@@ -168,6 +168,33 @@ textarea{resize:vertical;min-height:72px;line-height:1.5}
 .toast{position:fixed;bottom:76px;left:50%;transform:translateX(-50%);background:#1A1814;color:#fff;padding:9px 18px;border-radius:20px;font-size:12px;z-index:300;opacity:0;transition:opacity 0.3s;pointer-events:none;white-space:nowrap;max-width:calc(100% - 32px);text-align:center}
 .toast.show{opacity:1}
 
+/* ── Estoque Físico ── */
+.stock-bar-wrap{margin-top:6px}
+.stock-bar-bg{height:7px;background:var(--surface3);border-radius:4px;overflow:hidden}
+.stock-bar-fill{height:100%;border-radius:4px;transition:width 0.4s,background 0.4s}
+.stock-bar-fill.green{background:#52B788}
+.stock-bar-fill.orange{background:#F4A261}
+.stock-bar-fill.red{background:#E76F51}
+.stock-flag{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:600;padding:2px 7px;border-radius:20px;margin-top:4px}
+.stock-flag.green{background:#D8F3DC;color:#2D6A4F}
+.stock-flag.orange{background:#FFF3E0;color:#E65100}
+.stock-flag.red{background:#FEE2E2;color:#C62828}
+.pstock-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:12px;margin-bottom:8px}
+.pstock-header{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:8px}
+.pstock-name{font-size:13px;font-weight:600;flex:1;min-width:0}
+.pstock-actions{display:flex;gap:5px;flex-shrink:0}
+.pstock-qty{font-family:'DM Mono',monospace;font-size:18px;font-weight:600;color:var(--text);margin-bottom:2px}
+.pstock-meta{font-size:11px;color:var(--text3);margin-bottom:6px}
+.pstock-btns{display:flex;gap:6px;margin-top:10px}
+.summary-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:12px;margin-bottom:12px;display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.summary-item-label{font-size:10px;color:var(--text3);margin-bottom:2px}
+.summary-item-val{font-size:15px;font-weight:600;font-family:'DM Mono',monospace}
+
+/* ── Source Selector (Ficha) ── */
+.source-toggle{display:flex;background:var(--surface2);border-radius:var(--r2);padding:3px;gap:3px;margin-bottom:10px}
+.source-btn{flex:1;padding:7px 4px;font-size:11px;font-weight:500;border:none;border-radius:6px;cursor:pointer;background:transparent;color:var(--text2);font-family:'Sora',sans-serif;transition:all 0.15s;text-align:center;line-height:1.3}
+.source-btn.active{background:var(--surface);color:var(--accent);box-shadow:0 1px 4px rgba(0,0,0,0.1);font-weight:600}
+
 /* ── Desktop override ── */
 @media(min-width:480px){
   .page{padding:20px 24px;max-width:480px}
@@ -216,6 +243,10 @@ textarea{resize:vertical;min-height:72px;line-height:1.5}
 
   <div class="section-label">Adicionar Ingrediente</div>
   <div class="card">
+    <div class="source-toggle">
+      <button class="source-btn active" id="src-btn-virtual" onclick="setIngSource('virtual')">📦 Est. Virtual<br><span style="font-size:9px;font-weight:400;opacity:0.8">fichas & precificação</span></button>
+      <button class="source-btn" id="src-btn-fisico" onclick="setIngSource('fisico')">🏪 Est. Físico<br><span style="font-size:9px;font-weight:400;opacity:0.8">desconta estoque real</span></button>
+    </div>
     <div style="position:relative" id="ing-search-wrap">
       <span class="search-icon">🔍</span>
       <input type="text" id="ing-search" placeholder="Buscar ingrediente do estoque..." oninput="searchIngredient()" autocomplete="off" style="padding-left:36px">
@@ -301,12 +332,12 @@ textarea{resize:vertical;min-height:72px;line-height:1.5}
   </div>
 </div>
 
-<!-- PAGE: ESTOQUE -->
+<!-- PAGE: ESTOQUE VIRTUAL -->
 <div class="page" id="page-estoque">
   <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px">
     <div>
-      <div class="section-title">Estoque</div>
-      <div class="section-sub">Gerencie seus ingredientes e produtos</div>
+      <div class="section-title">Est. Virtual</div>
+      <div class="section-sub">Ingredientes para precificação e fichas técnicas</div>
     </div>
     <button class="btn btn-primary btn-sm" onclick="openAddStock()">+ Novo</button>
   </div>
@@ -339,13 +370,36 @@ textarea{resize:vertical;min-height:72px;line-height:1.5}
   <div id="recipes-list"></div>
 </div>
 
+<!-- PAGE: ESTOQUE FÍSICO -->
+<div class="page" id="page-fisico">
+  <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px">
+    <div>
+      <div class="section-title">Est. Físico</div>
+      <div class="section-sub">Controle real de quantidade e reposição</div>
+    </div>
+    <button class="btn btn-primary btn-sm" onclick="openAddPhysical()">+ Novo</button>
+  </div>
+
+  <div id="pstock-summary" class="summary-box" style="display:none"></div>
+
+  <div class="search-bar">
+    <span class="search-icon">🔍</span>
+    <input type="text" placeholder="Buscar produto..." oninput="filterPhysical(this.value)" style="padding-left:36px">
+  </div>
+
+  <div id="pstock-list"></div>
+</div>
+
 <!-- NAV -->
 <nav class="nav">
   <button class="nav-btn active" id="nav-ficha" onclick="showPage('ficha','nav-ficha')">
     <span class="nav-icon">📋</span>Ficha
   </button>
   <button class="nav-btn" id="nav-estoque" onclick="showPage('estoque','nav-estoque')">
-    <span class="nav-icon">📦</span>Estoque
+    <span class="nav-icon">📦</span>Virtual
+  </button>
+  <button class="nav-btn" id="nav-fisico" onclick="showPage('fisico','nav-fisico')">
+    <span class="nav-icon">🏪</span>Físico
   </button>
   <button class="nav-btn" id="nav-receitas" onclick="showPage('receitas','nav-receitas')">
     <span class="nav-icon">🍳</span>Receitas
@@ -446,6 +500,104 @@ textarea{resize:vertical;min-height:72px;line-height:1.5}
   </div>
 </div>
 
+<!-- MODAL: ADD/EDIT PHYSICAL STOCK -->
+<div class="modal-overlay" id="modal-pstock">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="modal-pstock-title">Novo Produto Físico</div>
+
+    <div class="input-group">
+      <label class="input-label">Nome do Produto *</label>
+      <input type="text" id="pstock-name" placeholder="Ex: Farinha de trigo, Frango...">
+    </div>
+
+    <div class="input-row cols-2">
+      <div class="input-group">
+        <label class="input-label">Quantidade Comprada *</label>
+        <input type="number" id="pstock-qty" placeholder="Ex: 5" step="0.001">
+      </div>
+      <div class="input-group">
+        <label class="input-label">Unidade</label>
+        <select id="pstock-unit">
+          <option value="kg">KG</option>
+          <option value="g">Gramas</option>
+          <option value="ml">Mililitros (ml)</option>
+          <option value="un">Unidade (un)</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="input-group">
+      <label class="input-label">Valor Pago (R$) *</label>
+      <input type="number" id="pstock-price" placeholder="Ex: 10.00" step="0.01">
+    </div>
+
+    <div class="input-group">
+      <label class="input-label">Estoque Desejado (meta) *</label>
+      <input type="number" id="pstock-desired" placeholder="Ex: 10 — será seu 100%" step="0.001">
+    </div>
+
+    <div class="input-group">
+      <label class="input-label">Categoria</label>
+      <select id="pstock-category">
+        <option value="">Selecionar...</option>
+        <option value="Proteínas">💪 Proteínas</option>
+        <option value="Carboidratos">🍞 Carboidratos</option>
+        <option value="Gorduras">🧈 Gorduras</option>
+        <option value="Leguminosas">🫘 Leguminosas</option>
+        <option value="Laticínios">🧀 Laticínios</option>
+        <option value="Carnes">🥩 Carnes</option>
+        <option value="Cereais">🌾 Cereais</option>
+        <option value="Farinhas">🌿 Farinhas</option>
+        <option value="Açúcares">🍬 Açúcares</option>
+        <option value="Óleos e Gorduras">🫙 Óleos e Gorduras</option>
+        <option value="Temperos">🌶 Temperos</option>
+        <option value="Hortifrúti">🥬 Hortifrúti</option>
+        <option value="Outros">📦 Outros</option>
+      </select>
+    </div>
+
+    <div style="background:var(--accent3);border-radius:var(--r2);padding:10px;font-size:11px;color:var(--accent);margin-bottom:14px">
+      💡 Ao salvar, este produto também será sincronizado no Estoque Virtual para uso nas fichas técnicas.
+    </div>
+
+    <div style="display:flex;gap:8px">
+      <button class="btn btn-secondary" style="flex:1" onclick="closeModal('modal-pstock')">Cancelar</button>
+      <button class="btn btn-primary" style="flex:1" onclick="savePhysical()">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: MOVIMENTAÇÃO (usar / repor) -->
+<div class="modal-overlay" id="modal-move">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="modal-move-title">Movimentar Estoque</div>
+    <div id="modal-move-info" style="background:var(--surface2);border-radius:var(--r2);padding:10px;margin-bottom:14px;font-size:12px;color:var(--text2)"></div>
+
+    <div class="source-toggle" style="margin-bottom:14px">
+      <button class="source-btn active" id="move-btn-usar" onclick="setMoveType('usar')">📤 Usar / Retirar</button>
+      <button class="source-btn" id="move-btn-repor" onclick="setMoveType('repor')">📥 Repor / Comprar</button>
+    </div>
+
+    <div class="input-row cols-2" style="margin-bottom:12px">
+      <div class="input-group" style="margin-bottom:0">
+        <label class="input-label" id="move-qty-label">Quantidade a usar</label>
+        <input type="number" id="move-qty" placeholder="Ex: 2" step="0.001" min="0.001">
+      </div>
+      <div class="input-group" style="margin-bottom:0">
+        <label class="input-label">Unidade</label>
+        <div id="move-unit-display" style="padding:9px 10px;background:var(--surface2);border-radius:var(--r2);font-size:13px;color:var(--text2)">—</div>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:8px">
+      <button class="btn btn-secondary" style="flex:1" onclick="closeModal('modal-move')">Cancelar</button>
+      <button class="btn btn-primary" style="flex:1" id="move-confirm-btn" onclick="confirmMove()">Confirmar</button>
+    </div>
+  </div>
+</div>
+
 <!-- TOAST -->
 <div class="toast" id="toast"></div>
 
@@ -454,12 +606,17 @@ const fmtBRL = v => v.toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
 const fmtN = (v,d=1) => typeof v==='number'?v.toFixed(d):'—';
 
 let stock = JSON.parse(localStorage.getItem('fichatec_stock')||'[]');
+let physicalStock = JSON.parse(localStorage.getItem('fichatec_physical')||'[]');
 let recipes = JSON.parse(localStorage.getItem('fichatec_recipes')||'[]');
 let currentIngredients = [];
 let selectedIngredient = null;
 let editingStockId = null;
+let editingPhysicalId = null;
 let currentRecipeId = null;
 let activeIngFilter = null;
+let ingSource = 'virtual'; // 'virtual' | 'fisico'
+let moveType = 'usar'; // 'usar' | 'repor'
+let movingPhysicalId = null;
 
 const defaultNutrition = {
   'farinha de trigo':{kcal:361,carb:75,prot:9.8,fat:1.4,fiber:2.3,sodium:2},
@@ -509,11 +666,241 @@ function showPage(page,navId){
   document.getElementById('page-'+page).classList.add('active');
   document.getElementById(navId).classList.add('active');
   if(page==='estoque')renderStock();
+  if(page==='fisico')renderPhysical();
   if(page==='receitas')renderRecipes();
 }
 
 function saveStockData(){localStorage.setItem('fichatec_stock',JSON.stringify(stock));}
 function saveRecipesData(){localStorage.setItem('fichatec_recipes',JSON.stringify(recipes));}
+function savePhysicalData(){localStorage.setItem('fichatec_physical',JSON.stringify(physicalStock));}
+
+// ── Source toggle (Ficha) ──
+function setIngSource(src){
+  ingSource=src;
+  document.getElementById('src-btn-virtual').classList.toggle('active',src==='virtual');
+  document.getElementById('src-btn-fisico').classList.toggle('active',src==='fisico');
+  // reset busca
+  document.getElementById('ing-search').value='';
+  document.getElementById('ing-dropdown').classList.remove('open');
+  document.getElementById('ing-selected-info').style.display='none';
+  document.getElementById('ing-cost-preview').style.display='none';
+  selectedIngredient=null;
+}
+
+// ── Helpers estoque físico ──
+function stockColor(pct){
+  if(pct>=80)return'green';
+  if(pct>=50)return'orange';
+  return'red';
+}
+function stockFlag(pct){
+  const cls=stockColor(pct);
+  const icon=pct>=80?'🟢':pct>=50?'🟡':'🔴';
+  return`<span class="stock-flag ${cls}">${icon} ${pct.toFixed(0)}%</span>`;
+}
+function stockBar(pct){
+  const cls=stockColor(pct);
+  const w=Math.min(pct,100).toFixed(1);
+  return`<div class="stock-bar-wrap"><div class="stock-bar-bg"><div class="stock-bar-fill ${cls}" style="width:${w}%"></div></div></div>`;
+}
+function fmtQty(q,u){return q%1===0?q+u:q.toFixed(3).replace(/\.?0+$/,'')+u;}
+
+// ── Estoque Físico CRUD ──
+function openAddPhysical(id=null){
+  editingPhysicalId=id;
+  if(id!==null){
+    const p=physicalStock.find(x=>x.id===id);
+    document.getElementById('modal-pstock-title').textContent='Editar Produto';
+    document.getElementById('pstock-name').value=p.name;
+    document.getElementById('pstock-qty').value=p.currentQty;
+    document.getElementById('pstock-unit').value=p.unit;
+    document.getElementById('pstock-price').value=p.price;
+    document.getElementById('pstock-desired').value=p.desiredQty;
+    document.getElementById('pstock-category').value=p.category||'';
+  }else{
+    document.getElementById('modal-pstock-title').textContent='Novo Produto Físico';
+    ['pstock-name','pstock-qty','pstock-price','pstock-desired'].forEach(i=>document.getElementById(i).value='');
+    document.getElementById('pstock-unit').value='kg';
+    document.getElementById('pstock-category').value='';
+  }
+  document.getElementById('modal-pstock').classList.add('open');
+}
+
+function savePhysical(){
+  const name=document.getElementById('pstock-name').value.trim();
+  const qty=parseFloat(document.getElementById('pstock-qty').value);
+  const unit=document.getElementById('pstock-unit').value;
+  const price=parseFloat(document.getElementById('pstock-price').value);
+  const desired=parseFloat(document.getElementById('pstock-desired').value);
+  if(!name||isNaN(qty)||qty<0||isNaN(price)||price<0||isNaN(desired)||desired<=0){
+    showToast('Preencha todos os campos obrigatórios.');return;
+  }
+  const category=document.getElementById('pstock-category').value;
+
+  if(editingPhysicalId!==null){
+    // editar existente
+    physicalStock=physicalStock.map(p=>p.id===editingPhysicalId
+      ?{...p,name,currentQty:qty,unit,price,desiredQty:desired,category}:p);
+  }else{
+    const newItem={
+      id:Date.now(),name,currentQty:qty,desiredQty:desired,
+      unit,price,category,
+      usedTotal:0,
+      history:[{type:'entrada',qty,date:new Date().toISOString(),note:'Cadastro inicial'}]
+    };
+    physicalStock.push(newItem);
+  }
+  savePhysicalData();
+
+  // Sincronizar no estoque virtual (nome + unit + price como qty 1 ou kg)
+  syncPhysicalToVirtual(name,unit,price,qty,category);
+
+  closeModal('modal-pstock');
+  renderPhysical();
+  showToast(editingPhysicalId?'Produto atualizado!':'Produto adicionado e sincronizado no Est. Virtual!');
+}
+
+function syncPhysicalToVirtual(name,unit,price,qty,category){
+  // Calcula preço por unidade base para o estoque virtual
+  // O estoque virtual armazena price como "valor total pago por qty unidades"
+  const existing=stock.find(s=>s.name.toLowerCase()===name.toLowerCase());
+  if(!existing){
+    const nutrition=getNutritionFor(name);
+    stock.push({id:Date.now()+1,name,qty,unit,price,category,nutrition});
+    saveStockData();
+  }else{
+    // Atualiza preço
+    stock=stock.map(s=>s.name.toLowerCase()===name.toLowerCase()?{...s,price,qty,unit,category}:s);
+    saveStockData();
+  }
+}
+
+function deletePhysical(id){
+  if(!confirm('Remover este produto do estoque físico?'))return;
+  physicalStock=physicalStock.filter(p=>p.id!==id);
+  savePhysicalData();
+  renderPhysical();
+  showToast('Produto removido.');
+}
+
+// ── Movimentação ──
+function openMove(id){
+  movingPhysicalId=id;
+  const p=physicalStock.find(x=>x.id===id);
+  if(!p)return;
+  moveType='usar';
+  document.getElementById('move-btn-usar').classList.add('active');
+  document.getElementById('move-btn-repor').classList.remove('active');
+  document.getElementById('modal-move-title').textContent=p.name;
+  document.getElementById('move-qty-label').textContent='Quantidade a usar';
+  document.getElementById('move-confirm-btn').textContent='Confirmar Uso';
+  document.getElementById('move-unit-display').textContent=p.unit;
+  document.getElementById('move-qty').value='';
+  const pct=p.desiredQty>0?(p.currentQty/p.desiredQty)*100:0;
+  document.getElementById('modal-move-info').innerHTML=
+    `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+      <span>Em estoque</span><strong style="font-family:'DM Mono',monospace">${fmtQty(p.currentQty,p.unit)}</strong>
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+      <span>Desejado</span><strong style="font-family:'DM Mono',monospace">${fmtQty(p.desiredQty,p.unit)}</strong>
+    </div>
+    ${stockBar(pct)}${stockFlag(pct)}`;
+  document.getElementById('modal-move').classList.add('open');
+}
+
+function setMoveType(type){
+  moveType=type;
+  const usar=type==='usar';
+  document.getElementById('move-btn-usar').classList.toggle('active',usar);
+  document.getElementById('move-btn-repor').classList.toggle('active',!usar);
+  document.getElementById('move-qty-label').textContent=usar?'Quantidade a usar':'Quantidade a repor';
+  document.getElementById('move-confirm-btn').textContent=usar?'Confirmar Uso':'Confirmar Reposição';
+}
+
+function confirmMove(){
+  const p=physicalStock.find(x=>x.id===movingPhysicalId);
+  if(!p)return;
+  const qty=parseFloat(document.getElementById('move-qty').value);
+  if(!qty||qty<=0){showToast('Informe uma quantidade válida.');return;}
+  if(moveType==='usar'){
+    if(qty>p.currentQty){showToast('Quantidade maior que o estoque disponível!');return;}
+    p.currentQty=parseFloat((p.currentQty-qty).toFixed(6));
+    p.usedTotal=(p.usedTotal||0)+qty;
+    p.history=p.history||[];
+    p.history.push({type:'saida',qty,date:new Date().toISOString()});
+    // Também desconta do virtual se existir
+    const vs=stock.find(s=>s.name.toLowerCase()===p.name.toLowerCase());
+    if(vs){
+      const newQty=parseFloat((vs.qty-qty).toFixed(6));
+      stock=stock.map(s=>s.name.toLowerCase()===p.name.toLowerCase()?{...s,qty:Math.max(newQty,0)}:s);
+      saveStockData();
+    }
+    showToast(`${fmtQty(qty,p.unit)} retirados do estoque.`);
+  }else{
+    p.currentQty=parseFloat((p.currentQty+qty).toFixed(6));
+    p.history=p.history||[];
+    p.history.push({type:'entrada',qty,date:new Date().toISOString()});
+    // Também repõe no virtual
+    const vs=stock.find(s=>s.name.toLowerCase()===p.name.toLowerCase());
+    if(vs){
+      stock=stock.map(s=>s.name.toLowerCase()===p.name.toLowerCase()?{...s,qty:parseFloat((vs.qty+qty).toFixed(6))}:s);
+      saveStockData();
+    }
+    showToast(`${fmtQty(qty,p.unit)} adicionados ao estoque.`);
+  }
+  savePhysicalData();
+  closeModal('modal-move');
+  renderPhysical();
+}
+
+// ── Render Estoque Físico ──
+function renderPhysical(filter=''){
+  const el=document.getElementById('pstock-list');
+  const filtered=physicalStock.filter(p=>p.name.toLowerCase().includes(filter.toLowerCase()));
+
+  // Summary
+  const sumEl=document.getElementById('pstock-summary');
+  if(physicalStock.length){
+    const total=physicalStock.length;
+    const ok=physicalStock.filter(p=>(p.currentQty/p.desiredQty)*100>=80).length;
+    const warn=physicalStock.filter(p=>{const pct=(p.currentQty/p.desiredQty)*100;return pct>=50&&pct<80;}).length;
+    const low=physicalStock.filter(p=>(p.currentQty/p.desiredQty)*100<50).length;
+    sumEl.style.display='grid';
+    sumEl.innerHTML=`
+      <div><div class="summary-item-label">Total produtos</div><div class="summary-item-val">${total}</div></div>
+      <div><div class="summary-item-label">🟢 Adequado</div><div class="summary-item-val" style="color:#2D6A4F">${ok}</div></div>
+      <div><div class="summary-item-label">🟡 Atenção</div><div class="summary-item-val" style="color:#E65100">${warn}</div></div>
+      <div><div class="summary-item-label">🔴 Crítico</div><div class="summary-item-val" style="color:#C62828">${low}</div></div>`;
+  }else{sumEl.style.display='none';}
+
+  if(!filtered.length){
+    el.innerHTML=`<div class="empty-state"><div class="empty-icon">🏪</div><div class="empty-text">${filter?'Nenhum produto encontrado.':'Nenhum produto no estoque físico ainda. Clique em "+ Novo" para adicionar!'}</div></div>`;
+    return;
+  }
+  el.innerHTML=filtered.map(p=>{
+    const pct=p.desiredQty>0?(p.currentQty/p.desiredQty)*100:0;
+    const cls=stockColor(pct);
+    return`<div class="pstock-card">
+      <div class="pstock-header">
+        <div class="pstock-name">${p.name}${p.category?` <span class="tag">${p.category}</span>`:''}</div>
+        <div class="pstock-actions">
+          <button class="btn btn-secondary btn-sm" onclick="openAddPhysical(${p.id})">✏️</button>
+          <button class="btn btn-danger btn-sm" onclick="deletePhysical(${p.id})">🗑</button>
+        </div>
+      </div>
+      <div class="pstock-qty">${fmtQty(p.currentQty,p.unit)}</div>
+      <div class="pstock-meta">Meta: ${fmtQty(p.desiredQty,p.unit)} · Usado: ${fmtQty(p.usedTotal||0,p.unit)} · ${fmtBRL(p.price)}</div>
+      ${stockBar(pct)}
+      ${stockFlag(pct)}
+      <div class="pstock-btns">
+        <button class="btn btn-danger btn-sm" style="flex:1" onclick="openMove(${p.id})">📤 Usar</button>
+        <button class="btn btn-primary btn-sm" style="flex:1" onclick="openMove(${p.id});setMoveType('repor')">📥 Repor</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function filterPhysical(v){renderPhysical(v);}
 
 function openAddStock(id=null){
   editingStockId=id;
@@ -632,13 +1019,29 @@ function searchIngredient(){
   const q=document.getElementById('ing-search').value.toLowerCase().trim();
   const dd=document.getElementById('ing-dropdown');
   if(!q){dd.classList.remove('open');return;}
-  const matches=stock.filter(s=>s.name.toLowerCase().includes(q)).slice(0,8);
+
+  let matches;
+  if(ingSource==='fisico'){
+    matches=physicalStock
+      .filter(p=>p.name.toLowerCase().includes(q)&&p.currentQty>0)
+      .slice(0,8)
+      .map(p=>({
+        id:'pf_'+p.id, name:p.name, unit:p.unit,
+        price:p.price, qty:p.currentQty,
+        _physical:p,
+        nutrition:getNutritionFor(p.name),
+        category:p.category||''
+      }));
+  }else{
+    matches=stock.filter(s=>s.name.toLowerCase().includes(q)).slice(0,8);
+  }
+
   if(!matches.length){
-    dd.innerHTML='<div class="autocomplete-item" style="color:var(--text3)">Nenhum ingrediente encontrado no estoque</div>';
+    dd.innerHTML=`<div class="autocomplete-item" style="color:var(--text3)">${ingSource==='fisico'?'Nenhum produto com estoque disponível':'Nenhum ingrediente encontrado no estoque'}</div>`;
     dd.classList.add('open');return;
   }
-  dd.innerHTML=matches.map(s=>`<div class="autocomplete-item" onclick="selectIngredient(${s.id})">
-    <div>${s.name}</div>
+  dd.innerHTML=matches.map(s=>`<div class="autocomplete-item" onclick="selectIngredient('${s.id}')">
+    <div>${s.name}${ingSource==='fisico'?` <span style="font-size:10px;color:var(--accent);font-weight:600">🏪 ${fmtQty(s.qty,s.unit)}</span>`:''}</div>
     <div class="sub">${s.qty}${s.unit} · ${fmtBRL(s.price)} · ${
       s.unit==='ml'?fmtBRL(pricePerG(s)*1000)+'/L':
       s.unit==='un'?fmtBRL(pricePerG(s))+'/un':
@@ -649,11 +1052,26 @@ function searchIngredient(){
 }
 
 function selectIngredient(id){
-  selectedIngredient=stock.find(s=>s.id===id);
+  // id pode ser numérico (virtual) ou 'pf_xxx' (físico)
+  if(ingSource==='fisico'&&String(id).startsWith('pf_')){
+    const pid=parseInt(id.replace('pf_',''));
+    const p=physicalStock.find(x=>x.id===pid);
+    if(!p)return;
+    selectedIngredient={
+      id:'pf_'+p.id, name:p.name, unit:p.unit,
+      price:p.price, qty:p.currentQty,
+      _physicalId:p.id,
+      nutrition:getNutritionFor(p.name),
+      category:p.category||''
+    };
+  }else{
+    selectedIngredient=stock.find(s=>s.id===parseInt(id)||s.id===id);
+  }
+  if(!selectedIngredient)return;
   document.getElementById('ing-search').value=selectedIngredient.name;
   document.getElementById('ing-dropdown').classList.remove('open');
   document.getElementById('ing-selected-info').style.display='block';
-  document.getElementById('ing-sel-name').textContent=selectedIngredient.name;
+  document.getElementById('ing-sel-name').textContent=selectedIngredient.name+(ingSource==='fisico'?' 🏪':'');
   const ppg=pricePerG(selectedIngredient);
   const u=selectedIngredient.unit;
   document.getElementById('ing-sel-price').textContent=
@@ -688,10 +1106,36 @@ function addIngredient(){
   currentIngredients.push({
     id:Date.now(),
     stockId:selectedIngredient.id,
+    physicalId:selectedIngredient._physicalId||null,
+    source:ingSource,
     name:selectedIngredient.name,
     qtyG,qtyBruta,unit,rendimento:rend,cost,
     nutrition:selectedIngredient.nutrition
   });
+
+  // Se fonte for físico, desconta do estoque físico imediatamente
+  if(ingSource==='fisico'&&selectedIngredient._physicalId){
+    const pid=selectedIngredient._physicalId;
+    physicalStock=physicalStock.map(p=>{
+      if(p.id!==pid)return p;
+      const deduct=isUn?qtyBruta:qtyBruta/1; // já está na unidade correta
+      const newQty=parseFloat((p.currentQty-deduct).toFixed(6));
+      return{...p,
+        currentQty:Math.max(newQty,0),
+        usedTotal:(p.usedTotal||0)+deduct,
+        history:[...(p.history||[]),{type:'saida',qty:deduct,date:new Date().toISOString(),note:'Ficha técnica'}]
+      };
+    });
+    savePhysicalData();
+    // Também desconta do virtual
+    const vname=selectedIngredient.name.toLowerCase();
+    const vs=stock.find(s=>s.name.toLowerCase()===vname);
+    if(vs){
+      const deduct=isUn?qtyBruta:qtyBruta;
+      stock=stock.map(s=>s.name.toLowerCase()===vname?{...s,qty:Math.max(parseFloat((s.qty-deduct).toFixed(6)),0)}:s);
+      saveStockData();
+    }
+  }
   document.getElementById('ing-search').value='';
   document.getElementById('ing-qty').value='';
   document.getElementById('ing-rendimento').value='';
@@ -942,6 +1386,7 @@ if(!stock.length){
 
 renderStock();
 renderRecipes();
+renderPhysical();
 </script>
 </body>
 </html>
