@@ -15,108 +15,165 @@
   --warn:#E76F51;--warn2:#FFF0EB;
   --amber:#F4A261;--amber2:#FFF8F0;
   --border:#DDD9D0;--border2:#C8C4BB;
-  --r:12px;--r2:8px;--r3:20px;
+  --r:10px;--r2:7px;--r3:18px;
   --shadow:0 2px 8px rgba(0,0,0,0.08);
 }
-body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding-bottom:80px}
-.app-header{background:var(--surface);border-bottom:1px solid var(--border);padding:16px 20px;position:sticky;top:0;z-index:100;display:flex;align-items:center;gap:12px}
-.app-logo{width:36px;height:36px;background:var(--accent);border-radius:10px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px;flex-shrink:0}
-.app-title{font-size:17px;font-weight:600;color:var(--text)}
-.app-subtitle{font-size:11px;color:var(--text3);font-weight:400}
+
+/* ── Base ── */
+html{font-size:14px}
+body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding-bottom:68px;-webkit-text-size-adjust:100%}
+
+/* ── Header ── */
+.app-header{background:var(--surface);border-bottom:1px solid var(--border);padding:11px 14px;position:sticky;top:0;z-index:100;display:flex;align-items:center;gap:10px}
+.app-logo{width:32px;height:32px;background:var(--accent);border-radius:9px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:16px;flex-shrink:0}
+.app-title{font-size:15px;font-weight:600;color:var(--text);line-height:1.2}
+.app-subtitle{font-size:10px;color:var(--text3);font-weight:400}
+
+/* ── Bottom Nav ── */
 .nav{position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-top:1px solid var(--border);display:flex;z-index:100;padding-bottom:env(safe-area-inset-bottom)}
-.nav-btn{flex:1;padding:10px 4px 8px;display:flex;flex-direction:column;align-items:center;gap:3px;border:none;background:none;cursor:pointer;color:var(--text3);font-size:9px;font-family:'Sora',sans-serif;font-weight:500;letter-spacing:0.3px;transition:color 0.15s}
+.nav-btn{flex:1;padding:8px 4px 7px;display:flex;flex-direction:column;align-items:center;gap:2px;border:none;background:none;cursor:pointer;color:var(--text3);font-size:9px;font-family:'Sora',sans-serif;font-weight:500;letter-spacing:0.2px;transition:color 0.15s;min-height:52px}
 .nav-btn.active{color:var(--accent)}
-.nav-icon{font-size:20px;line-height:1}
-.page{display:none;padding:16px;max-width:680px;margin:0 auto}
+.nav-icon{font-size:19px;line-height:1}
+
+/* ── Pages ── */
+.page{display:none;padding:12px;max-width:380px;margin:0 auto;width:100%}
 .page.active{display:block}
-.section-title{font-size:20px;font-weight:600;margin-bottom:4px}
-.section-sub{font-size:13px;color:var(--text2);margin-bottom:20px}
-.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:16px;margin-bottom:12px}
-.card-title{font-size:14px;font-weight:600;color:var(--text)}
-.badge{font-size:10px;padding:3px 8px;border-radius:20px;font-weight:500}
+.section-title{font-size:17px;font-weight:600;margin-bottom:3px}
+.section-sub{font-size:12px;color:var(--text2);margin-bottom:14px;line-height:1.4}
+
+/* ── Cards ── */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:12px;margin-bottom:10px}
+.card-title{font-size:13px;font-weight:600;color:var(--text)}
+.badge{font-size:10px;padding:3px 7px;border-radius:20px;font-weight:500;white-space:nowrap}
 .badge-green{background:var(--accent3);color:var(--accent)}
-.input-group{margin-bottom:12px}
-.input-label{font-size:12px;font-weight:500;color:var(--text2);margin-bottom:5px;display:block}
-input,select,textarea{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:var(--r2);font-size:14px;font-family:'Sora',sans-serif;background:var(--surface);color:var(--text);outline:none;transition:border-color 0.15s}
+
+/* ── Form Controls ── */
+.input-group{margin-bottom:10px}
+.input-label{font-size:11px;font-weight:500;color:var(--text2);margin-bottom:4px;display:block}
+input,select,textarea{
+  width:100%;padding:9px 10px;border:1px solid var(--border);border-radius:var(--r2);
+  font-size:14px;font-family:'Sora',sans-serif;background:var(--surface);
+  color:var(--text);outline:none;transition:border-color 0.15s;
+  -webkit-appearance:none;appearance:none
+}
+select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%239A958A' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;padding-right:28px}
 input:focus,select:focus,textarea:focus{border-color:var(--accent)}
-textarea{resize:vertical;min-height:80px}
-.input-row{display:grid;gap:10px}
+textarea{resize:vertical;min-height:72px;line-height:1.5}
+
+/* ── Grid Layouts ── */
+.input-row{display:grid;gap:8px}
 .cols-2{grid-template-columns:1fr 1fr}
 .cols-3{grid-template-columns:1fr 1fr 1fr}
-.btn{padding:10px 16px;border-radius:var(--r2);font-size:13px;font-family:'Sora',sans-serif;font-weight:500;cursor:pointer;border:none;transition:all 0.15s;display:inline-flex;align-items:center;gap:6px}
+
+/* ── Buttons ── */
+.btn{padding:9px 14px;border-radius:var(--r2);font-size:13px;font-family:'Sora',sans-serif;font-weight:500;cursor:pointer;border:none;transition:all 0.15s;display:inline-flex;align-items:center;justify-content:center;gap:5px;white-space:nowrap;-webkit-tap-highlight-color:transparent}
 .btn-primary{background:var(--accent);color:#fff}
-.btn-primary:hover{background:#235D40}
+.btn-primary:active{background:#235D40}
 .btn-secondary{background:var(--surface2);color:var(--text2);border:1px solid var(--border)}
-.btn-secondary:hover{background:var(--surface3)}
+.btn-secondary:active{background:var(--surface3)}
 .btn-danger{background:#FEE2E2;color:#DC2626}
-.btn-danger:hover{background:#FECACA}
 .btn-warn{background:var(--warn2);color:var(--warn)}
-.btn-sm{padding:6px 10px;font-size:12px}
+.btn-sm{padding:6px 9px;font-size:11px}
 .btn-full{width:100%;justify-content:center}
-.search-bar{position:relative;margin-bottom:16px}
-.search-bar input{padding-left:36px}
-.search-icon{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--text3);font-size:16px;pointer-events:none}
-.item-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px;display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;transition:border-color 0.15s}
-.item-card:hover{border-color:var(--accent)}
-.item-name{font-size:14px;font-weight:500}
-.item-meta{font-size:12px;color:var(--text3);margin-top:2px}
-.item-actions{display:flex;gap:6px;flex-shrink:0}
-.tag{display:inline-block;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:500;background:var(--surface2);color:var(--text2)}
-.divider{height:1px;background:var(--border);margin:16px 0}
-.total-box{background:linear-gradient(135deg,#2D6A4F,#3D8B64);border-radius:var(--r);padding:16px;color:#fff;margin-bottom:12px}
-.total-label{font-size:12px;opacity:0.8;margin-bottom:4px}
-.total-value{font-size:24px;font-weight:600;font-family:'DM Mono',monospace}
-.nutrition-table{width:100%;border-collapse:collapse;font-size:13px}
-.nutrition-table th{text-align:left;padding:8px 10px;background:var(--surface2);font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.4px}
-.nutrition-table td{padding:8px 10px;border-bottom:1px solid var(--border)}
+
+/* ── Search Bar ── */
+.search-bar{position:relative;margin-bottom:12px}
+.search-bar input{padding-left:34px}
+.search-icon{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--text3);font-size:15px;pointer-events:none}
+
+/* ── Item Cards (Estoque) ── */
+.item-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:11px 12px;display:flex;align-items:center;justify-content:space-between;margin-bottom:7px;transition:border-color 0.15s;gap:8px}
+.item-name{font-size:13px;font-weight:500;line-height:1.3}
+.item-meta{font-size:11px;color:var(--text3);margin-top:2px;line-height:1.4;word-break:break-word}
+.item-actions{display:flex;gap:5px;flex-shrink:0}
+.tag{display:inline-block;padding:2px 6px;border-radius:20px;font-size:10px;font-weight:500;background:var(--surface2);color:var(--text2)}
+
+/* ── Divider ── */
+.divider{height:1px;background:var(--border);margin:12px 0}
+
+/* ── Totals Box ── */
+.total-box{background:linear-gradient(135deg,#2D6A4F,#3D8B64);border-radius:var(--r);padding:12px;color:#fff;margin-bottom:10px}
+.total-label{font-size:11px;opacity:0.8;margin-bottom:3px}
+.total-value{font-size:18px;font-weight:600;font-family:'DM Mono',monospace;line-height:1.2}
+
+/* ── Nutrition Table ── */
+.nutrition-table{width:100%;border-collapse:collapse;font-size:12px}
+.nutrition-table th{text-align:left;padding:6px 8px;background:var(--surface2);font-size:10px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.3px}
+.nutrition-table td{padding:7px 8px;border-bottom:1px solid var(--border)}
 .nutrition-table tr:last-child td{border-bottom:none}
-.nutrition-table .val{font-family:'DM Mono',monospace;font-size:12px;font-weight:500;text-align:right}
-.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:200;align-items:flex-end;justify-content:center}
+.nutrition-table .val{font-family:'DM Mono',monospace;font-size:11px;font-weight:500;text-align:right}
+
+/* ── Modal ── */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:200;align-items:flex-end;justify-content:center}
 .modal-overlay.open{display:flex}
-.modal{background:var(--surface);border-radius:20px 20px 0 0;padding:20px;width:100%;max-width:680px;max-height:90vh;overflow-y:auto}
-.modal-handle{width:36px;height:4px;background:var(--border2);border-radius:2px;margin:0 auto 16px}
-.modal-title{font-size:17px;font-weight:600;margin-bottom:16px}
-.ingredient-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)}
+.modal{background:var(--surface);border-radius:18px 18px 0 0;padding:16px;width:100%;max-height:92vh;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.modal-handle{width:32px;height:4px;background:var(--border2);border-radius:2px;margin:0 auto 14px}
+.modal-title{font-size:16px;font-weight:600;margin-bottom:14px}
+
+/* ── Ingredient Rows ── */
+.ingredient-row{display:flex;align-items:center;gap:8px;padding:9px 0;border-bottom:1px solid var(--border)}
 .ingredient-row:last-child{border-bottom:none}
-.ing-name{flex:1;font-size:13px;font-weight:500}
-.ing-qty{font-family:'DM Mono',monospace;font-size:12px;color:var(--text2)}
-.ing-cost{font-family:'DM Mono',monospace;font-size:13px;font-weight:500;color:var(--accent);min-width:70px;text-align:right}
-.ing-del{background:none;border:none;cursor:pointer;color:var(--text3);font-size:16px;padding:4px;line-height:1}
-.markup-row{display:flex;align-items:center;gap:12px;background:var(--amber2);border:1px solid #FCD34D;border-radius:var(--r2);padding:12px 14px;margin-bottom:12px}
-.markup-label{font-size:13px;font-weight:500;color:#92400E;flex:1}
-.markup-input{width:80px!important;text-align:center;font-family:'DM Mono',monospace;border-color:#FCD34D!important}
-.portion-row{display:flex;align-items:center;gap:10px;margin-bottom:12px}
-.portion-label{font-size:13px;color:var(--text2);flex:1}
-.portion-input{width:90px!important;text-align:center;font-family:'DM Mono',monospace}
-.autocomplete-dropdown{position:absolute;top:100%;left:0;right:0;background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);box-shadow:var(--shadow);z-index:50;max-height:220px;overflow-y:auto;display:none}
+.ing-name{flex:1;font-size:12px;font-weight:500;min-width:0;word-break:break-word}
+.ing-qty{font-family:'DM Mono',monospace;font-size:11px;color:var(--text2);white-space:nowrap}
+.ing-cost{font-family:'DM Mono',monospace;font-size:12px;font-weight:500;color:var(--accent);min-width:62px;text-align:right;white-space:nowrap}
+.ing-del{background:none;border:none;cursor:pointer;color:var(--text3);font-size:16px;padding:4px;line-height:1;flex-shrink:0}
+
+/* ── Markup Row ── */
+.markup-row{display:flex;align-items:center;gap:10px;background:var(--amber2);border:1px solid #FCD34D;border-radius:var(--r2);padding:10px 12px;margin-bottom:10px}
+.markup-label{font-size:12px;font-weight:500;color:#92400E;flex:1}
+.markup-input{width:70px!important;text-align:center;font-family:'DM Mono',monospace;border-color:#FCD34D!important}
+
+/* ── Portion Row ── */
+.portion-row{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.portion-label{font-size:12px;color:var(--text2);flex:1}
+.portion-input{width:76px!important;text-align:center;font-family:'DM Mono',monospace}
+
+/* ── Autocomplete ── */
+.autocomplete-dropdown{position:absolute;top:100%;left:0;right:0;background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);box-shadow:var(--shadow);z-index:50;max-height:200px;overflow-y:auto;display:none}
 .autocomplete-dropdown.open{display:block}
-.autocomplete-item{padding:10px 12px;font-size:13px;cursor:pointer;border-bottom:1px solid var(--border)}
+.autocomplete-item{padding:9px 11px;font-size:12px;cursor:pointer;border-bottom:1px solid var(--border)}
 .autocomplete-item:last-child{border-bottom:none}
-.autocomplete-item:hover{background:var(--surface2)}
-.autocomplete-item .sub{font-size:11px;color:var(--text3)}
-.empty-state{text-align:center;padding:40px 20px;color:var(--text3)}
-.empty-icon{font-size:40px;margin-bottom:12px}
-.empty-text{font-size:14px}
-.filter-chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
-.chip{padding:6px 12px;border-radius:20px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid var(--border);background:var(--surface);color:var(--text2);transition:all 0.15s;white-space:nowrap}
+.autocomplete-item:active{background:var(--surface2)}
+.autocomplete-item .sub{font-size:10px;color:var(--text3);margin-top:2px}
+
+/* ── Empty State ── */
+.empty-state{text-align:center;padding:36px 16px;color:var(--text3)}
+.empty-icon{font-size:36px;margin-bottom:10px}
+.empty-text{font-size:13px;line-height:1.5}
+
+/* ── Filter Chips ── */
+.filter-chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.chip{padding:5px 11px;border-radius:20px;font-size:11px;font-weight:500;cursor:pointer;border:1px solid var(--border);background:var(--surface);color:var(--text2);transition:all 0.15s;white-space:nowrap;-webkit-tap-highlight-color:transparent}
 .chip.active{background:var(--accent);color:#fff;border-color:var(--accent)}
-.google-search-btn{display:inline-flex;align-items:center;gap:6px;padding:8px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r2);font-size:12px;color:var(--text2);cursor:pointer;margin-top:6px;text-decoration:none}
-.progress-bar{height:6px;background:var(--surface3);border-radius:3px;overflow:hidden;margin-top:4px}
+
+/* ── Google Search Btn ── */
+.google-search-btn{display:inline-flex;align-items:center;gap:5px;padding:7px 10px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r2);font-size:11px;color:var(--text2);cursor:pointer;margin-top:6px;text-decoration:none;word-break:break-word;max-width:100%}
+
+/* ── Progress Bar ── */
+.progress-bar{height:5px;background:var(--surface3);border-radius:3px;overflow:hidden;margin-top:3px}
 .progress-fill{height:100%;background:var(--accent2);border-radius:3px;transition:width 0.3s}
 .nut-pct{font-size:10px;color:var(--text3)}
-.recipe-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:16px;margin-bottom:10px;cursor:pointer;transition:border-color 0.15s}
-.recipe-card:hover{border-color:var(--accent)}
-.recipe-card-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px}
-.recipe-card-title{font-size:15px;font-weight:600}
-.recipe-card-meta{font-size:12px;color:var(--text3);margin-bottom:6px}
-.recipe-card-tags{display:flex;gap:4px;flex-wrap:wrap;margin-top:6px}
-.section-label{font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;margin-top:16px}
-.toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:#1A1814;color:#fff;padding:10px 20px;border-radius:20px;font-size:13px;z-index:300;opacity:0;transition:opacity 0.3s;pointer-events:none;white-space:nowrap}
+
+/* ── Recipe Cards ── */
+.recipe-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:12px;margin-bottom:8px;cursor:pointer;transition:border-color 0.15s}
+.recipe-card-header{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:6px}
+.recipe-card-title{font-size:14px;font-weight:600;line-height:1.3}
+.recipe-card-meta{font-size:11px;color:var(--text3);margin-bottom:4px;line-height:1.4}
+.recipe-card-tags{display:flex;gap:4px;flex-wrap:wrap;margin-top:4px}
+
+/* ── Section Label ── */
+.section-label{font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:7px;margin-top:14px}
+
+/* ── Toast ── */
+.toast{position:fixed;bottom:76px;left:50%;transform:translateX(-50%);background:#1A1814;color:#fff;padding:9px 18px;border-radius:20px;font-size:12px;z-index:300;opacity:0;transition:opacity 0.3s;pointer-events:none;white-space:nowrap;max-width:calc(100% - 32px);text-align:center}
 .toast.show{opacity:1}
-@media(min-width:600px){
-  .page{padding:24px 32px}
-  .modal{border-radius:16px;margin:auto;margin-bottom:0}
+
+/* ── Desktop override ── */
+@media(min-width:480px){
+  .page{padding:20px 24px;max-width:480px}
+  .modal{border-radius:14px;margin:auto;margin-bottom:0;max-width:420px}
   .modal-overlay{align-items:center}
+  .total-value{font-size:20px}
 }
 </style>
 </head>
@@ -178,6 +235,7 @@ textarea{resize:vertical;min-height:80px}
         <select id="ing-unit" onchange="calcIngCost()">
           <option value="g">Gramas (g)</option>
           <option value="kg">Quilograma (kg)</option>
+          <option value="ml">Mililitros (ml)</option>
         </select>
       </div>
     </div>
@@ -198,7 +256,7 @@ textarea{resize:vertical;min-height:80px}
     </div>
 
     <div class="total-box">
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
         <div>
           <div class="total-label">Custo Total</div>
           <div class="total-value" id="total-custo">R$ 0,00</div>
@@ -209,11 +267,11 @@ textarea{resize:vertical;min-height:80px}
         </div>
         <div>
           <div class="total-label">Custo por Porção</div>
-          <div class="total-value" id="total-porcao" style="font-size:18px">R$ 0,00</div>
+          <div class="total-value" id="total-porcao" style="font-size:15px">R$ 0,00</div>
         </div>
         <div>
           <div class="total-label">Custo por KG</div>
-          <div class="total-value" id="total-kg" style="font-size:18px">—</div>
+          <div class="total-value" id="total-kg" style="font-size:15px">—</div>
         </div>
       </div>
     </div>
@@ -314,6 +372,7 @@ textarea{resize:vertical;min-height:80px}
         <select id="stock-unit">
           <option value="kg">KG</option>
           <option value="g">Gramas</option>
+          <option value="ml">Mililitros (ml)</option>
         </select>
       </div>
     </div>
@@ -528,7 +587,10 @@ function deleteStock(id){
 }
 
 function pricePerG(s){
-  const qtyG=s.unit==='kg'?s.qty*1000:s.qty;
+  let qtyG;
+  if(s.unit==='kg') qtyG=s.qty*1000;
+  else if(s.unit==='ml') qtyG=s.qty; // 1ml ≈ 1g (densidade água, padrão culinário)
+  else qtyG=s.qty;
   return s.price/qtyG;
 }
 
@@ -544,7 +606,7 @@ function renderStock(filter=''){
       <div style="flex:1;min-width:0">
         <div class="item-name">${s.name} ${s.category?'<span class="tag" style="margin-left:4px">'+s.category+'</span>':''}</div>
         <div class="item-meta">${s.qty}${s.unit} · ${fmtBRL(s.price)}</div>
-        <div class="item-meta" style="font-family:'DM Mono',monospace">${fmtBRL(pricePerG(s)*1000)}/kg · ${fmtBRL(pricePerG(s)*100)}/100g</div>
+        <div class="item-meta" style="font-family:'DM Mono',monospace">${s.unit==='ml'?fmtBRL(pricePerG(s)*1000)+'/L · '+fmtBRL(pricePerG(s)*100)+'/100ml':fmtBRL(pricePerG(s)*1000)+'/kg · '+fmtBRL(pricePerG(s)*100)+'/100g'}</div>
       </div>
       <div class="item-actions">
         <button class="btn btn-secondary btn-sm" onclick="openAddStock(${s.id})">✏️</button>
@@ -566,7 +628,7 @@ function searchIngredient(){
   }
   dd.innerHTML=matches.map(s=>`<div class="autocomplete-item" onclick="selectIngredient(${s.id})">
     <div>${s.name}</div>
-    <div class="sub">${s.qty}${s.unit} · ${fmtBRL(s.price)} · ${fmtBRL(pricePerG(s)*1000)}/kg</div>
+    <div class="sub">${s.qty}${s.unit} · ${fmtBRL(s.price)} · ${s.unit==='ml'?fmtBRL(pricePerG(s)*1000)+'/L':fmtBRL(pricePerG(s)*1000)+'/kg'}</div>
   </div>`).join('');
   dd.classList.add('open');
 }
@@ -578,7 +640,10 @@ function selectIngredient(id){
   document.getElementById('ing-selected-info').style.display='block';
   document.getElementById('ing-sel-name').textContent=selectedIngredient.name;
   const ppg=pricePerG(selectedIngredient);
-  document.getElementById('ing-sel-price').textContent=`${fmtBRL(ppg*1000)}/kg · ${fmtBRL(ppg*100)}/100g`;
+  const isML=selectedIngredient.unit==='ml';
+  document.getElementById('ing-sel-price').textContent=isML
+    ?`${fmtBRL(ppg*1000)}/L · ${fmtBRL(ppg*100)}/100ml`
+    :`${fmtBRL(ppg*1000)}/kg · ${fmtBRL(ppg*100)}/100g`;
   calcIngCost();
 }
 
@@ -586,7 +651,7 @@ function calcIngCost(){
   if(!selectedIngredient)return;
   const qty=parseFloat(document.getElementById('ing-qty').value)||0;
   const unit=document.getElementById('ing-unit').value;
-  const qtyG=unit==='kg'?qty*1000:qty;
+  const qtyG=unit==='kg'?qty*1000:qty; // ml e g têm conversão 1:1
   const cost=pricePerG(selectedIngredient)*qtyG;
   const preview=document.getElementById('ing-cost-preview');
   if(qty>0){preview.style.display='block';preview.textContent=`Custo estimado: ${fmtBRL(cost)}`;}
@@ -599,7 +664,7 @@ function addIngredient(){
   const unit=document.getElementById('ing-unit').value;
   const rend=parseFloat(document.getElementById('ing-rendimento').value)||100;
   if(!qty||qty<=0){showToast('Informe a quantidade utilizada.');return;}
-  const qtyG=unit==='kg'?qty*1000:qty;
+  const qtyG=unit==='kg'?qty*1000:qty; // ml e g têm conversão 1:1
   const qtyBruta=qtyG/(rend/100);
   const cost=pricePerG(selectedIngredient)*qtyBruta;
   currentIngredients.push({
@@ -633,7 +698,7 @@ function renderIngredients(){
     ${currentIngredients.map(i=>`<div class="ingredient-row">
       <div style="flex:1;min-width:0">
         <div class="ing-name">${i.name}</div>
-        <div class="ing-qty">${i.qtyG}g usados${i.rendimento<100?' (rend. '+i.rendimento+'%) → '+i.qtyBruta.toFixed(0)+'g bruto':''}</div>
+        <div class="ing-qty">${i.unit==='ml'?i.qtyG+'ml':i.qtyG+'g'} usados${i.rendimento<100?' (rend. '+i.rendimento+'%) → '+i.qtyBruta.toFixed(0)+(i.unit==='ml'?'ml':'g')+' bruto':''}</div>
       </div>
       <div class="ing-cost">${fmtBRL(i.cost)}</div>
       <button class="ing-del" onclick="removeIngredient(${i.id})">✕</button>
@@ -771,30 +836,30 @@ function viewRecipe(id){
   if(!r)return;
   currentRecipeId=id;
   document.getElementById('recipe-detail-content').innerHTML=`
-    <div style="font-size:20px;font-weight:600;margin-bottom:4px">${r.nome}</div>
-    <div style="font-size:12px;color:var(--text3);margin-bottom:16px">Criada em ${new Date(r.createdAt).toLocaleDateString('pt-BR')} · ${r.ingredients.length} ingrediente(s)</div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px">
-      <div style="background:var(--surface2);padding:12px;border-radius:var(--r2)">
-        <div style="font-size:11px;color:var(--text3)">Custo Total</div>
-        <div style="font-size:18px;font-weight:600;font-family:'DM Mono',monospace">${fmtBRL(r.totalCost)}</div>
+    <div style="font-size:17px;font-weight:600;margin-bottom:3px">${r.nome}</div>
+    <div style="font-size:11px;color:var(--text3);margin-bottom:14px">Criada em ${new Date(r.createdAt).toLocaleDateString('pt-BR')} · ${r.ingredients.length} ingrediente(s)</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:14px">
+      <div style="background:var(--surface2);padding:10px;border-radius:var(--r2)">
+        <div style="font-size:10px;color:var(--text3)">Custo Total</div>
+        <div style="font-size:15px;font-weight:600;font-family:'DM Mono',monospace">${fmtBRL(r.totalCost)}</div>
       </div>
-      <div style="background:var(--accent3);padding:12px;border-radius:var(--r2)">
-        <div style="font-size:11px;color:var(--accent)">Preço de Venda</div>
-        <div style="font-size:18px;font-weight:600;font-family:'DM Mono',monospace;color:var(--accent)">${fmtBRL(r.venda)}</div>
+      <div style="background:var(--accent3);padding:10px;border-radius:var(--r2)">
+        <div style="font-size:10px;color:var(--accent)">Preço de Venda</div>
+        <div style="font-size:15px;font-weight:600;font-family:'DM Mono',monospace;color:var(--accent)">${fmtBRL(r.venda)}</div>
       </div>
-      <div style="background:var(--surface2);padding:12px;border-radius:var(--r2)">
-        <div style="font-size:11px;color:var(--text3)">Markup</div>
-        <div style="font-size:18px;font-weight:600">${r.markup}%</div>
+      <div style="background:var(--surface2);padding:10px;border-radius:var(--r2)">
+        <div style="font-size:10px;color:var(--text3)">Markup</div>
+        <div style="font-size:15px;font-weight:600">${r.markup}%</div>
       </div>
-      <div style="background:var(--surface2);padding:12px;border-radius:var(--r2)">
-        <div style="font-size:11px;color:var(--text3)">Por Porção</div>
-        <div style="font-size:18px;font-weight:600;font-family:'DM Mono',monospace">${fmtBRL(r.totalCost/r.porcoes)}</div>
+      <div style="background:var(--surface2);padding:10px;border-radius:var(--r2)">
+        <div style="font-size:10px;color:var(--text3)">Por Porção</div>
+        <div style="font-size:15px;font-weight:600;font-family:'DM Mono',monospace">${fmtBRL(r.totalCost/r.porcoes)}</div>
       </div>
     </div>
-    <div style="font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.4px;margin-bottom:8px">Ingredientes</div>
+    <div style="font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.4px;margin-bottom:7px">Ingredientes</div>
     ${r.ingredients.map(i=>`<div class="ingredient-row">
       <div class="ing-name" style="flex:1">${i.name}</div>
-      <div class="ing-qty" style="margin-right:8px">${i.qtyBruta.toFixed(0)}g</div>
+      <div class="ing-qty" style="margin-right:6px">${i.qtyBruta.toFixed(0)}${i.unit==='ml'?'ml':'g'}</div>
       <div class="ing-cost">${fmtBRL(i.cost)}</div>
     </div>`).join('')}
   `;
