@@ -508,7 +508,7 @@ textarea{resize:vertical;min-height:72px;line-height:1.5}
 
     <div class="input-group">
       <label class="input-label">Nome do Produto *</label>
-      <input type="text" id="pstock-name" placeholder="Ex: Farinha de trigo, Frango...">
+      <input type="text" id="pstock-name" placeholder="Ex: Farinha de trigo, Frango..." oninput="updatePstockGoogleLink()">
     </div>
 
     <div class="input-row cols-2">
@@ -557,8 +557,29 @@ textarea{resize:vertical;min-height:72px;line-height:1.5}
       </select>
     </div>
 
+    <div class="divider"></div>
+    <div style="font-size:12px;font-weight:600;margin-bottom:3px">Tabela Nutricional <span style="font-weight:400;color:var(--text3)">(por 100g ou 100ml)</span></div>
+    <div style="font-size:11px;color:var(--text3);margin-bottom:8px">Preencha os valores do rótulo para cálculo da ficha nutricional.</div>
+
+    <a id="pstock-google-link" href="#" target="_blank" class="google-search-btn" onclick="handlePstockGoogleSearch(event)">
+      🔍 Pesquisar valores nutricionais no Google
+    </a>
+
+    <div class="input-row cols-2" style="margin-top:10px">
+      <div class="input-group"><label class="input-label">Calorias (kcal)</label><input type="number" id="pnut-kcal" placeholder="Ex: 361"></div>
+      <div class="input-group"><label class="input-label">Carboidratos (g)</label><input type="number" id="pnut-carb" placeholder="Ex: 75"></div>
+    </div>
+    <div class="input-row cols-2">
+      <div class="input-group"><label class="input-label">Proteínas (g)</label><input type="number" id="pnut-prot" placeholder="Ex: 9.8"></div>
+      <div class="input-group"><label class="input-label">Gorduras (g)</label><input type="number" id="pnut-fat" placeholder="Ex: 1.4"></div>
+    </div>
+    <div class="input-row cols-2">
+      <div class="input-group"><label class="input-label">Fibras (g)</label><input type="number" id="pnut-fiber" placeholder="Ex: 2.3"></div>
+      <div class="input-group"><label class="input-label">Sódio (mg)</label><input type="number" id="pnut-sodium" placeholder="Ex: 2"></div>
+    </div>
+
     <div style="background:var(--accent3);border-radius:var(--r2);padding:10px;font-size:11px;color:var(--accent);margin-bottom:14px">
-      💡 Ao salvar, este produto também será sincronizado no Estoque Virtual para uso nas fichas técnicas.
+      💡 Ao salvar, este produto também será sincronizado no Estoque Virtual.
     </div>
 
     <div style="display:flex;gap:8px">
@@ -705,9 +726,24 @@ function stockBar(pct){
 }
 function fmtQty(q,u){return q%1===0?q+u:q.toFixed(3).replace(/\.?0+$/,'')+u;}
 
+// ── Google link para estoque físico ──
+function updatePstockGoogleLink(){
+  const name=document.getElementById('pstock-name').value.trim();
+  const link=document.getElementById('pstock-google-link');
+  if(!link)return;
+  link.href=name?`https://www.google.com/search?q=tabela+nutricional+${encodeURIComponent(name)}+por+100g`:'#';
+  link.textContent=`🔍 Pesquisar${name?' "'+name+'"':''} no Google`;
+}
+function handlePstockGoogleSearch(e){
+  const href=document.getElementById('pstock-google-link').href;
+  if(!href||href==='#'){e.preventDefault();return;}
+  window.open(href,'_blank');e.preventDefault();
+}
+
 // ── Estoque Físico CRUD ──
 function openAddPhysical(id=null){
   editingPhysicalId=id;
+  const nutFields=['pnut-kcal','pnut-carb','pnut-prot','pnut-fat','pnut-fiber','pnut-sodium'];
   if(id!==null){
     const p=physicalStock.find(x=>x.id===id);
     document.getElementById('modal-pstock-title').textContent='Editar Produto';
@@ -717,12 +753,21 @@ function openAddPhysical(id=null){
     document.getElementById('pstock-price').value=p.price;
     document.getElementById('pstock-desired').value=p.desiredQty;
     document.getElementById('pstock-category').value=p.category||'';
+    const n=p.nutrition||{};
+    document.getElementById('pnut-kcal').value=n.kcal||'';
+    document.getElementById('pnut-carb').value=n.carb||'';
+    document.getElementById('pnut-prot').value=n.prot||'';
+    document.getElementById('pnut-fat').value=n.fat||'';
+    document.getElementById('pnut-fiber').value=n.fiber||'';
+    document.getElementById('pnut-sodium').value=n.sodium||'';
   }else{
     document.getElementById('modal-pstock-title').textContent='Novo Produto Físico';
     ['pstock-name','pstock-qty','pstock-price','pstock-desired'].forEach(i=>document.getElementById(i).value='');
+    nutFields.forEach(i=>document.getElementById(i).value='');
     document.getElementById('pstock-unit').value='kg';
     document.getElementById('pstock-category').value='';
   }
+  updatePstockGoogleLink();
   document.getElementById('modal-pstock').classList.add('open');
 }
 
@@ -736,43 +781,53 @@ function savePhysical(){
     showToast('Preencha todos os campos obrigatórios.');return;
   }
   const category=document.getElementById('pstock-category').value;
+  // Nutrição: usa valores inseridos ou fallback pelo nome
+  const nutRaw={
+    kcal:parseFloat(document.getElementById('pnut-kcal').value)||null,
+    carb:parseFloat(document.getElementById('pnut-carb').value)||null,
+    prot:parseFloat(document.getElementById('pnut-prot').value)||null,
+    fat:parseFloat(document.getElementById('pnut-fat').value)||null,
+    fiber:parseFloat(document.getElementById('pnut-fiber').value)||null,
+    sodium:parseFloat(document.getElementById('pnut-sodium').value)||null,
+  };
+  const fallback=getNutritionFor(name);
+  const nutrition={
+    kcal:nutRaw.kcal??fallback.kcal,
+    carb:nutRaw.carb??fallback.carb,
+    prot:nutRaw.prot??fallback.prot,
+    fat:nutRaw.fat??fallback.fat,
+    fiber:nutRaw.fiber??fallback.fiber,
+    sodium:nutRaw.sodium??fallback.sodium,
+  };
 
   if(editingPhysicalId!==null){
-    // editar existente
     physicalStock=physicalStock.map(p=>p.id===editingPhysicalId
-      ?{...p,name,currentQty:qty,unit,price,desiredQty:desired,category}:p);
+      ?{...p,name,currentQty:qty,unit,price,desiredQty:desired,category,nutrition}:p);
   }else{
-    const newItem={
+    physicalStock.push({
       id:Date.now(),name,currentQty:qty,desiredQty:desired,
-      unit,price,category,
+      unit,price,category,nutrition,
       usedTotal:0,
       history:[{type:'entrada',qty,date:new Date().toISOString(),note:'Cadastro inicial'}]
-    };
-    physicalStock.push(newItem);
+    });
   }
   savePhysicalData();
-
-  // Sincronizar no estoque virtual (nome + unit + price como qty 1 ou kg)
-  syncPhysicalToVirtual(name,unit,price,qty,category);
-
+  syncPhysicalToVirtual(name,unit,price,qty,category,nutrition);
   closeModal('modal-pstock');
   renderPhysical();
   showToast(editingPhysicalId?'Produto atualizado!':'Produto adicionado e sincronizado no Est. Virtual!');
 }
 
-function syncPhysicalToVirtual(name,unit,price,qty,category){
-  // Calcula preço por unidade base para o estoque virtual
-  // O estoque virtual armazena price como "valor total pago por qty unidades"
+function syncPhysicalToVirtual(name,unit,price,qty,category,nutrition){
+  const nut=nutrition||getNutritionFor(name);
   const existing=stock.find(s=>s.name.toLowerCase()===name.toLowerCase());
   if(!existing){
-    const nutrition=getNutritionFor(name);
-    stock.push({id:Date.now()+1,name,qty,unit,price,category,nutrition});
-    saveStockData();
+    stock.push({id:Date.now()+1,name,qty,unit,price,category,nutrition:nut});
   }else{
-    // Atualiza preço
-    stock=stock.map(s=>s.name.toLowerCase()===name.toLowerCase()?{...s,price,qty,unit,category}:s);
-    saveStockData();
+    stock=stock.map(s=>s.name.toLowerCase()===name.toLowerCase()
+      ?{...s,price,qty,unit,category,nutrition:nut}:s);
   }
+  saveStockData();
 }
 
 function deletePhysical(id){
@@ -1052,16 +1107,17 @@ function searchIngredient(){
 }
 
 function selectIngredient(id){
-  // id pode ser numérico (virtual) ou 'pf_xxx' (físico)
   if(ingSource==='fisico'&&String(id).startsWith('pf_')){
     const pid=parseInt(id.replace('pf_',''));
     const p=physicalStock.find(x=>x.id===pid);
     if(!p)return;
+    // Usa nutrição real do produto físico (inserida ou calculada pelo nome)
+    const nut=p.nutrition&&p.nutrition.kcal?p.nutrition:getNutritionFor(p.name);
     selectedIngredient={
       id:'pf_'+p.id, name:p.name, unit:p.unit,
       price:p.price, qty:p.currentQty,
       _physicalId:p.id,
-      nutrition:getNutritionFor(p.name),
+      nutrition:nut,
       category:p.category||''
     };
   }else{
@@ -1103,6 +1159,19 @@ function addIngredient(){
   const qtyG=isUn?qty:(unit==='kg'?qty*1000:qty);
   const qtyBruta=isUn?qty:qtyG/(rend/100);
   const cost=isUn?pricePerG(selectedIngredient)*qtyBruta:pricePerG(selectedIngredient)*(qtyG/(rend/100));
+
+  // Valida disponibilidade se fonte física
+  if(ingSource==='fisico'&&selectedIngredient._physicalId){
+    const p=physicalStock.find(x=>x.id===selectedIngredient._physicalId);
+    // Soma já reservado para este produto na ficha atual
+    const jaReservado=currentIngredients
+      .filter(i=>i.physicalId===selectedIngredient._physicalId)
+      .reduce((acc,i)=>acc+i.qtyBruta,0);
+    if(p&&(jaReservado+qtyBruta)>p.currentQty){
+      showToast(`Estoque insuficiente! Disponível: ${fmtQty(p.currentQty-jaReservado,p.unit)}`);return;
+    }
+  }
+
   currentIngredients.push({
     id:Date.now(),
     stockId:selectedIngredient.id,
@@ -1113,29 +1182,6 @@ function addIngredient(){
     nutrition:selectedIngredient.nutrition
   });
 
-  // Se fonte for físico, desconta do estoque físico imediatamente
-  if(ingSource==='fisico'&&selectedIngredient._physicalId){
-    const pid=selectedIngredient._physicalId;
-    physicalStock=physicalStock.map(p=>{
-      if(p.id!==pid)return p;
-      const deduct=isUn?qtyBruta:qtyBruta/1; // já está na unidade correta
-      const newQty=parseFloat((p.currentQty-deduct).toFixed(6));
-      return{...p,
-        currentQty:Math.max(newQty,0),
-        usedTotal:(p.usedTotal||0)+deduct,
-        history:[...(p.history||[]),{type:'saida',qty:deduct,date:new Date().toISOString(),note:'Ficha técnica'}]
-      };
-    });
-    savePhysicalData();
-    // Também desconta do virtual
-    const vname=selectedIngredient.name.toLowerCase();
-    const vs=stock.find(s=>s.name.toLowerCase()===vname);
-    if(vs){
-      const deduct=isUn?qtyBruta:qtyBruta;
-      stock=stock.map(s=>s.name.toLowerCase()===vname?{...s,qty:Math.max(parseFloat((s.qty-deduct).toFixed(6)),0)}:s);
-      saveStockData();
-    }
-  }
   document.getElementById('ing-search').value='';
   document.getElementById('ing-qty').value='';
   document.getElementById('ing-rendimento').value='';
@@ -1159,7 +1205,7 @@ function renderIngredients(){
     <div class="card-title" style="margin-bottom:10px">📝 Ingredientes adicionados (${currentIngredients.length})</div>
     ${currentIngredients.map(i=>`<div class="ingredient-row">
       <div style="flex:1;min-width:0">
-        <div class="ing-name">${i.name}</div>
+        <div class="ing-name">${i.name}${i.source==='fisico'?' <span style="font-size:9px;background:#D8F3DC;color:#2D6A4F;padding:1px 5px;border-radius:8px;font-weight:600">🏪 físico</span>':''}</div>
         <div class="ing-qty">${i.unit==='un'?i.qtyG+'un':i.unit==='ml'?i.qtyG+'ml':i.qtyG+'g'} usados${i.unit!=='un'&&i.rendimento<100?' (rend. '+i.rendimento+'%) → '+i.qtyBruta.toFixed(0)+(i.unit==='ml'?'ml':'g')+' bruto':''}</div>
       </div>
       <div class="ing-cost">${fmtBRL(i.cost)}</div>
@@ -1225,8 +1271,11 @@ function saveRecipe(){
   const nome=document.getElementById('ficha-nome').value.trim();
   if(!nome){showToast('Informe o nome da receita.');return;}
   if(!currentIngredients.length){showToast('Adicione pelo menos um ingrediente.');return;}
+
   const totalCost=currentIngredients.reduce((s,i)=>s+i.cost,0);
   const markup=parseFloat(document.getElementById('markup-pct').value)||0;
+  const hasPhysical=currentIngredients.some(i=>i.source==='fisico'&&i.physicalId);
+
   const recipe={
     id:Date.now(),nome,
     ingredients:[...currentIngredients],
@@ -1235,8 +1284,10 @@ function saveRecipe(){
     markup,totalCost,
     venda:totalCost*(1+markup/100),
     porcaoSize:parseFloat(document.getElementById('portion-size').value)||100,
+    usedPhysical:hasPhysical,
     createdAt:new Date().toISOString()
   };
+
   const existing=recipes.findIndex(r=>r.nome.toLowerCase()===nome.toLowerCase());
   if(existing>=0){
     if(!confirm(`Já existe uma receita chamada "${nome}". Deseja sobrescrever?`))return;
@@ -1245,7 +1296,35 @@ function saveRecipe(){
     recipes.push(recipe);
   }
   saveRecipesData();
-  showToast(`Receita "${nome}" salva!`);
+
+  // Descontar do estoque físico (e virtual espelhado) ao salvar
+  if(hasPhysical){
+    currentIngredients.forEach(ing=>{
+      if(ing.source!=='fisico'||!ing.physicalId)return;
+      physicalStock=physicalStock.map(p=>{
+        if(p.id!==ing.physicalId)return p;
+        const newQty=parseFloat((p.currentQty-ing.qtyBruta).toFixed(6));
+        return{...p,
+          currentQty:Math.max(newQty,0),
+          usedTotal:parseFloat(((p.usedTotal||0)+ing.qtyBruta).toFixed(6)),
+          history:[...(p.history||[]),{
+            type:'saida',qty:ing.qtyBruta,
+            date:new Date().toISOString(),
+            note:`Receita: ${nome}`
+          }]
+        };
+      });
+      // Espelha no virtual
+      const vname=ing.name.toLowerCase();
+      stock=stock.map(s=>s.name.toLowerCase()===vname
+        ?{...s,qty:Math.max(parseFloat((s.qty-ing.qtyBruta).toFixed(6)),0)}:s);
+    });
+    savePhysicalData();
+    saveStockData();
+    showToast(`Receita "${nome}" salva! Estoque físico atualizado.`);
+  }else{
+    showToast(`Receita "${nome}" salva!`);
+  }
 }
 
 function clearFicha(){
@@ -1319,9 +1398,10 @@ function viewRecipe(id){
       </div>
     </div>
     <div style="font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.4px;margin-bottom:7px">Ingredientes</div>
+    ${r.usedPhysical?`<div style="background:#D8F3DC;border-radius:var(--r2);padding:8px 10px;font-size:11px;color:#2D6A4F;margin-bottom:8px">🏪 Esta receita usou ingredientes do estoque físico. O desconto foi aplicado ao salvar.</div>`:''}
     ${r.ingredients.map(i=>`<div class="ingredient-row">
-      <div class="ing-name" style="flex:1">${i.name}</div>
-      <div class="ing-qty" style="margin-right:6px">${i.qtyBruta.toFixed(0)}${i.unit==='ml'?'ml':'g'}</div>
+      <div class="ing-name" style="flex:1">${i.name}${i.source==='fisico'?' <span style="font-size:9px;background:#D8F3DC;color:#2D6A4F;padding:1px 4px;border-radius:6px">🏪</span>':''}</div>
+      <div class="ing-qty" style="margin-right:6px">${i.qtyBruta.toFixed(0)}${i.unit==='ml'?'ml':i.unit==='un'?'un':'g'}</div>
       <div class="ing-cost">${fmtBRL(i.cost)}</div>
     </div>`).join('')}
   `;
@@ -1387,6 +1467,42 @@ if(!stock.length){
 renderStock();
 renderRecipes();
 renderPhysical();
+
+// Seed estoque físico com produtos de teste
+if(!physicalStock.length){
+  const seedPhysical=[
+    {
+      id:9001,name:'Farinha de Trigo',currentQty:20,desiredQty:20,unit:'kg',
+      price:340.00,category:'Farinhas',usedTotal:0,
+      nutrition:{kcal:361,carb:75,prot:9.8,fat:1.4,fiber:2.3,sodium:2},
+      history:[{type:'entrada',qty:20,date:new Date().toISOString(),note:'Cadastro inicial'}]
+    },
+    {
+      id:9002,name:'Carne Patinho',currentQty:10,desiredQty:10,unit:'kg',
+      price:320.00,category:'Carnes',usedTotal:0,
+      nutrition:{kcal:219,carb:0,prot:26,fat:13,fiber:0,sodium:66},
+      history:[{type:'entrada',qty:10,date:new Date().toISOString(),note:'Cadastro inicial'}]
+    },
+    {
+      id:9003,name:'Ovo',currentQty:100,desiredQty:100,unit:'un',
+      price:75.00,category:'Proteínas',usedTotal:0,
+      nutrition:{kcal:146,carb:0.4,prot:12.6,fat:10,fiber:0,sodium:142},
+      history:[{type:'entrada',qty:100,date:new Date().toISOString(),note:'Cadastro inicial'}]
+    },
+    {
+      id:9004,name:'Leite',currentQty:5,desiredQty:5,unit:'kg',
+      price:40.00,category:'Laticínios',usedTotal:0,
+      nutrition:{kcal:61,carb:4.7,prot:3.2,fat:3.3,fiber:0,sodium:38},
+      history:[{type:'entrada',qty:5,date:new Date().toISOString(),note:'Cadastro inicial'}]
+    },
+  ];
+  physicalStock=seedPhysical;
+  savePhysicalData();
+  // Sincronizar cada um no virtual
+  seedPhysical.forEach(p=>syncPhysicalToVirtual(p.name,p.unit,p.price,p.currentQty,p.category,p.nutrition));
+  renderPhysical();
+  renderStock();
+}
 </script>
 </body>
 </html>
