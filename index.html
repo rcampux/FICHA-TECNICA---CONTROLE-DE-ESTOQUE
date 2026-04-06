@@ -757,6 +757,7 @@ function savePhysical(){
 
   closeModal('modal-pstock');
   renderPhysical();
+  renderRecipes(document.getElementById('recipe-search').value,activeIngFilter);
   showToast(editingPhysicalId?'Produto atualizado!':'Produto adicionado e sincronizado no Est. Virtual!');
 }
 
@@ -968,6 +969,8 @@ function saveStock(){
   saveStockData();
   closeModal('modal-stock');
   renderStock();
+  // Re-renderiza receitas para refletir novos preços
+  renderRecipes(document.getElementById('recipe-search').value,activeIngFilter);
   showToast(editingStockId?'Produto atualizado!':'Produto adicionado ao estoque!');
 }
 
@@ -1225,15 +1228,32 @@ function saveRecipe(){
   const nome=document.getElementById('ficha-nome').value.trim();
   if(!nome){showToast('Informe o nome da receita.');return;}
   if(!currentIngredients.length){showToast('Adicione pelo menos um ingrediente.');return;}
-  const totalCost=currentIngredients.reduce((s,i)=>s+i.cost,0);
   const markup=parseFloat(document.getElementById('markup-pct').value)||0;
+  // Salva apenas referências — custo será recalculado dinamicamente
+  const ingredientRefs=currentIngredients.map(i=>({
+    id:i.id,
+    stockId:i.stockId,
+    physicalId:i.physicalId||null,
+    source:i.source||'virtual',
+    name:i.name,
+    qtyG:i.qtyG,
+    qtyBruta:i.qtyBruta,
+    unit:i.unit,
+    rendimento:i.rendimento,
+    nutrition:i.nutrition,
+    // Snapshot do preço no momento do salvamento (para mostrar variação)
+    savedPricePerG:pricePerGByStockId(i.stockId,i.name)
+  }));
+  const liveCalc=calcRecipeLive(ingredientRefs,markup);
   const recipe={
     id:Date.now(),nome,
-    ingredients:[...currentIngredients],
+    ingredients:ingredientRefs,
     rendimento:parseFloat(document.getElementById('ficha-rendimento').value)||0,
     porcoes:parseFloat(document.getElementById('ficha-porcoes').value)||1,
-    markup,totalCost,
-    venda:totalCost*(1+markup/100),
+    markup,
+    // totalCost e venda ficam como snapshot do momento do salvamento
+    totalCost:liveCalc.totalCost,
+    venda:liveCalc.venda,
     porcaoSize:parseFloat(document.getElementById('portion-size').value)||100,
     createdAt:new Date().toISOString()
   };
@@ -1246,6 +1266,30 @@ function saveRecipe(){
   }
   saveRecipesData();
   showToast(`Receita "${nome}" salva!`);
+}
+
+// Retorna o preço por grama atual de um ingrediente pelo stockId ou nome
+function pricePerGByStockId(stockId,name){
+  let s=null;
+  if(stockId&&!String(stockId).startsWith('pf_')){
+    s=stock.find(x=>x.id===stockId||x.id===parseInt(stockId));
+  }
+  if(!s) s=stock.find(x=>x.name.toLowerCase()===name.toLowerCase());
+  if(!s) return 0;
+  return pricePerG(s);
+}
+
+// Recalcula o custo de uma receita usando preços atuais do estoque
+function calcRecipeLive(ingredientRefs,markup){
+  const ingredients=ingredientRefs.map(i=>{
+    const ppg=pricePerGByStockId(i.stockId,i.name);
+    const isUn=i.unit==='un';
+    const cost=ppg*i.qtyBruta;
+    return{...i,cost,currentPricePerG:ppg};
+  });
+  const totalCost=ingredients.reduce((s,i)=>s+i.cost,0);
+  const venda=totalCost*(1+(markup||0)/100);
+  return{ingredients,totalCost,venda};
 }
 
 function clearFicha(){
@@ -1271,19 +1315,37 @@ function renderRecipes(filter='',ingFilter=null){
     el.innerHTML=`<div class="empty-state"><div class="empty-icon">🍳</div><div class="empty-text">${filter||ingFilter?'Nenhuma receita encontrada.':'Nenhuma receita salva ainda. Crie uma ficha e clique em Salvar!'}</div></div>`;
     return;
   }
-  el.innerHTML=filtered.map(r=>`
-    <div class="recipe-card" onclick="viewRecipe(${r.id})">
+  el.innerHTML=filtered.map(r=>{
+    const live=calcRecipeLive(r.ingredients,r.markup);
+    const priceChanged=hasAnyPriceChanged(r.ingredients);
+    const priceDiff=live.totalCost-r.totalCost;
+    const diffSign=priceDiff>0?'+':'';
+    return`<div class="recipe-card" onclick="viewRecipe(${r.id})">
       <div class="recipe-card-header">
         <div class="recipe-card-title">${r.nome}</div>
-        <span class="badge badge-green">${fmtBRL(r.totalCost)}</span>
+        <div style="display:flex;gap:5px;align-items:center;flex-shrink:0">
+          ${priceChanged?`<span title="Preço atualizado pelo estoque" style="font-size:11px;background:${priceDiff>0?'#FEE2E2':priceDiff<0?'#D8F3DC':'var(--surface2)'};color:${priceDiff>0?'#DC2626':priceDiff<0?'#2D6A4F':'var(--text3)'};padding:2px 6px;border-radius:10px;font-weight:600">${priceDiff>0?'▲':'▼'} ${fmtBRL(Math.abs(priceDiff))}</span>`:''}
+          <span class="badge badge-green">${fmtBRL(live.totalCost)}</span>
+        </div>
       </div>
       <div class="recipe-card-meta">${r.ingredients.length} ingrediente(s) · ${r.porcoes} porção(ões)${r.rendimento?' · '+r.rendimento+'g':''} · Markup ${r.markup}%</div>
-      <div class="recipe-card-meta" style="color:var(--accent);font-weight:600">Preço de venda: ${fmtBRL(r.venda)}</div>
+      <div class="recipe-card-meta" style="color:var(--accent);font-weight:600">Preço de venda: ${fmtBRL(live.venda)}</div>
+      ${priceChanged?`<div class="recipe-card-meta" style="color:var(--text3);font-size:10px">🔄 Preços atualizados conforme estoque</div>`:''}
       <div class="recipe-card-tags">
         ${r.ingredients.slice(0,5).map(i=>`<span class="tag">${i.name}</span>`).join('')}
         ${r.ingredients.length>5?`<span class="tag">+${r.ingredients.length-5}</span>`:''}
       </div>
-    </div>`).join('');
+    </div>`;
+  }).join('');
+}
+
+// Verifica se algum ingrediente teve o preço alterado desde o salvamento
+function hasAnyPriceChanged(ingredientRefs){
+  return ingredientRefs.some(i=>{
+    if(!i.savedPricePerG)return false;
+    const current=pricePerGByStockId(i.stockId,i.name);
+    return Math.abs(current-i.savedPricePerG)>0.000001;
+  });
 }
 
 function setIngFilter(val){
@@ -1297,17 +1359,25 @@ function viewRecipe(id){
   const r=recipes.find(x=>x.id===id);
   if(!r)return;
   currentRecipeId=id;
+  const live=calcRecipeLive(r.ingredients,r.markup);
+  const porcoes=Math.max(r.porcoes||1,1);
+  const priceChanged=hasAnyPriceChanged(r.ingredients);
+  const totalDiff=live.totalCost-r.totalCost;
   document.getElementById('recipe-detail-content').innerHTML=`
     <div style="font-size:17px;font-weight:600;margin-bottom:3px">${r.nome}</div>
-    <div style="font-size:11px;color:var(--text3);margin-bottom:14px">Criada em ${new Date(r.createdAt).toLocaleDateString('pt-BR')} · ${r.ingredients.length} ingrediente(s)</div>
+    <div style="font-size:11px;color:var(--text3);margin-bottom:${priceChanged?'8px':'14px'}">Criada em ${new Date(r.createdAt).toLocaleDateString('pt-BR')} · ${r.ingredients.length} ingrediente(s)</div>
+    ${priceChanged?`<div style="background:${totalDiff>0?'#FEE2E2':totalDiff<0?'#D8F3DC':'var(--surface2)'};border:1px solid ${totalDiff>0?'#FECACA':totalDiff<0?'#B7E4C7':'var(--border)'};border-radius:var(--r2);padding:9px 12px;margin-bottom:14px;font-size:12px;color:${totalDiff>0?'#DC2626':totalDiff<0?'#2D6A4F':'var(--text2)'}">
+      <strong>🔄 Preços atualizados pelo estoque</strong><br>
+      Custo salvo: ${fmtBRL(r.totalCost)} → Custo atual: <strong>${fmtBRL(live.totalCost)}</strong>
+      ${totalDiff!==0?` (${totalDiff>0?'+':''}${fmtBRL(totalDiff)})`:''}</div>`:''}
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:14px">
       <div style="background:var(--surface2);padding:10px;border-radius:var(--r2)">
         <div style="font-size:10px;color:var(--text3)">Custo Total</div>
-        <div style="font-size:15px;font-weight:600;font-family:'DM Mono',monospace">${fmtBRL(r.totalCost)}</div>
+        <div style="font-size:15px;font-weight:600;font-family:'DM Mono',monospace">${fmtBRL(live.totalCost)}</div>
       </div>
       <div style="background:var(--accent3);padding:10px;border-radius:var(--r2)">
         <div style="font-size:10px;color:var(--accent)">Preço de Venda</div>
-        <div style="font-size:15px;font-weight:600;font-family:'DM Mono',monospace;color:var(--accent)">${fmtBRL(r.venda)}</div>
+        <div style="font-size:15px;font-weight:600;font-family:'DM Mono',monospace;color:var(--accent)">${fmtBRL(live.venda)}</div>
       </div>
       <div style="background:var(--surface2);padding:10px;border-radius:var(--r2)">
         <div style="font-size:10px;color:var(--text3)">Markup</div>
@@ -1315,15 +1385,23 @@ function viewRecipe(id){
       </div>
       <div style="background:var(--surface2);padding:10px;border-radius:var(--r2)">
         <div style="font-size:10px;color:var(--text3)">Por Porção</div>
-        <div style="font-size:15px;font-weight:600;font-family:'DM Mono',monospace">${fmtBRL(r.totalCost/r.porcoes)}</div>
+        <div style="font-size:15px;font-weight:600;font-family:'DM Mono',monospace">${fmtBRL(live.totalCost/porcoes)}</div>
       </div>
     </div>
     <div style="font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.4px;margin-bottom:7px">Ingredientes</div>
-    ${r.ingredients.map(i=>`<div class="ingredient-row">
-      <div class="ing-name" style="flex:1">${i.name}</div>
-      <div class="ing-qty" style="margin-right:6px">${i.qtyBruta.toFixed(0)}${i.unit==='ml'?'ml':'g'}</div>
-      <div class="ing-cost">${fmtBRL(i.cost)}</div>
-    </div>`).join('')}
+    ${live.ingredients.map(i=>{
+      const savedPPG=i.savedPricePerG||0;
+      const curPPG=i.currentPricePerG||0;
+      const ingChanged=savedPPG>0&&Math.abs(curPPG-savedPPG)>0.000001;
+      const ingDiff=ingChanged?i.cost-(savedPPG*i.qtyBruta):0;
+      return`<div class="ingredient-row" style="${ingChanged?'background:'+( (curPPG>savedPPG)?'#FFF5F5':'#F0FFF4')+';border-radius:var(--r2);padding:9px 8px;margin-bottom:3px':''}">
+        <div style="flex:1;min-width:0">
+          <div class="ing-name">${i.name}${ingChanged?` <span style="font-size:9px;font-weight:600;color:${curPPG>savedPPG?'#DC2626':'#2D6A4F'}">${curPPG>savedPPG?'▲':'▼'}</span>`:''}</div>
+          <div class="ing-qty" style="margin-top:2px">${i.qtyBruta.toFixed(0)}${i.unit==='ml'?'ml':'g'}${ingChanged?` · era ${fmtBRL(savedPPG*i.qtyBruta)}`:''}</div>
+        </div>
+        <div class="ing-cost" style="${ingChanged&&curPPG>savedPPG?'color:#DC2626':ingChanged?'color:#2D6A4F':''}">${fmtBRL(i.cost)}</div>
+      </div>`;
+    }).join('')}
   `;
   document.getElementById('modal-recipe').classList.add('open');
 }
@@ -1383,6 +1461,15 @@ if(!stock.length){
   stock=seed;
   saveStockData();
 }
+
+// Migração: receitas antigas sem savedPricePerG
+recipes=recipes.map(r=>({
+  ...r,
+  ingredients:r.ingredients.map(i=>({
+    ...i,
+    savedPricePerG:i.savedPricePerG!==undefined?i.savedPricePerG:pricePerGByStockId(i.stockId,i.name)
+  }))
+}));
 
 renderStock();
 renderRecipes();
