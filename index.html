@@ -5,203 +5,233 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>FichaTec — Fichas Técnicas & Estoque</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
+/* ── MD3 Tokens ── */
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --bg:#F7F5F0;--surface:#FFFFFF;--surface2:#F0EDE6;--surface3:#E8E4DC;
-  --text:#1A1814;--text2:#5A564E;--text3:#9A958A;
-  --accent:#2D6A4F;--accent2:#52B788;--accent3:#D8F3DC;
-  --warn:#E76F51;--warn2:#FFF0EB;
-  --amber:#F4A261;--amber2:#FFF8F0;
-  --border:#DDD9D0;--border2:#C8C4BB;
-  --r:10px;--r2:7px;--r3:18px;
-  --shadow:0 2px 8px rgba(0,0,0,0.08);
+  --md-primary:#1B6B45;--md-on-primary:#fff;
+  --md-primary-container:#B7F0D2;--md-on-primary-container:#002112;
+  --md-secondary:#4D6B59;--md-on-secondary:#fff;
+  --md-secondary-container:#CFE9D8;--md-on-secondary-container:#0B1F14;
+  --md-error:#BA1A1A;--md-on-error:#fff;
+  --md-error-container:#FFDAD6;--md-on-error-container:#410002;
+  --md-warning:#7C5800;--md-warning-container:#FFE08B;--md-on-warning-container:#261900;
+  --md-bg:#F5FBF6;--md-on-bg:#191C1A;
+  --md-surface:#F5FBF6;--md-on-surface:#191C1A;
+  --md-surface-variant:#DCE5DC;--md-on-surface-variant:#404944;
+  --md-surface-low:#EFF5EF;--md-surface-container:#E9F0E9;
+  --md-surface-high:#E3EAE3;--md-surface-highest:#DDE4DD;
+  --md-outline:#6F7970;--md-outline-variant:#BFC9BF;
+  --r-sm:8px;--r-md:12px;--r-lg:16px;--r-xl:28px;--r-full:50px;
+  --shadow-1:0 1px 2px rgba(0,0,0,0.3),0 1px 3px 1px rgba(0,0,0,0.15);
+  --shadow-2:0 1px 2px rgba(0,0,0,0.3),0 2px 6px 2px rgba(0,0,0,0.15);
+  --shadow-3:0 4px 8px 3px rgba(0,0,0,0.15),0 1px 3px rgba(0,0,0,0.3);
+  --dur:250ms;--ease:cubic-bezier(0.2,0,0,1);--ease-in:cubic-bezier(0.05,0.7,0.1,1);
 }
 
 /* ── Base ── */
-html{font-size:14px}
-body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding-bottom:68px;-webkit-text-size-adjust:100%}
+html{font-size:14px;-webkit-text-size-adjust:100%}
+body{font-family:'Roboto',sans-serif;background:var(--md-bg);color:var(--md-on-bg);min-height:100vh;padding-bottom:80px;line-height:1.5}
 
-/* ── Header ── */
-.app-header{background:var(--surface);border-bottom:1px solid var(--border);padding:11px 14px;position:sticky;top:0;z-index:100;display:flex;align-items:center;gap:10px}
-.app-logo{width:32px;height:32px;background:var(--accent);border-radius:9px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:16px;flex-shrink:0}
-.app-title{font-size:15px;font-weight:600;color:var(--text);line-height:1.2}
-.app-subtitle{font-size:10px;color:var(--text3);font-weight:400}
+/* ── Top App Bar ── */
+.app-header{background:var(--md-surface-container);padding:0 16px;position:sticky;top:0;z-index:100;height:64px;display:flex;align-items:center;gap:12px;box-shadow:0 2px 4px rgba(0,0,0,0.08);border-bottom:1px solid var(--md-outline-variant)}
+.app-logo{width:40px;height:40px;background:var(--md-primary);border-radius:var(--r-md);display:flex;align-items:center;justify-content:center;color:#fff;font-size:20px;flex-shrink:0}
+.app-title{font-size:22px;font-weight:500;color:var(--md-on-surface);line-height:1.27}
+.app-subtitle{font-size:11px;color:var(--md-on-surface-variant);letter-spacing:0.5px}
 
-/* ── Bottom Nav ── */
-.nav{position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-top:1px solid var(--border);display:flex;z-index:100;padding-bottom:env(safe-area-inset-bottom)}
-.nav-btn{flex:1;padding:8px 4px 7px;display:flex;flex-direction:column;align-items:center;gap:2px;border:none;background:none;cursor:pointer;color:var(--text3);font-size:9px;font-family:'Sora',sans-serif;font-weight:500;letter-spacing:0.2px;transition:color 0.15s;min-height:52px}
-.nav-btn.active{color:var(--accent)}
-.nav-icon{font-size:19px;line-height:1}
+/* ── Nav Bar ── */
+.nav{position:fixed;bottom:0;left:0;right:0;background:var(--md-surface-container);border-top:1px solid var(--md-outline-variant);display:flex;z-index:100;padding-bottom:env(safe-area-inset-bottom);height:80px;align-items:flex-start}
+.nav-btn{flex:1;padding:12px 0 16px;display:flex;flex-direction:column;align-items:center;gap:4px;border:none;background:none;cursor:pointer;color:var(--md-on-surface-variant);font-size:11px;font-family:'Roboto',sans-serif;font-weight:500;letter-spacing:0.5px;transition:color var(--dur) var(--ease);-webkit-tap-highlight-color:transparent}
+.nav-btn.active{color:var(--md-on-secondary-container)}
+.nav-indicator{width:64px;height:32px;border-radius:var(--r-full);background:transparent;display:flex;align-items:center;justify-content:center;transition:background var(--dur) var(--ease);margin-bottom:4px}
+.nav-btn.active .nav-indicator{background:var(--md-secondary-container)}
+.nav-btn:not(.active):hover .nav-indicator{background:rgba(27,107,69,0.08)}
+.nav-icon{font-size:22px;line-height:1}
 
 /* ── Pages ── */
-.page{display:none;padding:12px;max-width:380px;margin:0 auto;width:100%}
+.page{display:none;padding:16px;max-width:412px;margin:0 auto;width:100%}
 .page.active{display:block}
-.section-title{font-size:17px;font-weight:600;margin-bottom:3px}
-.section-sub{font-size:12px;color:var(--text2);margin-bottom:14px;line-height:1.4}
+.page-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px;gap:8px}
+.section-title{font-size:24px;font-weight:400;color:var(--md-on-surface);line-height:1.29;margin-bottom:2px}
+.section-sub{font-size:12px;color:var(--md-on-surface-variant);line-height:1.43;letter-spacing:0.25px}
+.section-label{font-size:11px;font-weight:500;color:var(--md-on-surface-variant);text-transform:uppercase;letter-spacing:1px;margin:16px 0 8px}
 
 /* ── Cards ── */
-.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:12px;margin-bottom:10px}
-.card-title{font-size:13px;font-weight:600;color:var(--text)}
-.badge{font-size:10px;padding:3px 7px;border-radius:20px;font-weight:500;white-space:nowrap}
-.badge-green{background:var(--accent3);color:var(--accent)}
+.card{background:var(--md-surface-low);border-radius:var(--r-md);padding:16px;margin-bottom:12px}
+.card-outlined{background:var(--md-surface);border:1px solid var(--md-outline-variant);border-radius:var(--r-md);padding:16px;margin-bottom:12px}
+.card-elevated{background:#fff;border-radius:var(--r-md);padding:16px;margin-bottom:12px;box-shadow:var(--shadow-1);transition:box-shadow var(--dur) var(--ease)}
+.card-elevated:hover{box-shadow:var(--shadow-2)}
+.card-title{font-size:16px;font-weight:500;color:var(--md-on-surface);letter-spacing:0.15px}
 
-/* ── Form Controls ── */
-.input-group{margin-bottom:10px}
-.input-label{font-size:11px;font-weight:500;color:var(--text2);margin-bottom:4px;display:block}
-input,select,textarea{
-  width:100%;padding:9px 10px;border:1px solid var(--border);border-radius:var(--r2);
-  font-size:14px;font-family:'Sora',sans-serif;background:var(--surface);
-  color:var(--text);outline:none;transition:border-color 0.15s;
-  -webkit-appearance:none;appearance:none
-}
-select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%239A958A' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;padding-right:28px}
-input:focus,select:focus,textarea:focus{border-color:var(--accent)}
-textarea{resize:vertical;min-height:72px;line-height:1.5}
+/* ── Chips / Badges / Tags ── */
+.badge{font-size:11px;font-weight:500;padding:4px 10px;border-radius:var(--r-full);letter-spacing:0.5px;display:inline-flex;align-items:center}
+.badge-green{background:var(--md-primary-container);color:var(--md-on-primary-container)}
+.tag{display:inline-flex;align-items:center;padding:4px 10px;border-radius:var(--r-full);font-size:11px;font-weight:500;background:transparent;border:1px solid var(--md-outline-variant);color:var(--md-on-surface-variant)}
+.filter-chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.chip{padding:6px 16px;border-radius:var(--r-full);font-size:14px;font-weight:500;cursor:pointer;border:1px solid var(--md-outline);background:transparent;color:var(--md-on-surface-variant);transition:all var(--dur) var(--ease);white-space:nowrap;font-family:'Roboto',sans-serif;letter-spacing:0.1px;height:32px;display:inline-flex;align-items:center;-webkit-tap-highlight-color:transparent}
+.chip:hover{background:rgba(27,107,69,0.08)}
+.chip.active{background:var(--md-secondary-container);color:var(--md-on-secondary-container);border-color:var(--md-secondary-container)}
 
-/* ── Grid Layouts ── */
-.input-row{display:grid;gap:8px}
+/* ── Text Fields ── */
+.input-group{margin-bottom:12px}
+.input-label{font-size:12px;font-weight:500;color:var(--md-on-surface-variant);margin-bottom:6px;display:block;letter-spacing:0.5px}
+input,select,textarea{width:100%;padding:14px 16px;border:none;border-bottom:1.5px solid var(--md-outline);border-radius:4px 4px 0 0;font-size:16px;font-family:'Roboto',sans-serif;background:var(--md-surface-highest);color:var(--md-on-surface);outline:none;transition:border-color 100ms var(--ease),background 100ms var(--ease);-webkit-appearance:none;appearance:none}
+input:hover,select:hover,textarea:hover{background:var(--md-surface-high);border-bottom-color:var(--md-on-surface)}
+input:focus,select:focus,textarea:focus{background:var(--md-surface-high);border-bottom:2px solid var(--md-primary)}
+input::placeholder,textarea::placeholder{color:var(--md-on-surface-variant);opacity:0.7}
+textarea{resize:vertical;min-height:80px;line-height:1.5}
+select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%236F7970' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:36px;cursor:pointer}
+.input-row{display:grid;gap:10px}
 .cols-2{grid-template-columns:1fr 1fr}
 .cols-3{grid-template-columns:1fr 1fr 1fr}
 
 /* ── Buttons ── */
-.btn{padding:9px 14px;border-radius:var(--r2);font-size:13px;font-family:'Sora',sans-serif;font-weight:500;cursor:pointer;border:none;transition:all 0.15s;display:inline-flex;align-items:center;justify-content:center;gap:5px;white-space:nowrap;-webkit-tap-highlight-color:transparent}
-.btn-primary{background:var(--accent);color:#fff}
-.btn-primary:active{background:#235D40}
-.btn-secondary{background:var(--surface2);color:var(--text2);border:1px solid var(--border)}
-.btn-secondary:active{background:var(--surface3)}
-.btn-danger{background:#FEE2E2;color:#DC2626}
-.btn-warn{background:var(--warn2);color:var(--warn)}
-.btn-sm{padding:6px 9px;font-size:11px}
+.btn{padding:10px 24px;border-radius:var(--r-full);font-size:14px;font-family:'Roboto',sans-serif;font-weight:500;cursor:pointer;border:none;transition:box-shadow 100ms var(--ease),background 100ms var(--ease);display:inline-flex;align-items:center;justify-content:center;gap:8px;white-space:nowrap;-webkit-tap-highlight-color:transparent;letter-spacing:0.1px;height:40px;position:relative;overflow:hidden}
+.btn-primary{background:var(--md-primary);color:#fff}
+.btn-primary:hover{box-shadow:var(--shadow-1)}
+.btn-primary:active{box-shadow:none}
+.btn-secondary{background:var(--md-secondary-container);color:var(--md-on-secondary-container)}
+.btn-secondary:hover{box-shadow:var(--shadow-1)}
+.btn-outlined{background:transparent;color:var(--md-primary);border:1px solid var(--md-outline)}
+.btn-outlined:hover{background:rgba(27,107,69,0.08)}
+.btn-danger{background:var(--md-error-container);color:var(--md-on-error-container)}
+.btn-warn{background:var(--md-warning-container);color:var(--md-on-warning-container)}
+.btn-sm{height:32px;padding:6px 16px;font-size:12px}
 .btn-full{width:100%;justify-content:center}
+.btn-icon-sm{width:32px;height:32px;padding:0;border-radius:var(--r-full);font-size:15px}
 
 /* ── Search Bar ── */
-.search-bar{position:relative;margin-bottom:12px}
-.search-bar input{padding-left:34px}
-.search-icon{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--text3);font-size:15px;pointer-events:none}
+.search-bar{position:relative;margin-bottom:16px}
+.search-bar input{padding:14px 16px 14px 48px;border-radius:var(--r-full);border-bottom:none;background:var(--md-surface-high)}
+.search-bar input:focus{border-bottom:none;outline:2px solid var(--md-primary);outline-offset:-2px}
+.search-icon{position:absolute;left:16px;top:50%;transform:translateY(-50%);color:var(--md-on-surface-variant);font-size:18px;pointer-events:none}
 
-/* ── Item Cards (Estoque) ── */
-.item-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:11px 12px;display:flex;align-items:center;justify-content:space-between;margin-bottom:7px;transition:border-color 0.15s;gap:8px}
-.item-name{font-size:13px;font-weight:500;line-height:1.3}
-.item-meta{font-size:11px;color:var(--text3);margin-top:2px;line-height:1.4;word-break:break-word}
-.item-actions{display:flex;gap:5px;flex-shrink:0}
-.tag{display:inline-block;padding:2px 6px;border-radius:20px;font-size:10px;font-weight:500;background:var(--surface2);color:var(--text2)}
+/* ── List Items ── */
+.item-card{background:#fff;border:1px solid var(--md-outline-variant);border-radius:var(--r-md);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;gap:12px;transition:background var(--dur) var(--ease),box-shadow var(--dur) var(--ease)}
+.item-card:hover{background:var(--md-surface-low);box-shadow:var(--shadow-1)}
+.item-name{font-size:14px;font-weight:500;color:var(--md-on-surface);line-height:1.43;letter-spacing:0.25px}
+.item-meta{font-size:12px;color:var(--md-on-surface-variant);margin-top:2px;line-height:1.43;letter-spacing:0.25px;word-break:break-word}
+.item-actions{display:flex;gap:6px;flex-shrink:0}
 
 /* ── Divider ── */
-.divider{height:1px;background:var(--border);margin:12px 0}
+.divider{height:1px;background:var(--md-outline-variant);margin:16px 0}
 
-/* ── Totals Box ── */
-.total-box{background:linear-gradient(135deg,#2D6A4F,#3D8B64);border-radius:var(--r);padding:12px;color:#fff;margin-bottom:10px}
-.total-label{font-size:11px;opacity:0.8;margin-bottom:3px}
-.total-value{font-size:18px;font-weight:600;font-family:'DM Mono',monospace;line-height:1.2}
+/* ── Totals ── */
+.total-box{background:var(--md-primary);border-radius:var(--r-lg);padding:20px;color:#fff;margin-bottom:12px;box-shadow:var(--shadow-2)}
+.total-label{font-size:12px;opacity:0.85;margin-bottom:4px;letter-spacing:0.5px;font-weight:500}
+.total-value{font-size:20px;font-weight:600;font-family:'Roboto Mono',monospace;line-height:1.2;letter-spacing:-0.5px}
 
 /* ── Nutrition Table ── */
 .nutrition-table{width:100%;border-collapse:collapse;font-size:12px}
-.nutrition-table th{text-align:left;padding:6px 8px;background:var(--surface2);font-size:10px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.3px}
-.nutrition-table td{padding:7px 8px;border-bottom:1px solid var(--border)}
+.nutrition-table th{text-align:left;padding:10px 12px;background:var(--md-surface-container);font-size:11px;font-weight:500;color:var(--md-on-surface-variant);text-transform:uppercase;letter-spacing:0.8px}
+.nutrition-table td{padding:10px 12px;border-bottom:1px solid var(--md-outline-variant);color:var(--md-on-surface)}
 .nutrition-table tr:last-child td{border-bottom:none}
-.nutrition-table .val{font-family:'DM Mono',monospace;font-size:11px;font-weight:500;text-align:right}
+.nutrition-table .val{font-family:'Roboto Mono',monospace;font-size:12px;font-weight:500;text-align:right}
+.nut-pct{font-size:11px;color:var(--md-on-surface-variant);font-family:'Roboto Mono',monospace}
+.progress-bar{height:4px;background:var(--md-secondary-container);border-radius:2px;overflow:hidden;margin-top:4px}
+.progress-fill{height:100%;background:var(--md-primary);border-radius:2px;transition:width var(--dur) var(--ease)}
 
-/* ── Modal ── */
-.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:200;align-items:flex-end;justify-content:center}
+/* ── Modal / Bottom Sheet ── */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.32);z-index:200;align-items:flex-end;justify-content:center}
 .modal-overlay.open{display:flex}
-.modal{background:var(--surface);border-radius:18px 18px 0 0;padding:16px;width:100%;max-height:92vh;overflow-y:auto;-webkit-overflow-scrolling:touch}
-.modal-handle{width:32px;height:4px;background:var(--border2);border-radius:2px;margin:0 auto 14px}
-.modal-title{font-size:16px;font-weight:600;margin-bottom:14px}
+.modal{background:var(--md-surface-low);border-radius:28px 28px 0 0;padding:0 24px 24px;width:100%;max-height:92vh;overflow-y:auto;-webkit-overflow-scrolling:touch;box-shadow:var(--shadow-3);animation:slideUp var(--dur) var(--ease-in)}
+@keyframes slideUp{from{transform:translateY(100%);opacity:0}to{transform:translateY(0);opacity:1}}
+.modal-handle{width:32px;height:4px;background:var(--md-on-surface-variant);opacity:0.4;border-radius:2px;margin:12px auto 20px}
+.modal-title{font-size:24px;font-weight:400;color:var(--md-on-surface);margin-bottom:20px;line-height:1.29}
 
 /* ── Ingredient Rows ── */
-.ingredient-row{display:flex;align-items:center;gap:8px;padding:9px 0;border-bottom:1px solid var(--border)}
+.ingredient-row{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--md-outline-variant)}
 .ingredient-row:last-child{border-bottom:none}
-.ing-name{flex:1;font-size:12px;font-weight:500;min-width:0;word-break:break-word}
-.ing-qty{font-family:'DM Mono',monospace;font-size:11px;color:var(--text2);white-space:nowrap}
-.ing-cost{font-family:'DM Mono',monospace;font-size:12px;font-weight:500;color:var(--accent);min-width:62px;text-align:right;white-space:nowrap}
-.ing-del{background:none;border:none;cursor:pointer;color:var(--text3);font-size:16px;padding:4px;line-height:1;flex-shrink:0}
+.ing-name{flex:1;font-size:14px;font-weight:500;color:var(--md-on-surface);min-width:0;word-break:break-word;letter-spacing:0.25px}
+.ing-qty{font-family:'Roboto Mono',monospace;font-size:12px;color:var(--md-on-surface-variant);white-space:nowrap}
+.ing-cost{font-family:'Roboto Mono',monospace;font-size:14px;font-weight:500;color:var(--md-primary);min-width:72px;text-align:right;white-space:nowrap}
+.ing-del{width:32px;height:32px;background:none;border:none;cursor:pointer;color:var(--md-on-surface-variant);font-size:16px;border-radius:var(--r-full);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background 100ms var(--ease)}
+.ing-del:hover{background:var(--md-error-container);color:var(--md-on-error-container)}
 
 /* ── Markup Row ── */
-.markup-row{display:flex;align-items:center;gap:10px;background:var(--amber2);border:1px solid #FCD34D;border-radius:var(--r2);padding:10px 12px;margin-bottom:10px}
-.markup-label{font-size:12px;font-weight:500;color:#92400E;flex:1}
-.markup-input{width:70px!important;text-align:center;font-family:'DM Mono',monospace;border-color:#FCD34D!important}
+.markup-row{display:flex;align-items:center;gap:12px;background:var(--md-warning-container);border-radius:var(--r-md);padding:12px 16px;margin-bottom:12px}
+.markup-label{font-size:14px;font-weight:500;color:var(--md-on-warning-container);flex:1;letter-spacing:0.25px}
+.markup-input{width:80px!important;text-align:center;font-family:'Roboto Mono',monospace}
 
 /* ── Portion Row ── */
-.portion-row{display:flex;align-items:center;gap:8px;margin-bottom:10px}
-.portion-label{font-size:12px;color:var(--text2);flex:1}
-.portion-input{width:76px!important;text-align:center;font-family:'DM Mono',monospace}
+.portion-row{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.portion-label{font-size:12px;color:var(--md-on-surface-variant);flex:1;letter-spacing:0.25px}
+.portion-input{width:80px!important;text-align:center;font-family:'Roboto Mono',monospace}
 
 /* ── Autocomplete ── */
-.autocomplete-dropdown{position:absolute;top:100%;left:0;right:0;background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);box-shadow:var(--shadow);z-index:50;max-height:200px;overflow-y:auto;display:none}
-.autocomplete-dropdown.open{display:block}
-.autocomplete-item{padding:9px 11px;font-size:12px;cursor:pointer;border-bottom:1px solid var(--border)}
+.autocomplete-dropdown{position:absolute;top:calc(100% + 4px);left:0;right:0;background:var(--md-surface-container);border-radius:var(--r-md);box-shadow:var(--shadow-2);z-index:50;max-height:220px;overflow-y:auto;display:none;border:1px solid var(--md-outline-variant)}
+.autocomplete-dropdown.open{display:block;animation:fadeIn 150ms var(--ease-in)}
+@keyframes fadeIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
+.autocomplete-item{padding:12px 16px;font-size:14px;cursor:pointer;border-bottom:1px solid var(--md-outline-variant);transition:background 50ms var(--ease);color:var(--md-on-surface)}
 .autocomplete-item:last-child{border-bottom:none}
-.autocomplete-item:active{background:var(--surface2)}
-.autocomplete-item .sub{font-size:10px;color:var(--text3);margin-top:2px}
+.autocomplete-item:hover{background:var(--md-surface-high)}
+.autocomplete-item .sub{font-size:12px;color:var(--md-on-surface-variant);margin-top:2px;letter-spacing:0.25px}
 
 /* ── Empty State ── */
-.empty-state{text-align:center;padding:36px 16px;color:var(--text3)}
-.empty-icon{font-size:36px;margin-bottom:10px}
-.empty-text{font-size:13px;line-height:1.5}
+.empty-state{text-align:center;padding:48px 24px;color:var(--md-on-surface-variant)}
+.empty-icon{font-size:48px;margin-bottom:16px;display:block}
+.empty-text{font-size:14px;line-height:1.5;max-width:240px;margin:0 auto;letter-spacing:0.25px}
 
-/* ── Filter Chips ── */
-.filter-chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
-.chip{padding:5px 11px;border-radius:20px;font-size:11px;font-weight:500;cursor:pointer;border:1px solid var(--border);background:var(--surface);color:var(--text2);transition:all 0.15s;white-space:nowrap;-webkit-tap-highlight-color:transparent}
-.chip.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+/* ── Segmented Button (Source Toggle) ── */
+.source-toggle{display:flex;border:1px solid var(--md-outline);border-radius:var(--r-full);overflow:hidden;margin-bottom:12px}
+.source-btn{flex:1;padding:10px 8px;font-size:12px;font-weight:500;border:none;border-right:1px solid var(--md-outline);background:transparent;color:var(--md-on-surface);font-family:'Roboto',sans-serif;transition:all 100ms var(--ease);text-align:center;line-height:1.3;cursor:pointer;letter-spacing:0.1px}
+.source-btn:last-child{border-right:none}
+.source-btn.active{background:var(--md-secondary-container);color:var(--md-on-secondary-container);font-weight:600}
+.source-btn:not(.active):hover{background:rgba(27,107,69,0.08)}
 
-/* ── Google Search Btn ── */
-.google-search-btn{display:inline-flex;align-items:center;gap:5px;padding:7px 10px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r2);font-size:11px;color:var(--text2);cursor:pointer;margin-top:6px;text-decoration:none;word-break:break-word;max-width:100%}
+/* ── Info Banner ── */
+.info-banner{background:var(--md-primary-container);border-radius:var(--r-md);padding:12px 16px;font-size:12px;color:var(--md-on-primary-container);margin-bottom:16px;line-height:1.5;display:flex;gap:10px;align-items:flex-start}
 
-/* ── Progress Bar ── */
-.progress-bar{height:5px;background:var(--surface3);border-radius:3px;overflow:hidden;margin-top:3px}
-.progress-fill{height:100%;background:var(--accent2);border-radius:3px;transition:width 0.3s}
-.nut-pct{font-size:10px;color:var(--text3)}
+/* ── Toast / Snackbar ── */
+.toast{position:fixed;bottom:88px;left:50%;transform:translateX(-50%) translateY(8px);background:var(--md-on-surface);color:var(--md-surface);padding:12px 20px;border-radius:var(--r-sm);font-size:14px;font-family:'Roboto',sans-serif;z-index:300;opacity:0;transition:opacity var(--dur) var(--ease),transform var(--dur) var(--ease);pointer-events:none;white-space:nowrap;max-width:calc(100% - 32px);text-align:center;box-shadow:var(--shadow-2)}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* ── Physical Stock ── */
+.stock-bar-bg{height:6px;background:var(--md-surface-highest);border-radius:3px;overflow:hidden;margin-top:8px}
+.stock-bar-fill{height:100%;border-radius:3px;transition:width var(--dur) var(--ease),background var(--dur) var(--ease)}
+.stock-bar-fill.green{background:#4CAF50}
+.stock-bar-fill.orange{background:#FF9800}
+.stock-bar-fill.red{background:var(--md-error)}
+.stock-flag{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:500;padding:4px 10px;border-radius:var(--r-full);margin-top:6px;letter-spacing:0.5px}
+.stock-flag.green{background:var(--md-primary-container);color:var(--md-on-primary-container)}
+.stock-flag.orange{background:var(--md-warning-container);color:var(--md-on-warning-container)}
+.stock-flag.red{background:var(--md-error-container);color:var(--md-on-error-container)}
+.pstock-card{background:#fff;border:1px solid var(--md-outline-variant);border-radius:var(--r-lg);padding:16px;margin-bottom:10px;transition:box-shadow var(--dur) var(--ease)}
+.pstock-card:hover{box-shadow:var(--shadow-1)}
+.pstock-header{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:10px}
+.pstock-name{font-size:14px;font-weight:500;flex:1;min-width:0;color:var(--md-on-surface);letter-spacing:0.1px}
+.pstock-qty{font-family:'Roboto Mono',monospace;font-size:24px;font-weight:500;color:var(--md-on-surface);margin-bottom:2px;letter-spacing:-0.5px}
+.pstock-meta{font-size:12px;color:var(--md-on-surface-variant);margin-bottom:8px;letter-spacing:0.25px}
+.summary-box{background:var(--md-surface-low);border-radius:var(--r-lg);padding:16px;margin-bottom:16px;display:grid;grid-template-columns:1fr 1fr;gap:12px;border:1px solid var(--md-outline-variant)}
+.summary-item-label{font-size:11px;color:var(--md-on-surface-variant);margin-bottom:4px;letter-spacing:0.5px}
+.summary-item-val{font-size:22px;font-weight:500;font-family:'Roboto Mono',monospace;color:var(--md-on-surface);letter-spacing:-0.5px}
 
 /* ── Recipe Cards ── */
-.recipe-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:12px;margin-bottom:8px;cursor:pointer;transition:border-color 0.15s}
-.recipe-card-header{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:6px}
-.recipe-card-title{font-size:14px;font-weight:600;line-height:1.3}
-.recipe-card-meta{font-size:11px;color:var(--text3);margin-bottom:4px;line-height:1.4}
-.recipe-card-tags{display:flex;gap:4px;flex-wrap:wrap;margin-top:4px}
+.recipe-card{background:#fff;border:1px solid var(--md-outline-variant);border-radius:var(--r-md);padding:16px;margin-bottom:10px;cursor:pointer;transition:background var(--dur) var(--ease),box-shadow var(--dur) var(--ease)}
+.recipe-card:hover{background:var(--md-surface-low);box-shadow:var(--shadow-1)}
+.recipe-card-title{font-size:16px;font-weight:500;color:var(--md-on-surface);line-height:1.5;letter-spacing:0.15px}
+.recipe-card-meta{font-size:12px;color:var(--md-on-surface-variant);margin-bottom:4px;line-height:1.43;letter-spacing:0.25px}
 
-/* ── Section Label ── */
-.section-label{font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:7px;margin-top:14px}
+/* ── Google Search Btn ── */
+.google-search-btn{display:inline-flex;align-items:center;gap:8px;padding:10px 16px;background:var(--md-surface-container);border:1px solid var(--md-outline);border-radius:var(--r-full);font-size:12px;font-family:'Roboto',sans-serif;font-weight:500;color:var(--md-primary);cursor:pointer;margin-top:8px;text-decoration:none;max-width:100%;letter-spacing:0.1px;transition:background 100ms var(--ease)}
+.google-search-btn:hover{background:var(--md-surface-high)}
 
-/* ── Toast ── */
-.toast{position:fixed;bottom:76px;left:50%;transform:translateX(-50%);background:#1A1814;color:#fff;padding:9px 18px;border-radius:20px;font-size:12px;z-index:300;opacity:0;transition:opacity 0.3s;pointer-events:none;white-space:nowrap;max-width:calc(100% - 32px);text-align:center}
-.toast.show{opacity:1}
+/* ── Ing selected / cost preview ── */
+#ing-selected-info{display:none;margin-top:10px;padding:12px 14px;background:var(--md-primary-container);border-radius:var(--r-md)}
+#ing-sel-name{font-size:14px;font-weight:500;color:var(--md-on-primary-container)}
+#ing-sel-price{font-size:12px;color:var(--md-primary);margin-top:4px;font-family:'Roboto Mono',monospace}
+#ing-cost-preview{display:none;margin-top:8px;font-size:14px;color:var(--md-primary);font-weight:500;font-family:'Roboto Mono',monospace;letter-spacing:0.5px}
 
-/* ── Estoque Físico ── */
-.stock-bar-wrap{margin-top:6px}
-.stock-bar-bg{height:7px;background:var(--surface3);border-radius:4px;overflow:hidden}
-.stock-bar-fill{height:100%;border-radius:4px;transition:width 0.4s,background 0.4s}
-.stock-bar-fill.green{background:#52B788}
-.stock-bar-fill.orange{background:#F4A261}
-.stock-bar-fill.red{background:#E76F51}
-.stock-flag{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:600;padding:2px 7px;border-radius:20px;margin-top:4px}
-.stock-flag.green{background:#D8F3DC;color:#2D6A4F}
-.stock-flag.orange{background:#FFF3E0;color:#E65100}
-.stock-flag.red{background:#FEE2E2;color:#C62828}
-.pstock-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:12px;margin-bottom:8px}
-.pstock-header{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:8px}
-.pstock-name{font-size:13px;font-weight:600;flex:1;min-width:0}
-.pstock-actions{display:flex;gap:5px;flex-shrink:0}
-.pstock-qty{font-family:'DM Mono',monospace;font-size:18px;font-weight:600;color:var(--text);margin-bottom:2px}
-.pstock-meta{font-size:11px;color:var(--text3);margin-bottom:6px}
-.pstock-btns{display:flex;gap:6px;margin-top:10px}
-.summary-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:12px;margin-bottom:12px;display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.summary-item-label{font-size:10px;color:var(--text3);margin-bottom:2px}
-.summary-item-val{font-size:15px;font-weight:600;font-family:'DM Mono',monospace}
-
-/* ── Source Selector (Ficha) ── */
-.source-toggle{display:flex;background:var(--surface2);border-radius:var(--r2);padding:3px;gap:3px;margin-bottom:10px}
-.source-btn{flex:1;padding:7px 4px;font-size:11px;font-weight:500;border:none;border-radius:6px;cursor:pointer;background:transparent;color:var(--text2);font-family:'Sora',sans-serif;transition:all 0.15s;text-align:center;line-height:1.3}
-.source-btn.active{background:var(--surface);color:var(--accent);box-shadow:0 1px 4px rgba(0,0,0,0.1);font-weight:600}
-
-/* ── Desktop override ── */
+/* ── Desktop ── */
 @media(min-width:480px){
-  .page{padding:20px 24px;max-width:480px}
-  .modal{border-radius:14px;margin:auto;margin-bottom:0;max-width:420px}
+  .page{padding:24px 28px;max-width:480px}
+  .modal{border-radius:var(--r-xl);margin:auto;margin-bottom:0;max-width:440px}
   .modal-overlay{align-items:center}
-  .total-value{font-size:20px}
 }
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--md-outline-variant);border-radius:2px}
 </style>
 </head>
 <body>
@@ -216,14 +246,10 @@ textarea{resize:vertical;min-height:72px;line-height:1.5}
 
 <!-- PAGE: FICHA TÉCNICA -->
 <div class="page active" id="page-ficha">
-  <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px">
-    <div>
-      <div class="section-title">Ficha Técnica</div>
-      <div class="section-sub">Monte sua receita com ingredientes do estoque</div>
-    </div>
+  <div class="page-header">
+    <div><div class="section-title">Ficha Técnica</div><div class="section-sub">Monte sua receita com ingredientes do estoque</div></div>
     <button class="btn btn-warn btn-sm" onclick="clearFicha()">Limpar</button>
   </div>
-
   <div class="card">
     <div class="input-group">
       <label class="input-label">Nome da Receita *</label>
@@ -244,19 +270,16 @@ textarea{resize:vertical;min-height:72px;line-height:1.5}
   <div class="section-label">Adicionar Ingrediente</div>
   <div class="card">
     <div class="source-toggle">
-      <button class="source-btn active" id="src-btn-virtual" onclick="setIngSource('virtual')">📦 Est. Virtual<br><span style="font-size:9px;font-weight:400;opacity:0.8">fichas & precificação</span></button>
-      <button class="source-btn" id="src-btn-fisico" onclick="setIngSource('fisico')">🏪 Est. Físico<br><span style="font-size:9px;font-weight:400;opacity:0.8">desconta estoque real</span></button>
+      <button class="source-btn active" id="src-btn-virtual" onclick="setIngSource('virtual')">📦 Est. Virtual<br><span style="font-size:10px;font-weight:400;opacity:0.75">fichas & precificação</span></button>
+      <button class="source-btn" id="src-btn-fisico" onclick="setIngSource('fisico')">🏪 Est. Físico<br><span style="font-size:10px;font-weight:400;opacity:0.75">desconta estoque real</span></button>
     </div>
     <div style="position:relative" id="ing-search-wrap">
       <span class="search-icon">🔍</span>
-      <input type="text" id="ing-search" placeholder="Buscar ingrediente do estoque..." oninput="searchIngredient()" autocomplete="off" style="padding-left:36px">
+      <input type="text" id="ing-search" placeholder="Buscar ingrediente..." oninput="searchIngredient()" autocomplete="off" style="padding-left:42px">
       <div class="autocomplete-dropdown" id="ing-dropdown"></div>
     </div>
-    <div id="ing-selected-info" style="display:none;margin-top:8px;padding:10px;background:var(--accent3);border-radius:var(--r2)">
-      <div style="font-size:13px;font-weight:500" id="ing-sel-name"></div>
-      <div style="font-size:11px;color:var(--accent);margin-top:2px" id="ing-sel-price"></div>
-    </div>
-    <div class="input-row cols-2" style="margin-top:10px">
+    <div id="ing-selected-info"><div id="ing-sel-name"></div><div id="ing-sel-price"></div></div>
+    <div class="input-row cols-2" style="margin-top:12px">
       <div class="input-group" style="margin-bottom:0">
         <label class="input-label">Quantidade usada</label>
         <input type="number" id="ing-qty" placeholder="Ex: 200" oninput="calcIngCost()">
@@ -271,12 +294,12 @@ textarea{resize:vertical;min-height:72px;line-height:1.5}
         </select>
       </div>
     </div>
-    <div id="ing-cost-preview" style="display:none;margin-top:8px;font-size:13px;color:var(--accent);font-weight:500;font-family:'DM Mono',monospace"></div>
-    <div class="input-group" style="margin-top:10px;margin-bottom:0">
-      <label class="input-label">Rendimento do ingrediente % <span style="color:var(--text3);font-weight:400">(opcional, padrão 100%)</span></label>
+    <div id="ing-cost-preview"></div>
+    <div class="input-group" style="margin-top:12px;margin-bottom:0">
+      <label class="input-label">Rendimento do ingrediente % <span style="font-weight:400;opacity:0.7">(padrão 100%)</span></label>
       <input type="number" id="ing-rendimento" placeholder="Ex: 85 para 15% de perda" min="1" max="100">
     </div>
-    <button class="btn btn-primary btn-full" style="margin-top:10px" onclick="addIngredient()">+ Adicionar Ingrediente</button>
+    <button class="btn btn-primary btn-full" style="margin-top:14px" onclick="addIngredient()">+ Adicionar Ingrediente</button>
   </div>
 
   <div id="ingredients-list"></div>
@@ -286,341 +309,237 @@ textarea{resize:vertical;min-height:72px;line-height:1.5}
       <div class="markup-label">💹 Markup (%)</div>
       <input type="number" class="markup-input" id="markup-pct" placeholder="0" oninput="calcFicha()" min="0" style="width:80px">
     </div>
-
     <div class="total-box">
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
-        <div>
-          <div class="total-label">Custo Total</div>
-          <div class="total-value" id="total-custo">R$ 0,00</div>
-        </div>
-        <div>
-          <div class="total-label">Preço de Venda</div>
-          <div class="total-value" id="total-venda">R$ 0,00</div>
-        </div>
-        <div>
-          <div class="total-label">Custo por Porção</div>
-          <div class="total-value" id="total-porcao" style="font-size:15px">R$ 0,00</div>
-        </div>
-        <div>
-          <div class="total-label">Custo por KG</div>
-          <div class="total-value" id="total-kg" style="font-size:15px">—</div>
-        </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div><div class="total-label">Custo Total</div><div class="total-value" id="total-custo">R$ 0,00</div></div>
+        <div><div class="total-label">Preço de Venda</div><div class="total-value" id="total-venda">R$ 0,00</div></div>
+        <div><div class="total-label">Custo por Porção</div><div class="total-value" id="total-porcao" style="font-size:16px">R$ 0,00</div></div>
+        <div><div class="total-label">Custo por KG</div><div class="total-value" id="total-kg" style="font-size:16px">—</div></div>
       </div>
     </div>
-
-    <div class="section-label" style="margin-top:16px">Tabela Nutricional Estimada</div>
+    <div class="section-label" style="margin-top:20px">Tabela Nutricional Estimada</div>
     <div class="card">
       <div class="portion-row">
         <div class="portion-label">Porção base para cálculo:</div>
         <input type="number" class="portion-input" id="portion-size" value="100" oninput="calcNutrition()" style="width:90px">
-        <span style="font-size:12px;color:var(--text2)">g</span>
+        <span style="font-size:12px;color:var(--md-on-surface-variant)">g</span>
       </div>
-      <div style="font-size:11px;color:var(--text3);margin-bottom:12px">Base: 2500 kcal/dia. VD% calculado sobre recomendações diárias. Valores estimados com base na composição dos ingredientes.</div>
+      <div style="font-size:12px;color:var(--md-on-surface-variant);margin-bottom:14px;line-height:1.5">Base: 2500 kcal/dia. Valores estimados com base na composição dos ingredientes.</div>
       <table class="nutrition-table">
-        <thead>
-          <tr>
-            <th>Nutriente</th>
-            <th style="text-align:right">Por <span id="nut-portion-label">100g</span></th>
-            <th style="text-align:right">%VD</th>
-          </tr>
-        </thead>
+        <thead><tr><th>Nutriente</th><th style="text-align:right">Por <span id="nut-portion-label">100g</span></th><th style="text-align:right">%VD</th></tr></thead>
         <tbody id="nutrition-body"></tbody>
       </table>
     </div>
-
-    <button class="btn btn-primary btn-full" onclick="saveRecipe()" style="margin-bottom:8px">💾 Salvar Receita</button>
+    <button class="btn btn-primary btn-full" onclick="saveRecipe()" style="margin-bottom:10px">💾 Salvar Receita</button>
   </div>
 </div>
 
 <!-- PAGE: ESTOQUE VIRTUAL -->
 <div class="page" id="page-estoque">
-  <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px">
-    <div>
-      <div class="section-title">Est. Virtual</div>
-      <div class="section-sub">Ingredientes para precificação e fichas técnicas</div>
-    </div>
-    <button class="btn btn-primary btn-sm" onclick="openAddStock()">+ Novo</button>
+  <div class="page-header">
+    <div><div class="section-title">Est. Virtual</div><div class="section-sub">Ingredientes para precificação e fichas</div></div>
+    <button class="btn btn-primary btn-sm" onclick="openStockModal()">+ Novo</button>
   </div>
-
   <div class="search-bar">
     <span class="search-icon">🔍</span>
-    <input type="text" placeholder="Buscar produto..." oninput="filterStock(this.value)" style="padding-left:36px">
+    <input type="text" placeholder="Buscar produto..." oninput="renderStock(this.value)">
   </div>
-
   <div id="stock-list"></div>
 </div>
 
 <!-- PAGE: RECEITAS -->
 <div class="page" id="page-receitas">
-  <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px">
-    <div>
-      <div class="section-title">Receitas</div>
-      <div class="section-sub">Suas fichas técnicas salvas</div>
-    </div>
+  <div class="page-header">
+    <div><div class="section-title">Receitas</div><div class="section-sub">Suas fichas técnicas salvas</div></div>
   </div>
-
   <div class="search-bar">
     <span class="search-icon">🔍</span>
-    <input type="text" placeholder="Buscar receita pelo nome..." oninput="filterRecipes(this.value)" id="recipe-search" style="padding-left:36px">
+    <input type="text" placeholder="Buscar receita..." oninput="renderRecipes(this.value,activeIngFilter)" id="recipe-search">
   </div>
-
-  <div class="section-label" style="margin-top:0;margin-bottom:8px">Filtrar por ingrediente</div>
+  <div class="section-label" style="margin-top:0;margin-bottom:10px">Filtrar por ingrediente</div>
   <div class="filter-chips" id="ingredient-filter-chips"></div>
-
   <div id="recipes-list"></div>
 </div>
 
 <!-- PAGE: ESTOQUE FÍSICO -->
 <div class="page" id="page-fisico">
-  <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px">
-    <div>
-      <div class="section-title">Est. Físico</div>
-      <div class="section-sub">Controle real de quantidade e reposição</div>
-    </div>
-    <button class="btn btn-primary btn-sm" onclick="openAddPhysical()">+ Novo</button>
+  <div class="page-header">
+    <div><div class="section-title">Est. Físico</div><div class="section-sub">Controle real de quantidade e reposição</div></div>
+    <button class="btn btn-primary btn-sm" onclick="openPhysicalModal()">+ Novo</button>
   </div>
-
   <div id="pstock-summary" class="summary-box" style="display:none"></div>
-
   <div class="search-bar">
     <span class="search-icon">🔍</span>
-    <input type="text" placeholder="Buscar produto..." oninput="filterPhysical(this.value)" style="padding-left:36px">
+    <input type="text" placeholder="Buscar produto..." oninput="renderPhysical(this.value)">
   </div>
-
   <div id="pstock-list"></div>
 </div>
 
 <!-- NAV -->
 <nav class="nav">
   <button class="nav-btn active" id="nav-ficha" onclick="showPage('ficha','nav-ficha')">
-    <span class="nav-icon">📋</span>Ficha
+    <div class="nav-indicator"><span class="nav-icon">📋</span></div><span>Ficha</span>
   </button>
   <button class="nav-btn" id="nav-estoque" onclick="showPage('estoque','nav-estoque')">
-    <span class="nav-icon">📦</span>Virtual
+    <div class="nav-indicator"><span class="nav-icon">📦</span></div><span>Virtual</span>
   </button>
   <button class="nav-btn" id="nav-fisico" onclick="showPage('fisico','nav-fisico')">
-    <span class="nav-icon">🏪</span>Físico
+    <div class="nav-indicator"><span class="nav-icon">🏪</span></div><span>Físico</span>
   </button>
   <button class="nav-btn" id="nav-receitas" onclick="showPage('receitas','nav-receitas')">
-    <span class="nav-icon">🍳</span>Receitas
+    <div class="nav-indicator"><span class="nav-icon">🍳</span></div><span>Receitas</span>
   </button>
 </nav>
 
-<!-- MODAL: ADD/EDIT STOCK -->
+<!-- MODAL: ESTOQUE VIRTUAL -->
 <div class="modal-overlay" id="modal-stock">
   <div class="modal">
     <div class="modal-handle"></div>
     <div class="modal-title" id="modal-stock-title">Novo Produto</div>
-
-    <div class="input-group">
-      <label class="input-label">Nome do Produto *</label>
-      <input type="text" id="stock-name" placeholder="Ex: Farinha de trigo, Frango..." oninput="updateGoogleLink()">
-    </div>
-
+    <div class="input-group"><label class="input-label">Nome do Produto *</label><input type="text" id="stock-name" placeholder="Ex: Farinha de trigo..." oninput="updateGoogleLink()"></div>
     <div class="input-row cols-2">
-      <div class="input-group">
-        <label class="input-label">Quantidade Comprada *</label>
-        <input type="number" id="stock-qty" placeholder="Ex: 1" step="0.001">
-      </div>
-      <div class="input-group">
-        <label class="input-label">Unidade</label>
-        <select id="stock-unit">
-          <option value="kg">KG</option>
-          <option value="g">Gramas</option>
-          <option value="ml">Mililitros (ml)</option>
-          <option value="un">Unidade (un)</option>
-        </select>
+      <div class="input-group"><label class="input-label">Quantidade *</label><input type="number" id="stock-qty" placeholder="Ex: 1" step="0.001"></div>
+      <div class="input-group"><label class="input-label">Unidade</label>
+        <select id="stock-unit"><option value="kg">KG</option><option value="g">Gramas</option><option value="ml">Mililitros</option><option value="un">Unidade</option></select>
       </div>
     </div>
-
-    <div class="input-group">
-      <label class="input-label">Valor Pago (R$) *</label>
-      <input type="number" id="stock-price" placeholder="Ex: 10.00" step="0.01">
-    </div>
-
-    <div class="input-group">
-      <label class="input-label">Categoria</label>
-      <select id="stock-category">
-        <option value="">Selecionar...</option>
-        <option value="Proteínas">💪 Proteínas</option>
-        <option value="Carboidratos">🍞 Carboidratos</option>
-        <option value="Gorduras">🧈 Gorduras</option>
-        <option value="Leguminosas">🫘 Leguminosas</option>
-        <option value="Laticínios">🧀 Laticínios</option>
-        <option value="Carnes">🥩 Carnes</option>
-        <option value="Cereais">🌾 Cereais</option>
-        <option value="Farinhas">🌿 Farinhas</option>
-        <option value="Açúcares">🍬 Açúcares</option>
-        <option value="Óleos e Gorduras">🫙 Óleos e Gorduras</option>
-        <option value="Temperos">🌶 Temperos</option>
-        <option value="Hortifrúti">🥬 Hortifrúti</option>
-        <option value="Grãos e Leguminosas">🫘 Grãos e Leguminosas</option>
-        <option value="Outros">📦 Outros</option>
-      </select>
-    </div>
-
+    <div class="input-group"><label class="input-label">Valor Pago (R$) *</label><input type="number" id="stock-price" placeholder="Ex: 10.00" step="0.01"></div>
+    <div class="input-group"><label class="input-label">Categoria</label><select id="stock-category">
+      <option value="">Selecionar...</option>
+      <option value="Proteínas">💪 Proteínas</option><option value="Carboidratos">🍞 Carboidratos</option>
+      <option value="Gorduras">🧈 Gorduras</option><option value="Laticínios">🧀 Laticínios</option>
+      <option value="Carnes">🥩 Carnes</option><option value="Cereais">🌾 Cereais</option>
+      <option value="Farinhas">🌿 Farinhas</option><option value="Açúcares">🍬 Açúcares</option>
+      <option value="Óleos e Gorduras">🫙 Óleos e Gorduras</option><option value="Temperos">🌶 Temperos</option>
+      <option value="Hortifrúti">🥬 Hortifrúti</option><option value="Leguminosas">🫘 Leguminosas</option>
+      <option value="Outros">📦 Outros</option>
+    </select></div>
     <div class="divider"></div>
-    <div style="font-size:13px;font-weight:600;margin-bottom:4px">Tabela Nutricional <span style="font-weight:400;color:var(--text3)">(por 100g do produto)</span></div>
-    <div style="font-size:12px;color:var(--text3);margin-bottom:10px">Preencha os valores do rótulo. Se deixar vazio, o app usa valores padrão estimados para calcular a ficha nutricional.</div>
-
-    <a id="google-search-link" href="#" target="_blank" class="google-search-btn" onclick="handleGoogleSearch(event)">
-      🔍 Pesquisar valores nutricionais no Google
-    </a>
-
-    <div class="input-row cols-2" style="margin-top:12px">
+    <div style="font-size:14px;font-weight:500;margin-bottom:6px">Tabela Nutricional <span style="font-weight:400;color:var(--md-on-surface-variant)">(por 100g)</span></div>
+    <div style="font-size:12px;color:var(--md-on-surface-variant);margin-bottom:12px;line-height:1.5">Preencha os valores do rótulo. Se vazio, o app usa estimativas.</div>
+    <a id="google-search-link" href="#" target="_blank" class="google-search-btn" onclick="handleGoogleSearch(event)">🔍 Pesquisar no Google</a>
+    <div class="input-row cols-2" style="margin-top:16px">
       <div class="input-group"><label class="input-label">Calorias (kcal)</label><input type="number" id="nut-kcal" placeholder="Ex: 364"></div>
       <div class="input-group"><label class="input-label">Carboidratos (g)</label><input type="number" id="nut-carb" placeholder="Ex: 76"></div>
     </div>
     <div class="input-row cols-2">
       <div class="input-group"><label class="input-label">Proteínas (g)</label><input type="number" id="nut-prot" placeholder="Ex: 10"></div>
-      <div class="input-group"><label class="input-label">Gorduras Totais (g)</label><input type="number" id="nut-fat" placeholder="Ex: 1.2"></div>
+      <div class="input-group"><label class="input-label">Gorduras (g)</label><input type="number" id="nut-fat" placeholder="Ex: 1.2"></div>
     </div>
     <div class="input-row cols-2">
       <div class="input-group"><label class="input-label">Fibras (g)</label><input type="number" id="nut-fiber" placeholder="Ex: 2.7"></div>
       <div class="input-group"><label class="input-label">Sódio (mg)</label><input type="number" id="nut-sodium" placeholder="Ex: 2"></div>
     </div>
-
-    <div style="display:flex;gap:8px;margin-top:16px">
-      <button class="btn btn-secondary" style="flex:1" onclick="closeModal('modal-stock')">Cancelar</button>
-      <button class="btn btn-primary" style="flex:1" onclick="saveStock()">Salvar Produto</button>
+    <div style="display:flex;gap:10px;margin-top:20px">
+      <button class="btn btn-outlined" style="flex:1" onclick="closeModal('modal-stock')">Cancelar</button>
+      <button class="btn btn-primary" style="flex:1" onclick="saveStock()">Salvar</button>
     </div>
   </div>
 </div>
 
-<!-- MODAL: VIEW RECIPE -->
+<!-- MODAL: VER RECEITA -->
 <div class="modal-overlay" id="modal-recipe">
   <div class="modal">
     <div class="modal-handle"></div>
     <div id="recipe-detail-content"></div>
-    <div style="display:flex;gap:8px;margin-top:16px;flex-wrap:wrap">
-      <button class="btn btn-secondary" style="flex:1;min-width:70px" onclick="closeModal('modal-recipe')">Fechar</button>
+    <div style="display:flex;gap:8px;margin-top:20px;flex-wrap:wrap">
+      <button class="btn btn-outlined" style="flex:1;min-width:70px" onclick="closeModal('modal-recipe')">Fechar</button>
       <button class="btn btn-danger btn-sm" onclick="deleteCurrentRecipe()" style="flex:1;min-width:70px">🗑 Excluir</button>
       <button class="btn btn-primary" style="flex:1;min-width:70px" onclick="loadRecipeToFicha()">✏️ Editar</button>
-      <button class="btn btn-secondary" style="flex:1;min-width:70px;border-color:var(--accent);color:var(--accent)" onclick="exportRecipePDF(currentRecipeId)">📄 PDF</button>
+      <button class="btn btn-secondary" style="flex:1;min-width:70px" onclick="exportRecipePDF(currentRecipeId)">📄 PDF</button>
     </div>
   </div>
 </div>
 
-<!-- MODAL: ADD/EDIT PHYSICAL STOCK -->
+<!-- MODAL: ESTOQUE FÍSICO -->
 <div class="modal-overlay" id="modal-pstock">
   <div class="modal">
     <div class="modal-handle"></div>
     <div class="modal-title" id="modal-pstock-title">Novo Produto Físico</div>
-
-    <div class="input-group">
-      <label class="input-label">Nome do Produto *</label>
-      <input type="text" id="pstock-name" placeholder="Ex: Farinha de trigo, Frango...">
-    </div>
-
+    <div class="input-group"><label class="input-label">Nome do Produto *</label><input type="text" id="pstock-name" placeholder="Ex: Farinha de trigo..."></div>
     <div class="input-row cols-2">
-      <div class="input-group">
-        <label class="input-label">Quantidade Comprada *</label>
-        <input type="number" id="pstock-qty" placeholder="Ex: 5" step="0.001">
-      </div>
-      <div class="input-group">
-        <label class="input-label">Unidade</label>
-        <select id="pstock-unit">
-          <option value="kg">KG</option>
-          <option value="g">Gramas</option>
-          <option value="ml">Mililitros (ml)</option>
-          <option value="un">Unidade (un)</option>
-        </select>
+      <div class="input-group"><label class="input-label">Quantidade *</label><input type="number" id="pstock-qty" placeholder="Ex: 5" step="0.001"></div>
+      <div class="input-group"><label class="input-label">Unidade</label>
+        <select id="pstock-unit"><option value="kg">KG</option><option value="g">Gramas</option><option value="ml">Mililitros</option><option value="un">Unidade</option></select>
       </div>
     </div>
-
-    <div class="input-group">
-      <label class="input-label">Valor Pago (R$) *</label>
-      <input type="number" id="pstock-price" placeholder="Ex: 10.00" step="0.01">
-    </div>
-
-    <div class="input-group">
-      <label class="input-label">Estoque Desejado (meta) *</label>
-      <input type="number" id="pstock-desired" placeholder="Ex: 10 — será seu 100%" step="0.001">
-    </div>
-
-    <div class="input-group">
-      <label class="input-label">Categoria</label>
-      <select id="pstock-category">
-        <option value="">Selecionar...</option>
-        <option value="Proteínas">💪 Proteínas</option>
-        <option value="Carboidratos">🍞 Carboidratos</option>
-        <option value="Gorduras">🧈 Gorduras</option>
-        <option value="Leguminosas">🫘 Leguminosas</option>
-        <option value="Laticínios">🧀 Laticínios</option>
-        <option value="Carnes">🥩 Carnes</option>
-        <option value="Cereais">🌾 Cereais</option>
-        <option value="Farinhas">🌿 Farinhas</option>
-        <option value="Açúcares">🍬 Açúcares</option>
-        <option value="Óleos e Gorduras">🫙 Óleos e Gorduras</option>
-        <option value="Temperos">🌶 Temperos</option>
-        <option value="Hortifrúti">🥬 Hortifrúti</option>
-        <option value="Outros">📦 Outros</option>
-      </select>
-    </div>
-
-    <div style="background:var(--accent3);border-radius:var(--r2);padding:10px;font-size:11px;color:var(--accent);margin-bottom:14px">
-      💡 Ao salvar, este produto também será sincronizado no Estoque Virtual para uso nas fichas técnicas.
-    </div>
-
-    <div style="display:flex;gap:8px">
-      <button class="btn btn-secondary" style="flex:1" onclick="closeModal('modal-pstock')">Cancelar</button>
+    <div class="input-group"><label class="input-label">Valor Pago (R$) *</label><input type="number" id="pstock-price" placeholder="Ex: 10.00" step="0.01"></div>
+    <div class="input-group"><label class="input-label">Estoque Desejado (meta) *</label><input type="number" id="pstock-desired" placeholder="Ex: 10 — será seu 100%" step="0.001"></div>
+    <div class="input-group"><label class="input-label">Categoria</label><select id="pstock-category">
+      <option value="">Selecionar...</option>
+      <option value="Proteínas">💪 Proteínas</option><option value="Carnes">🥩 Carnes</option>
+      <option value="Laticínios">🧀 Laticínios</option><option value="Cereais">🌾 Cereais</option>
+      <option value="Farinhas">🌿 Farinhas</option><option value="Açúcares">🍬 Açúcares</option>
+      <option value="Óleos e Gorduras">🫙 Óleos e Gorduras</option><option value="Temperos">🌶 Temperos</option>
+      <option value="Hortifrúti">🥬 Hortifrúti</option><option value="Leguminosas">🫘 Leguminosas</option>
+      <option value="Outros">📦 Outros</option>
+    </select></div>
+    <div class="info-banner"><span style="font-size:18px;flex-shrink:0">💡</span><span>Ao salvar, este produto será sincronizado no Estoque Virtual.</span></div>
+    <div style="display:flex;gap:10px">
+      <button class="btn btn-outlined" style="flex:1" onclick="closeModal('modal-pstock')">Cancelar</button>
       <button class="btn btn-primary" style="flex:1" onclick="savePhysical()">Salvar</button>
     </div>
   </div>
 </div>
 
-<!-- MODAL: MOVIMENTAÇÃO (usar / repor) -->
+<!-- MODAL: MOVIMENTAÇÃO -->
 <div class="modal-overlay" id="modal-move">
   <div class="modal">
     <div class="modal-handle"></div>
     <div class="modal-title" id="modal-move-title">Movimentar Estoque</div>
-    <div id="modal-move-info" style="background:var(--surface2);border-radius:var(--r2);padding:10px;margin-bottom:14px;font-size:12px;color:var(--text2)"></div>
-
-    <div class="source-toggle" style="margin-bottom:14px">
+    <div id="modal-move-info" style="background:var(--md-surface-container);border-radius:var(--r-md);padding:12px 16px;margin-bottom:16px;font-size:12px;color:var(--md-on-surface-variant)"></div>
+    <div class="source-toggle" style="margin-bottom:16px">
       <button class="source-btn active" id="move-btn-usar" onclick="setMoveType('usar')">📤 Usar / Retirar</button>
       <button class="source-btn" id="move-btn-repor" onclick="setMoveType('repor')">📥 Repor / Comprar</button>
     </div>
-
-    <div class="input-row cols-2" style="margin-bottom:12px">
+    <div class="input-row cols-2" style="margin-bottom:16px">
       <div class="input-group" style="margin-bottom:0">
         <label class="input-label" id="move-qty-label">Quantidade a usar</label>
         <input type="number" id="move-qty" placeholder="Ex: 2" step="0.001" min="0.001">
       </div>
       <div class="input-group" style="margin-bottom:0">
         <label class="input-label">Unidade</label>
-        <div id="move-unit-display" style="padding:9px 10px;background:var(--surface2);border-radius:var(--r2);font-size:13px;color:var(--text2)">—</div>
+        <div id="move-unit-display" style="padding:14px 16px;background:var(--md-surface-highest);border-radius:4px 4px 0 0;font-size:16px;color:var(--md-on-surface-variant);border-bottom:1.5px solid var(--md-outline)">—</div>
       </div>
     </div>
-
-    <div style="display:flex;gap:8px">
-      <button class="btn btn-secondary" style="flex:1" onclick="closeModal('modal-move')">Cancelar</button>
+    <div style="display:flex;gap:10px">
+      <button class="btn btn-outlined" style="flex:1" onclick="closeModal('modal-move')">Cancelar</button>
       <button class="btn btn-primary" style="flex:1" id="move-confirm-btn" onclick="confirmMove()">Confirmar</button>
     </div>
   </div>
 </div>
 
-<!-- TOAST -->
 <div class="toast" id="toast"></div>
 
 <script>
+/* ════════════════════════════════════
+   HELPERS
+════════════════════════════════════ */
 const fmtBRL = v => v.toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
-const fmtN = (v,d=1) => typeof v==='number'?v.toFixed(d):'—';
+const fmtQty = (q,u) => (q%1===0?q:parseFloat(q.toFixed(3)))+u;
 
-let stock = JSON.parse(localStorage.getItem('fichatec_stock')||'[]');
-let physicalStock = JSON.parse(localStorage.getItem('fichatec_physical')||'[]');
-let recipes = JSON.parse(localStorage.getItem('fichatec_recipes')||'[]');
+// Persistência unificada
+const DB = {
+  load: k => JSON.parse(localStorage.getItem(k)||'[]'),
+  save: (k,v) => localStorage.setItem(k, JSON.stringify(v))
+};
+
+let stock         = DB.load('fichatec_stock');
+let physicalStock = DB.load('fichatec_physical');
+let recipes       = DB.load('fichatec_recipes');
+
 let currentIngredients = [];
 let selectedIngredient = null;
-let editingStockId = null;
-let editingPhysicalId = null;
-let currentRecipeId = null;
-let activeIngFilter = null;
-let ingSource = 'virtual'; // 'virtual' | 'fisico'
-let moveType = 'usar'; // 'usar' | 'repor'
-let movingPhysicalId = null;
+let editingStockId     = null;
+let editingPhysicalId  = null;
+let currentRecipeId    = null;
+let activeIngFilter    = null;
+let ingSource          = 'virtual';
+let moveType           = 'usar';
+let movingPhysicalId   = null;
 
+/* ── Nutrição padrão ── */
 const defaultNutrition = {
-  'farinha de trigo':{kcal:361,carb:75,prot:9.8,fat:1.4,fiber:2.3,sodium:2},
   'farinha':{kcal:361,carb:75,prot:9.8,fat:1.4,fiber:2.3,sodium:2},
   'açúcar refinado':{kcal:399,carb:99.6,prot:0,fat:0,fiber:0,sodium:1},
   'açúcar':{kcal:387,carb:99,prot:0,fat:0,fiber:0,sodium:1},
@@ -633,12 +552,11 @@ const defaultNutrition = {
   'arroz':{kcal:358,carb:79,prot:7.4,fat:0.3,fiber:1.6,sodium:1},
   'feijão':{kcal:333,carb:61,prot:22,fat:1.6,fiber:15.5,sodium:5},
   'frango':{kcal:162,carb:0,prot:24,fat:7,fiber:0,sodium:75},
-  'patinho':{kcal:219,carb:0,prot:26,fat:13,fiber:0,sodium:66},
   'carne':{kcal:219,carb:0,prot:26,fat:13,fiber:0,sodium:66},
+  'patinho':{kcal:219,carb:0,prot:26,fat:13,fiber:0,sodium:66},
   'tomate':{kcal:18,carb:3.9,prot:0.9,fat:0.2,fiber:1.2,sodium:5},
   'cebola':{kcal:40,carb:9.3,prot:1.1,fat:0.1,fiber:1.7,sodium:4},
   'alho':{kcal:149,carb:33,prot:6.4,fat:0.5,fiber:2.1,sodium:17},
-  'açúcar mascavo':{kcal:377,carb:96,prot:0.3,fat:0,fiber:0,sodium:28},
   'fermento':{kcal:105,carb:8,prot:12,fat:2,fiber:4,sodium:50},
   'bicarbonato':{kcal:0,carb:0,prot:0,fat:0,fiber:0,sodium:27360},
   'chocolate':{kcal:546,carb:60,prot:5,fat:32,fiber:7,sodium:10},
@@ -649,15 +567,41 @@ const defaultNutrition = {
   'default':{kcal:250,carb:30,prot:8,fat:5,fiber:2,sodium:100}
 };
 
-function getNutritionFor(name){
-  const key=name.toLowerCase();
-  for(const k in defaultNutrition){if(key.includes(k))return defaultNutrition[k];}
+function getNutrition(name){
+  const k=name.toLowerCase();
+  for(const key in defaultNutrition) if(k.includes(key)) return defaultNutrition[key];
   return defaultNutrition.default;
+}
+
+/* Preço por grama/unidade base */
+function pricePerUnit(s){
+  if(s.unit==='un') return s.price/s.qty;
+  return s.price/(s.unit==='kg'?s.qty*1000:s.qty);
+}
+
+/* Busca item no estoque virtual por id ou nome */
+function findStockItem(stockId, name){
+  if(stockId && !String(stockId).startsWith('pf_')){
+    const s=stock.find(x=>x.id===stockId||x.id===parseInt(stockId));
+    if(s) return s;
+  }
+  return stock.find(x=>x.name.toLowerCase()===name.toLowerCase())||null;
+}
+
+/* Calcula custo e preço de venda de uma lista de ingredientes */
+function calcCosts(ingredients, markup=0){
+  const list=ingredients.map(i=>{
+    const s=findStockItem(i.stockId,i.name);
+    const ppg=s?pricePerUnit(s):0;
+    return{...i, cost:ppg*i.qtyBruta, currentPricePerG:ppg};
+  });
+  const totalCost=list.reduce((a,i)=>a+i.cost,0);
+  return{ingredients:list, totalCost, venda:totalCost*(1+(markup||0)/100)};
 }
 
 function showToast(msg){
   const t=document.getElementById('toast');
-  t.textContent=msg;t.classList.add('show');
+  t.textContent=msg; t.classList.add('show');
   setTimeout(()=>t.classList.remove('show'),2500);
 }
 
@@ -666,48 +610,125 @@ function showPage(page,navId){
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
   document.getElementById('page-'+page).classList.add('active');
   document.getElementById(navId).classList.add('active');
-  if(page==='estoque')renderStock();
-  if(page==='fisico')renderPhysical();
+  if(page==='estoque') renderStock();
+  if(page==='fisico')  renderPhysical();
   if(page==='receitas')renderRecipes();
 }
 
-function saveStockData(){localStorage.setItem('fichatec_stock',JSON.stringify(stock));}
-function saveRecipesData(){localStorage.setItem('fichatec_recipes',JSON.stringify(recipes));}
-function savePhysicalData(){localStorage.setItem('fichatec_physical',JSON.stringify(physicalStock));}
+function closeModal(id){document.getElementById(id).classList.remove('open');}
 
-// ── Source toggle (Ficha) ──
-function setIngSource(src){
-  ingSource=src;
-  document.getElementById('src-btn-virtual').classList.toggle('active',src==='virtual');
-  document.getElementById('src-btn-fisico').classList.toggle('active',src==='fisico');
-  // reset busca
-  document.getElementById('ing-search').value='';
-  document.getElementById('ing-dropdown').classList.remove('open');
-  document.getElementById('ing-selected-info').style.display='none';
-  document.getElementById('ing-cost-preview').style.display='none';
-  selectedIngredient=null;
+/* ════════════════════════════════════
+   ESTOQUE VIRTUAL
+════════════════════════════════════ */
+function openStockModal(id=null){
+  editingStockId=id;
+  const nutFields=['nut-kcal','nut-carb','nut-prot','nut-fat','nut-fiber','nut-sodium'];
+  if(id!==null){
+    const s=stock.find(x=>x.id===id);
+    document.getElementById('modal-stock-title').textContent='Editar Produto';
+    document.getElementById('stock-name').value=s.name;
+    document.getElementById('stock-qty').value=s.qty;
+    document.getElementById('stock-unit').value=s.unit;
+    document.getElementById('stock-price').value=s.price;
+    document.getElementById('stock-category').value=s.category||'';
+    const n=s.nutrition||{};
+    nutFields.forEach(f=>document.getElementById(f).value=n[f.replace('nut-','')]||'');
+  }else{
+    document.getElementById('modal-stock-title').textContent='Novo Produto';
+    ['stock-name','stock-qty','stock-price',...nutFields].forEach(f=>document.getElementById(f).value='');
+    document.getElementById('stock-unit').value='kg';
+    document.getElementById('stock-category').value='';
+  }
+  updateGoogleLink();
+  document.getElementById('modal-stock').classList.add('open');
 }
 
-// ── Helpers estoque físico ──
-function stockColor(pct){
-  if(pct>=80)return'green';
-  if(pct>=50)return'orange';
-  return'red';
+function updateGoogleLink(){
+  const name=document.getElementById('stock-name').value.trim();
+  const link=document.getElementById('google-search-link');
+  link.href=name?`https://www.google.com/search?q=tabela+nutricional+${encodeURIComponent(name)}+por+100g`:'#';
+  link.textContent=`🔍 Pesquisar${name?' "'+name+'"':''} no Google`;
 }
+
+function handleGoogleSearch(e){
+  const href=document.getElementById('google-search-link').href;
+  if(!href||href==='#'){e.preventDefault();return;}
+  window.open(href,'_blank'); e.preventDefault();
+}
+
+function saveStock(){
+  const name=document.getElementById('stock-name').value.trim();
+  const qty=parseFloat(document.getElementById('stock-qty').value);
+  const price=parseFloat(document.getElementById('stock-price').value);
+  if(!name||isNaN(qty)||qty<=0||isNaN(price)||price<0){showToast('Preencha nome, quantidade e valor.');return;}
+  const nutrition={
+    kcal:parseFloat(document.getElementById('nut-kcal').value)||null,
+    carb:parseFloat(document.getElementById('nut-carb').value)||null,
+    prot:parseFloat(document.getElementById('nut-prot').value)||null,
+    fat:parseFloat(document.getElementById('nut-fat').value)||null,
+    fiber:parseFloat(document.getElementById('nut-fiber').value)||null,
+    sodium:parseFloat(document.getElementById('nut-sodium').value)||null,
+  };
+  const item={
+    id:editingStockId||Date.now(), name, qty,
+    unit:document.getElementById('stock-unit').value,
+    price, category:document.getElementById('stock-category').value, nutrition
+  };
+  stock=editingStockId?stock.map(s=>s.id===editingStockId?item:s):[...stock,item];
+  DB.save('fichatec_stock',stock);
+  closeModal('modal-stock');
+  renderStock();
+  renderRecipes(document.getElementById('recipe-search').value,activeIngFilter);
+  showToast(editingStockId?'Produto atualizado!':'Produto adicionado!');
+}
+
+function deleteStock(id){
+  if(!confirm('Remover este produto do estoque?'))return;
+  stock=stock.filter(s=>s.id!==id);
+  DB.save('fichatec_stock',stock);
+  renderStock();
+  showToast('Produto removido.');
+}
+
+function renderStock(filter=''){
+  const el=document.getElementById('stock-list');
+  const filtered=stock.filter(s=>s.name.toLowerCase().includes(filter.toLowerCase()));
+  if(!filtered.length){
+    el.innerHTML=`<div class="empty-state"><span class="empty-icon">📦</span><div class="empty-text">${filter?'Nenhum produto encontrado.':'Estoque vazio. Clique em "+ Novo" para adicionar!'}</div></div>`;
+    return;
+  }
+  el.innerHTML=filtered.map(s=>{
+    const ppg=pricePerUnit(s);
+    const priceStr=s.unit==='ml'?fmtBRL(ppg*1000)+'/L · '+fmtBRL(ppg*100)+'/100ml':
+                   s.unit==='un'?fmtBRL(ppg)+'/un':
+                   fmtBRL(ppg*1000)+'/kg · '+fmtBRL(ppg*100)+'/100g';
+    return`<div class="item-card">
+      <div style="flex:1;min-width:0">
+        <div class="item-name">${s.name}${s.category?` <span class="tag" style="margin-left:4px">${s.category}</span>`:''}</div>
+        <div class="item-meta">${s.qty}${s.unit} · ${fmtBRL(s.price)}</div>
+        <div class="item-meta" style="font-family:'Roboto Mono',monospace;font-size:11px">${priceStr}</div>
+      </div>
+      <div class="item-actions">
+        <button class="btn btn-secondary btn-icon-sm" onclick="openStockModal(${s.id})">✏️</button>
+        <button class="btn btn-danger btn-icon-sm" onclick="deleteStock(${s.id})">🗑</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+/* ════════════════════════════════════
+   ESTOQUE FÍSICO
+════════════════════════════════════ */
+function stockColor(pct){return pct>=80?'green':pct>=50?'orange':'red';}
 function stockFlag(pct){
-  const cls=stockColor(pct);
-  const icon=pct>=80?'🟢':pct>=50?'🟡':'🔴';
-  return`<span class="stock-flag ${cls}">${icon} ${pct.toFixed(0)}%</span>`;
+  const c=stockColor(pct), icon=pct>=80?'🟢':pct>=50?'🟡':'🔴';
+  return`<span class="stock-flag ${c}">${icon} ${pct.toFixed(0)}%</span>`;
 }
 function stockBar(pct){
-  const cls=stockColor(pct);
-  const w=Math.min(pct,100).toFixed(1);
-  return`<div class="stock-bar-wrap"><div class="stock-bar-bg"><div class="stock-bar-fill ${cls}" style="width:${w}%"></div></div></div>`;
+  return`<div class="stock-bar-bg"><div class="stock-bar-fill ${stockColor(pct)}" style="width:${Math.min(pct,100).toFixed(1)}%"></div></div>`;
 }
-function fmtQty(q,u){return q%1===0?q+u:q.toFixed(3).replace(/\.?0+$/,'')+u;}
 
-// ── Estoque Físico CRUD ──
-function openAddPhysical(id=null){
+function openPhysicalModal(id=null){
   editingPhysicalId=id;
   if(id!==null){
     const p=physicalStock.find(x=>x.id===id);
@@ -720,7 +741,7 @@ function openAddPhysical(id=null){
     document.getElementById('pstock-category').value=p.category||'';
   }else{
     document.getElementById('modal-pstock-title').textContent='Novo Produto Físico';
-    ['pstock-name','pstock-qty','pstock-price','pstock-desired'].forEach(i=>document.getElementById(i).value='');
+    ['pstock-name','pstock-qty','pstock-price','pstock-desired'].forEach(f=>document.getElementById(f).value='');
     document.getElementById('pstock-unit').value='kg';
     document.getElementById('pstock-category').value='';
   }
@@ -737,164 +758,69 @@ function savePhysical(){
     showToast('Preencha todos os campos obrigatórios.');return;
   }
   const category=document.getElementById('pstock-category').value;
-
   if(editingPhysicalId!==null){
-    // editar existente
-    physicalStock=physicalStock.map(p=>p.id===editingPhysicalId
-      ?{...p,name,currentQty:qty,unit,price,desiredQty:desired,category}:p);
+    physicalStock=physicalStock.map(p=>p.id===editingPhysicalId?{...p,name,currentQty:qty,unit,price,desiredQty:desired,category}:p);
   }else{
-    const newItem={
-      id:Date.now(),name,currentQty:qty,desiredQty:desired,
-      unit,price,category,
-      usedTotal:0,
-      history:[{type:'entrada',qty,date:new Date().toISOString(),note:'Cadastro inicial'}]
-    };
-    physicalStock.push(newItem);
+    physicalStock.push({id:Date.now(),name,currentQty:qty,desiredQty:desired,unit,price,category,usedTotal:0,
+      history:[{type:'entrada',qty,date:new Date().toISOString(),note:'Cadastro inicial'}]});
   }
-  savePhysicalData();
-
-  // Sincronizar no estoque virtual (nome + unit + price como qty 1 ou kg)
-  syncPhysicalToVirtual(name,unit,price,qty,category);
-
+  DB.save('fichatec_physical',physicalStock);
+  // Sincroniza no virtual
+  const existing=stock.find(s=>s.name.toLowerCase()===name.toLowerCase());
+  if(!existing){
+    stock.push({id:Date.now()+1,name,qty,unit,price,category,nutrition:getNutrition(name)});
+  }else{
+    stock=stock.map(s=>s.name.toLowerCase()===name.toLowerCase()?{...s,price,qty,unit,category}:s);
+  }
+  DB.save('fichatec_stock',stock);
   closeModal('modal-pstock');
   renderPhysical();
   renderRecipes(document.getElementById('recipe-search').value,activeIngFilter);
-  showToast(editingPhysicalId?'Produto atualizado!':'Produto adicionado e sincronizado no Est. Virtual!');
-}
-
-function syncPhysicalToVirtual(name,unit,price,qty,category){
-  // Calcula preço por unidade base para o estoque virtual
-  // O estoque virtual armazena price como "valor total pago por qty unidades"
-  const existing=stock.find(s=>s.name.toLowerCase()===name.toLowerCase());
-  if(!existing){
-    const nutrition=getNutritionFor(name);
-    stock.push({id:Date.now()+1,name,qty,unit,price,category,nutrition});
-    saveStockData();
-  }else{
-    // Atualiza preço
-    stock=stock.map(s=>s.name.toLowerCase()===name.toLowerCase()?{...s,price,qty,unit,category}:s);
-    saveStockData();
-  }
+  showToast(editingPhysicalId?'Produto atualizado!':'Produto adicionado e sincronizado!');
 }
 
 function deletePhysical(id){
   if(!confirm('Remover este produto do estoque físico?'))return;
   physicalStock=physicalStock.filter(p=>p.id!==id);
-  savePhysicalData();
+  DB.save('fichatec_physical',physicalStock);
   renderPhysical();
   showToast('Produto removido.');
 }
 
-// ── Movimentação ──
-function openMove(id){
-  movingPhysicalId=id;
-  const p=physicalStock.find(x=>x.id===id);
-  if(!p)return;
-  moveType='usar';
-  document.getElementById('move-btn-usar').classList.add('active');
-  document.getElementById('move-btn-repor').classList.remove('active');
-  document.getElementById('modal-move-title').textContent=p.name;
-  document.getElementById('move-qty-label').textContent='Quantidade a usar';
-  document.getElementById('move-confirm-btn').textContent='Confirmar Uso';
-  document.getElementById('move-unit-display').textContent=p.unit;
-  document.getElementById('move-qty').value='';
-  const pct=p.desiredQty>0?(p.currentQty/p.desiredQty)*100:0;
-  document.getElementById('modal-move-info').innerHTML=
-    `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
-      <span>Em estoque</span><strong style="font-family:'DM Mono',monospace">${fmtQty(p.currentQty,p.unit)}</strong>
-    </div>
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
-      <span>Desejado</span><strong style="font-family:'DM Mono',monospace">${fmtQty(p.desiredQty,p.unit)}</strong>
-    </div>
-    ${stockBar(pct)}${stockFlag(pct)}`;
-  document.getElementById('modal-move').classList.add('open');
-}
-
-function setMoveType(type){
-  moveType=type;
-  const usar=type==='usar';
-  document.getElementById('move-btn-usar').classList.toggle('active',usar);
-  document.getElementById('move-btn-repor').classList.toggle('active',!usar);
-  document.getElementById('move-qty-label').textContent=usar?'Quantidade a usar':'Quantidade a repor';
-  document.getElementById('move-confirm-btn').textContent=usar?'Confirmar Uso':'Confirmar Reposição';
-}
-
-function confirmMove(){
-  const p=physicalStock.find(x=>x.id===movingPhysicalId);
-  if(!p)return;
-  const qty=parseFloat(document.getElementById('move-qty').value);
-  if(!qty||qty<=0){showToast('Informe uma quantidade válida.');return;}
-  if(moveType==='usar'){
-    if(qty>p.currentQty){showToast('Quantidade maior que o estoque disponível!');return;}
-    p.currentQty=parseFloat((p.currentQty-qty).toFixed(6));
-    p.usedTotal=(p.usedTotal||0)+qty;
-    p.history=p.history||[];
-    p.history.push({type:'saida',qty,date:new Date().toISOString()});
-    // Também desconta do virtual se existir
-    const vs=stock.find(s=>s.name.toLowerCase()===p.name.toLowerCase());
-    if(vs){
-      const newQty=parseFloat((vs.qty-qty).toFixed(6));
-      stock=stock.map(s=>s.name.toLowerCase()===p.name.toLowerCase()?{...s,qty:Math.max(newQty,0)}:s);
-      saveStockData();
-    }
-    showToast(`${fmtQty(qty,p.unit)} retirados do estoque.`);
-  }else{
-    p.currentQty=parseFloat((p.currentQty+qty).toFixed(6));
-    p.history=p.history||[];
-    p.history.push({type:'entrada',qty,date:new Date().toISOString()});
-    // Também repõe no virtual
-    const vs=stock.find(s=>s.name.toLowerCase()===p.name.toLowerCase());
-    if(vs){
-      stock=stock.map(s=>s.name.toLowerCase()===p.name.toLowerCase()?{...s,qty:parseFloat((vs.qty+qty).toFixed(6))}:s);
-      saveStockData();
-    }
-    showToast(`${fmtQty(qty,p.unit)} adicionados ao estoque.`);
-  }
-  savePhysicalData();
-  closeModal('modal-move');
-  renderPhysical();
-}
-
-// ── Render Estoque Físico ──
 function renderPhysical(filter=''){
   const el=document.getElementById('pstock-list');
   const filtered=physicalStock.filter(p=>p.name.toLowerCase().includes(filter.toLowerCase()));
-
-  // Summary
   const sumEl=document.getElementById('pstock-summary');
   if(physicalStock.length){
-    const total=physicalStock.length;
     const ok=physicalStock.filter(p=>(p.currentQty/p.desiredQty)*100>=80).length;
     const warn=physicalStock.filter(p=>{const pct=(p.currentQty/p.desiredQty)*100;return pct>=50&&pct<80;}).length;
     const low=physicalStock.filter(p=>(p.currentQty/p.desiredQty)*100<50).length;
     sumEl.style.display='grid';
     sumEl.innerHTML=`
-      <div><div class="summary-item-label">Total produtos</div><div class="summary-item-val">${total}</div></div>
-      <div><div class="summary-item-label">🟢 Adequado</div><div class="summary-item-val" style="color:#2D6A4F">${ok}</div></div>
-      <div><div class="summary-item-label">🟡 Atenção</div><div class="summary-item-val" style="color:#E65100">${warn}</div></div>
-      <div><div class="summary-item-label">🔴 Crítico</div><div class="summary-item-val" style="color:#C62828">${low}</div></div>`;
+      <div><div class="summary-item-label">Total</div><div class="summary-item-val">${physicalStock.length}</div></div>
+      <div><div class="summary-item-label">🟢 Adequado</div><div class="summary-item-val" style="color:var(--md-primary)">${ok}</div></div>
+      <div><div class="summary-item-label">🟡 Atenção</div><div class="summary-item-val" style="color:var(--md-warning)">${warn}</div></div>
+      <div><div class="summary-item-label">🔴 Crítico</div><div class="summary-item-val" style="color:var(--md-error)">${low}</div></div>`;
   }else{sumEl.style.display='none';}
 
   if(!filtered.length){
-    el.innerHTML=`<div class="empty-state"><div class="empty-icon">🏪</div><div class="empty-text">${filter?'Nenhum produto encontrado.':'Nenhum produto no estoque físico ainda. Clique em "+ Novo" para adicionar!'}</div></div>`;
+    el.innerHTML=`<div class="empty-state"><span class="empty-icon">🏪</span><div class="empty-text">${filter?'Nenhum produto encontrado.':'Estoque físico vazio. Clique em "+ Novo"!'}</div></div>`;
     return;
   }
   el.innerHTML=filtered.map(p=>{
     const pct=p.desiredQty>0?(p.currentQty/p.desiredQty)*100:0;
-    const cls=stockColor(pct);
     return`<div class="pstock-card">
       <div class="pstock-header">
         <div class="pstock-name">${p.name}${p.category?` <span class="tag">${p.category}</span>`:''}</div>
-        <div class="pstock-actions">
-          <button class="btn btn-secondary btn-sm" onclick="openAddPhysical(${p.id})">✏️</button>
-          <button class="btn btn-danger btn-sm" onclick="deletePhysical(${p.id})">🗑</button>
+        <div style="display:flex;gap:6px">
+          <button class="btn btn-secondary btn-icon-sm" onclick="openPhysicalModal(${p.id})">✏️</button>
+          <button class="btn btn-danger btn-icon-sm" onclick="deletePhysical(${p.id})">🗑</button>
         </div>
       </div>
       <div class="pstock-qty">${fmtQty(p.currentQty,p.unit)}</div>
       <div class="pstock-meta">Meta: ${fmtQty(p.desiredQty,p.unit)} · Usado: ${fmtQty(p.usedTotal||0,p.unit)} · ${fmtBRL(p.price)}</div>
-      ${stockBar(pct)}
-      ${stockFlag(pct)}
-      <div class="pstock-btns">
+      ${stockBar(pct)}${stockFlag(pct)}
+      <div style="display:flex;gap:8px;margin-top:12px">
         <button class="btn btn-danger btn-sm" style="flex:1" onclick="openMove(${p.id})">📤 Usar</button>
         <button class="btn btn-primary btn-sm" style="flex:1" onclick="openMove(${p.id});setMoveType('repor')">📥 Repor</button>
       </div>
@@ -902,186 +828,107 @@ function renderPhysical(filter=''){
   }).join('');
 }
 
-function filterPhysical(v){renderPhysical(v);}
-
-function openAddStock(id=null){
-  editingStockId=id;
-  const fields=['stock-name','stock-qty','stock-price','nut-kcal','nut-carb','nut-prot','nut-fat','nut-fiber','nut-sodium'];
-  if(id!==null){
-    const s=stock.find(x=>x.id===id);
-    document.getElementById('modal-stock-title').textContent='Editar Produto';
-    document.getElementById('stock-name').value=s.name;
-    document.getElementById('stock-qty').value=s.qty;
-    document.getElementById('stock-unit').value=s.unit;
-    document.getElementById('stock-price').value=s.price;
-    document.getElementById('stock-category').value=s.category||'';
-    const n=s.nutrition||{};
-    document.getElementById('nut-kcal').value=n.kcal||'';
-    document.getElementById('nut-carb').value=n.carb||'';
-    document.getElementById('nut-prot').value=n.prot||'';
-    document.getElementById('nut-fat').value=n.fat||'';
-    document.getElementById('nut-fiber').value=n.fiber||'';
-    document.getElementById('nut-sodium').value=n.sodium||'';
-  }else{
-    document.getElementById('modal-stock-title').textContent='Novo Produto';
-    fields.forEach(i=>document.getElementById(i).value='');
-    document.getElementById('stock-unit').value='kg';
-    document.getElementById('stock-category').value='';
-  }
-  updateGoogleLink();
-  document.getElementById('modal-stock').classList.add('open');
+/* ── Movimentação ── */
+function openMove(id){
+  movingPhysicalId=id;
+  const p=physicalStock.find(x=>x.id===id);
+  if(!p)return;
+  setMoveType('usar');
+  document.getElementById('modal-move-title').textContent=p.name;
+  document.getElementById('move-unit-display').textContent=p.unit;
+  document.getElementById('move-qty').value='';
+  const pct=p.desiredQty>0?(p.currentQty/p.desiredQty)*100:0;
+  document.getElementById('modal-move-info').innerHTML=
+    `<div style="display:flex;justify-content:space-between;margin-bottom:8px"><span>Em estoque</span><strong style="font-family:'Roboto Mono',monospace">${fmtQty(p.currentQty,p.unit)}</strong></div>
+     <div style="display:flex;justify-content:space-between;margin-bottom:8px"><span>Desejado</span><strong style="font-family:'Roboto Mono',monospace">${fmtQty(p.desiredQty,p.unit)}</strong></div>
+     ${stockBar(pct)}${stockFlag(pct)}`;
+  document.getElementById('modal-move').classList.add('open');
 }
 
-function updateGoogleLink(){
-  const name=document.getElementById('stock-name').value.trim();
-  const link=document.getElementById('google-search-link');
-  link.href=name
-    ?`https://www.google.com/search?q=tabela+nutricional+${encodeURIComponent(name)}+por+100g`
-    :'#';
-  link.textContent=`🔍 Pesquisar${name?' "'+name+'"':''} no Google`;
+function setMoveType(type){
+  moveType=type;
+  document.getElementById('move-btn-usar').classList.toggle('active',type==='usar');
+  document.getElementById('move-btn-repor').classList.toggle('active',type==='repor');
+  document.getElementById('move-qty-label').textContent=type==='usar'?'Quantidade a usar':'Quantidade a repor';
+  document.getElementById('move-confirm-btn').textContent=type==='usar'?'Confirmar Uso':'Confirmar Reposição';
 }
 
-function handleGoogleSearch(e){
-  const href=document.getElementById('google-search-link').href;
-  if(!href||href==='#'){e.preventDefault();return;}
-  window.open(href,'_blank');
-  e.preventDefault();
+function confirmMove(){
+  const p=physicalStock.find(x=>x.id===movingPhysicalId);
+  if(!p)return;
+  const qty=parseFloat(document.getElementById('move-qty').value);
+  if(!qty||qty<=0){showToast('Informe uma quantidade válida.');return;}
+  if(moveType==='usar'&&qty>p.currentQty){showToast('Quantidade maior que o estoque!');return;}
+  const delta=moveType==='usar'?-qty:qty;
+  p.currentQty=parseFloat((p.currentQty+delta).toFixed(6));
+  if(moveType==='usar') p.usedTotal=(p.usedTotal||0)+qty;
+  (p.history=p.history||[]).push({type:moveType==='usar'?'saida':'entrada',qty,date:new Date().toISOString()});
+  DB.save('fichatec_physical',physicalStock);
+  // Sincroniza virtual
+  const vname=p.name.toLowerCase();
+  stock=stock.map(s=>s.name.toLowerCase()===vname?{...s,qty:Math.max(parseFloat((s.qty+delta).toFixed(6)),0)}:s);
+  DB.save('fichatec_stock',stock);
+  showToast(moveType==='usar'?`${fmtQty(qty,p.unit)} retirados.`:`${fmtQty(qty,p.unit)} adicionados.`);
+  closeModal('modal-move');
+  renderPhysical();
 }
 
-function saveStock(){
-  const name=document.getElementById('stock-name').value.trim();
-  const qty=parseFloat(document.getElementById('stock-qty').value);
-  const unit=document.getElementById('stock-unit').value;
-  const price=parseFloat(document.getElementById('stock-price').value);
-  if(!name||isNaN(qty)||qty<=0||isNaN(price)||price<0){
-    showToast('Preencha nome, quantidade e valor corretamente.');return;
-  }
-  const nutrition={
-    kcal:parseFloat(document.getElementById('nut-kcal').value)||null,
-    carb:parseFloat(document.getElementById('nut-carb').value)||null,
-    prot:parseFloat(document.getElementById('nut-prot').value)||null,
-    fat:parseFloat(document.getElementById('nut-fat').value)||null,
-    fiber:parseFloat(document.getElementById('nut-fiber').value)||null,
-    sodium:parseFloat(document.getElementById('nut-sodium').value)||null,
-  };
-  const item={id:editingStockId||Date.now(),name,qty,unit,price,category:document.getElementById('stock-category').value,nutrition};
-  if(editingStockId!==null){stock=stock.map(s=>s.id===editingStockId?item:s);}
-  else{stock.push(item);}
-  saveStockData();
-  closeModal('modal-stock');
-  renderStock();
-  // Re-renderiza receitas para refletir novos preços
-  renderRecipes(document.getElementById('recipe-search').value,activeIngFilter);
-  showToast(editingStockId?'Produto atualizado!':'Produto adicionado ao estoque!');
+/* ════════════════════════════════════
+   FICHA TÉCNICA
+════════════════════════════════════ */
+function setIngSource(src){
+  ingSource=src;
+  document.getElementById('src-btn-virtual').classList.toggle('active',src==='virtual');
+  document.getElementById('src-btn-fisico').classList.toggle('active',src==='fisico');
+  document.getElementById('ing-search').value='';
+  document.getElementById('ing-dropdown').classList.remove('open');
+  document.getElementById('ing-selected-info').style.display='none';
+  document.getElementById('ing-cost-preview').style.display='none';
+  selectedIngredient=null;
 }
-
-function deleteStock(id){
-  if(!confirm('Remover este produto do estoque?'))return;
-  stock=stock.filter(s=>s.id!==id);
-  saveStockData();
-  renderStock();
-  showToast('Produto removido.');
-}
-
-function pricePerG(s){
-  // Para 'un', retorna preço por unidade (não por grama)
-  if(s.unit==='un') return s.price/s.qty;
-  let qtyG;
-  if(s.unit==='kg') qtyG=s.qty*1000;
-  else qtyG=s.qty; // g e ml: conversão 1:1
-  return s.price/qtyG;
-}
-
-function renderStock(filter=''){
-  const el=document.getElementById('stock-list');
-  const filtered=stock.filter(s=>s.name.toLowerCase().includes(filter.toLowerCase()));
-  if(!filtered.length){
-    el.innerHTML=`<div class="empty-state"><div class="empty-icon">📦</div><div class="empty-text">${filter?'Nenhum produto encontrado.':'Estoque vazio. Clique em "+ Novo" para adicionar!'}</div></div>`;
-    return;
-  }
-  el.innerHTML=filtered.map(s=>`
-    <div class="item-card">
-      <div style="flex:1;min-width:0">
-        <div class="item-name">${s.name} ${s.category?'<span class="tag" style="margin-left:4px">'+s.category+'</span>':''}</div>
-        <div class="item-meta">${s.qty}${s.unit} · ${fmtBRL(s.price)}</div>
-        <div class="item-meta" style="font-family:'DM Mono',monospace">${
-          s.unit==='ml'?fmtBRL(pricePerG(s)*1000)+'/L · '+fmtBRL(pricePerG(s)*100)+'/100ml':
-          s.unit==='un'?fmtBRL(pricePerG(s))+'/un':
-          fmtBRL(pricePerG(s)*1000)+'/kg · '+fmtBRL(pricePerG(s)*100)+'/100g'
-        }</div>
-      </div>
-      <div class="item-actions">
-        <button class="btn btn-secondary btn-sm" onclick="openAddStock(${s.id})">✏️</button>
-        <button class="btn btn-danger btn-sm" onclick="deleteStock(${s.id})">🗑</button>
-      </div>
-    </div>`).join('');
-}
-
-function filterStock(v){renderStock(v);}
 
 function searchIngredient(){
   const q=document.getElementById('ing-search').value.toLowerCase().trim();
   const dd=document.getElementById('ing-dropdown');
   if(!q){dd.classList.remove('open');return;}
-
-  let matches;
-  if(ingSource==='fisico'){
-    matches=physicalStock
-      .filter(p=>p.name.toLowerCase().includes(q)&&p.currentQty>0)
-      .slice(0,8)
-      .map(p=>({
-        id:'pf_'+p.id, name:p.name, unit:p.unit,
-        price:p.price, qty:p.currentQty,
-        _physical:p,
-        nutrition:getNutritionFor(p.name),
-        category:p.category||''
-      }));
-  }else{
-    matches=stock.filter(s=>s.name.toLowerCase().includes(q)).slice(0,8);
-  }
+  const matches=ingSource==='fisico'
+    ?physicalStock.filter(p=>p.name.toLowerCase().includes(q)&&p.currentQty>0).slice(0,8)
+      .map(p=>({id:'pf_'+p.id,name:p.name,unit:p.unit,price:p.price,qty:p.currentQty,_physicalId:p.id,nutrition:getNutrition(p.name)}))
+    :stock.filter(s=>s.name.toLowerCase().includes(q)).slice(0,8);
 
   if(!matches.length){
-    dd.innerHTML=`<div class="autocomplete-item" style="color:var(--text3)">${ingSource==='fisico'?'Nenhum produto com estoque disponível':'Nenhum ingrediente encontrado no estoque'}</div>`;
-    dd.classList.add('open');return;
+    dd.innerHTML=`<div class="autocomplete-item" style="color:var(--md-on-surface-variant)">Nenhum ingrediente encontrado</div>`;
+  }else{
+    dd.innerHTML=matches.map(s=>{
+      const ppg=pricePerUnit(s);
+      const sub=s.unit==='ml'?fmtBRL(ppg*1000)+'/L':s.unit==='un'?fmtBRL(ppg)+'/un':fmtBRL(ppg*1000)+'/kg';
+      return`<div class="autocomplete-item" onclick="selectIngredient('${s.id}')">
+        <div>${s.name}${ingSource==='fisico'?` <span style="font-size:11px;color:var(--md-primary);font-weight:500">🏪 ${fmtQty(s.qty,s.unit)}</span>`:''}</div>
+        <div class="sub">${s.qty}${s.unit} · ${fmtBRL(s.price)} · ${sub}</div>
+      </div>`;
+    }).join('');
   }
-  dd.innerHTML=matches.map(s=>`<div class="autocomplete-item" onclick="selectIngredient('${s.id}')">
-    <div>${s.name}${ingSource==='fisico'?` <span style="font-size:10px;color:var(--accent);font-weight:600">🏪 ${fmtQty(s.qty,s.unit)}</span>`:''}</div>
-    <div class="sub">${s.qty}${s.unit} · ${fmtBRL(s.price)} · ${
-      s.unit==='ml'?fmtBRL(pricePerG(s)*1000)+'/L':
-      s.unit==='un'?fmtBRL(pricePerG(s))+'/un':
-      fmtBRL(pricePerG(s)*1000)+'/kg'
-    }</div>
-  </div>`).join('');
   dd.classList.add('open');
 }
 
 function selectIngredient(id){
-  // id pode ser numérico (virtual) ou 'pf_xxx' (físico)
   if(ingSource==='fisico'&&String(id).startsWith('pf_')){
     const pid=parseInt(id.replace('pf_',''));
     const p=physicalStock.find(x=>x.id===pid);
     if(!p)return;
-    selectedIngredient={
-      id:'pf_'+p.id, name:p.name, unit:p.unit,
-      price:p.price, qty:p.currentQty,
-      _physicalId:p.id,
-      nutrition:getNutritionFor(p.name),
-      category:p.category||''
-    };
+    selectedIngredient={id:'pf_'+p.id,name:p.name,unit:p.unit,price:p.price,qty:p.currentQty,_physicalId:p.id,nutrition:getNutrition(p.name)};
   }else{
     selectedIngredient=stock.find(s=>s.id===parseInt(id)||s.id===id);
   }
   if(!selectedIngredient)return;
   document.getElementById('ing-search').value=selectedIngredient.name;
   document.getElementById('ing-dropdown').classList.remove('open');
-  document.getElementById('ing-selected-info').style.display='block';
+  const ppg=pricePerUnit(selectedIngredient),u=selectedIngredient.unit;
   document.getElementById('ing-sel-name').textContent=selectedIngredient.name+(ingSource==='fisico'?' 🏪':'');
-  const ppg=pricePerG(selectedIngredient);
-  const u=selectedIngredient.unit;
   document.getElementById('ing-sel-price').textContent=
     u==='ml'?`${fmtBRL(ppg*1000)}/L · ${fmtBRL(ppg*100)}/100ml`:
-    u==='un'?`${fmtBRL(ppg)}/unidade`:
-    `${fmtBRL(ppg*1000)}/kg · ${fmtBRL(ppg*100)}/100g`;
+    u==='un'?`${fmtBRL(ppg)}/unidade`:`${fmtBRL(ppg*1000)}/kg · ${fmtBRL(ppg*100)}/100g`;
+  document.getElementById('ing-selected-info').style.display='block';
   calcIngCost();
 }
 
@@ -1089,60 +936,45 @@ function calcIngCost(){
   if(!selectedIngredient)return;
   const qty=parseFloat(document.getElementById('ing-qty').value)||0;
   const unit=document.getElementById('ing-unit').value;
-  // 'un': custo = preçoPorun * qty; outros: converte para g
   const qtyG=unit==='kg'?qty*1000:qty;
-  const cost=unit==='un'?pricePerG(selectedIngredient)*qty:pricePerG(selectedIngredient)*qtyG;
-  const preview=document.getElementById('ing-cost-preview');
-  if(qty>0){preview.style.display='block';preview.textContent=`Custo estimado: ${fmtBRL(cost)}`;}
-  else{preview.style.display='none';}
+  const cost=unit==='un'?pricePerUnit(selectedIngredient)*qty:pricePerUnit(selectedIngredient)*qtyG;
+  const el=document.getElementById('ing-cost-preview');
+  if(qty>0){el.style.display='block';el.textContent=`Custo estimado: ${fmtBRL(cost)}`;}
+  else el.style.display='none';
 }
 
 function addIngredient(){
-  if(!selectedIngredient){showToast('Selecione um ingrediente do estoque.');return;}
+  if(!selectedIngredient){showToast('Selecione um ingrediente.');return;}
   const qty=parseFloat(document.getElementById('ing-qty').value);
   const unit=document.getElementById('ing-unit').value;
   const rend=parseFloat(document.getElementById('ing-rendimento').value)||100;
-  if(!qty||qty<=0){showToast('Informe a quantidade utilizada.');return;}
+  if(!qty||qty<=0){showToast('Informe a quantidade.');return;}
   const isUn=unit==='un';
   const qtyG=isUn?qty:(unit==='kg'?qty*1000:qty);
   const qtyBruta=isUn?qty:qtyG/(rend/100);
-  const cost=isUn?pricePerG(selectedIngredient)*qtyBruta:pricePerG(selectedIngredient)*(qtyG/(rend/100));
   currentIngredients.push({
-    id:Date.now(),
-    stockId:selectedIngredient.id,
+    id:Date.now(), stockId:selectedIngredient.id,
     physicalId:selectedIngredient._physicalId||null,
-    source:ingSource,
-    name:selectedIngredient.name,
-    qtyG,qtyBruta,unit,rendimento:rend,cost,
-    nutrition:selectedIngredient.nutrition
+    source:ingSource, name:selectedIngredient.name,
+    qtyG, qtyBruta, unit, rendimento:rend,
+    cost:pricePerUnit(selectedIngredient)*qtyBruta,
+    nutrition:selectedIngredient.nutrition||getNutrition(selectedIngredient.name)
   });
-
-  // Se fonte for físico, desconta do estoque físico imediatamente
+  // Desconta do físico se fonte for estoque físico
   if(ingSource==='fisico'&&selectedIngredient._physicalId){
     const pid=selectedIngredient._physicalId;
     physicalStock=physicalStock.map(p=>{
       if(p.id!==pid)return p;
-      const deduct=isUn?qtyBruta:qtyBruta/1; // já está na unidade correta
-      const newQty=parseFloat((p.currentQty-deduct).toFixed(6));
-      return{...p,
-        currentQty:Math.max(newQty,0),
-        usedTotal:(p.usedTotal||0)+deduct,
-        history:[...(p.history||[]),{type:'saida',qty:deduct,date:new Date().toISOString(),note:'Ficha técnica'}]
-      };
+      return{...p,currentQty:Math.max(parseFloat((p.currentQty-qtyBruta).toFixed(6)),0),
+        usedTotal:(p.usedTotal||0)+qtyBruta,
+        history:[...(p.history||[]),{type:'saida',qty:qtyBruta,date:new Date().toISOString(),note:'Ficha técnica'}]};
     });
-    savePhysicalData();
-    // Também desconta do virtual
+    DB.save('fichatec_physical',physicalStock);
     const vname=selectedIngredient.name.toLowerCase();
-    const vs=stock.find(s=>s.name.toLowerCase()===vname);
-    if(vs){
-      const deduct=isUn?qtyBruta:qtyBruta;
-      stock=stock.map(s=>s.name.toLowerCase()===vname?{...s,qty:Math.max(parseFloat((s.qty-deduct).toFixed(6)),0)}:s);
-      saveStockData();
-    }
+    stock=stock.map(s=>s.name.toLowerCase()===vname?{...s,qty:Math.max(parseFloat((s.qty-qtyBruta).toFixed(6)),0)}:s);
+    DB.save('fichatec_stock',stock);
   }
-  document.getElementById('ing-search').value='';
-  document.getElementById('ing-qty').value='';
-  document.getElementById('ing-rendimento').value='';
+  ['ing-search','ing-qty','ing-rendimento'].forEach(f=>document.getElementById(f).value='');
   document.getElementById('ing-selected-info').style.display='none';
   document.getElementById('ing-cost-preview').style.display='none';
   selectedIngredient=null;
@@ -1159,12 +991,12 @@ function removeIngredient(id){
 function renderIngredients(){
   const el=document.getElementById('ingredients-list');
   if(!currentIngredients.length){el.innerHTML='';return;}
-  el.innerHTML=`<div class="card">
-    <div class="card-title" style="margin-bottom:10px">📝 Ingredientes adicionados (${currentIngredients.length})</div>
+  el.innerHTML=`<div class="card-outlined">
+    <div class="card-title" style="margin-bottom:12px">📝 Ingredientes (${currentIngredients.length})</div>
     ${currentIngredients.map(i=>`<div class="ingredient-row">
       <div style="flex:1;min-width:0">
         <div class="ing-name">${i.name}</div>
-        <div class="ing-qty">${i.unit==='un'?i.qtyG+'un':i.unit==='ml'?i.qtyG+'ml':i.qtyG+'g'} usados${i.unit!=='un'&&i.rendimento<100?' (rend. '+i.rendimento+'%) → '+i.qtyBruta.toFixed(0)+(i.unit==='ml'?'ml':'g')+' bruto':''}</div>
+        <div class="ing-qty">${i.unit==='un'?i.qtyG+'un':i.unit==='ml'?i.qtyG+'ml':i.qtyG+'g'} usados${i.unit!=='un'&&i.rendimento<100?' → '+i.qtyBruta.toFixed(0)+(i.unit==='ml'?'ml':'g')+' bruto':''}</div>
       </div>
       <div class="ing-cost">${fmtBRL(i.cost)}</div>
       <button class="ing-del" onclick="removeIngredient(${i.id})">✕</button>
@@ -1174,9 +1006,7 @@ function renderIngredients(){
 
 function calcFicha(){
   if(!currentIngredients.length){document.getElementById('ficha-totals').style.display='none';return;}
-  const totalCost=currentIngredients.reduce((s,i)=>s+i.cost,0);
-  const markup=parseFloat(document.getElementById('markup-pct').value)||0;
-  const venda=totalCost*(1+markup/100);
+  const {totalCost,venda}=calcCosts(currentIngredients,parseFloat(document.getElementById('markup-pct').value)||0);
   const rend=parseFloat(document.getElementById('ficha-rendimento').value)||0;
   const porcoes=Math.max(parseFloat(document.getElementById('ficha-porcoes').value)||1,1);
   document.getElementById('total-custo').textContent=fmtBRL(totalCost);
@@ -1191,16 +1021,11 @@ function calcNutrition(){
   const portion=parseFloat(document.getElementById('portion-size').value)||100;
   document.getElementById('nut-portion-label').textContent=`${portion}g`;
   const totalQtyG=currentIngredients.reduce((s,i)=>s+i.qtyBruta,0)||1;
-  let tot={kcal:0,carb:0,prot:0,fat:0,fiber:0,sodium:0};
+  const tot={kcal:0,carb:0,prot:0,fat:0,fiber:0,sodium:0};
   currentIngredients.forEach(i=>{
     const ratio=i.qtyBruta/totalQtyG;
-    const n=(i.nutrition&&i.nutrition.kcal)?i.nutrition:getNutritionFor(i.name);
-    tot.kcal+=(n.kcal||0)*ratio;
-    tot.carb+=(n.carb||0)*ratio;
-    tot.prot+=(n.prot||0)*ratio;
-    tot.fat+=(n.fat||0)*ratio;
-    tot.fiber+=(n.fiber||0)*ratio;
-    tot.sodium+=(n.sodium||0)*ratio;
+    const n=(i.nutrition&&i.nutrition.kcal)?i.nutrition:getNutrition(i.name);
+    Object.keys(tot).forEach(k=>tot[k]+=(n[k]||0)*ratio);
   });
   const sc=portion/100;
   const vd={kcal:2500,carb:375,prot:75,fat:83,fiber:25,sodium:2400};
@@ -1212,17 +1037,23 @@ function calcNutrition(){
     ['Fibra Alimentar',`${(tot.fiber*sc).toFixed(1)} g`,tot.fiber*sc/vd.fiber],
     ['Sódio',`${(tot.sodium*sc).toFixed(0)} mg`,tot.sodium*sc/vd.sodium],
   ];
-  document.getElementById('nutrition-body').innerHTML=rows.map(([n,v,pct])=>`
-    <tr>
-      <td>${n}</td>
-      <td class="val">${v}</td>
-      <td style="text-align:right;min-width:90px">
-        <div class="nut-pct">${Math.round(pct*100)}%</div>
-        <div class="progress-bar" style="width:80px;margin-left:auto">
-          <div class="progress-fill" style="width:${Math.min(pct*100,100).toFixed(1)}%"></div>
-        </div>
-      </td>
-    </tr>`).join('');
+  document.getElementById('nutrition-body').innerHTML=rows.map(([n,v,pct])=>`<tr>
+    <td>${n}</td><td class="val">${v}</td>
+    <td style="text-align:right;min-width:90px">
+      <div class="nut-pct">${Math.round(pct*100)}%</div>
+      <div class="progress-bar" style="width:80px;margin-left:auto"><div class="progress-fill" style="width:${Math.min(pct*100,100).toFixed(1)}%"></div></div>
+    </td>
+  </tr>`).join('');
+}
+
+function clearFicha(){
+  if(currentIngredients.length&&!confirm('Limpar todos os dados da ficha atual?'))return;
+  currentIngredients=[];
+  ['ficha-nome','ficha-rendimento','ficha-porcoes','markup-pct'].forEach(f=>document.getElementById(f).value='');
+  document.getElementById('portion-size').value='100';
+  document.getElementById('ficha-totals').style.display='none';
+  document.getElementById('ingredients-list').innerHTML='';
+  showToast('Ficha limpa.');
 }
 
 function saveRecipe(){
@@ -1230,126 +1061,78 @@ function saveRecipe(){
   if(!nome){showToast('Informe o nome da receita.');return;}
   if(!currentIngredients.length){showToast('Adicione pelo menos um ingrediente.');return;}
   const markup=parseFloat(document.getElementById('markup-pct').value)||0;
-  // Salva apenas referências — custo será recalculado dinamicamente
   const ingredientRefs=currentIngredients.map(i=>({
-    id:i.id,
-    stockId:i.stockId,
-    physicalId:i.physicalId||null,
-    source:i.source||'virtual',
-    name:i.name,
-    qtyG:i.qtyG,
-    qtyBruta:i.qtyBruta,
-    unit:i.unit,
-    rendimento:i.rendimento,
-    nutrition:i.nutrition,
-    // Snapshot do preço no momento do salvamento (para mostrar variação)
-    savedPricePerG:pricePerGByStockId(i.stockId,i.name)
+    ...i,
+    savedPricePerG:pricePerUnit(findStockItem(i.stockId,i.name)||{price:0,qty:1,unit:'kg'})
   }));
-  const liveCalc=calcRecipeLive(ingredientRefs,markup);
+  const {totalCost,venda}=calcCosts(ingredientRefs,markup);
   const recipe={
-    id:Date.now(),nome,
-    ingredients:ingredientRefs,
+    id:Date.now(), nome, ingredients:ingredientRefs,
     rendimento:parseFloat(document.getElementById('ficha-rendimento').value)||0,
     porcoes:parseFloat(document.getElementById('ficha-porcoes').value)||1,
-    markup,
-    // totalCost e venda ficam como snapshot do momento do salvamento
-    totalCost:liveCalc.totalCost,
-    venda:liveCalc.venda,
+    markup, totalCost, venda,
     porcaoSize:parseFloat(document.getElementById('portion-size').value)||100,
     createdAt:new Date().toISOString()
   };
-  const existing=recipes.findIndex(r=>r.nome.toLowerCase()===nome.toLowerCase());
-  if(existing>=0){
-    if(!confirm(`Já existe uma receita chamada "${nome}". Deseja sobrescrever?`))return;
-    recipes[existing]=recipe;
+  const idx=recipes.findIndex(r=>r.nome.toLowerCase()===nome.toLowerCase());
+  if(idx>=0){
+    if(!confirm(`Receita "${nome}" já existe. Sobrescrever?`))return;
+    recipes[idx]=recipe;
   }else{
     recipes.push(recipe);
   }
-  saveRecipesData();
+  DB.save('fichatec_recipes',recipes);
   showToast(`Receita "${nome}" salva!`);
 }
 
-// Retorna o preço por grama atual de um ingrediente pelo stockId ou nome
-function pricePerGByStockId(stockId,name){
-  let s=null;
-  if(stockId&&!String(stockId).startsWith('pf_')){
-    s=stock.find(x=>x.id===stockId||x.id===parseInt(stockId));
-  }
-  if(!s) s=stock.find(x=>x.name.toLowerCase()===name.toLowerCase());
-  if(!s) return 0;
-  return pricePerG(s);
-}
-
-// Recalcula o custo de uma receita usando preços atuais do estoque
-function calcRecipeLive(ingredientRefs,markup){
-  const ingredients=ingredientRefs.map(i=>{
-    const ppg=pricePerGByStockId(i.stockId,i.name);
-    const isUn=i.unit==='un';
-    const cost=ppg*i.qtyBruta;
-    return{...i,cost,currentPricePerG:ppg};
+/* ════════════════════════════════════
+   RECEITAS
+════════════════════════════════════ */
+function hasPriceChanged(refs){
+  return refs.some(i=>{
+    if(!i.savedPricePerG)return false;
+    const s=findStockItem(i.stockId,i.name);
+    return s&&Math.abs(pricePerUnit(s)-i.savedPricePerG)>0.000001;
   });
-  const totalCost=ingredients.reduce((s,i)=>s+i.cost,0);
-  const venda=totalCost*(1+(markup||0)/100);
-  return{ingredients,totalCost,venda};
-}
-
-function clearFicha(){
-  if(currentIngredients.length&&!confirm('Limpar todos os dados da ficha atual?'))return;
-  currentIngredients=[];
-  ['ficha-nome','ficha-rendimento','ficha-porcoes','markup-pct'].forEach(i=>document.getElementById(i).value='');
-  document.getElementById('portion-size').value='100';
-  document.getElementById('ficha-totals').style.display='none';
-  document.getElementById('ingredients-list').innerHTML='';
-  showToast('Ficha limpa.');
 }
 
 function renderRecipes(filter='',ingFilter=null){
-  const allIngNames=[...new Set(recipes.flatMap(r=>r.ingredients.map(i=>i.name)))].slice(0,15);
+  const allIng=[...new Set(recipes.flatMap(r=>r.ingredients.map(i=>i.name)))].slice(0,15);
   document.getElementById('ingredient-filter-chips').innerHTML=
     `<div class="chip ${!ingFilter?'active':''}" onclick="setIngFilter(null)">Todas</div>`+
-    allIngNames.map(n=>`<div class="chip ${ingFilter===n?'active':''}" onclick="setIngFilter('${n.replace(/'/g,"\\'")}')">${n}</div>`).join('');
+    allIng.map(n=>`<div class="chip ${ingFilter===n?'active':''}" onclick="setIngFilter('${n.replace(/'/g,"\\'")}')">${n}</div>`).join('');
 
-  let filtered=recipes.filter(r=>r.nome.toLowerCase().includes(filter.toLowerCase()));
-  if(ingFilter)filtered=filtered.filter(r=>r.ingredients.some(i=>i.name===ingFilter));
+  let filtered=recipes.filter(r=>r.nome.toLowerCase().includes((filter||'').toLowerCase()));
+  if(ingFilter) filtered=filtered.filter(r=>r.ingredients.some(i=>i.name===ingFilter));
   const el=document.getElementById('recipes-list');
   if(!filtered.length){
-    el.innerHTML=`<div class="empty-state"><div class="empty-icon">🍳</div><div class="empty-text">${filter||ingFilter?'Nenhuma receita encontrada.':'Nenhuma receita salva ainda. Crie uma ficha e clique em Salvar!'}</div></div>`;
+    el.innerHTML=`<div class="empty-state"><span class="empty-icon">🍳</span><div class="empty-text">${filter||ingFilter?'Nenhuma receita encontrada.':'Nenhuma receita salva ainda.'}</div></div>`;
     return;
   }
   el.innerHTML=filtered.map(r=>{
-    const live=calcRecipeLive(r.ingredients,r.markup);
-    const priceChanged=hasAnyPriceChanged(r.ingredients);
-    const priceDiff=live.totalCost-r.totalCost;
-    const diffSign=priceDiff>0?'+':'';
+    const {totalCost,venda}=calcCosts(r.ingredients,r.markup);
+    const changed=hasPriceChanged(r.ingredients);
+    const diff=totalCost-r.totalCost;
     return`<div class="recipe-card" onclick="viewRecipe(${r.id})">
-      <div class="recipe-card-header">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:8px">
         <div class="recipe-card-title">${r.nome}</div>
-        <div style="display:flex;gap:5px;align-items:center;flex-shrink:0">
-          ${priceChanged?`<span title="Preço atualizado pelo estoque" style="font-size:11px;background:${priceDiff>0?'#FEE2E2':priceDiff<0?'#D8F3DC':'var(--surface2)'};color:${priceDiff>0?'#DC2626':priceDiff<0?'#2D6A4F':'var(--text3)'};padding:2px 6px;border-radius:10px;font-weight:600">${priceDiff>0?'▲':'▼'} ${fmtBRL(Math.abs(priceDiff))}</span>`:''}
-          <span class="badge badge-green">${fmtBRL(live.totalCost)}</span>
+        <div style="display:flex;gap:6px;align-items:center;flex-shrink:0">
+          ${changed?`<span style="font-size:11px;background:${diff>0?'var(--md-error-container)':'var(--md-primary-container)'};color:${diff>0?'var(--md-on-error-container)':'var(--md-on-primary-container)'};padding:3px 8px;border-radius:var(--r-full);font-weight:600">${diff>0?'▲':'▼'} ${fmtBRL(Math.abs(diff))}</span>`:''}
+          <span class="badge badge-green">${fmtBRL(totalCost)}</span>
         </div>
       </div>
       <div class="recipe-card-meta">${r.ingredients.length} ingrediente(s) · ${r.porcoes} porção(ões)${r.rendimento?' · '+r.rendimento+'g':''} · Markup ${r.markup}%</div>
-      <div class="recipe-card-meta" style="color:var(--accent);font-weight:600">Preço de venda: ${fmtBRL(live.venda)}</div>
-      ${priceChanged?`<div class="recipe-card-meta" style="color:var(--text3);font-size:10px">🔄 Preços atualizados conforme estoque</div>`:''}
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px">
-        <div class="recipe-card-tags" style="flex:1;margin-top:0">
+      <div class="recipe-card-meta" style="color:var(--md-primary);font-weight:500">Venda: ${fmtBRL(venda)}</div>
+      ${changed?`<div class="recipe-card-meta" style="font-size:11px">🔄 Preços atualizados</div>`:''}
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px">
+        <div style="display:flex;gap:6px;flex-wrap:wrap">
           ${r.ingredients.slice(0,4).map(i=>`<span class="tag">${i.name}</span>`).join('')}
           ${r.ingredients.length>4?`<span class="tag">+${r.ingredients.length-4}</span>`:''}
         </div>
-        <button class="btn btn-sm" onclick="event.stopPropagation();exportRecipePDF(${r.id})" style="flex-shrink:0;margin-left:8px;background:#F0EDE6;border:1px solid var(--border);color:var(--accent);font-size:10px;padding:5px 8px;gap:3px" title="Baixar PDF">📄 PDF</button>
+        <button class="btn btn-secondary btn-sm" onclick="event.stopPropagation();exportRecipePDF(${r.id})" style="margin-left:10px;font-size:11px">📄 PDF</button>
       </div>
     </div>`;
   }).join('');
-}
-
-// Verifica se algum ingrediente teve o preço alterado desde o salvamento
-function hasAnyPriceChanged(ingredientRefs){
-  return ingredientRefs.some(i=>{
-    if(!i.savedPricePerG)return false;
-    const current=pricePerGByStockId(i.stockId,i.name);
-    return Math.abs(current-i.savedPricePerG)>0.000001;
-  });
 }
 
 function setIngFilter(val){
@@ -1357,63 +1140,48 @@ function setIngFilter(val){
   renderRecipes(document.getElementById('recipe-search').value,val);
 }
 
-function filterRecipes(v){renderRecipes(v,activeIngFilter);}
-
 function viewRecipe(id){
   const r=recipes.find(x=>x.id===id);
   if(!r)return;
   currentRecipeId=id;
-  const live=calcRecipeLive(r.ingredients,r.markup);
+  const {ingredients,totalCost,venda}=calcCosts(r.ingredients,r.markup);
   const porcoes=Math.max(r.porcoes||1,1);
-  const priceChanged=hasAnyPriceChanged(r.ingredients);
-  const totalDiff=live.totalCost-r.totalCost;
+  const changed=hasPriceChanged(r.ingredients);
+  const diff=totalCost-r.totalCost;
   document.getElementById('recipe-detail-content').innerHTML=`
-    <div style="font-size:17px;font-weight:600;margin-bottom:3px">${r.nome}</div>
-    <div style="font-size:11px;color:var(--text3);margin-bottom:${priceChanged?'8px':'14px'}">Criada em ${new Date(r.createdAt).toLocaleDateString('pt-BR')} · ${r.ingredients.length} ingrediente(s)</div>
-    ${priceChanged?`<div style="background:${totalDiff>0?'#FEE2E2':totalDiff<0?'#D8F3DC':'var(--surface2)'};border:1px solid ${totalDiff>0?'#FECACA':totalDiff<0?'#B7E4C7':'var(--border)'};border-radius:var(--r2);padding:9px 12px;margin-bottom:14px;font-size:12px;color:${totalDiff>0?'#DC2626':totalDiff<0?'#2D6A4F':'var(--text2)'}">
-      <strong>🔄 Preços atualizados pelo estoque</strong><br>
-      Custo salvo: ${fmtBRL(r.totalCost)} → Custo atual: <strong>${fmtBRL(live.totalCost)}</strong>
-      ${totalDiff!==0?` (${totalDiff>0?'+':''}${fmtBRL(totalDiff)})`:''}</div>`:''}
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:14px">
-      <div style="background:var(--surface2);padding:10px;border-radius:var(--r2)">
-        <div style="font-size:10px;color:var(--text3)">Custo Total</div>
-        <div style="font-size:15px;font-weight:600;font-family:'DM Mono',monospace">${fmtBRL(live.totalCost)}</div>
-      </div>
-      <div style="background:var(--accent3);padding:10px;border-radius:var(--r2)">
-        <div style="font-size:10px;color:var(--accent)">Preço de Venda</div>
-        <div style="font-size:15px;font-weight:600;font-family:'DM Mono',monospace;color:var(--accent)">${fmtBRL(live.venda)}</div>
-      </div>
-      <div style="background:var(--surface2);padding:10px;border-radius:var(--r2)">
-        <div style="font-size:10px;color:var(--text3)">Markup</div>
-        <div style="font-size:15px;font-weight:600">${r.markup}%</div>
-      </div>
-      <div style="background:var(--surface2);padding:10px;border-radius:var(--r2)">
-        <div style="font-size:10px;color:var(--text3)">Por Porção</div>
-        <div style="font-size:15px;font-weight:600;font-family:'DM Mono',monospace">${fmtBRL(live.totalCost/porcoes)}</div>
-      </div>
+    <div style="font-size:24px;font-weight:400;margin-bottom:4px">${r.nome}</div>
+    <div style="font-size:12px;color:var(--md-on-surface-variant);margin-bottom:${changed?'12px':'18px'}">Criada em ${new Date(r.createdAt).toLocaleDateString('pt-BR')} · ${r.ingredients.length} ingrediente(s)</div>
+    ${changed?`<div style="background:${diff>0?'var(--md-error-container)':'var(--md-primary-container)'};border-radius:var(--r-md);padding:12px 16px;margin-bottom:18px;font-size:12px;color:${diff>0?'var(--md-on-error-container)':'var(--md-on-primary-container)'}">
+      <strong>🔄 Preços atualizados</strong><br>
+      Custo salvo: ${fmtBRL(r.totalCost)} → Atual: <strong>${fmtBRL(totalCost)}</strong>${diff!==0?` (${diff>0?'+':''}${fmtBRL(diff)})`:''}
+    </div>`:''}
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:18px">
+      ${[['Custo Total',fmtBRL(totalCost),'var(--md-surface-container)',''],
+         ['Preço de Venda',fmtBRL(venda),'var(--md-primary-container)','color:var(--md-primary)'],
+         ['Markup',r.markup+'%','var(--md-surface-container)',''],
+         ['Por Porção',fmtBRL(totalCost/porcoes),'var(--md-surface-container)','']
+        ].map(([l,v,bg,c])=>`<div style="background:${bg};padding:12px;border-radius:var(--r-md)"><div style="font-size:11px;color:var(--md-on-surface-variant);letter-spacing:0.5px">${l}</div><div style="font-size:16px;font-weight:500;font-family:'Roboto Mono',monospace;${c}">${v}</div></div>`).join('')}
     </div>
-    <div style="font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.4px;margin-bottom:7px">Ingredientes</div>
-    ${live.ingredients.map(i=>{
-      const savedPPG=i.savedPricePerG||0;
-      const curPPG=i.currentPricePerG||0;
-      const ingChanged=savedPPG>0&&Math.abs(curPPG-savedPPG)>0.000001;
-      const ingDiff=ingChanged?i.cost-(savedPPG*i.qtyBruta):0;
-      return`<div class="ingredient-row" style="${ingChanged?'background:'+( (curPPG>savedPPG)?'#FFF5F5':'#F0FFF4')+';border-radius:var(--r2);padding:9px 8px;margin-bottom:3px':''}">
+    <div style="font-size:11px;font-weight:500;color:var(--md-on-surface-variant);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">Ingredientes</div>
+    ${ingredients.map(i=>{
+      const s=findStockItem(i.stockId,i.name);
+      const curPPG=s?pricePerUnit(s):0;
+      const ingChanged=i.savedPricePerG&&Math.abs(curPPG-i.savedPricePerG)>0.000001;
+      return`<div class="ingredient-row" style="${ingChanged?'background:'+(curPPG>i.savedPricePerG?'#FFF1F0':'#F0FFF4')+';border-radius:var(--r-sm);padding:10px;margin-bottom:4px':''}">
         <div style="flex:1;min-width:0">
-          <div class="ing-name">${i.name}${ingChanged?` <span style="font-size:9px;font-weight:600;color:${curPPG>savedPPG?'#DC2626':'#2D6A4F'}">${curPPG>savedPPG?'▲':'▼'}</span>`:''}</div>
-          <div class="ing-qty" style="margin-top:2px">${i.qtyBruta.toFixed(0)}${i.unit==='ml'?'ml':'g'}${ingChanged?` · era ${fmtBRL(savedPPG*i.qtyBruta)}`:''}</div>
+          <div class="ing-name">${i.name}${ingChanged?` <span style="font-size:10px;font-weight:600;color:${curPPG>i.savedPricePerG?'var(--md-error)':'var(--md-primary)'}">${curPPG>i.savedPricePerG?'▲':'▼'}</span>`:''}</div>
+          <div class="ing-qty">${i.qtyBruta.toFixed(0)}${i.unit==='ml'?'ml':'g'}</div>
         </div>
-        <div class="ing-cost" style="${ingChanged&&curPPG>savedPPG?'color:#DC2626':ingChanged?'color:#2D6A4F':''}">${fmtBRL(i.cost)}</div>
+        <div class="ing-cost" style="${ingChanged?'color:'+(curPPG>i.savedPricePerG?'var(--md-error)':'var(--md-primary)'):''}"> ${fmtBRL(i.cost)}</div>
       </div>`;
-    }).join('')}
-  `;
+    }).join('')}`;
   document.getElementById('modal-recipe').classList.add('open');
 }
 
 function deleteCurrentRecipe(){
-  if(!confirm('Excluir esta receita permanentemente?'))return;
+  if(!confirm('Excluir esta receita?'))return;
   recipes=recipes.filter(r=>r.id!==currentRecipeId);
-  saveRecipesData();
+  DB.save('fichatec_recipes',recipes);
   closeModal('modal-recipe');
   renderRecipes(document.getElementById('recipe-search').value,activeIngFilter);
   showToast('Receita excluída.');
@@ -1434,191 +1202,105 @@ function loadRecipeToFicha(){
   showPage('ficha','nav-ficha');
 }
 
+/* ════════════════════════════════════
+   EXPORT PDF
+════════════════════════════════════ */
 function exportRecipePDF(id){
   const r=recipes.find(x=>x.id===id);
   if(!r)return;
-  const live=calcRecipeLive(r.ingredients,r.markup);
+  const {ingredients,totalCost,venda}=calcCosts(r.ingredients,r.markup);
   const porcoes=Math.max(r.porcoes||1,1);
-  const dataGeracao=new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
-  const dataCriacao=new Date(r.createdAt).toLocaleDateString('pt-BR');
-  const priceChanged=hasAnyPriceChanged(r.ingredients);
+  const now=new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
+  const criado=new Date(r.createdAt).toLocaleDateString('pt-BR');
+  const changed=hasPriceChanged(r.ingredients);
+  const rows=ingredients.map(i=>`<tr>
+    <td style="padding:10px 12px;border-bottom:1px solid #E0E0E0;font-size:13px">${i.name}</td>
+    <td style="padding:10px 12px;border-bottom:1px solid #E0E0E0;font-size:12px;color:#666;font-family:monospace">${i.qtyBruta.toFixed(0)}${i.unit==='ml'?'ml':'g'}</td>
+    <td style="padding:10px 12px;border-bottom:1px solid #E0E0E0;font-size:12px;color:#1B6B45;font-family:monospace;font-weight:600;text-align:right">${fmtBRL(i.cost)}</td>
+  </tr>`).join('');
 
-  const ingredientRows=live.ingredients.map(i=>{
-    const savedPPG=i.savedPricePerG||0;
-    const curPPG=i.currentPricePerG||0;
-    const ingChanged=savedPPG>0&&Math.abs(curPPG-savedPPG)>0.000001;
-    const arrow=ingChanged?(curPPG>savedPPG?' ▲':' ▼'):'';
-    const arrowColor=ingChanged?(curPPG>savedPPG?'#DC2626':'#2D6A4F'):'';
-    return`<tr>
-      <td style="padding:8px 10px;border-bottom:1px solid #E8E4DC;font-size:12px;font-weight:500">${i.name}${ingChanged?`<span style="color:${arrowColor};font-size:10px">${arrow}</span>`:''}</td>
-      <td style="padding:8px 10px;border-bottom:1px solid #E8E4DC;font-size:11px;color:#5A564E;font-family:monospace;white-space:nowrap">${i.qtyBruta.toFixed(0)}${i.unit==='ml'?'ml':'g'}</td>
-      <td style="padding:8px 10px;border-bottom:1px solid #E8E4DC;font-size:11px;color:#2D6A4F;font-family:monospace;font-weight:600;text-align:right;white-space:nowrap">${fmtBRL(i.cost)}</td>
-    </tr>`;
-  }).join('');
-
-  const html=`<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-<meta charset="UTF-8">
-<title>Ficha Técnica — ${r.nome}</title>
-<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-<style>
-  *{box-sizing:border-box;margin:0;padding:0}
-  body{font-family:'Sora',sans-serif;background:#fff;color:#1A1814;font-size:13px;padding:32px 36px;max-width:680px;margin:0 auto}
-  @media print{
-    body{padding:20px 24px}
-    .no-print{display:none!important}
-    @page{margin:15mm 18mm;size:A4}
-  }
-
-  /* Header */
-  .pdf-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:22px;padding-bottom:16px;border-bottom:2px solid #2D6A4F}
-  .pdf-logo{display:flex;align-items:center;gap:10px}
-  .pdf-logo-box{width:36px;height:36px;background:#2D6A4F;border-radius:9px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px;flex-shrink:0}
-  .pdf-app-name{font-size:16px;font-weight:600;color:#1A1814;line-height:1.2}
-  .pdf-app-sub{font-size:10px;color:#9A958A}
-  .pdf-meta{text-align:right;font-size:10px;color:#9A958A;line-height:1.8}
-
-  /* Title block */
-  .pdf-title-block{margin-bottom:20px}
-  .pdf-recipe-title{font-size:22px;font-weight:600;color:#1A1814;margin-bottom:4px;line-height:1.3}
-  .pdf-recipe-sub{font-size:11px;color:#9A958A}
-
-  /* Price update banner */
-  .pdf-update-banner{background:#D8F3DC;border:1px solid #B7E4C7;border-radius:6px;padding:8px 12px;margin-bottom:16px;font-size:11px;color:#2D6A4F}
-
-  /* Summary grid */
-  .pdf-summary{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:22px}
-  .pdf-summary-item{background:#F7F5F0;border:1px solid #DDD9D0;border-radius:8px;padding:10px 12px}
-  .pdf-summary-label{font-size:9px;color:#9A958A;text-transform:uppercase;letter-spacing:0.4px;margin-bottom:4px;font-weight:600}
-  .pdf-summary-value{font-size:15px;font-weight:600;font-family:'DM Mono',monospace;color:#1A1814;line-height:1.2}
-  .pdf-summary-item.highlight{background:#2D6A4F;border-color:#2D6A4F}
-  .pdf-summary-item.highlight .pdf-summary-label{color:rgba(255,255,255,0.7)}
-  .pdf-summary-item.highlight .pdf-summary-value{color:#fff}
-
-  /* Section label */
-  .pdf-section-label{font-size:10px;font-weight:600;color:#9A958A;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;margin-top:20px}
-
-  /* Ingredients table */
-  .pdf-table{width:100%;border-collapse:collapse;border:1px solid #DDD9D0;border-radius:8px;overflow:hidden}
-  .pdf-table thead tr{background:#F0EDE6}
-  .pdf-table th{padding:9px 10px;text-align:left;font-size:10px;font-weight:600;color:#5A564E;text-transform:uppercase;letter-spacing:0.3px}
-  .pdf-table th:last-child{text-align:right}
-  .pdf-table tbody tr:last-child td{border-bottom:none!important}
-  .pdf-table tfoot tr{background:#F7F5F0}
-  .pdf-table tfoot td{padding:9px 10px;font-size:12px;font-weight:600;border-top:2px solid #DDD9D0}
-  .pdf-table tfoot td:last-child{text-align:right;color:#2D6A4F;font-family:'DM Mono',monospace}
-
-  /* Footer */
-  .pdf-footer{margin-top:28px;padding-top:12px;border-top:1px solid #DDD9D0;display:flex;justify-content:space-between;align-items:center;font-size:10px;color:#9A958A}
-
-  /* Print button */
-  .btn-print{display:inline-flex;align-items:center;gap:6px;background:#2D6A4F;color:#fff;border:none;padding:10px 18px;border-radius:7px;font-size:13px;font-family:'Sora',sans-serif;font-weight:500;cursor:pointer;margin-bottom:20px}
-  .btn-print:hover{background:#235D40}
-</style>
-</head>
-<body>
-
-<div class="no-print" style="margin-bottom:16px;display:flex;gap:10px;align-items:center">
-  <button class="btn-print" onclick="window.print()">🖨️ Salvar / Imprimir PDF</button>
-  <span style="font-size:12px;color:#9A958A">Selecione "Salvar como PDF" na janela de impressão</span>
-</div>
-
-<div class="pdf-header">
-  <div class="pdf-logo">
-    <div class="pdf-logo-box">🍽</div>
-    <div>
-      <div class="pdf-app-name">FichaTec</div>
-      <div class="pdf-app-sub">Fichas Técnicas & Estoque</div>
+  const html=`<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8">
+  <title>Ficha — ${r.nome}</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Roboto',sans-serif;color:#1C1B1F;padding:36px 40px;max-width:720px;margin:0 auto;line-height:1.5}
+    @media print{body{padding:20px 24px}.no-print{display:none!important}@page{margin:15mm 18mm;size:A4}}
+    .header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:24px;padding-bottom:16px;border-bottom:2px solid #1B6B45}
+    .logo{display:flex;align-items:center;gap:12px}
+    .logo-box{width:40px;height:40px;background:#1B6B45;border-radius:12px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:20px}
+    .meta{text-align:right;font-size:11px;color:#79747E;line-height:2}
+    .summary{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:20px 0 24px}
+    .sum-item{background:#F4EFF4;border-radius:12px;padding:12px 14px}
+    .sum-item.hl{background:#1B6B45}
+    .sum-label{font-size:10px;color:#79747E;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:5px}
+    .sum-label.hl{color:rgba(255,255,255,0.75)}
+    .sum-val{font-size:16px;font-weight:500;font-family:'Roboto Mono',monospace}
+    .sum-val.hl{color:#fff}
+    table{width:100%;border-collapse:collapse;border:1px solid #CAC4D0;border-radius:12px;overflow:hidden}
+    thead tr{background:#ECE6F0}
+    th{padding:10px 12px;text-align:left;font-size:11px;font-weight:500;color:#49454F;text-transform:uppercase;letter-spacing:0.5px}
+    th:last-child{text-align:right}
+    tfoot tr{background:#F7F2FA}
+    tfoot td{padding:10px 12px;font-size:13px;font-weight:600;border-top:2px solid #CAC4D0}
+    tfoot td:last-child{text-align:right;color:#1B6B45;font-family:'Roboto Mono',monospace}
+    footer{margin-top:28px;padding-top:12px;border-top:1px solid #CAC4D0;display:flex;justify-content:space-between;font-size:11px;color:#79747E}
+    .btn-print{display:inline-flex;align-items:center;gap:8px;background:#1B6B45;color:#fff;border:none;padding:12px 22px;border-radius:50px;font-size:14px;font-family:'Roboto',sans-serif;font-weight:500;cursor:pointer;margin-bottom:22px}
+  </style></head><body>
+  <div class="no-print" style="display:flex;gap:12px;align-items:center;margin-bottom:18px">
+    <button class="btn-print" onclick="window.print()">🖨️ Salvar / Imprimir PDF</button>
+    <span style="font-size:12px;color:#79747E">Selecione "Salvar como PDF"</span>
+  </div>
+  <div class="header">
+    <div class="logo">
+      <div class="logo-box">🍽</div>
+      <div><div style="font-size:17px;font-weight:500">FichaTec</div><div style="font-size:11px;color:#79747E">Fichas Técnicas & Estoque</div></div>
     </div>
+    <div class="meta"><div>Gerado em ${now}</div><div>Criado em ${criado}</div></div>
   </div>
-  <div class="pdf-meta">
-    <div>Gerado em ${dataGeracao}</div>
-    <div>Criado em ${dataCriacao}</div>
+  <div style="margin-bottom:20px">
+    <div style="font-size:24px;font-weight:400;margin-bottom:4px">${r.nome}</div>
+    <div style="font-size:12px;color:#79747E">${r.ingredients.length} ingrediente(s) · ${r.porcoes} porção(ões)${r.rendimento?' · Rendimento: '+r.rendimento+'g':''}${r.markup?' · Markup: '+r.markup+'%':''}</div>
   </div>
-</div>
-
-<div class="pdf-title-block">
-  <div class="pdf-recipe-title">${r.nome}</div>
-  <div class="pdf-recipe-sub">${r.ingredients.length} ingrediente(s) · ${r.porcoes} porção(ões)${r.rendimento?' · Rendimento: '+r.rendimento+'g':''}${r.markup?' · Markup: '+r.markup+'%':''}</div>
-</div>
-
-${priceChanged?`<div class="pdf-update-banner">🔄 Preços atualizados automaticamente conforme o estoque virtual. Custo original ao salvar: ${fmtBRL(r.totalCost)}.</div>`:''}
-
-<div class="pdf-summary">
-  <div class="pdf-summary-item">
-    <div class="pdf-summary-label">Custo Total</div>
-    <div class="pdf-summary-value">${fmtBRL(live.totalCost)}</div>
+  ${changed?`<div style="background:#B7F0D2;border-radius:8px;padding:10px 14px;margin-bottom:18px;font-size:12px;color:#002112">🔄 Preços atualizados. Custo original: ${fmtBRL(r.totalCost)}.</div>`:''}
+  <div class="summary">
+    <div class="sum-item"><div class="sum-label">Custo Total</div><div class="sum-val">${fmtBRL(totalCost)}</div></div>
+    <div class="sum-item hl"><div class="sum-label hl">Preço de Venda</div><div class="sum-val hl">${fmtBRL(venda)}</div></div>
+    <div class="sum-item"><div class="sum-label">Por Porção</div><div class="sum-val">${fmtBRL(totalCost/porcoes)}</div></div>
+    <div class="sum-item"><div class="sum-label">Markup</div><div class="sum-val">${r.markup||0}%</div></div>
   </div>
-  <div class="pdf-summary-item highlight">
-    <div class="pdf-summary-label">Preço de Venda</div>
-    <div class="pdf-summary-value">${fmtBRL(live.venda)}</div>
-  </div>
-  <div class="pdf-summary-item">
-    <div class="pdf-summary-label">Por Porção</div>
-    <div class="pdf-summary-value">${fmtBRL(live.totalCost/porcoes)}</div>
-  </div>
-  <div class="pdf-summary-item">
-    <div class="pdf-summary-label">Markup</div>
-    <div class="pdf-summary-value">${r.markup||0}%</div>
-  </div>
-</div>
+  <table><thead><tr><th>Ingrediente</th><th>Quantidade</th><th style="text-align:right">Custo</th></tr></thead>
+  <tbody>${rows}</tbody>
+  <tfoot><tr><td colspan="2">Total</td><td>${fmtBRL(totalCost)}</td></tr></tfoot></table>
+  <footer><span>FichaTec</span><span>${r.nome} · ${now}</span></footer>
+  </body></html>`;
 
-<div class="pdf-section-label">Ingredientes</div>
-<table class="pdf-table">
-  <thead>
-    <tr>
-      <th>Ingrediente</th>
-      <th>Quantidade</th>
-      <th style="text-align:right">Custo</th>
-    </tr>
-  </thead>
-  <tbody>
-    ${ingredientRows}
-  </tbody>
-  <tfoot>
-    <tr>
-      <td colspan="2">Total</td>
-      <td>${fmtBRL(live.totalCost)}</td>
-    </tr>
-  </tfoot>
-</table>
-
-<div class="pdf-footer">
-  <span>FichaTec — Ficha Técnica</span>
-  <span>${r.nome} · ${dataGeracao}</span>
-</div>
-
-</body>
-</html>`;
-
-  const win=window.open('','_blank','width=780,height=900');
+  const win=window.open('','_blank','width=800,height=920');
   if(!win){showToast('Permita pop-ups para gerar o PDF.');return;}
   win.document.write(html);
   win.document.close();
 }
 
-function closeModal(id){document.getElementById(id).classList.remove('open');}
-
+/* ════════════════════════════════════
+   EVENTOS GLOBAIS
+════════════════════════════════════ */
 document.querySelectorAll('.modal-overlay').forEach(m=>{
   m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('open');});
 });
-
 document.addEventListener('click',e=>{
-  if(!document.getElementById('ing-search-wrap').contains(e.target)){
+  if(!document.getElementById('ing-search-wrap').contains(e.target))
     document.getElementById('ing-dropdown').classList.remove('open');
-  }
 });
 
-// Seed initial stock data from the PDF if empty
+/* ── Seed inicial ── */
 if(!stock.length){
-  const seed=[
+  stock=[
     {id:1,name:'Açúcar refinado',qty:1,unit:'kg',price:26.82,category:'Açúcares',nutrition:{kcal:399,carb:99.6,prot:0,fat:0,fiber:0,sodium:1}},
     {id:2,name:'Arroz branco',qty:1,unit:'kg',price:11.37,category:'Cereais',nutrition:{kcal:358,carb:79,prot:7.4,fat:0.3,fiber:1.6,sodium:1}},
     {id:3,name:'Bicarbonato de sódio',qty:1,unit:'kg',price:15.35,category:'Outros',nutrition:{kcal:0,carb:0,prot:0,fat:0,fiber:0,sodium:27360}},
     {id:4,name:'Doce de leite',qty:1,unit:'kg',price:14.88,category:'Laticínios',nutrition:{kcal:295,carb:55,prot:7,fat:6,fiber:0,sodium:100}},
     {id:5,name:'Extrato de tomate',qty:1,unit:'kg',price:28.27,category:'Outros',nutrition:{kcal:80,carb:16,prot:4,fat:0.5,fiber:3,sodium:700}},
-    {id:6,name:'Fermento biológico fresco',qty:1,unit:'kg',price:22.00,category:'Outros',nutrition:{kcal:105,carb:8,prot:12,fat:2,fiber:4,sodium:50}},
+    {id:6,name:'Fermento biológico',qty:1,unit:'kg',price:22.00,category:'Outros',nutrition:{kcal:105,carb:8,prot:12,fat:2,fiber:4,sodium:50}},
     {id:7,name:'Manteiga',qty:1,unit:'kg',price:35.00,category:'Laticínios',nutrition:{kcal:741,carb:0,prot:0.5,fat:83,fiber:0,sodium:576}},
     {id:8,name:'Patinho',qty:1,unit:'kg',price:32.00,category:'Carnes',nutrition:{kcal:219,carb:0,prot:26,fat:13,fiber:0,sodium:66}},
     {id:9,name:'Sal',qty:1,unit:'kg',price:2.90,category:'Temperos',nutrition:{kcal:0,carb:0,prot:0,fat:0,fiber:0,sodium:39300}},
@@ -1626,18 +1308,15 @@ if(!stock.length){
     {id:11,name:'Vinagre de maçã',qty:1,unit:'kg',price:5.00,category:'Temperos',nutrition:{kcal:22,carb:5,prot:0,fat:0,fiber:0,sodium:2}},
     {id:12,name:'Azeitona preta',qty:1,unit:'kg',price:6.71,category:'Outros',nutrition:{kcal:145,carb:4,prot:1,fat:15,fiber:3,sodium:1400}},
   ];
-  stock=seed;
-  saveStockData();
+  DB.save('fichatec_stock',stock);
 }
 
-// Migração: receitas antigas sem savedPricePerG
-recipes=recipes.map(r=>({
-  ...r,
-  ingredients:r.ingredients.map(i=>({
-    ...i,
-    savedPricePerG:i.savedPricePerG!==undefined?i.savedPricePerG:pricePerGByStockId(i.stockId,i.name)
-  }))
-}));
+/* Migração: garante savedPricePerG nas receitas antigas */
+recipes=recipes.map(r=>({...r,ingredients:r.ingredients.map(i=>{
+  if(i.savedPricePerG!==undefined)return i;
+  const s=findStockItem(i.stockId,i.name);
+  return{...i,savedPricePerG:s?pricePerUnit(s):0};
+})}));
 
 renderStock();
 renderRecipes();
