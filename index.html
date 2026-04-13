@@ -3,196 +3,255 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FichaTec — Fichas Técnicas & Estoque</title>
+<title>FichaTec</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-/* ══════════════════════════════════════════
-   IFOOD DESIGN TOKENS
-   Primary: #EA1D2C  |  Font: Inter
-   Spacing: 8px grid | Radius: 8/12/16/999px
-   ══════════════════════════════════════════ */
+/* ══════════════════════════════════════════════
+   DESIGN TOKENS — inspirado nas imagens enviadas
+   Verde primário · Cards brancos · Tipografia bold
+   ══════════════════════════════════════════════ */
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
-  /* Brand */
-  --if-red:#EA1D2C;
-  --if-red-dark:#C4121F;
-  --if-red-light:#FFF0F0;
-  --if-red-mid:#FDDCDE;
+  /* ── Brand Green (extraído das imagens) ── */
+  --g50 :#E8F8EE;   /* search bar bg, chip bg leve */
+  --g100:#C6EFD5;   /* hover leve */
+  --g200:#8FD9AB;
+  --g400:#2ECC71;   /* primary light */
+  --g500:#27AE60;   /* primary main */
+  --g600:#1E8449;   /* primary dark, hover */
+  --g700:#155D33;   /* dark text on light bg */
 
-  /* Neutrals */
-  --if-white:#FFFFFF;
-  --if-bg:#F5F5F5;
-  --if-surface:#FFFFFF;
-  --if-border:#E0E0E0;
-  --if-border-dark:#BDBDBD;
+  /* ── Red (badge promoção, como nas imagens) ── */
+  --r400:#EA1D2C;
+  --r100:#FDDCDE;
 
-  /* Text */
-  --if-text-primary:#3E3E3E;
-  --if-text-secondary:#717171;
-  --if-text-tertiary:#A0A0A0;
-  --if-text-inverse:#FFFFFF;
+  /* ── Neutrals ── */
+  --n0  :#FFFFFF;
+  --n50 :#F7F7F7;   /* page bg */
+  --n100:#F0F0F0;   /* skeleton / divider */
+  --n200:#E0E0E0;   /* border */
+  --n400:#BDBDBD;   /* placeholder / icon inactive */
+  --n600:#717171;   /* text secondary */
+  --n800:#3E3E3E;   /* text primary */
+  --n900:#1A1A1A;   /* text display */
 
-  /* Feedback */
-  --if-green:#50A773;
-  --if-green-light:#EBF7F0;
-  --if-orange:#FF8C00;
-  --if-orange-light:#FFF4E5;
-  --if-error:#EA1D2C;
-  --if-error-light:#FFF0F0;
+  /* ── Feedback ── */
+  --warning:#FF8C00;
+  --warning-bg:#FFF4E5;
 
-  /* Spacing (8px grid) */
+  /* ── Radius (extraído das imagens) ── */
+  --r-xs :4px;
+  --r-sm :8px;
+  --r-md :12px;
+  --r-lg :16px;   /* cards */
+  --r-xl :20px;   /* modal topo */
+  --r-pill:999px; /* botões, chips, badges */
+
+  /* ── Spacing 8px grid ── */
   --s1:4px; --s2:8px; --s3:12px; --s4:16px;
   --s5:20px; --s6:24px; --s7:32px; --s8:40px;
 
-  /* Radius */
-  --r-xs:4px; --r-sm:8px; --r-md:12px;
-  --r-lg:16px; --r-pill:999px;
-
-  /* Shadow */
-  --shadow-sm:0 1px 4px rgba(0,0,0,0.08);
+  /* ── Shadow ── */
+  --shadow-card:0 2px 12px rgba(0,0,0,0.08);
+  --shadow-float:0 4px 20px rgba(39,174,96,0.35);
   --shadow-md:0 2px 8px rgba(0,0,0,0.10);
-  --shadow-lg:0 4px 16px rgba(0,0,0,0.12);
 
-  /* Motion */
+  /* ── Motion ── */
   --ease:cubic-bezier(0.4,0,0.2,1);
   --dur:200ms;
 }
 
-/* ── Base ── */
+/* ══ BASE ══ */
 html{font-size:14px;-webkit-text-size-adjust:100%}
-body{font-family:'Inter',sans-serif;background:var(--if-bg);color:var(--if-text-primary);min-height:100vh;padding-bottom:72px;line-height:1.5;-webkit-font-smoothing:antialiased}
+body{
+  font-family:'Inter',sans-serif;
+  background:var(--n50);
+  color:var(--n800);
+  min-height:100vh;
+  padding-bottom:80px;
+  line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+}
 
-/* ══════════════════════════════════════════
-   TOP BAR — iFood style: white, border-b,
-   logo vermelho, título bold
-   ══════════════════════════════════════════ */
+/* ══════════════════════════════════════════════
+   TOP BAR — branco, sem sombra pesada, logo verde
+   (ref: tela "Hello Tobi" e "Order Details")
+   ══════════════════════════════════════════════ */
 .app-header{
-  background:var(--if-white);
-  border-bottom:1px solid var(--if-border);
+  background:var(--n0);
+  border-bottom:1px solid var(--n100);
   padding:0 var(--s4);
   height:56px;
   display:flex;align-items:center;gap:var(--s3);
   position:sticky;top:0;z-index:100;
-  box-shadow:var(--shadow-sm);
 }
 .app-logo{
   width:36px;height:36px;
-  background:var(--if-red);
+  background:var(--g500);
   border-radius:var(--r-sm);
   display:flex;align-items:center;justify-content:center;
   color:#fff;font-size:18px;flex-shrink:0;
 }
-.app-title{font-size:17px;font-weight:700;color:var(--if-text-primary);line-height:1.2;letter-spacing:-0.3px}
-.app-subtitle{font-size:11px;color:var(--if-text-tertiary);font-weight:400}
+.app-title{font-size:17px;font-weight:800;color:var(--n900);line-height:1.2;letter-spacing:-0.4px}
+.app-subtitle{font-size:11px;color:var(--n400);font-weight:400}
 
-/* ══════════════════════════════════════════
-   BOTTOM NAV — iFood style: white, ícone+label,
-   ativo em vermelho
-   ══════════════════════════════════════════ */
+/* ══════════════════════════════════════════════
+   BOTTOM NAV — ref: imagens com Home/Orders/Cart/Profile
+   Ícone central flutuante verde (search pill)
+   ══════════════════════════════════════════════ */
 .nav{
   position:fixed;bottom:0;left:0;right:0;
-  background:var(--if-white);
-  border-top:1px solid var(--if-border);
-  display:flex;z-index:100;
-  height:60px;align-items:center;
-  padding-bottom:env(safe-area-inset-bottom);
+  background:var(--n0);
+  border-top:1px solid var(--n100);
+  display:flex;align-items:center;z-index:100;
+  height:64px;padding-bottom:env(safe-area-inset-bottom);
 }
 .nav-btn{
   flex:1;height:100%;
   display:flex;flex-direction:column;align-items:center;justify-content:center;
   gap:3px;border:none;background:none;cursor:pointer;
-  color:var(--if-text-tertiary);
+  color:var(--n400);
   font-size:10px;font-family:'Inter',sans-serif;font-weight:500;
-  letter-spacing:0.2px;
   transition:color var(--dur) var(--ease);
   -webkit-tap-highlight-color:transparent;
-  padding:0;
+  letter-spacing:0.2px;
 }
-.nav-btn.active{color:var(--if-red)}
-.nav-icon{font-size:20px;line-height:1}
+.nav-btn.active{color:var(--g500)}
+.nav-icon{font-size:22px;line-height:1}
+/* Ícone central flutuante — exato das imagens */
+.nav-fab{
+  width:52px;height:52px;
+  background:var(--g500);
+  border-radius:var(--r-pill);
+  display:flex;align-items:center;justify-content:center;
+  color:#fff;font-size:22px;
+  box-shadow:var(--shadow-float);
+  flex-shrink:0;
+  margin-top:-20px;
+  border:4px solid var(--n0);
+  cursor:pointer;
+  -webkit-tap-highlight-color:transparent;
+  transition:background var(--dur) var(--ease),transform 80ms var(--ease);
+}
+.nav-fab:active{transform:scale(0.94)}
+.nav-fab:hover{background:var(--g600)}
 
-/* ══════════════════════════════════════════
+/* ══════════════════════════════════════════════
    PAGES
-   ══════════════════════════════════════════ */
+   ══════════════════════════════════════════════ */
 .page{display:none;padding:var(--s4);max-width:420px;margin:0 auto;width:100%}
 .page.active{display:block}
 
+/* Hero header — ref: "Let's find you something to eat" */
+.page-hero{padding:var(--s5) 0 var(--s4)}
+.page-hero-label{font-size:12px;font-weight:600;color:var(--n600);letter-spacing:0.3px;margin-bottom:var(--s1)}
+.page-hero-title{font-size:26px;font-weight:800;color:var(--n900);line-height:1.2;letter-spacing:-0.6px;margin-bottom:var(--s4)}
+
 .page-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:var(--s4);gap:var(--s2)}
-.page-title{font-size:20px;font-weight:700;color:var(--if-text-primary);letter-spacing:-0.4px;line-height:1.2}
-.page-sub{font-size:12px;color:var(--if-text-secondary);margin-top:2px;font-weight:400}
+.page-title{font-size:20px;font-weight:800;color:var(--n900);letter-spacing:-0.5px;line-height:1.2}
+.page-sub{font-size:12px;color:var(--n600);margin-top:2px;font-weight:400}
 
 .section-label{
-  font-size:11px;font-weight:600;
-  color:var(--if-text-secondary);
-  text-transform:uppercase;letter-spacing:0.8px;
+  font-size:13px;font-weight:700;
+  color:var(--n800);
+  letter-spacing:-0.1px;
   margin:var(--s4) 0 var(--s2);
 }
 
-/* ══════════════════════════════════════════
-   CARDS — iFood: fundo branco, borda fina,
-   radius 12, sombra leve
-   ══════════════════════════════════════════ */
-.card{
-  background:var(--if-white);
-  border:1px solid var(--if-border);
-  border-radius:var(--r-md);
-  padding:var(--s4);
-  margin-bottom:var(--s3);
-}
-.card-title{font-size:14px;font-weight:600;color:var(--if-text-primary);margin-bottom:var(--s3);letter-spacing:-0.1px}
-
-/* ── Elevated card (shadow, sem borda) ── */
-.card-elevated{
-  background:var(--if-white);
-  border-radius:var(--r-md);
-  padding:var(--s4);
-  margin-bottom:var(--s3);
-  box-shadow:var(--shadow-md);
+/* ══════════════════════════════════════════════
+   SEARCH BAR — ref: "What would you like to eat?"
+   fundo verde clarinho, radius pill, ícone verde
+   ══════════════════════════════════════════════ */
+.search-bar{position:relative;margin-bottom:var(--s4)}
+.search-bar input{
+  background:var(--g50);
   border:none;
+  border-radius:var(--r-pill);
+  padding:13px var(--s4) 13px 44px;
+  font-size:14px;font-family:'Inter',sans-serif;
+  color:var(--n800);width:100%;outline:none;
+  transition:box-shadow var(--dur) var(--ease),background var(--dur) var(--ease);
+  font-weight:400;
+  -webkit-appearance:none;
+}
+.search-bar input:focus{
+  background:var(--n0);
+  box-shadow:0 0 0 2px var(--g400);
+}
+.search-bar input::placeholder{color:var(--n400)}
+.search-icon{
+  position:absolute;left:16px;top:50%;transform:translateY(-50%);
+  color:var(--g500);font-size:16px;pointer-events:none;
 }
 
-/* ══════════════════════════════════════════
-   TEXT FIELDS — iFood: borda cinza, radius 8,
-   label acima, focus vermelho
-   ══════════════════════════════════════════ */
+/* ══════════════════════════════════════════════
+   CARDS — ref: "My Orders" cards
+   branco, radius 16, sombra leve, sem borda visível
+   ══════════════════════════════════════════════ */
+.card{
+  background:var(--n0);
+  border-radius:var(--r-lg);
+  padding:var(--s4);
+  margin-bottom:var(--s3);
+  box-shadow:var(--shadow-card);
+}
+.card-title{font-size:14px;font-weight:700;color:var(--n900);margin-bottom:var(--s3);letter-spacing:-0.2px}
+
+/* ── Card com borda (formulário) ── */
+.card-outlined{
+  background:var(--n0);
+  border:1.5px solid var(--n200);
+  border-radius:var(--r-lg);
+  padding:var(--s4);
+  margin-bottom:var(--s3);
+}
+
+/* ══════════════════════════════════════════════
+   TEXT FIELDS — label bold acima, borda radius 12
+   ══════════════════════════════════════════════ */
 .input-group{margin-bottom:var(--s3)}
 .input-label{
   font-size:12px;font-weight:600;
-  color:var(--if-text-secondary);
+  color:var(--n600);
   margin-bottom:var(--s1);display:block;
   letter-spacing:0.1px;
 }
-input,select,textarea{
+input:not(.search-bar input),select,textarea{
   width:100%;
-  padding:11px var(--s3);
-  border:1.5px solid var(--if-border);
-  border-radius:var(--r-sm);
+  padding:12px var(--s3);
+  border:1.5px solid var(--n200);
+  border-radius:var(--r-md);
   font-size:14px;font-family:'Inter',sans-serif;
-  background:var(--if-white);color:var(--if-text-primary);
+  background:var(--n0);color:var(--n800);
   outline:none;
-  transition:border-color var(--dur) var(--ease);
+  transition:border-color var(--dur) var(--ease),box-shadow var(--dur) var(--ease);
   -webkit-appearance:none;appearance:none;
   font-weight:400;
 }
-input:hover,select:hover{border-color:var(--if-border-dark)}
-input:focus,select:focus,textarea:focus{border-color:var(--if-red);box-shadow:0 0 0 3px rgba(234,29,44,0.08)}
-input::placeholder,textarea::placeholder{color:var(--if-text-tertiary);font-weight:400}
-textarea{resize:vertical;min-height:80px;line-height:1.5;border-radius:var(--r-sm)}
+input:not(.search-bar input):hover,select:hover{border-color:var(--n400)}
+input:not(.search-bar input):focus,select:focus,textarea:focus{
+  border-color:var(--g500);
+  box-shadow:0 0 0 3px rgba(39,174,96,0.12);
+}
+input::placeholder,textarea::placeholder{color:var(--n400);font-weight:400}
+textarea{resize:vertical;min-height:80px;line-height:1.5}
 select{
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23717171' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
-  background-repeat:no-repeat;background-position:right 12px center;padding-right:32px;cursor:pointer;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23BDBDBD' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 12px center;
+  padding-right:32px;cursor:pointer;
 }
 .input-row{display:grid;gap:var(--s2)}
 .cols-2{grid-template-columns:1fr 1fr}
 
-/* ══════════════════════════════════════════
-   BUTTONS — iFood: pill, vermelho, bold label
-   ══════════════════════════════════════════ */
+/* ══════════════════════════════════════════════
+   BUTTONS — ref: "Order again" / "Track Order"
+   Pill verde sólido + pill outline verde
+   ══════════════════════════════════════════════ */
 .btn{
-  padding:0 var(--s6);
+  padding:0 var(--s5);
   border-radius:var(--r-pill);
-  font-size:14px;font-family:'Inter',sans-serif;font-weight:600;
+  font-size:14px;font-family:'Inter',sans-serif;font-weight:700;
   cursor:pointer;border:none;
   transition:background var(--dur) var(--ease),
              box-shadow var(--dur) var(--ease),
@@ -202,317 +261,360 @@ select{
   -webkit-tap-highlight-color:transparent;
   letter-spacing:0.1px;height:44px;
 }
-.btn:active{transform:scale(0.97)}
+.btn:active{transform:scale(0.96)}
 
-/* Primary — vermelho sólido */
-.btn-primary{background:var(--if-red);color:#fff}
-.btn-primary:hover{background:var(--if-red-dark)}
+/* Primary — verde sólido (ref: "Order again", "Track Order") */
+.btn-primary{background:var(--g500);color:#fff}
+.btn-primary:hover{background:var(--g600)}
 
-/* Secondary — branco com borda */
-.btn-secondary{background:var(--if-white);color:var(--if-text-primary);border:1.5px solid var(--if-border)}
-.btn-secondary:hover{background:var(--if-bg);border-color:var(--if-border-dark)}
+/* Outline — borda verde (ref: "Leave Review", "Cancel Order") */
+.btn-outlined{background:var(--n0);color:var(--g500);border:1.5px solid var(--g500)}
+.btn-outlined:hover{background:var(--g50)}
 
-/* Ghost (outline vermelho) */
-.btn-outlined{background:transparent;color:var(--if-red);border:1.5px solid var(--if-red)}
-.btn-outlined:hover{background:var(--if-red-light)}
+/* Secondary — cinza neutro */
+.btn-secondary{background:var(--n100);color:var(--n800);border:none}
+.btn-secondary:hover{background:var(--n200)}
 
 /* Danger tonal */
-.btn-danger{background:var(--if-error-light);color:var(--if-error)}
-.btn-danger:hover{background:#FFD6D9}
+.btn-danger{background:var(--r100);color:var(--r400);border:none}
 
-/* Warning tonal */
-.btn-warn{background:var(--if-orange-light);color:var(--if-orange)}
-.btn-warn:hover{background:#FFE8C0}
+/* Warning */
+.btn-warn{background:var(--warning-bg);color:var(--warning);border:none}
 
 /* Sizes */
-.btn-sm{height:34px;padding:0 var(--s4);font-size:12px}
-.btn-xs{height:28px;padding:0 var(--s3);font-size:11px;border-radius:var(--r-pill)}
+.btn-sm{height:36px;padding:0 var(--s4);font-size:13px}
+.btn-xs{height:28px;padding:0 var(--s3);font-size:11px}
 .btn-full{width:100%;justify-content:center}
-.btn-icon{width:36px;height:36px;padding:0;border-radius:var(--r-pill);font-size:16px}
+.btn-icon{width:40px;height:40px;padding:0;border-radius:var(--r-pill)}
 
-/* ══════════════════════════════════════════
-   SEARCH BAR — iFood: pill, fundo cinza,
-   ícone à esquerda
-   ══════════════════════════════════════════ */
-.search-bar{position:relative;margin-bottom:var(--s4)}
-.search-bar input{
-  border-radius:var(--r-pill);
-  background:var(--if-bg);
-  border-color:transparent;
-  padding-left:40px;
-  font-size:14px;
+/* ══════════════════════════════════════════════
+   TABS — ref: "Ongoing / Completed"
+   underline verde, sem fundo, texto bold ativo
+   ══════════════════════════════════════════════ */
+.tabs{
+  display:flex;
+  border-bottom:1px solid var(--n200);
+  margin-bottom:var(--s4);
 }
-.search-bar input:focus{background:var(--if-white);border-color:var(--if-red)}
-.search-icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--if-text-tertiary);font-size:16px;pointer-events:none}
+.tab{
+  flex:1;padding:var(--s2) 0 11px;
+  font-size:14px;font-weight:500;
+  color:var(--n400);
+  background:none;border:none;cursor:pointer;
+  font-family:'Inter',sans-serif;
+  border-bottom:2.5px solid transparent;
+  margin-bottom:-1px;
+  transition:color var(--dur) var(--ease),border-color var(--dur) var(--ease);
+  letter-spacing:0.1px;
+  -webkit-tap-highlight-color:transparent;
+}
+.tab.active{color:var(--g500);font-weight:700;border-bottom-color:var(--g500)}
 
-/* ══════════════════════════════════════════
-   CHIPS / BADGES / TAGS
-   ══════════════════════════════════════════ */
+/* ══════════════════════════════════════════════
+   BADGES / TAGS / CHIPS
+   ══════════════════════════════════════════════ */
+/* Badge "Completed" / "Paid" — ref: imagens */
 .badge{
-  font-size:12px;font-weight:600;
+  font-size:11px;font-weight:700;
   padding:3px 10px;border-radius:var(--r-pill);
-  letter-spacing:0.2px;display:inline-flex;align-items:center;
+  display:inline-flex;align-items:center;
+  letter-spacing:0.2px;
 }
-.badge-red{background:var(--if-red-mid);color:var(--if-red)}
-.badge-green{background:var(--if-green-light);color:var(--if-green)}
+.badge-green{background:var(--g50);color:var(--g600);border:1px solid var(--g200)}
+.badge-red{background:var(--r100);color:var(--r400)}
 
+/* Tag ingrediente */
 .tag{
   display:inline-flex;align-items:center;
   padding:3px 10px;border-radius:var(--r-pill);
   font-size:11px;font-weight:500;
-  background:var(--if-bg);color:var(--if-text-secondary);
-  border:1px solid var(--if-border);
+  background:var(--n100);color:var(--n600);
+  border:none;
 }
 
+/* Promo badge — ref: "10% off" em vermelho */
+.promo-badge{
+  background:var(--r400);color:#fff;
+  font-size:11px;font-weight:700;
+  padding:3px 8px;border-radius:var(--r-xs);
+  letter-spacing:0.2px;
+}
+
+/* Filter chips */
 .filter-chips{display:flex;gap:var(--s2);flex-wrap:wrap;margin-bottom:var(--s4)}
 .chip{
-  padding:6px 14px;border-radius:var(--r-pill);
-  font-size:13px;font-weight:500;cursor:pointer;
-  border:1.5px solid var(--if-border);
-  background:var(--if-white);color:var(--if-text-secondary);
+  padding:6px 16px;border-radius:var(--r-pill);
+  font-size:13px;font-weight:600;cursor:pointer;
+  border:1.5px solid var(--n200);
+  background:var(--n0);color:var(--n600);
   transition:all var(--dur) var(--ease);
   white-space:nowrap;font-family:'Inter',sans-serif;
   height:34px;display:inline-flex;align-items:center;
   -webkit-tap-highlight-color:transparent;
 }
-.chip:hover{border-color:var(--if-red);color:var(--if-red)}
-.chip.active{background:var(--if-red);color:#fff;border-color:var(--if-red)}
+.chip:hover{border-color:var(--g400);color:var(--g500)}
+.chip.active{background:var(--g500);color:#fff;border-color:var(--g500)}
 
-/* ══════════════════════════════════════════
-   LIST ITEMS (Estoque Virtual)
-   ══════════════════════════════════════════ */
+/* ══════════════════════════════════════════════
+   ITEM CARD (Estoque Virtual)
+   ══════════════════════════════════════════════ */
 .item-card{
-  background:var(--if-white);border:1px solid var(--if-border);
-  border-radius:var(--r-md);padding:var(--s3) var(--s4);
+  background:var(--n0);
+  border-radius:var(--r-lg);
+  padding:var(--s3) var(--s4);
   display:flex;align-items:center;justify-content:space-between;
   margin-bottom:var(--s2);gap:var(--s3);
+  box-shadow:var(--shadow-card);
   transition:box-shadow var(--dur) var(--ease);
 }
 .item-card:hover{box-shadow:var(--shadow-md)}
-.item-name{font-size:14px;font-weight:600;color:var(--if-text-primary);line-height:1.3;letter-spacing:-0.1px}
-.item-meta{font-size:12px;color:var(--if-text-secondary);margin-top:2px;line-height:1.4;word-break:break-word}
+.item-name{font-size:14px;font-weight:700;color:var(--n900);line-height:1.3;letter-spacing:-0.1px}
+.item-meta{font-size:12px;color:var(--n600);margin-top:2px;line-height:1.4;word-break:break-word}
+.item-price{font-size:12px;color:var(--g600);font-weight:600;font-family:'Roboto Mono',monospace;margin-top:2px}
 .item-actions{display:flex;gap:var(--s1);flex-shrink:0}
 
-/* ══════════════════════════════════════════
-   DIVIDER
-   ══════════════════════════════════════════ */
-.divider{height:1px;background:var(--if-border);margin:var(--s4) 0}
+/* ══════════════════════════════════════════════
+   ORDER CARD — ref: "My Orders" (imagem)
+   Imagem quadrada à esq, título bold, badge, 2 botões
+   ══════════════════════════════════════════════ */
+.order-card{
+  background:var(--n0);
+  border-radius:var(--r-lg);
+  padding:var(--s4);
+  margin-bottom:var(--s3);
+  box-shadow:var(--shadow-card);
+}
+.order-card-body{display:flex;gap:var(--s3);align-items:flex-start;margin-bottom:var(--s3)}
+.order-thumb{
+  width:72px;height:72px;border-radius:var(--r-md);
+  background:var(--n100);flex-shrink:0;
+  overflow:hidden;object-fit:cover;display:flex;align-items:center;justify-content:center;
+  font-size:28px;
+}
+.order-info{flex:1;min-width:0}
+.order-title{font-size:14px;font-weight:700;color:var(--n900);line-height:1.3;letter-spacing:-0.2px;margin-bottom:4px}
+.order-price{font-size:16px;font-weight:800;color:var(--n900);font-family:'Roboto Mono',monospace;margin-bottom:6px}
+.order-divider{height:1px;background:var(--n100);margin:0 0 var(--s3)}
+.order-actions{display:flex;gap:var(--s2)}
 
-/* ══════════════════════════════════════════
-   HERO / TOTALS — iFood: vermelho bold,
-   card com gradiente suave
-   ══════════════════════════════════════════ */
+/* ══════════════════════════════════════════════
+   DIVIDER
+   ══════════════════════════════════════════════ */
+.divider{height:1px;background:var(--n100);margin:var(--s4) 0}
+
+/* ══════════════════════════════════════════════
+   HERO TOTAIS — verde sólido + bold
+   (ref: banner "Your order is on it's way")
+   ══════════════════════════════════════════════ */
 .total-box{
-  background:linear-gradient(135deg,var(--if-red) 0%,#C4121F 100%);
+  background:var(--g500);
   border-radius:var(--r-lg);padding:var(--s5);
   color:#fff;margin-bottom:var(--s3);
-  box-shadow:0 4px 16px rgba(234,29,44,0.28);
+  box-shadow:0 6px 20px rgba(39,174,96,0.30);
 }
-.total-label{font-size:11px;opacity:0.85;margin-bottom:3px;font-weight:500;letter-spacing:0.3px;text-transform:uppercase}
-.total-value{font-size:20px;font-weight:700;font-family:'Roboto Mono',monospace;line-height:1.2;letter-spacing:-0.5px}
+.total-label{font-size:11px;opacity:0.85;margin-bottom:3px;font-weight:600;letter-spacing:0.4px;text-transform:uppercase}
+.total-value{font-size:20px;font-weight:800;font-family:'Roboto Mono',monospace;line-height:1.2;letter-spacing:-0.5px}
 
-/* ══════════════════════════════════════════
+/* ══════════════════════════════════════════════
    NUTRITION TABLE
-   ══════════════════════════════════════════ */
+   ══════════════════════════════════════════════ */
 .nutrition-table{width:100%;border-collapse:collapse;font-size:13px}
-.nutrition-table th{text-align:left;padding:8px 10px;background:var(--if-bg);font-size:10px;font-weight:700;color:var(--if-text-secondary);text-transform:uppercase;letter-spacing:0.6px}
-.nutrition-table td{padding:9px 10px;border-bottom:1px solid var(--if-border);color:var(--if-text-primary)}
+.nutrition-table th{text-align:left;padding:9px 10px;background:var(--n50);font-size:10px;font-weight:700;color:var(--n600);text-transform:uppercase;letter-spacing:0.6px}
+.nutrition-table td{padding:9px 10px;border-bottom:1px solid var(--n100);color:var(--n800)}
 .nutrition-table tr:last-child td{border-bottom:none}
 .nutrition-table .val{font-family:'Roboto Mono',monospace;font-size:12px;font-weight:500;text-align:right}
-.nut-pct{font-size:11px;color:var(--if-text-secondary);font-family:'Roboto Mono',monospace}
-.progress-bar{height:4px;background:var(--if-border);border-radius:2px;overflow:hidden;margin-top:3px}
-.progress-fill{height:100%;background:var(--if-red);border-radius:2px;transition:width var(--dur) var(--ease)}
+.nut-pct{font-size:11px;color:var(--n600);font-family:'Roboto Mono',monospace}
+.progress-bar{height:4px;background:var(--n100);border-radius:2px;overflow:hidden;margin-top:3px}
+.progress-fill{height:100%;background:var(--g500);border-radius:2px;transition:width var(--dur) var(--ease)}
 
-/* ══════════════════════════════════════════
-   MODAL / BOTTOM SHEET — iFood: fundo branco,
-   handle pill, radius top 20px
-   ══════════════════════════════════════════ */
+/* ══════════════════════════════════════════════
+   MODAL / BOTTOM SHEET
+   ref: sheet na tela "Track Order" (handle + radius)
+   ══════════════════════════════════════════════ */
 .modal-overlay{
   display:none;position:fixed;inset:0;
-  background:rgba(0,0,0,0.48);
+  background:rgba(0,0,0,0.45);
   z-index:200;align-items:flex-end;justify-content:center;
 }
 .modal-overlay.open{display:flex}
 .modal{
-  background:var(--if-white);
-  border-radius:20px 20px 0 0;
+  background:var(--n0);
+  border-radius:var(--r-xl) var(--r-xl) 0 0;
   padding:0 var(--s4) var(--s6);
   width:100%;max-height:92vh;
   overflow-y:auto;-webkit-overflow-scrolling:touch;
-  box-shadow:0 -4px 32px rgba(0,0,0,0.18);
+  box-shadow:0 -4px 32px rgba(0,0,0,0.14);
   animation:slideUp var(--dur) var(--ease);
 }
 @keyframes slideUp{from{transform:translateY(60px);opacity:0}to{transform:translateY(0);opacity:1}}
-.modal-handle{width:36px;height:4px;background:var(--if-border-dark);border-radius:2px;margin:12px auto 16px}
-.modal-title{font-size:18px;font-weight:700;color:var(--if-text-primary);margin-bottom:var(--s4);letter-spacing:-0.3px;line-height:1.3}
+/* Handle — ref: tela track order (traço cinza pill) */
+.modal-handle{width:40px;height:5px;background:var(--n200);border-radius:var(--r-pill);margin:12px auto 20px}
+.modal-title{font-size:20px;font-weight:800;color:var(--n900);margin-bottom:var(--s4);letter-spacing:-0.4px;line-height:1.2}
 
-/* ══════════════════════════════════════════
+/* ══════════════════════════════════════════════
    INGREDIENT ROWS
-   ══════════════════════════════════════════ */
-.ingredient-row{display:flex;align-items:center;gap:var(--s3);padding:var(--s2) 0;border-bottom:1px solid var(--if-border)}
+   ══════════════════════════════════════════════ */
+.ingredient-row{display:flex;align-items:center;gap:var(--s3);padding:var(--s2) 0;border-bottom:1px solid var(--n100)}
 .ingredient-row:last-child{border-bottom:none}
-.ing-name{flex:1;font-size:13px;font-weight:600;color:var(--if-text-primary);min-width:0;word-break:break-word}
-.ing-qty{font-family:'Roboto Mono',monospace;font-size:11px;color:var(--if-text-secondary);white-space:nowrap}
-.ing-cost{font-family:'Roboto Mono',monospace;font-size:13px;font-weight:600;color:var(--if-red);min-width:68px;text-align:right;white-space:nowrap}
-.ing-del{width:28px;height:28px;background:none;border:none;cursor:pointer;color:var(--if-text-tertiary);font-size:14px;border-radius:var(--r-pill);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 100ms var(--ease)}
-.ing-del:hover{background:var(--if-error-light);color:var(--if-red)}
+.ing-name{flex:1;font-size:13px;font-weight:700;color:var(--n900);min-width:0;word-break:break-word}
+.ing-qty{font-family:'Roboto Mono',monospace;font-size:11px;color:var(--n600);white-space:nowrap}
+.ing-cost{font-family:'Roboto Mono',monospace;font-size:13px;font-weight:700;color:var(--g600);min-width:68px;text-align:right;white-space:nowrap}
+.ing-del{width:28px;height:28px;background:none;border:none;cursor:pointer;color:var(--n400);font-size:14px;border-radius:var(--r-pill);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 100ms var(--ease)}
+.ing-del:hover{background:var(--r100);color:var(--r400)}
 
-/* ══════════════════════════════════════════
-   MARKUP / PORTION ROWS
-   ══════════════════════════════════════════ */
+/* ══════════════════════════════════════════════
+   MARKUP / PORTION
+   ══════════════════════════════════════════════ */
 .markup-row{
   display:flex;align-items:center;gap:var(--s3);
-  background:var(--if-orange-light);
-  border:1px solid #FFD59E;
-  border-radius:var(--r-sm);
+  background:var(--warning-bg);
+  border:1px solid #FFD59E;border-radius:var(--r-md);
   padding:var(--s3) var(--s4);margin-bottom:var(--s3);
 }
-.markup-label{font-size:13px;font-weight:600;color:var(--if-orange);flex:1}
+.markup-label{font-size:13px;font-weight:700;color:var(--warning);flex:1}
 .markup-input{width:80px!important;text-align:center;font-family:'Roboto Mono',monospace}
-
 .portion-row{display:flex;align-items:center;gap:var(--s3);margin-bottom:var(--s3)}
-.portion-label{font-size:12px;color:var(--if-text-secondary);flex:1}
+.portion-label{font-size:12px;color:var(--n600);flex:1;font-weight:500}
 .portion-input{width:80px!important;text-align:center;font-family:'Roboto Mono',monospace}
 
-/* ══════════════════════════════════════════
-   AUTOCOMPLETE DROPDOWN
-   ══════════════════════════════════════════ */
+/* ══════════════════════════════════════════════
+   AUTOCOMPLETE
+   ══════════════════════════════════════════════ */
 .autocomplete-dropdown{
   position:absolute;top:calc(100% + 4px);left:0;right:0;
-  background:var(--if-white);
-  border-radius:var(--r-md);
-  box-shadow:var(--shadow-lg);
-  z-index:50;max-height:220px;overflow-y:auto;
-  display:none;border:1px solid var(--if-border);
+  background:var(--n0);border-radius:var(--r-lg);
+  box-shadow:var(--shadow-md);z-index:50;
+  max-height:220px;overflow-y:auto;display:none;
+  border:1px solid var(--n200);
 }
 .autocomplete-dropdown.open{display:block;animation:fadeDown 120ms var(--ease)}
 @keyframes fadeDown{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
-.autocomplete-item{padding:11px var(--s4);font-size:13px;cursor:pointer;border-bottom:1px solid var(--if-border);transition:background 80ms var(--ease);color:var(--if-text-primary)}
+.autocomplete-item{padding:11px var(--s4);font-size:13px;cursor:pointer;border-bottom:1px solid var(--n100);transition:background 80ms var(--ease);color:var(--n800);font-weight:500}
 .autocomplete-item:last-child{border-bottom:none}
-.autocomplete-item:hover{background:var(--if-bg)}
-.autocomplete-item .sub{font-size:11px;color:var(--if-text-secondary);margin-top:2px}
+.autocomplete-item:hover{background:var(--g50)}
+.autocomplete-item .sub{font-size:11px;color:var(--n600);margin-top:2px;font-weight:400}
 
-/* ══════════════════════════════════════════
+/* ══════════════════════════════════════════════
    EMPTY STATE
-   ══════════════════════════════════════════ */
-.empty-state{text-align:center;padding:48px var(--s6);color:var(--if-text-tertiary)}
-.empty-icon{font-size:48px;margin-bottom:var(--s4);display:block;opacity:0.7}
-.empty-text{font-size:14px;line-height:1.6;max-width:220px;margin:0 auto;color:var(--if-text-secondary)}
+   ══════════════════════════════════════════════ */
+.empty-state{text-align:center;padding:52px var(--s6);color:var(--n400)}
+.empty-icon{font-size:52px;margin-bottom:var(--s4);display:block;opacity:0.6}
+.empty-text{font-size:14px;line-height:1.6;max-width:220px;margin:0 auto;color:var(--n600);font-weight:500}
 
-/* ══════════════════════════════════════════
-   SEGMENTED CONTROL (source toggle)
-   ══════════════════════════════════════════ */
+/* ══════════════════════════════════════════════
+   SEGMENTED CONTROL (fonte selector)
+   ══════════════════════════════════════════════ */
 .source-toggle{
-  display:flex;background:var(--if-bg);
+  display:flex;background:var(--n100);
   border-radius:var(--r-sm);padding:3px;gap:3px;
   margin-bottom:var(--s3);
 }
 .source-btn{
-  flex:1;padding:8px 6px;font-size:11px;font-weight:600;
+  flex:1;padding:8px 6px;font-size:11px;font-weight:700;
   border:none;border-radius:6px;
-  background:transparent;color:var(--if-text-secondary);
+  background:transparent;color:var(--n600);
   font-family:'Inter',sans-serif;
   transition:all var(--dur) var(--ease);
-  text-align:center;line-height:1.3;cursor:pointer;letter-spacing:0.1px;
+  text-align:center;line-height:1.3;cursor:pointer;
 }
-.source-btn.active{background:var(--if-white);color:var(--if-red);box-shadow:var(--shadow-sm)}
-.source-btn:not(.active):hover{color:var(--if-text-primary)}
+.source-btn.active{background:var(--n0);color:var(--g500);box-shadow:var(--shadow-card)}
+.source-btn:not(.active):hover{color:var(--n800)}
 
-/* ══════════════════════════════════════════
+/* ══════════════════════════════════════════════
    INFO BANNER
-   ══════════════════════════════════════════ */
+   ══════════════════════════════════════════════ */
 .info-banner{
-  background:var(--if-red-light);border:1px solid var(--if-red-mid);
-  border-radius:var(--r-sm);padding:var(--s3) var(--s4);
-  font-size:12px;color:var(--if-red);margin-bottom:var(--s4);
-  line-height:1.5;display:flex;gap:var(--s2);align-items:flex-start;
-  font-weight:500;
+  background:var(--g50);border:1px solid var(--g200);
+  border-radius:var(--r-md);padding:var(--s3) var(--s4);
+  font-size:12px;color:var(--g700);margin-bottom:var(--s4);
+  line-height:1.5;display:flex;gap:var(--s2);align-items:flex-start;font-weight:500;
 }
 
-/* ══════════════════════════════════════════
-   ING SELECTED / COST PREVIEW
-   ══════════════════════════════════════════ */
-#ing-selected-info{display:none;margin-top:var(--s2);padding:var(--s3);background:var(--if-red-light);border:1px solid var(--if-red-mid);border-radius:var(--r-sm)}
-#ing-sel-name{font-size:13px;font-weight:600;color:var(--if-red)}
-#ing-sel-price{font-size:11px;color:var(--if-text-secondary);margin-top:2px;font-family:'Roboto Mono',monospace}
-#ing-cost-preview{display:none;margin-top:var(--s2);font-size:13px;color:var(--if-red);font-weight:600;font-family:'Roboto Mono',monospace}
+/* ══════════════════════════════════════════════
+   ING SELECTED INFO
+   ══════════════════════════════════════════════ */
+#ing-selected-info{display:none;margin-top:var(--s2);padding:var(--s3);background:var(--g50);border:1px solid var(--g200);border-radius:var(--r-md)}
+#ing-sel-name{font-size:13px;font-weight:700;color:var(--g700)}
+#ing-sel-price{font-size:11px;color:var(--n600);margin-top:2px;font-family:'Roboto Mono',monospace}
+#ing-cost-preview{display:none;margin-top:var(--s2);font-size:13px;color:var(--g600);font-weight:700;font-family:'Roboto Mono',monospace}
 
-/* ══════════════════════════════════════════
-   TOAST / SNACKBAR
-   ══════════════════════════════════════════ */
+/* ══════════════════════════════════════════════
+   TOAST — pill escuro, tipo iFood/Chowdeck
+   ══════════════════════════════════════════════ */
 .toast{
-  position:fixed;bottom:80px;left:50%;
-  transform:translateX(-50%) translateY(6px);
-  background:var(--if-text-primary);color:#fff;
-  padding:10px 20px;border-radius:var(--r-pill);
-  font-size:13px;font-family:'Inter',sans-serif;font-weight:500;
+  position:fixed;bottom:84px;left:50%;
+  transform:translateX(-50%) translateY(8px);
+  background:var(--n900);color:#fff;
+  padding:11px 22px;border-radius:var(--r-pill);
+  font-size:13px;font-family:'Inter',sans-serif;font-weight:600;
   z-index:300;opacity:0;
   transition:opacity var(--dur) var(--ease),transform var(--dur) var(--ease);
   pointer-events:none;white-space:nowrap;
   max-width:calc(100% - 32px);text-align:center;
-  box-shadow:var(--shadow-lg);
+  box-shadow:var(--shadow-md);
 }
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
-/* ══════════════════════════════════════════
-   PHYSICAL STOCK CARDS
-   ══════════════════════════════════════════ */
-.stock-bar-bg{height:6px;background:var(--if-bg);border-radius:3px;overflow:hidden;margin-top:var(--s2)}
+/* ══════════════════════════════════════════════
+   PHYSICAL STOCK
+   ══════════════════════════════════════════════ */
+.stock-bar-bg{height:6px;background:var(--n100);border-radius:3px;overflow:hidden;margin-top:var(--s2)}
 .stock-bar-fill{height:100%;border-radius:3px;transition:width var(--dur) var(--ease)}
-.stock-bar-fill.green{background:var(--if-green)}
-.stock-bar-fill.orange{background:var(--if-orange)}
-.stock-bar-fill.red{background:var(--if-red)}
-.stock-flag{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;padding:3px 10px;border-radius:var(--r-pill);margin-top:var(--s2)}
-.stock-flag.green{background:var(--if-green-light);color:var(--if-green)}
-.stock-flag.orange{background:var(--if-orange-light);color:var(--if-orange)}
-.stock-flag.red{background:var(--if-red-light);color:var(--if-red)}
+.stock-bar-fill.green{background:var(--g400)}
+.stock-bar-fill.orange{background:var(--warning)}
+.stock-bar-fill.red{background:var(--r400)}
+.stock-flag{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:700;padding:3px 10px;border-radius:var(--r-pill);margin-top:var(--s2)}
+.stock-flag.green{background:var(--g50);color:var(--g600)}
+.stock-flag.orange{background:var(--warning-bg);color:var(--warning)}
+.stock-flag.red{background:var(--r100);color:var(--r400)}
 
-.pstock-card{background:var(--if-white);border:1px solid var(--if-border);border-radius:var(--r-md);padding:var(--s4);margin-bottom:var(--s2);transition:box-shadow var(--dur) var(--ease)}
+.pstock-card{background:var(--n0);border-radius:var(--r-lg);padding:var(--s4);margin-bottom:var(--s2);box-shadow:var(--shadow-card);transition:box-shadow var(--dur) var(--ease)}
 .pstock-card:hover{box-shadow:var(--shadow-md)}
 .pstock-header{display:flex;justify-content:space-between;align-items:flex-start;gap:var(--s2);margin-bottom:var(--s2)}
-.pstock-name{font-size:14px;font-weight:600;flex:1;min-width:0;color:var(--if-text-primary);letter-spacing:-0.1px}
-.pstock-qty{font-family:'Roboto Mono',monospace;font-size:22px;font-weight:700;color:var(--if-text-primary);margin-bottom:2px;letter-spacing:-0.5px}
-.pstock-meta{font-size:11px;color:var(--if-text-secondary);margin-bottom:var(--s2)}
+.pstock-name{font-size:14px;font-weight:700;flex:1;min-width:0;color:var(--n900)}
+.pstock-qty{font-family:'Roboto Mono',monospace;font-size:24px;font-weight:800;color:var(--n900);margin-bottom:2px;letter-spacing:-0.5px}
+.pstock-meta{font-size:11px;color:var(--n600);margin-bottom:var(--s2);font-weight:500}
 
 .summary-box{
-  background:var(--if-white);border:1px solid var(--if-border);
-  border-radius:var(--r-md);padding:var(--s4);
-  margin-bottom:var(--s4);
+  background:var(--n0);border-radius:var(--r-lg);
+  padding:var(--s4);margin-bottom:var(--s4);
   display:grid;grid-template-columns:1fr 1fr;gap:var(--s3);
+  box-shadow:var(--shadow-card);
 }
-.summary-item-label{font-size:11px;color:var(--if-text-secondary);margin-bottom:3px;letter-spacing:0.3px;font-weight:500}
-.summary-item-val{font-size:20px;font-weight:700;font-family:'Roboto Mono',monospace;color:var(--if-text-primary);letter-spacing:-0.5px}
+.summary-item-label{font-size:11px;color:var(--n600);margin-bottom:3px;font-weight:600;letter-spacing:0.2px}
+.summary-item-val{font-size:22px;font-weight:800;font-family:'Roboto Mono',monospace;color:var(--n900);letter-spacing:-0.5px}
 
-/* ══════════════════════════════════════════
-   RECIPE CARDS — iFood style
-   ══════════════════════════════════════════ */
+/* ══════════════════════════════════════════════
+   RECIPE CARDS
+   ══════════════════════════════════════════════ */
 .recipe-card{
-  background:var(--if-white);border:1px solid var(--if-border);
-  border-radius:var(--r-md);padding:var(--s4);
-  margin-bottom:var(--s2);cursor:pointer;
-  transition:box-shadow var(--dur) var(--ease),border-color var(--dur) var(--ease);
+  background:var(--n0);border-radius:var(--r-lg);
+  padding:var(--s4);margin-bottom:var(--s3);cursor:pointer;
+  box-shadow:var(--shadow-card);
+  transition:box-shadow var(--dur) var(--ease),transform var(--dur) var(--ease);
 }
-.recipe-card:hover{box-shadow:var(--shadow-md);border-color:var(--if-border-dark)}
-.recipe-card-title{font-size:15px;font-weight:700;color:var(--if-text-primary);line-height:1.3;letter-spacing:-0.2px;margin-bottom:4px}
-.recipe-card-meta{font-size:12px;color:var(--if-text-secondary);line-height:1.4;margin-bottom:2px}
+.recipe-card:hover{box-shadow:var(--shadow-md);transform:translateY(-1px)}
+.recipe-card:active{transform:translateY(0)}
+.recipe-card-title{font-size:15px;font-weight:800;color:var(--n900);line-height:1.3;letter-spacing:-0.3px;margin-bottom:4px}
+.recipe-card-meta{font-size:12px;color:var(--n600);line-height:1.4;margin-bottom:2px;font-weight:500}
 
-/* ══════════════════════════════════════════
-   GOOGLE SEARCH BTN
-   ══════════════════════════════════════════ */
+/* ══════════════════════════════════════════════
+   GOOGLE LINK
+   ══════════════════════════════════════════════ */
 .google-search-btn{
   display:inline-flex;align-items:center;gap:6px;
-  padding:8px 14px;background:var(--if-bg);
-  border:1.5px solid var(--if-border);border-radius:var(--r-pill);
-  font-size:12px;font-family:'Inter',sans-serif;font-weight:500;
-  color:var(--if-text-secondary);cursor:pointer;margin-top:var(--s2);
+  padding:8px 16px;background:var(--n50);
+  border:1.5px solid var(--n200);border-radius:var(--r-pill);
+  font-size:12px;font-family:'Inter',sans-serif;font-weight:600;
+  color:var(--n600);cursor:pointer;margin-top:var(--s2);
   text-decoration:none;max-width:100%;
-  transition:border-color var(--dur) var(--ease);
+  transition:border-color var(--dur) var(--ease),color var(--dur) var(--ease);
 }
-.google-search-btn:hover{border-color:var(--if-red);color:var(--if-red)}
+.google-search-btn:hover{border-color:var(--g500);color:var(--g600)}
 
-/* ══════════════════════════════════════════
+/* ══════════════════════════════════════════════
    DESKTOP
-   ══════════════════════════════════════════ */
+   ══════════════════════════════════════════════ */
 @media(min-width:480px){
   .page{padding:var(--s6) var(--s7);max-width:480px}
   .modal{border-radius:var(--r-lg);margin:auto;margin-bottom:0;max-width:440px}
@@ -520,7 +622,7 @@ select{
 }
 ::-webkit-scrollbar{width:4px;height:4px}
 ::-webkit-scrollbar-track{background:transparent}
-::-webkit-scrollbar-thumb{background:var(--if-border-dark);border-radius:2px}
+::-webkit-scrollbar-thumb{background:var(--n200);border-radius:2px}
 </style>
 </head>
 <body>
@@ -536,12 +638,9 @@ select{
 
 <!-- PAGE: FICHA TÉCNICA -->
 <div class="page active" id="page-ficha">
-  <div class="page-header">
-    <div>
-      <div class="page-title">Ficha Técnica</div>
-      <div class="page-sub">Monte sua receita com ingredientes do estoque</div>
-    </div>
-    <button class="btn btn-warn btn-sm" onclick="clearFicha()">Limpar</button>
+  <div class="page-hero">
+    <div class="page-hero-label">Bem-vindo, Raphael 👋</div>
+    <div class="page-hero-title">Monte sua ficha técnica</div>
   </div>
 
   <div class="card">
@@ -552,904 +651,4 @@ select{
     <div class="input-row cols-2">
       <div class="input-group" style="margin-bottom:0">
         <label class="input-label">Rendimento (g)</label>
-        <input type="number" id="ficha-rendimento" placeholder="Ex: 800" oninput="calcFicha()">
-      </div>
-      <div class="input-group" style="margin-bottom:0">
-        <label class="input-label">Nº de Porções</label>
-        <input type="number" id="ficha-porcoes" placeholder="Ex: 10" oninput="calcFicha()">
-      </div>
-    </div>
-  </div>
-
-  <div class="section-label">Adicionar Ingrediente</div>
-  <div class="card">
-    <div class="source-toggle">
-      <button class="source-btn active" id="src-btn-virtual" onclick="setIngSource('virtual')">📦 Est. Virtual<br><span style="font-size:9px;font-weight:400;opacity:0.8">fichas & precificação</span></button>
-      <button class="source-btn" id="src-btn-fisico" onclick="setIngSource('fisico')">🏪 Est. Físico<br><span style="font-size:9px;font-weight:400;opacity:0.8">desconta estoque real</span></button>
-    </div>
-    <div style="position:relative" id="ing-search-wrap">
-      <span class="search-icon">🔍</span>
-      <input type="text" id="ing-search" placeholder="Buscar ingrediente..." oninput="searchIngredient()" autocomplete="off" style="padding-left:38px;border-radius:var(--r-pill);background:var(--if-bg);border-color:transparent">
-      <div class="autocomplete-dropdown" id="ing-dropdown"></div>
-    </div>
-    <div id="ing-selected-info"><div id="ing-sel-name"></div><div id="ing-sel-price"></div></div>
-    <div class="input-row cols-2" style="margin-top:var(--s3)">
-      <div class="input-group" style="margin-bottom:0">
-        <label class="input-label">Quantidade usada</label>
-        <input type="number" id="ing-qty" placeholder="Ex: 200" oninput="calcIngCost()">
-      </div>
-      <div class="input-group" style="margin-bottom:0">
-        <label class="input-label">Unidade</label>
-        <select id="ing-unit" onchange="calcIngCost()">
-          <option value="g">Gramas (g)</option>
-          <option value="kg">Quilograma (kg)</option>
-          <option value="ml">Mililitros (ml)</option>
-          <option value="un">Unidade (un)</option>
-        </select>
-      </div>
-    </div>
-    <div id="ing-cost-preview"></div>
-    <div class="input-group" style="margin-top:var(--s3);margin-bottom:0">
-      <label class="input-label">Rendimento do ingrediente % <span style="font-weight:400;color:var(--if-text-tertiary)">(padrão 100%)</span></label>
-      <input type="number" id="ing-rendimento" placeholder="Ex: 85 para 15% de perda" min="1" max="100">
-    </div>
-    <button class="btn btn-primary btn-full" style="margin-top:var(--s4)" onclick="addIngredient()">+ Adicionar Ingrediente</button>
-  </div>
-
-  <div id="ingredients-list"></div>
-
-  <div id="ficha-totals" style="display:none">
-    <div class="markup-row">
-      <div class="markup-label">💹 Markup (%)</div>
-      <input type="number" class="markup-input" id="markup-pct" placeholder="0" oninput="calcFicha()" min="0" style="width:80px">
-    </div>
-    <div class="total-box">
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--s4)">
-        <div><div class="total-label">Custo Total</div><div class="total-value" id="total-custo">R$ 0,00</div></div>
-        <div><div class="total-label">Preço de Venda</div><div class="total-value" id="total-venda">R$ 0,00</div></div>
-        <div><div class="total-label">Por Porção</div><div class="total-value" id="total-porcao" style="font-size:16px">R$ 0,00</div></div>
-        <div><div class="total-label">Por KG</div><div class="total-value" id="total-kg" style="font-size:16px">—</div></div>
-      </div>
-    </div>
-
-    <div class="section-label" style="margin-top:var(--s5)">Tabela Nutricional Estimada</div>
-    <div class="card">
-      <div class="portion-row">
-        <div class="portion-label">Porção base para cálculo:</div>
-        <input type="number" class="portion-input" id="portion-size" value="100" oninput="calcNutrition()" style="width:88px">
-        <span style="font-size:12px;color:var(--if-text-secondary)">g</span>
-      </div>
-      <div style="font-size:11px;color:var(--if-text-tertiary);margin-bottom:var(--s3);line-height:1.5">Base: 2500 kcal/dia. Valores estimados com base na composição dos ingredientes.</div>
-      <table class="nutrition-table">
-        <thead><tr><th>Nutriente</th><th style="text-align:right">Por <span id="nut-portion-label">100g</span></th><th style="text-align:right">%VD</th></tr></thead>
-        <tbody id="nutrition-body"></tbody>
-      </table>
-    </div>
-    <button class="btn btn-primary btn-full" onclick="saveRecipe()" style="margin-bottom:var(--s3)">💾 Salvar Receita</button>
-  </div>
-</div>
-
-<!-- PAGE: ESTOQUE VIRTUAL -->
-<div class="page" id="page-estoque">
-  <div class="page-header">
-    <div><div class="page-title">Est. Virtual</div><div class="page-sub">Ingredientes para precificação e fichas</div></div>
-    <button class="btn btn-primary btn-sm" onclick="openStockModal()">+ Novo</button>
-  </div>
-  <div class="search-bar">
-    <span class="search-icon">🔍</span>
-    <input type="text" placeholder="Buscar produto..." oninput="renderStock(this.value)">
-  </div>
-  <div id="stock-list"></div>
-</div>
-
-<!-- PAGE: RECEITAS -->
-<div class="page" id="page-receitas">
-  <div class="page-header">
-    <div><div class="page-title">Receitas</div><div class="page-sub">Suas fichas técnicas salvas</div></div>
-  </div>
-  <div class="search-bar">
-    <span class="search-icon">🔍</span>
-    <input type="text" placeholder="Buscar receita..." oninput="renderRecipes(this.value,activeIngFilter)" id="recipe-search">
-  </div>
-  <div class="section-label" style="margin-top:0;margin-bottom:var(--s2)">Filtrar por ingrediente</div>
-  <div class="filter-chips" id="ingredient-filter-chips"></div>
-  <div id="recipes-list"></div>
-</div>
-
-<!-- PAGE: ESTOQUE FÍSICO -->
-<div class="page" id="page-fisico">
-  <div class="page-header">
-    <div><div class="page-title">Est. Físico</div><div class="page-sub">Controle real de quantidade e reposição</div></div>
-    <button class="btn btn-primary btn-sm" onclick="openPhysicalModal()">+ Novo</button>
-  </div>
-  <div id="pstock-summary" class="summary-box" style="display:none"></div>
-  <div class="search-bar">
-    <span class="search-icon">🔍</span>
-    <input type="text" placeholder="Buscar produto..." oninput="renderPhysical(this.value)">
-  </div>
-  <div id="pstock-list"></div>
-</div>
-
-<!-- NAV -->
-<nav class="nav">
-  <button class="nav-btn active" id="nav-ficha" onclick="showPage('ficha','nav-ficha')">
-    <span class="nav-icon">📋</span><span>Ficha</span>
-  </button>
-  <button class="nav-btn" id="nav-estoque" onclick="showPage('estoque','nav-estoque')">
-    <span class="nav-icon">📦</span><span>Virtual</span>
-  </button>
-  <button class="nav-btn" id="nav-fisico" onclick="showPage('fisico','nav-fisico')">
-    <span class="nav-icon">🏪</span><span>Físico</span>
-  </button>
-  <button class="nav-btn" id="nav-receitas" onclick="showPage('receitas','nav-receitas')">
-    <span class="nav-icon">🍳</span><span>Receitas</span>
-  </button>
-</nav>
-
-<!-- MODAL: ESTOQUE VIRTUAL -->
-<div class="modal-overlay" id="modal-stock">
-  <div class="modal">
-    <div class="modal-handle"></div>
-    <div class="modal-title" id="modal-stock-title">Novo Produto</div>
-    <div class="input-group"><label class="input-label">Nome do Produto *</label><input type="text" id="stock-name" placeholder="Ex: Farinha de trigo..." oninput="updateGoogleLink()"></div>
-    <div class="input-row cols-2">
-      <div class="input-group"><label class="input-label">Quantidade *</label><input type="number" id="stock-qty" placeholder="Ex: 1" step="0.001"></div>
-      <div class="input-group"><label class="input-label">Unidade</label>
-        <select id="stock-unit"><option value="kg">KG</option><option value="g">Gramas</option><option value="ml">Mililitros</option><option value="un">Unidade</option></select>
-      </div>
-    </div>
-    <div class="input-group"><label class="input-label">Valor Pago (R$) *</label><input type="number" id="stock-price" placeholder="Ex: 10.00" step="0.01"></div>
-    <div class="input-group"><label class="input-label">Categoria</label>
-      <select id="stock-category">
-        <option value="">Selecionar...</option>
-        <option value="Proteínas">💪 Proteínas</option><option value="Carboidratos">🍞 Carboidratos</option>
-        <option value="Laticínios">🧀 Laticínios</option><option value="Carnes">🥩 Carnes</option>
-        <option value="Cereais">🌾 Cereais</option><option value="Farinhas">🌿 Farinhas</option>
-        <option value="Açúcares">🍬 Açúcares</option><option value="Óleos e Gorduras">🫙 Óleos</option>
-        <option value="Temperos">🌶 Temperos</option><option value="Hortifrúti">🥬 Hortifrúti</option>
-        <option value="Leguminosas">🫘 Leguminosas</option><option value="Outros">📦 Outros</option>
-      </select>
-    </div>
-    <div class="divider"></div>
-    <div style="font-size:14px;font-weight:700;margin-bottom:4px;color:var(--if-text-primary)">Tabela Nutricional <span style="font-weight:400;color:var(--if-text-secondary);font-size:12px">(por 100g)</span></div>
-    <div style="font-size:12px;color:var(--if-text-secondary);margin-bottom:var(--s3);line-height:1.5">Preencha os valores do rótulo. Se vazio, o app usa estimativas.</div>
-    <a id="google-search-link" href="#" target="_blank" class="google-search-btn" onclick="handleGoogleSearch(event)">🔍 Pesquisar no Google</a>
-    <div class="input-row cols-2" style="margin-top:var(--s4)">
-      <div class="input-group"><label class="input-label">Calorias (kcal)</label><input type="number" id="nut-kcal" placeholder="Ex: 364"></div>
-      <div class="input-group"><label class="input-label">Carboidratos (g)</label><input type="number" id="nut-carb" placeholder="Ex: 76"></div>
-    </div>
-    <div class="input-row cols-2">
-      <div class="input-group"><label class="input-label">Proteínas (g)</label><input type="number" id="nut-prot" placeholder="Ex: 10"></div>
-      <div class="input-group"><label class="input-label">Gorduras (g)</label><input type="number" id="nut-fat" placeholder="Ex: 1.2"></div>
-    </div>
-    <div class="input-row cols-2">
-      <div class="input-group"><label class="input-label">Fibras (g)</label><input type="number" id="nut-fiber" placeholder="Ex: 2.7"></div>
-      <div class="input-group"><label class="input-label">Sódio (mg)</label><input type="number" id="nut-sodium" placeholder="Ex: 2"></div>
-    </div>
-    <div style="display:flex;gap:var(--s2);margin-top:var(--s5)">
-      <button class="btn btn-secondary" style="flex:1" onclick="closeModal('modal-stock')">Cancelar</button>
-      <button class="btn btn-primary" style="flex:1" onclick="saveStock()">Salvar Produto</button>
-    </div>
-  </div>
-</div>
-
-<!-- MODAL: VER RECEITA -->
-<div class="modal-overlay" id="modal-recipe">
-  <div class="modal">
-    <div class="modal-handle"></div>
-    <div id="recipe-detail-content"></div>
-    <div style="display:flex;gap:var(--s2);margin-top:var(--s5);flex-wrap:wrap">
-      <button class="btn btn-secondary btn-sm" style="flex:1;min-width:70px" onclick="closeModal('modal-recipe')">Fechar</button>
-      <button class="btn btn-danger btn-sm" onclick="deleteCurrentRecipe()" style="flex:1;min-width:70px">🗑 Excluir</button>
-      <button class="btn btn-primary btn-sm" style="flex:1;min-width:70px" onclick="loadRecipeToFicha()">✏️ Editar</button>
-      <button class="btn btn-secondary btn-sm" style="flex:1;min-width:70px;border-color:var(--if-red);color:var(--if-red)" onclick="exportRecipePDF(currentRecipeId)">📄 PDF</button>
-    </div>
-  </div>
-</div>
-
-<!-- MODAL: ESTOQUE FÍSICO -->
-<div class="modal-overlay" id="modal-pstock">
-  <div class="modal">
-    <div class="modal-handle"></div>
-    <div class="modal-title" id="modal-pstock-title">Novo Produto Físico</div>
-    <div class="input-group"><label class="input-label">Nome do Produto *</label><input type="text" id="pstock-name" placeholder="Ex: Farinha de trigo..."></div>
-    <div class="input-row cols-2">
-      <div class="input-group"><label class="input-label">Quantidade *</label><input type="number" id="pstock-qty" placeholder="Ex: 5" step="0.001"></div>
-      <div class="input-group"><label class="input-label">Unidade</label>
-        <select id="pstock-unit"><option value="kg">KG</option><option value="g">Gramas</option><option value="ml">Mililitros</option><option value="un">Unidade</option></select>
-      </div>
-    </div>
-    <div class="input-group"><label class="input-label">Valor Pago (R$) *</label><input type="number" id="pstock-price" placeholder="Ex: 10.00" step="0.01"></div>
-    <div class="input-group"><label class="input-label">Estoque Desejado (meta) *</label><input type="number" id="pstock-desired" placeholder="Ex: 10 — será seu 100%" step="0.001"></div>
-    <div class="input-group"><label class="input-label">Categoria</label>
-      <select id="pstock-category">
-        <option value="">Selecionar...</option>
-        <option value="Proteínas">💪 Proteínas</option><option value="Carnes">🥩 Carnes</option>
-        <option value="Laticínios">🧀 Laticínios</option><option value="Cereais">🌾 Cereais</option>
-        <option value="Farinhas">🌿 Farinhas</option><option value="Açúcares">🍬 Açúcares</option>
-        <option value="Óleos e Gorduras">🫙 Óleos</option><option value="Temperos">🌶 Temperos</option>
-        <option value="Hortifrúti">🥬 Hortifrúti</option><option value="Leguminosas">🫘 Leguminosas</option>
-        <option value="Outros">📦 Outros</option>
-      </select>
-    </div>
-    <div class="info-banner"><span style="font-size:16px;flex-shrink:0">💡</span><span>Ao salvar, este produto será sincronizado no Estoque Virtual.</span></div>
-    <div style="display:flex;gap:var(--s2)">
-      <button class="btn btn-secondary" style="flex:1" onclick="closeModal('modal-pstock')">Cancelar</button>
-      <button class="btn btn-primary" style="flex:1" onclick="savePhysical()">Salvar</button>
-    </div>
-  </div>
-</div>
-
-<!-- MODAL: MOVIMENTAÇÃO -->
-<div class="modal-overlay" id="modal-move">
-  <div class="modal">
-    <div class="modal-handle"></div>
-    <div class="modal-title" id="modal-move-title">Movimentar Estoque</div>
-    <div id="modal-move-info" style="background:var(--if-bg);border-radius:var(--r-sm);padding:var(--s3) var(--s4);margin-bottom:var(--s4);font-size:12px;color:var(--if-text-secondary)"></div>
-    <div class="source-toggle" style="margin-bottom:var(--s4)">
-      <button class="source-btn active" id="move-btn-usar" onclick="setMoveType('usar')">📤 Usar / Retirar</button>
-      <button class="source-btn" id="move-btn-repor" onclick="setMoveType('repor')">📥 Repor / Comprar</button>
-    </div>
-    <div class="input-row cols-2" style="margin-bottom:var(--s4)">
-      <div class="input-group" style="margin-bottom:0">
-        <label class="input-label" id="move-qty-label">Quantidade a usar</label>
-        <input type="number" id="move-qty" placeholder="Ex: 2" step="0.001" min="0.001">
-      </div>
-      <div class="input-group" style="margin-bottom:0">
-        <label class="input-label">Unidade</label>
-        <div id="move-unit-display" style="padding:11px var(--s3);background:var(--if-bg);border:1.5px solid var(--if-border);border-radius:var(--r-sm);font-size:14px;color:var(--if-text-secondary)">—</div>
-      </div>
-    </div>
-    <div style="display:flex;gap:var(--s2)">
-      <button class="btn btn-secondary" style="flex:1" onclick="closeModal('modal-move')">Cancelar</button>
-      <button class="btn btn-primary" style="flex:1" id="move-confirm-btn" onclick="confirmMove()">Confirmar</button>
-    </div>
-  </div>
-</div>
-
-<div class="toast" id="toast"></div>
-
-<script>
-/* ══ HELPERS ══ */
-const fmtBRL = v => v.toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
-const fmtQty = (q,u) => (q%1===0?q:parseFloat(q.toFixed(3)))+u;
-const DB = {
-  load: k => JSON.parse(localStorage.getItem(k)||'[]'),
-  save: (k,v) => localStorage.setItem(k,JSON.stringify(v))
-};
-
-let stock         = DB.load('fichatec_stock');
-let physicalStock = DB.load('fichatec_physical');
-let recipes       = DB.load('fichatec_recipes');
-let currentIngredients=[], selectedIngredient=null;
-let editingStockId=null, editingPhysicalId=null;
-let currentRecipeId=null, activeIngFilter=null;
-let ingSource='virtual', moveType='usar', movingPhysicalId=null;
-
-const defaultNutrition={
-  'farinha':{kcal:361,carb:75,prot:9.8,fat:1.4,fiber:2.3,sodium:2},
-  'açúcar refinado':{kcal:399,carb:99.6,prot:0,fat:0,fiber:0,sodium:1},
-  'açúcar':{kcal:387,carb:99,prot:0,fat:0,fiber:0,sodium:1},
-  'manteiga':{kcal:741,carb:0,prot:0.5,fat:83,fiber:0,sodium:576},
-  'ovo':{kcal:146,carb:0.4,prot:12.6,fat:10,fiber:0,sodium:142},
-  'leite':{kcal:61,carb:4.7,prot:3.2,fat:3.3,fiber:0,sodium:38},
-  'sal':{kcal:0,carb:0,prot:0,fat:0,fiber:0,sodium:39300},
-  'azeite':{kcal:884,carb:0,prot:0,fat:100,fiber:0,sodium:0},
-  'óleo':{kcal:884,carb:0,prot:0,fat:100,fiber:0,sodium:0},
-  'arroz':{kcal:358,carb:79,prot:7.4,fat:0.3,fiber:1.6,sodium:1},
-  'feijão':{kcal:333,carb:61,prot:22,fat:1.6,fiber:15.5,sodium:5},
-  'frango':{kcal:162,carb:0,prot:24,fat:7,fiber:0,sodium:75},
-  'carne':{kcal:219,carb:0,prot:26,fat:13,fiber:0,sodium:66},
-  'patinho':{kcal:219,carb:0,prot:26,fat:13,fiber:0,sodium:66},
-  'tomate':{kcal:18,carb:3.9,prot:0.9,fat:0.2,fiber:1.2,sodium:5},
-  'cebola':{kcal:40,carb:9.3,prot:1.1,fat:0.1,fiber:1.7,sodium:4},
-  'alho':{kcal:149,carb:33,prot:6.4,fat:0.5,fiber:2.1,sodium:17},
-  'fermento':{kcal:105,carb:8,prot:12,fat:2,fiber:4,sodium:50},
-  'bicarbonato':{kcal:0,carb:0,prot:0,fat:0,fiber:0,sodium:27360},
-  'chocolate':{kcal:546,carb:60,prot:5,fat:32,fiber:7,sodium:10},
-  'creme de leite':{kcal:300,carb:3,prot:2.5,fat:30,fiber:0,sodium:40},
-  'queijo':{kcal:350,carb:2,prot:25,fat:27,fiber:0,sodium:600},
-  'vinagre':{kcal:22,carb:5,prot:0,fat:0,fiber:0,sodium:2},
-  'mel':{kcal:304,carb:82,prot:0.3,fat:0,fiber:0,sodium:4},
-  'default':{kcal:250,carb:30,prot:8,fat:5,fiber:2,sodium:100}
-};
-function getNutrition(name){const k=name.toLowerCase();for(const key in defaultNutrition)if(k.includes(key))return defaultNutrition[key];return defaultNutrition.default;}
-function pricePerUnit(s){return s.unit==='un'?s.price/s.qty:s.price/(s.unit==='kg'?s.qty*1000:s.qty);}
-function findStockItem(stockId,name){
-  if(stockId&&!String(stockId).startsWith('pf_')){const s=stock.find(x=>x.id===stockId||x.id===parseInt(stockId));if(s)return s;}
-  return stock.find(x=>x.name.toLowerCase()===name.toLowerCase())||null;
-}
-function calcCosts(ingredients,markup=0){
-  const list=ingredients.map(i=>{const s=findStockItem(i.stockId,i.name);const ppg=s?pricePerUnit(s):0;return{...i,cost:ppg*i.qtyBruta,currentPricePerG:ppg};});
-  const totalCost=list.reduce((a,i)=>a+i.cost,0);
-  return{ingredients:list,totalCost,venda:totalCost*(1+(markup||0)/100)};
-}
-function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
-function showPage(page,navId){
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
-  document.getElementById('page-'+page).classList.add('active');
-  document.getElementById(navId).classList.add('active');
-  if(page==='estoque')renderStock();
-  if(page==='fisico')renderPhysical();
-  if(page==='receitas')renderRecipes();
-}
-function closeModal(id){document.getElementById(id).classList.remove('open');}
-
-/* ══ ESTOQUE VIRTUAL ══ */
-function openStockModal(id=null){
-  editingStockId=id;
-  const nutFields=['nut-kcal','nut-carb','nut-prot','nut-fat','nut-fiber','nut-sodium'];
-  if(id!==null){
-    const s=stock.find(x=>x.id===id);
-    document.getElementById('modal-stock-title').textContent='Editar Produto';
-    document.getElementById('stock-name').value=s.name;
-    document.getElementById('stock-qty').value=s.qty;
-    document.getElementById('stock-unit').value=s.unit;
-    document.getElementById('stock-price').value=s.price;
-    document.getElementById('stock-category').value=s.category||'';
-    const n=s.nutrition||{};
-    nutFields.forEach(f=>document.getElementById(f).value=n[f.replace('nut-','')]||'');
-  }else{
-    document.getElementById('modal-stock-title').textContent='Novo Produto';
-    ['stock-name','stock-qty','stock-price',...nutFields].forEach(f=>document.getElementById(f).value='');
-    document.getElementById('stock-unit').value='kg';
-    document.getElementById('stock-category').value='';
-  }
-  updateGoogleLink();
-  document.getElementById('modal-stock').classList.add('open');
-}
-function updateGoogleLink(){
-  const name=document.getElementById('stock-name').value.trim();
-  const link=document.getElementById('google-search-link');
-  link.href=name?`https://www.google.com/search?q=tabela+nutricional+${encodeURIComponent(name)}+por+100g`:'#';
-  link.textContent=`🔍 Pesquisar${name?' "'+name+'"':''} no Google`;
-}
-function handleGoogleSearch(e){const href=document.getElementById('google-search-link').href;if(!href||href==='#'){e.preventDefault();return;}window.open(href,'_blank');e.preventDefault();}
-function saveStock(){
-  const name=document.getElementById('stock-name').value.trim();
-  const qty=parseFloat(document.getElementById('stock-qty').value);
-  const price=parseFloat(document.getElementById('stock-price').value);
-  if(!name||isNaN(qty)||qty<=0||isNaN(price)||price<0){showToast('Preencha nome, quantidade e valor.');return;}
-  const nutrition={kcal:parseFloat(document.getElementById('nut-kcal').value)||null,carb:parseFloat(document.getElementById('nut-carb').value)||null,prot:parseFloat(document.getElementById('nut-prot').value)||null,fat:parseFloat(document.getElementById('nut-fat').value)||null,fiber:parseFloat(document.getElementById('nut-fiber').value)||null,sodium:parseFloat(document.getElementById('nut-sodium').value)||null};
-  const item={id:editingStockId||Date.now(),name,qty,unit:document.getElementById('stock-unit').value,price,category:document.getElementById('stock-category').value,nutrition};
-  stock=editingStockId?stock.map(s=>s.id===editingStockId?item:s):[...stock,item];
-  DB.save('fichatec_stock',stock);
-  closeModal('modal-stock');renderStock();
-  renderRecipes(document.getElementById('recipe-search').value,activeIngFilter);
-  showToast(editingStockId?'Produto atualizado!':'Produto adicionado!');
-}
-function deleteStock(id){
-  if(!confirm('Remover este produto?'))return;
-  stock=stock.filter(s=>s.id!==id);DB.save('fichatec_stock',stock);renderStock();showToast('Removido.');
-}
-function renderStock(filter=''){
-  const el=document.getElementById('stock-list');
-  const filtered=stock.filter(s=>s.name.toLowerCase().includes(filter.toLowerCase()));
-  if(!filtered.length){el.innerHTML=`<div class="empty-state"><span class="empty-icon">📦</span><div class="empty-text">${filter?'Nenhum produto encontrado.':'Estoque vazio. Clique em "+ Novo" para adicionar!'}</div></div>`;return;}
-  el.innerHTML=filtered.map(s=>{
-    const ppg=pricePerUnit(s);
-    const ps=s.unit==='ml'?fmtBRL(ppg*1000)+'/L · '+fmtBRL(ppg*100)+'/100ml':s.unit==='un'?fmtBRL(ppg)+'/un':fmtBRL(ppg*1000)+'/kg · '+fmtBRL(ppg*100)+'/100g';
-    return`<div class="item-card">
-      <div style="flex:1;min-width:0">
-        <div class="item-name">${s.name}${s.category?` <span class="tag" style="margin-left:4px;font-size:10px">${s.category}</span>`:''}</div>
-        <div class="item-meta">${s.qty}${s.unit} · ${fmtBRL(s.price)}</div>
-        <div class="item-meta" style="font-family:'Roboto Mono',monospace;font-size:11px;color:var(--if-red);font-weight:500">${ps}</div>
-      </div>
-      <div class="item-actions">
-        <button class="btn btn-secondary btn-icon" onclick="openStockModal(${s.id})" style="font-size:14px">✏️</button>
-        <button class="btn btn-danger btn-icon" onclick="deleteStock(${s.id})" style="font-size:14px">🗑</button>
-      </div>
-    </div>`;
-  }).join('');
-}
-
-/* ══ ESTOQUE FÍSICO ══ */
-function stockColor(p){return p>=80?'green':p>=50?'orange':'red';}
-function stockFlag(p){const c=stockColor(p),i=p>=80?'🟢':p>=50?'🟡':'🔴';return`<span class="stock-flag ${c}">${i} ${p.toFixed(0)}%</span>`;}
-function stockBar(p){return`<div class="stock-bar-bg"><div class="stock-bar-fill ${stockColor(p)}" style="width:${Math.min(p,100).toFixed(1)}%"></div></div>`;}
-function openPhysicalModal(id=null){
-  editingPhysicalId=id;
-  if(id!==null){
-    const p=physicalStock.find(x=>x.id===id);
-    document.getElementById('modal-pstock-title').textContent='Editar Produto';
-    document.getElementById('pstock-name').value=p.name;document.getElementById('pstock-qty').value=p.currentQty;
-    document.getElementById('pstock-unit').value=p.unit;document.getElementById('pstock-price').value=p.price;
-    document.getElementById('pstock-desired').value=p.desiredQty;document.getElementById('pstock-category').value=p.category||'';
-  }else{
-    document.getElementById('modal-pstock-title').textContent='Novo Produto Físico';
-    ['pstock-name','pstock-qty','pstock-price','pstock-desired'].forEach(f=>document.getElementById(f).value='');
-    document.getElementById('pstock-unit').value='kg';document.getElementById('pstock-category').value='';
-  }
-  document.getElementById('modal-pstock').classList.add('open');
-}
-function savePhysical(){
-  const name=document.getElementById('pstock-name').value.trim();
-  const qty=parseFloat(document.getElementById('pstock-qty').value);
-  const unit=document.getElementById('pstock-unit').value;
-  const price=parseFloat(document.getElementById('pstock-price').value);
-  const desired=parseFloat(document.getElementById('pstock-desired').value);
-  if(!name||isNaN(qty)||qty<0||isNaN(price)||price<0||isNaN(desired)||desired<=0){showToast('Preencha todos os campos obrigatórios.');return;}
-  const category=document.getElementById('pstock-category').value;
-  if(editingPhysicalId!==null){
-    physicalStock=physicalStock.map(p=>p.id===editingPhysicalId?{...p,name,currentQty:qty,unit,price,desiredQty:desired,category}:p);
-  }else{
-    physicalStock.push({id:Date.now(),name,currentQty:qty,desiredQty:desired,unit,price,category,usedTotal:0,history:[{type:'entrada',qty,date:new Date().toISOString(),note:'Cadastro inicial'}]});
-  }
-  DB.save('fichatec_physical',physicalStock);
-  const existing=stock.find(s=>s.name.toLowerCase()===name.toLowerCase());
-  if(!existing){stock.push({id:Date.now()+1,name,qty,unit,price,category,nutrition:getNutrition(name)});}
-  else{stock=stock.map(s=>s.name.toLowerCase()===name.toLowerCase()?{...s,price,qty,unit,category}:s);}
-  DB.save('fichatec_stock',stock);
-  closeModal('modal-pstock');renderPhysical();
-  renderRecipes(document.getElementById('recipe-search').value,activeIngFilter);
-  showToast(editingPhysicalId?'Atualizado!':'Adicionado e sincronizado!');
-}
-function deletePhysical(id){
-  if(!confirm('Remover este produto?'))return;
-  physicalStock=physicalStock.filter(p=>p.id!==id);DB.save('fichatec_physical',physicalStock);renderPhysical();showToast('Removido.');
-}
-function renderPhysical(filter=''){
-  const el=document.getElementById('pstock-list');
-  const filtered=physicalStock.filter(p=>p.name.toLowerCase().includes(filter.toLowerCase()));
-  const sumEl=document.getElementById('pstock-summary');
-  if(physicalStock.length){
-    const ok=physicalStock.filter(p=>(p.currentQty/p.desiredQty)*100>=80).length;
-    const warn=physicalStock.filter(p=>{const pct=(p.currentQty/p.desiredQty)*100;return pct>=50&&pct<80;}).length;
-    const low=physicalStock.filter(p=>(p.currentQty/p.desiredQty)*100<50).length;
-    sumEl.style.display='grid';
-    sumEl.innerHTML=`
-      <div><div class="summary-item-label">Total</div><div class="summary-item-val">${physicalStock.length}</div></div>
-      <div><div class="summary-item-label">🟢 Adequado</div><div class="summary-item-val" style="color:var(--if-green)">${ok}</div></div>
-      <div><div class="summary-item-label">🟡 Atenção</div><div class="summary-item-val" style="color:var(--if-orange)">${warn}</div></div>
-      <div><div class="summary-item-label">🔴 Crítico</div><div class="summary-item-val" style="color:var(--if-red)">${low}</div></div>`;
-  }else{sumEl.style.display='none';}
-  if(!filtered.length){el.innerHTML=`<div class="empty-state"><span class="empty-icon">🏪</span><div class="empty-text">${filter?'Nenhum produto encontrado.':'Estoque físico vazio. Clique em "+ Novo"!'}</div></div>`;return;}
-  el.innerHTML=filtered.map(p=>{
-    const pct=p.desiredQty>0?(p.currentQty/p.desiredQty)*100:0;
-    return`<div class="pstock-card">
-      <div class="pstock-header">
-        <div class="pstock-name">${p.name}${p.category?` <span class="tag" style="font-size:10px">${p.category}</span>`:''}</div>
-        <div style="display:flex;gap:4px">
-          <button class="btn btn-secondary btn-icon" onclick="openPhysicalModal(${p.id})" style="font-size:13px">✏️</button>
-          <button class="btn btn-danger btn-icon" onclick="deletePhysical(${p.id})" style="font-size:13px">🗑</button>
-        </div>
-      </div>
-      <div class="pstock-qty">${fmtQty(p.currentQty,p.unit)}</div>
-      <div class="pstock-meta">Meta: ${fmtQty(p.desiredQty,p.unit)} · Usado: ${fmtQty(p.usedTotal||0,p.unit)} · ${fmtBRL(p.price)}</div>
-      ${stockBar(pct)}${stockFlag(pct)}
-      <div style="display:flex;gap:var(--s2);margin-top:var(--s3)">
-        <button class="btn btn-danger btn-sm" style="flex:1" onclick="openMove(${p.id})">📤 Usar</button>
-        <button class="btn btn-primary btn-sm" style="flex:1" onclick="openMove(${p.id});setMoveType('repor')">📥 Repor</button>
-      </div>
-    </div>`;
-  }).join('');
-}
-function openMove(id){
-  movingPhysicalId=id;
-  const p=physicalStock.find(x=>x.id===id);if(!p)return;
-  setMoveType('usar');
-  document.getElementById('modal-move-title').textContent=p.name;
-  document.getElementById('move-unit-display').textContent=p.unit;
-  document.getElementById('move-qty').value='';
-  const pct=p.desiredQty>0?(p.currentQty/p.desiredQty)*100:0;
-  document.getElementById('modal-move-info').innerHTML=
-    `<div style="display:flex;justify-content:space-between;margin-bottom:6px"><span>Em estoque</span><strong style="font-family:'Roboto Mono',monospace">${fmtQty(p.currentQty,p.unit)}</strong></div>
-     <div style="display:flex;justify-content:space-between;margin-bottom:8px"><span>Desejado</span><strong style="font-family:'Roboto Mono',monospace">${fmtQty(p.desiredQty,p.unit)}</strong></div>
-     ${stockBar(pct)}${stockFlag(pct)}`;
-  document.getElementById('modal-move').classList.add('open');
-}
-function setMoveType(type){
-  moveType=type;
-  document.getElementById('move-btn-usar').classList.toggle('active',type==='usar');
-  document.getElementById('move-btn-repor').classList.toggle('active',type==='repor');
-  document.getElementById('move-qty-label').textContent=type==='usar'?'Quantidade a usar':'Quantidade a repor';
-  document.getElementById('move-confirm-btn').textContent=type==='usar'?'Confirmar Uso':'Confirmar Reposição';
-}
-function confirmMove(){
-  const p=physicalStock.find(x=>x.id===movingPhysicalId);if(!p)return;
-  const qty=parseFloat(document.getElementById('move-qty').value);
-  if(!qty||qty<=0){showToast('Informe uma quantidade válida.');return;}
-  if(moveType==='usar'&&qty>p.currentQty){showToast('Quantidade maior que o estoque!');return;}
-  const delta=moveType==='usar'?-qty:qty;
-  p.currentQty=parseFloat((p.currentQty+delta).toFixed(6));
-  if(moveType==='usar')p.usedTotal=(p.usedTotal||0)+qty;
-  (p.history=p.history||[]).push({type:moveType==='usar'?'saida':'entrada',qty,date:new Date().toISOString()});
-  DB.save('fichatec_physical',physicalStock);
-  const vn=p.name.toLowerCase();
-  stock=stock.map(s=>s.name.toLowerCase()===vn?{...s,qty:Math.max(parseFloat((s.qty+delta).toFixed(6)),0)}:s);
-  DB.save('fichatec_stock',stock);
-  showToast(moveType==='usar'?`${fmtQty(qty,p.unit)} retirados.`:`${fmtQty(qty,p.unit)} adicionados.`);
-  closeModal('modal-move');renderPhysical();
-}
-
-/* ══ FICHA TÉCNICA ══ */
-function setIngSource(src){
-  ingSource=src;
-  document.getElementById('src-btn-virtual').classList.toggle('active',src==='virtual');
-  document.getElementById('src-btn-fisico').classList.toggle('active',src==='fisico');
-  document.getElementById('ing-search').value='';
-  document.getElementById('ing-dropdown').classList.remove('open');
-  document.getElementById('ing-selected-info').style.display='none';
-  document.getElementById('ing-cost-preview').style.display='none';
-  selectedIngredient=null;
-}
-function searchIngredient(){
-  const q=document.getElementById('ing-search').value.toLowerCase().trim();
-  const dd=document.getElementById('ing-dropdown');
-  if(!q){dd.classList.remove('open');return;}
-  const matches=ingSource==='fisico'
-    ?physicalStock.filter(p=>p.name.toLowerCase().includes(q)&&p.currentQty>0).slice(0,8).map(p=>({id:'pf_'+p.id,name:p.name,unit:p.unit,price:p.price,qty:p.currentQty,_physicalId:p.id,nutrition:getNutrition(p.name)}))
-    :stock.filter(s=>s.name.toLowerCase().includes(q)).slice(0,8);
-  if(!matches.length){dd.innerHTML=`<div class="autocomplete-item" style="color:var(--if-text-tertiary)">Nenhum ingrediente encontrado</div>`;}
-  else{
-    dd.innerHTML=matches.map(s=>{
-      const ppg=pricePerUnit(s);
-      const sub=s.unit==='ml'?fmtBRL(ppg*1000)+'/L':s.unit==='un'?fmtBRL(ppg)+'/un':fmtBRL(ppg*1000)+'/kg';
-      return`<div class="autocomplete-item" onclick="selectIngredient('${s.id}')">
-        <div>${s.name}${ingSource==='fisico'?` <span style="font-size:11px;color:var(--if-red);font-weight:600">🏪 ${fmtQty(s.qty,s.unit)}</span>`:''}</div>
-        <div class="sub">${s.qty}${s.unit} · ${fmtBRL(s.price)} · ${sub}</div>
-      </div>`;
-    }).join('');
-  }
-  dd.classList.add('open');
-}
-function selectIngredient(id){
-  if(ingSource==='fisico'&&String(id).startsWith('pf_')){
-    const pid=parseInt(id.replace('pf_',''));
-    const p=physicalStock.find(x=>x.id===pid);if(!p)return;
-    selectedIngredient={id:'pf_'+p.id,name:p.name,unit:p.unit,price:p.price,qty:p.currentQty,_physicalId:p.id,nutrition:getNutrition(p.name)};
-  }else{selectedIngredient=stock.find(s=>s.id===parseInt(id)||s.id===id);}
-  if(!selectedIngredient)return;
-  document.getElementById('ing-search').value=selectedIngredient.name;
-  document.getElementById('ing-dropdown').classList.remove('open');
-  const ppg=pricePerUnit(selectedIngredient),u=selectedIngredient.unit;
-  document.getElementById('ing-sel-name').textContent=selectedIngredient.name+(ingSource==='fisico'?' 🏪':'');
-  document.getElementById('ing-sel-price').textContent=u==='ml'?`${fmtBRL(ppg*1000)}/L · ${fmtBRL(ppg*100)}/100ml`:u==='un'?`${fmtBRL(ppg)}/unidade`:`${fmtBRL(ppg*1000)}/kg · ${fmtBRL(ppg*100)}/100g`;
-  document.getElementById('ing-selected-info').style.display='block';
-  calcIngCost();
-}
-function calcIngCost(){
-  if(!selectedIngredient)return;
-  const qty=parseFloat(document.getElementById('ing-qty').value)||0;
-  const unit=document.getElementById('ing-unit').value;
-  const qtyG=unit==='kg'?qty*1000:qty;
-  const cost=unit==='un'?pricePerUnit(selectedIngredient)*qty:pricePerUnit(selectedIngredient)*qtyG;
-  const el=document.getElementById('ing-cost-preview');
-  if(qty>0){el.style.display='block';el.textContent=`Custo estimado: ${fmtBRL(cost)}`;}
-  else el.style.display='none';
-}
-function addIngredient(){
-  if(!selectedIngredient){showToast('Selecione um ingrediente.');return;}
-  const qty=parseFloat(document.getElementById('ing-qty').value);
-  const unit=document.getElementById('ing-unit').value;
-  const rend=parseFloat(document.getElementById('ing-rendimento').value)||100;
-  if(!qty||qty<=0){showToast('Informe a quantidade.');return;}
-  const isUn=unit==='un';
-  const qtyG=isUn?qty:(unit==='kg'?qty*1000:qty);
-  const qtyBruta=isUn?qty:qtyG/(rend/100);
-  currentIngredients.push({
-    id:Date.now(),stockId:selectedIngredient.id,physicalId:selectedIngredient._physicalId||null,
-    source:ingSource,name:selectedIngredient.name,qtyG,qtyBruta,unit,rendimento:rend,
-    cost:pricePerUnit(selectedIngredient)*qtyBruta,
-    nutrition:selectedIngredient.nutrition||getNutrition(selectedIngredient.name)
-  });
-  if(ingSource==='fisico'&&selectedIngredient._physicalId){
-    const pid=selectedIngredient._physicalId;
-    physicalStock=physicalStock.map(p=>{
-      if(p.id!==pid)return p;
-      return{...p,currentQty:Math.max(parseFloat((p.currentQty-qtyBruta).toFixed(6)),0),usedTotal:(p.usedTotal||0)+qtyBruta,history:[...(p.history||[]),{type:'saida',qty:qtyBruta,date:new Date().toISOString(),note:'Ficha técnica'}]};
-    });
-    DB.save('fichatec_physical',physicalStock);
-    const vn=selectedIngredient.name.toLowerCase();
-    stock=stock.map(s=>s.name.toLowerCase()===vn?{...s,qty:Math.max(parseFloat((s.qty-qtyBruta).toFixed(6)),0)}:s);
-    DB.save('fichatec_stock',stock);
-  }
-  ['ing-search','ing-qty','ing-rendimento'].forEach(f=>document.getElementById(f).value='');
-  document.getElementById('ing-selected-info').style.display='none';
-  document.getElementById('ing-cost-preview').style.display='none';
-  selectedIngredient=null;
-  renderIngredients();calcFicha();
-}
-function removeIngredient(id){
-  currentIngredients=currentIngredients.filter(i=>i.id!==id);
-  renderIngredients();calcFicha();
-}
-function renderIngredients(){
-  const el=document.getElementById('ingredients-list');
-  if(!currentIngredients.length){el.innerHTML='';return;}
-  el.innerHTML=`<div class="card" style="border-color:var(--if-border)">
-    <div class="card-title">📝 Ingredientes (${currentIngredients.length})</div>
-    ${currentIngredients.map(i=>`<div class="ingredient-row">
-      <div style="flex:1;min-width:0">
-        <div class="ing-name">${i.name}</div>
-        <div class="ing-qty">${i.unit==='un'?i.qtyG+'un':i.unit==='ml'?i.qtyG+'ml':i.qtyG+'g'} usados${i.unit!=='un'&&i.rendimento<100?' → '+i.qtyBruta.toFixed(0)+(i.unit==='ml'?'ml':'g')+' bruto':''}</div>
-      </div>
-      <div class="ing-cost">${fmtBRL(i.cost)}</div>
-      <button class="ing-del" onclick="removeIngredient(${i.id})">✕</button>
-    </div>`).join('')}
-  </div>`;
-}
-function calcFicha(){
-  if(!currentIngredients.length){document.getElementById('ficha-totals').style.display='none';return;}
-  const markup=parseFloat(document.getElementById('markup-pct').value)||0;
-  const {totalCost,venda}=calcCosts(currentIngredients,markup);
-  const rend=parseFloat(document.getElementById('ficha-rendimento').value)||0;
-  const porcoes=Math.max(parseFloat(document.getElementById('ficha-porcoes').value)||1,1);
-  document.getElementById('total-custo').textContent=fmtBRL(totalCost);
-  document.getElementById('total-venda').textContent=fmtBRL(venda);
-  document.getElementById('total-porcao').textContent=fmtBRL(totalCost/porcoes);
-  document.getElementById('total-kg').textContent=rend>0?fmtBRL(totalCost/(rend/1000)):'—';
-  document.getElementById('ficha-totals').style.display='block';
-  calcNutrition();
-}
-function calcNutrition(){
-  const portion=parseFloat(document.getElementById('portion-size').value)||100;
-  document.getElementById('nut-portion-label').textContent=`${portion}g`;
-  const totalQtyG=currentIngredients.reduce((s,i)=>s+i.qtyBruta,0)||1;
-  const tot={kcal:0,carb:0,prot:0,fat:0,fiber:0,sodium:0};
-  currentIngredients.forEach(i=>{
-    const ratio=i.qtyBruta/totalQtyG;
-    const n=(i.nutrition&&i.nutrition.kcal)?i.nutrition:getNutrition(i.name);
-    Object.keys(tot).forEach(k=>tot[k]+=(n[k]||0)*ratio);
-  });
-  const sc=portion/100;
-  const vd={kcal:2500,carb:375,prot:75,fat:83,fiber:25,sodium:2400};
-  const rows=[
-    ['Valor Energético',`${(tot.kcal*sc).toFixed(0)} kcal`,tot.kcal*sc/vd.kcal],
-    ['Carboidratos',`${(tot.carb*sc).toFixed(1)} g`,tot.carb*sc/vd.carb],
-    ['Proteínas',`${(tot.prot*sc).toFixed(1)} g`,tot.prot*sc/vd.prot],
-    ['Gorduras Totais',`${(tot.fat*sc).toFixed(1)} g`,tot.fat*sc/vd.fat],
-    ['Fibra Alimentar',`${(tot.fiber*sc).toFixed(1)} g`,tot.fiber*sc/vd.fiber],
-    ['Sódio',`${(tot.sodium*sc).toFixed(0)} mg`,tot.sodium*sc/vd.sodium],
-  ];
-  document.getElementById('nutrition-body').innerHTML=rows.map(([n,v,pct])=>`<tr>
-    <td>${n}</td><td class="val">${v}</td>
-    <td style="text-align:right;min-width:88px">
-      <div class="nut-pct">${Math.round(pct*100)}%</div>
-      <div class="progress-bar" style="width:76px;margin-left:auto"><div class="progress-fill" style="width:${Math.min(pct*100,100).toFixed(1)}%"></div></div>
-    </td>
-  </tr>`).join('');
-}
-function clearFicha(){
-  if(currentIngredients.length&&!confirm('Limpar todos os dados da ficha?'))return;
-  currentIngredients=[];
-  ['ficha-nome','ficha-rendimento','ficha-porcoes','markup-pct'].forEach(f=>document.getElementById(f).value='');
-  document.getElementById('portion-size').value='100';
-  document.getElementById('ficha-totals').style.display='none';
-  document.getElementById('ingredients-list').innerHTML='';
-  showToast('Ficha limpa.');
-}
-function saveRecipe(){
-  const nome=document.getElementById('ficha-nome').value.trim();
-  if(!nome){showToast('Informe o nome da receita.');return;}
-  if(!currentIngredients.length){showToast('Adicione pelo menos um ingrediente.');return;}
-  const markup=parseFloat(document.getElementById('markup-pct').value)||0;
-  const ingredientRefs=currentIngredients.map(i=>({...i,savedPricePerG:pricePerUnit(findStockItem(i.stockId,i.name)||{price:0,qty:1,unit:'kg'})}));
-  const {totalCost,venda}=calcCosts(ingredientRefs,markup);
-  const recipe={
-    id:Date.now(),nome,ingredients:ingredientRefs,
-    rendimento:parseFloat(document.getElementById('ficha-rendimento').value)||0,
-    porcoes:parseFloat(document.getElementById('ficha-porcoes').value)||1,
-    markup,totalCost,venda,
-    porcaoSize:parseFloat(document.getElementById('portion-size').value)||100,
-    createdAt:new Date().toISOString()
-  };
-  const idx=recipes.findIndex(r=>r.nome.toLowerCase()===nome.toLowerCase());
-  if(idx>=0){if(!confirm(`Receita "${nome}" já existe. Sobrescrever?`))return;recipes[idx]=recipe;}
-  else recipes.push(recipe);
-  DB.save('fichatec_recipes',recipes);
-  showToast(`"${nome}" salva!`);
-}
-
-/* ══ RECEITAS ══ */
-function hasPriceChanged(refs){
-  return refs.some(i=>{
-    if(!i.savedPricePerG)return false;
-    const s=findStockItem(i.stockId,i.name);
-    return s&&Math.abs(pricePerUnit(s)-i.savedPricePerG)>0.000001;
-  });
-}
-function renderRecipes(filter='',ingFilter=null){
-  const allIng=[...new Set(recipes.flatMap(r=>r.ingredients.map(i=>i.name)))].slice(0,15);
-  document.getElementById('ingredient-filter-chips').innerHTML=
-    `<div class="chip ${!ingFilter?'active':''}" onclick="setIngFilter(null)">Todas</div>`+
-    allIng.map(n=>`<div class="chip ${ingFilter===n?'active':''}" onclick="setIngFilter('${n.replace(/'/g,"\\'")}')">${n}</div>`).join('');
-  let filtered=recipes.filter(r=>r.nome.toLowerCase().includes((filter||'').toLowerCase()));
-  if(ingFilter)filtered=filtered.filter(r=>r.ingredients.some(i=>i.name===ingFilter));
-  const el=document.getElementById('recipes-list');
-  if(!filtered.length){el.innerHTML=`<div class="empty-state"><span class="empty-icon">🍳</span><div class="empty-text">${filter||ingFilter?'Nenhuma receita encontrada.':'Nenhuma receita salva ainda.'}</div></div>`;return;}
-  el.innerHTML=filtered.map(r=>{
-    const {totalCost,venda}=calcCosts(r.ingredients,r.markup);
-    const changed=hasPriceChanged(r.ingredients);
-    const diff=totalCost-r.totalCost;
-    return`<div class="recipe-card" onclick="viewRecipe(${r.id})">
-      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:var(--s2);margin-bottom:4px">
-        <div class="recipe-card-title">${r.nome}</div>
-        <div style="display:flex;gap:6px;align-items:center;flex-shrink:0">
-          ${changed?`<span style="font-size:11px;background:${diff>0?'var(--if-error-light)':'var(--if-green-light)'};color:${diff>0?'var(--if-red)':'var(--if-green)'};padding:2px 8px;border-radius:var(--r-pill);font-weight:600">${diff>0?'▲':'▼'} ${fmtBRL(Math.abs(diff))}</span>`:''}
-          <span class="badge badge-red">${fmtBRL(totalCost)}</span>
-        </div>
-      </div>
-      <div class="recipe-card-meta">${r.ingredients.length} ingrediente(s) · ${r.porcoes} porção(ões)${r.rendimento?' · '+r.rendimento+'g':''} · Markup ${r.markup}%</div>
-      <div class="recipe-card-meta" style="color:var(--if-green);font-weight:600">Venda: ${fmtBRL(venda)}</div>
-      ${changed?`<div class="recipe-card-meta" style="font-size:11px;color:var(--if-text-tertiary)">🔄 Preços atualizados pelo estoque</div>`:''}
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:var(--s3)">
-        <div style="display:flex;gap:4px;flex-wrap:wrap">
-          ${r.ingredients.slice(0,4).map(i=>`<span class="tag">${i.name}</span>`).join('')}
-          ${r.ingredients.length>4?`<span class="tag">+${r.ingredients.length-4}</span>`:''}
-        </div>
-        <button class="btn btn-secondary btn-xs" onclick="event.stopPropagation();exportRecipePDF(${r.id})" style="margin-left:var(--s2);border-color:var(--if-red);color:var(--if-red)">📄 PDF</button>
-      </div>
-    </div>`;
-  }).join('');
-}
-function setIngFilter(val){activeIngFilter=val;renderRecipes(document.getElementById('recipe-search').value,val);}
-function viewRecipe(id){
-  const r=recipes.find(x=>x.id===id);if(!r)return;
-  currentRecipeId=id;
-  const {ingredients,totalCost,venda}=calcCosts(r.ingredients,r.markup);
-  const porcoes=Math.max(r.porcoes||1,1);
-  const changed=hasPriceChanged(r.ingredients);
-  const diff=totalCost-r.totalCost;
-  document.getElementById('recipe-detail-content').innerHTML=`
-    <div style="font-size:20px;font-weight:700;margin-bottom:4px;letter-spacing:-0.4px">${r.nome}</div>
-    <div style="font-size:12px;color:var(--if-text-secondary);margin-bottom:${changed?'12px':'20px'}">Criada em ${new Date(r.createdAt).toLocaleDateString('pt-BR')} · ${r.ingredients.length} ingrediente(s)</div>
-    ${changed?`<div style="background:${diff>0?'var(--if-error-light)':'var(--if-green-light)'};border:1px solid ${diff>0?'var(--if-red-mid)':'#A8E6C3'};border-radius:var(--r-sm);padding:var(--s3) var(--s4);margin-bottom:var(--s4);font-size:12px;color:${diff>0?'var(--if-red)':'var(--if-green)'}">
-      <strong>🔄 Preços atualizados</strong><br>
-      Custo salvo: ${fmtBRL(r.totalCost)} → Atual: <strong>${fmtBRL(totalCost)}</strong>${diff!==0?` (${diff>0?'+':''}${fmtBRL(diff)})`:''}
-    </div>`:''}
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--s2);margin-bottom:var(--s4)">
-      ${[['Custo Total',fmtBRL(totalCost),'var(--if-bg)','var(--if-text-primary)'],
-         ['Preço de Venda',fmtBRL(venda),'var(--if-green-light)','var(--if-green)'],
-         ['Markup',r.markup+'%','var(--if-bg)','var(--if-text-primary)'],
-         ['Por Porção',fmtBRL(totalCost/porcoes),'var(--if-bg)','var(--if-text-primary)']
-        ].map(([l,v,bg,c])=>`<div style="background:${bg};padding:var(--s3) var(--s4);border-radius:var(--r-sm);border:1px solid var(--if-border)">
-          <div style="font-size:11px;color:var(--if-text-secondary);font-weight:500;margin-bottom:3px">${l}</div>
-          <div style="font-size:16px;font-weight:700;font-family:'Roboto Mono',monospace;color:${c}">${v}</div>
-        </div>`).join('')}
-    </div>
-    <div style="font-size:11px;font-weight:700;color:var(--if-text-secondary);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:var(--s2)">Ingredientes</div>
-    ${ingredients.map(i=>{
-      const s=findStockItem(i.stockId,i.name);
-      const curPPG=s?pricePerUnit(s):0;
-      const ingChanged=i.savedPricePerG&&Math.abs(curPPG-i.savedPricePerG)>0.000001;
-      return`<div class="ingredient-row" style="${ingChanged?'background:'+(curPPG>i.savedPricePerG?'var(--if-error-light)':'var(--if-green-light)')+';border-radius:var(--r-xs);padding:var(--s2) var(--s2);margin-bottom:2px':''}">
-        <div style="flex:1;min-width:0">
-          <div class="ing-name">${i.name}${ingChanged?` <span style="font-size:10px;font-weight:700;color:${curPPG>i.savedPricePerG?'var(--if-red)':'var(--if-green)'}">${curPPG>i.savedPricePerG?'▲':'▼'}</span>`:''}</div>
-          <div class="ing-qty">${i.qtyBruta.toFixed(0)}${i.unit==='ml'?'ml':'g'}</div>
-        </div>
-        <div class="ing-cost" style="${ingChanged?'color:'+(curPPG>i.savedPricePerG?'var(--if-red)':'var(--if-green)'):''}"> ${fmtBRL(i.cost)}</div>
-      </div>`;
-    }).join('')}`;
-  document.getElementById('modal-recipe').classList.add('open');
-}
-function deleteCurrentRecipe(){
-  if(!confirm('Excluir esta receita?'))return;
-  recipes=recipes.filter(r=>r.id!==currentRecipeId);
-  DB.save('fichatec_recipes',recipes);
-  closeModal('modal-recipe');
-  renderRecipes(document.getElementById('recipe-search').value,activeIngFilter);
-  showToast('Receita excluída.');
-}
-function loadRecipeToFicha(){
-  const r=recipes.find(x=>x.id===currentRecipeId);if(!r)return;
-  closeModal('modal-recipe');
-  currentIngredients=[...r.ingredients];
-  document.getElementById('ficha-nome').value=r.nome;
-  document.getElementById('ficha-rendimento').value=r.rendimento||'';
-  document.getElementById('ficha-porcoes').value=r.porcoes||'';
-  document.getElementById('markup-pct').value=r.markup||'';
-  document.getElementById('portion-size').value=r.porcaoSize||100;
-  renderIngredients();calcFicha();showPage('ficha','nav-ficha');
-}
-
-/* ══ EXPORT PDF ══ */
-function exportRecipePDF(id){
-  const r=recipes.find(x=>x.id===id);if(!r)return;
-  const {ingredients,totalCost,venda}=calcCosts(r.ingredients,r.markup);
-  const porcoes=Math.max(r.porcoes||1,1);
-  const now=new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
-  const criado=new Date(r.createdAt).toLocaleDateString('pt-BR');
-  const changed=hasPriceChanged(r.ingredients);
-  const rows=ingredients.map(i=>`<tr>
-    <td style="padding:10px 12px;border-bottom:1px solid #F0F0F0;font-size:13px;font-weight:500">${i.name}</td>
-    <td style="padding:10px 12px;border-bottom:1px solid #F0F0F0;font-size:12px;color:#717171;font-family:monospace">${i.qtyBruta.toFixed(0)}${i.unit==='ml'?'ml':'g'}</td>
-    <td style="padding:10px 12px;border-bottom:1px solid #F0F0F0;font-size:12px;color:#EA1D2C;font-family:monospace;font-weight:600;text-align:right">${fmtBRL(i.cost)}</td>
-  </tr>`).join('');
-  const html=`<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8">
-  <title>Ficha — ${r.nome}</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
-  <style>
-    *{box-sizing:border-box;margin:0;padding:0}
-    body{font-family:'Inter',sans-serif;color:#3E3E3E;padding:36px 40px;max-width:720px;margin:0 auto;line-height:1.5;-webkit-font-smoothing:antialiased}
-    @media print{body{padding:20px 24px}.no-print{display:none!important}@page{margin:15mm 18mm;size:A4}}
-    .header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:24px;padding-bottom:16px;border-bottom:2px solid #EA1D2C}
-    .logo{display:flex;align-items:center;gap:12px}
-    .logo-box{width:40px;height:40px;background:#EA1D2C;border-radius:10px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:20px}
-    .meta{text-align:right;font-size:11px;color:#A0A0A0;line-height:2}
-    .summary{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:20px 0 24px}
-    .si{background:#F5F5F5;border-radius:10px;padding:12px 14px}
-    .si.hl{background:#EA1D2C}
-    .sl{font-size:10px;color:#717171;text-transform:uppercase;letter-spacing:0.6px;margin-bottom:4px;font-weight:600}
-    .sl.hl{color:rgba(255,255,255,0.8)}
-    .sv{font-size:16px;font-weight:700;font-family:'Roboto Mono',monospace;color:#3E3E3E}
-    .sv.hl{color:#fff}
-    table{width:100%;border-collapse:collapse;border:1px solid #E0E0E0;border-radius:10px;overflow:hidden}
-    thead tr{background:#F5F5F5}
-    th{padding:10px 12px;text-align:left;font-size:11px;font-weight:600;color:#717171;text-transform:uppercase;letter-spacing:0.5px}
-    th:last-child{text-align:right}
-    tfoot td{padding:10px 12px;font-size:13px;font-weight:700;border-top:2px solid #E0E0E0;background:#F5F5F5}
-    tfoot td:last-child{text-align:right;color:#EA1D2C;font-family:'Roboto Mono',monospace}
-    footer{margin-top:28px;padding-top:12px;border-top:1px solid #E0E0E0;display:flex;justify-content:space-between;font-size:11px;color:#A0A0A0}
-    .btn-print{display:inline-flex;align-items:center;gap:8px;background:#EA1D2C;color:#fff;border:none;padding:12px 24px;border-radius:999px;font-size:14px;font-family:'Inter',sans-serif;font-weight:600;cursor:pointer;margin-bottom:20px}
-    .btn-print:hover{background:#C4121F}
-  </style></head><body>
-  <div class="no-print" style="display:flex;gap:12px;align-items:center;margin-bottom:20px">
-    <button class="btn-print" onclick="window.print()">🖨️ Salvar / Imprimir PDF</button>
-    <span style="font-size:12px;color:#A0A0A0">Selecione "Salvar como PDF"</span>
-  </div>
-  <div class="header">
-    <div class="logo">
-      <div class="logo-box">🍽</div>
-      <div><div style="font-size:18px;font-weight:700;color:#3E3E3E;letter-spacing:-0.3px">FichaTec</div><div style="font-size:11px;color:#A0A0A0">Fichas Técnicas & Estoque</div></div>
-    </div>
-    <div class="meta"><div>Gerado em ${now}</div><div>Criado em ${criado}</div></div>
-  </div>
-  <div style="margin-bottom:20px">
-    <div style="font-size:22px;font-weight:700;margin-bottom:4px;letter-spacing:-0.4px">${r.nome}</div>
-    <div style="font-size:12px;color:#717171">${r.ingredients.length} ingrediente(s) · ${r.porcoes} porção(ões)${r.rendimento?' · Rendimento: '+r.rendimento+'g':''}${r.markup?' · Markup: '+r.markup+'%':''}</div>
-  </div>
-  ${changed?`<div style="background:#FFF0F0;border:1px solid #FDDCDE;border-radius:8px;padding:10px 14px;margin-bottom:16px;font-size:12px;color:#EA1D2C;font-weight:500">🔄 Preços atualizados. Custo original: ${fmtBRL(r.totalCost)}.</div>`:''}
-  <div class="summary">
-    <div class="si"><div class="sl">Custo Total</div><div class="sv">${fmtBRL(totalCost)}</div></div>
-    <div class="si hl"><div class="sl hl">Preço de Venda</div><div class="sv hl">${fmtBRL(venda)}</div></div>
-    <div class="si"><div class="sl">Por Porção</div><div class="sv">${fmtBRL(totalCost/porcoes)}</div></div>
-    <div class="si"><div class="sl">Markup</div><div class="sv">${r.markup||0}%</div></div>
-  </div>
-  <table><thead><tr><th>Ingrediente</th><th>Quantidade</th><th style="text-align:right">Custo</th></tr></thead>
-  <tbody>${rows}</tbody>
-  <tfoot><tr><td colspan="2">Total</td><td>${fmtBRL(totalCost)}</td></tr></tfoot></table>
-  <footer><span>FichaTec — Ficha Técnica</span><span>${r.nome} · ${now}</span></footer>
-  </body></html>`;
-  const win=window.open('','_blank','width=800,height=920');
-  if(!win){showToast('Permita pop-ups para gerar o PDF.');return;}
-  win.document.write(html);win.document.close();
-}
-
-/* ══ EVENTOS GLOBAIS ══ */
-document.querySelectorAll('.modal-overlay').forEach(m=>{
-  m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('open');});
-});
-document.addEventListener('click',e=>{
-  if(!document.getElementById('ing-search-wrap').contains(e.target))
-    document.getElementById('ing-dropdown').classList.remove('open');
-});
-
-/* ══ SEED ══ */
-if(!stock.length){
-  stock=[
-    {id:1,name:'Açúcar refinado',qty:1,unit:'kg',price:26.82,category:'Açúcares',nutrition:{kcal:399,carb:99.6,prot:0,fat:0,fiber:0,sodium:1}},
-    {id:2,name:'Arroz branco',qty:1,unit:'kg',price:11.37,category:'Cereais',nutrition:{kcal:358,carb:79,prot:7.4,fat:0.3,fiber:1.6,sodium:1}},
-    {id:3,name:'Bicarbonato de sódio',qty:1,unit:'kg',price:15.35,category:'Outros',nutrition:{kcal:0,carb:0,prot:0,fat:0,fiber:0,sodium:27360}},
-    {id:4,name:'Doce de leite',qty:1,unit:'kg',price:14.88,category:'Laticínios',nutrition:{kcal:295,carb:55,prot:7,fat:6,fiber:0,sodium:100}},
-    {id:5,name:'Extrato de tomate',qty:1,unit:'kg',price:28.27,category:'Outros',nutrition:{kcal:80,carb:16,prot:4,fat:0.5,fiber:3,sodium:700}},
-    {id:6,name:'Fermento biológico',qty:1,unit:'kg',price:22.00,category:'Outros',nutrition:{kcal:105,carb:8,prot:12,fat:2,fiber:4,sodium:50}},
-    {id:7,name:'Manteiga',qty:1,unit:'kg',price:35.00,category:'Laticínios',nutrition:{kcal:741,carb:0,prot:0.5,fat:83,fiber:0,sodium:576}},
-    {id:8,name:'Patinho',qty:1,unit:'kg',price:32.00,category:'Carnes',nutrition:{kcal:219,carb:0,prot:26,fat:13,fiber:0,sodium:66}},
-    {id:9,name:'Sal',qty:1,unit:'kg',price:2.90,category:'Temperos',nutrition:{kcal:0,carb:0,prot:0,fat:0,fiber:0,sodium:39300}},
-    {id:10,name:'Trigo fino claro',qty:1,unit:'kg',price:17.00,category:'Farinhas',nutrition:{kcal:361,carb:75,prot:9.8,fat:1.4,fiber:2.3,sodium:2}},
-    {id:11,name:'Vinagre de maçã',qty:1,unit:'kg',price:5.00,category:'Temperos',nutrition:{kcal:22,carb:5,prot:0,fat:0,fiber:0,sodium:2}},
-    {id:12,name:'Azeitona preta',qty:1,unit:'kg',price:6.71,category:'Outros',nutrition:{kcal:145,carb:4,prot:1,fat:15,fiber:3,sodium:1400}},
-  ];
-  DB.save('fichatec_stock',stock);
-}
-recipes=recipes.map(r=>({...r,ingredients:r.ingredients.map(i=>{
-  if(i.savedPricePerG!==undefined)return i;
-  const s=findStockItem(i.stockId,i.name);
-  return{...i,savedPricePerG:s?pricePerUnit(s):0};
-})}));
-renderStock();renderRecipes();renderPhysical();
-</script>
-</body>
-</html>
+        <input type="number" id="ficha-rendimento" placeholder="Ex: 800" oninput="calc
