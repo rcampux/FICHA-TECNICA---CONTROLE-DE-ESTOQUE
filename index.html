@@ -232,6 +232,37 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 .google-search-btn:hover{border-color:var(--g500);color:var(--g600)}
 .google-search-btn .material-symbols-rounded{font-size:16px}
 
+/* ── Scanner ── */
+.scan-fab{position:fixed;bottom:80px;right:16px;width:52px;height:52px;background:var(--g600);border-radius:var(--r-pill);display:flex;align-items:center;justify-content:center;color:#fff;box-shadow:0 4px 20px rgba(39,174,96,0.50);border:none;cursor:pointer;z-index:90;transition:background var(--dur) var(--ease),transform var(--dur) var(--ease),opacity var(--dur) var(--ease);-webkit-tap-highlight-color:transparent}
+.scan-fab:hover{background:var(--g700)}
+.scan-fab:active{transform:scale(0.92)}
+.scan-fab .material-symbols-rounded{font-size:24px}
+.scan-mode-btns{display:flex;gap:var(--s2);margin-bottom:var(--s4)}
+.scan-mode-btn{flex:1;height:84px;border:2px dashed var(--n200);border-radius:var(--r-lg);background:var(--n0);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;cursor:pointer;transition:all var(--dur) var(--ease);font-family:'Inter',sans-serif;font-size:12px;font-weight:700;color:var(--n600);-webkit-tap-highlight-color:transparent}
+.scan-mode-btn:hover,.scan-mode-btn:active{border-color:var(--g400);color:var(--g500);background:var(--g50)}
+.scan-mode-btn .material-symbols-rounded{font-size:30px;color:var(--n400);transition:color var(--dur) var(--ease)}
+.scan-mode-btn:hover .material-symbols-rounded{color:var(--g500)}
+.scan-preview-wrap{width:100%;border-radius:var(--r-lg);overflow:hidden;background:var(--n900);margin-bottom:var(--s3);min-height:160px;display:flex;align-items:center;justify-content:center;position:relative}
+.scan-preview-wrap img{width:100%;max-height:280px;object-fit:contain;display:block}
+.scan-preview-placeholder{display:flex;flex-direction:column;align-items:center;gap:var(--s2);color:var(--n600);padding:var(--s6);text-align:center}
+.scan-preview-placeholder .material-symbols-rounded{font-size:44px;opacity:0.3;color:var(--n400)}
+.scan-preview-placeholder p{font-size:12px;font-weight:500;opacity:0.7}
+.scan-status-box{border-radius:var(--r-md);padding:var(--s3) var(--s4);margin-bottom:var(--s3);font-size:13px;font-weight:600;display:flex;align-items:center;gap:var(--s2)}
+.scan-status-box.loading{background:var(--warn-bg);color:var(--warn)}
+.scan-status-box.success{background:var(--g50);color:var(--g600)}
+.scan-status-box.error{background:var(--r100);color:var(--r400)}
+.scan-result-box{background:var(--n50);border:1.5px solid var(--n200);border-radius:var(--r-md);padding:var(--s1) var(--s3);margin-bottom:var(--s3);max-height:200px;overflow-y:auto}
+.scan-ing-row{display:flex;align-items:center;gap:var(--s2);padding:8px 0;border-bottom:1px solid var(--n100);font-size:13px}
+.scan-ing-row:last-child{border-bottom:none}
+.scan-ing-name{flex:1;font-weight:600;color:var(--n900);min-width:0;word-break:break-word}
+.scan-ing-qty{font-family:'Roboto Mono',monospace;font-size:11px;color:var(--n600);white-space:nowrap;margin-right:4px}
+.scan-ing-del{width:24px;height:24px;background:none;border:none;cursor:pointer;color:var(--n400);border-radius:var(--r-pill);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 100ms var(--ease)}
+.scan-ing-del:hover{background:var(--r100);color:var(--r400)}
+.scan-ing-del .material-symbols-rounded{font-size:15px}
+.scan-badge{display:inline-flex;align-items:center;gap:4px;background:var(--g50);color:var(--g600);border:1px solid var(--g200);border-radius:var(--r-pill);padding:3px 10px;font-size:11px;font-weight:700;margin-left:6px;vertical-align:middle}
+@keyframes spin{to{transform:rotate(360deg)}}
+.spin{animation:spin 1s linear infinite;display:inline-block}
+
 @media(min-width:480px){
   .page{padding:var(--s6) var(--s7);max-width:480px}
   .modal{border-radius:var(--r-lg);margin:auto;margin-bottom:0;max-width:440px}
@@ -430,6 +461,11 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
   </button>
 </nav>
 
+<!-- FAB: Scanner -->
+<button class="scan-fab" id="scan-fab-btn" onclick="openScanModal()" title="Digitalizar receita com câmera">
+  <span class="material-symbols-rounded">document_scanner</span>
+</button>
+
 <!-- MODAL: ESTOQUE VIRTUAL -->
 <div class="modal-overlay" id="modal-stock">
   <div class="modal">
@@ -570,6 +606,120 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
   </div>
 </div>
 
+<!-- MODAL: SCANNER DE RECEITA -->
+<div class="modal-overlay" id="modal-scan">
+  <div class="modal" style="max-height:95vh">
+    <div class="modal-handle"></div>
+    <div class="modal-title" style="display:flex;align-items:center;gap:var(--s2);margin-bottom:var(--s3)">
+      <span class="material-symbols-rounded" style="color:var(--g500);font-size:24px">document_scanner</span>
+      Digitalizar Receita
+    </div>
+
+    <!-- STEP 1: captura -->
+    <div id="scan-step-1">
+      <div class="info-banner" style="margin-bottom:var(--s4)">
+        <span class="material-symbols-rounded">tips_and_updates</span>
+        <span>Funciona com letra cursiva, bastão e impressa. Use boa iluminação e mantenha a câmera estável.</span>
+      </div>
+
+      <div class="scan-mode-btns">
+        <button class="scan-mode-btn" onclick="document.getElementById('scan-input-camera').click()">
+          <span class="material-symbols-rounded">photo_camera</span>
+          Tirar Foto
+        </button>
+        <button class="scan-mode-btn" onclick="document.getElementById('scan-input-gallery').click()">
+          <span class="material-symbols-rounded">photo_library</span>
+          Da Galeria
+        </button>
+      </div>
+
+      <!-- inputs ocultos -->
+      <input type="file" id="scan-input-camera" accept="image/*" capture="environment" style="display:none" onchange="handleScanFile(event)">
+      <input type="file" id="scan-input-gallery" accept="image/*" style="display:none" onchange="handleScanFile(event)">
+
+      <!-- preview -->
+      <div class="scan-preview-wrap" id="scan-preview-wrap">
+        <div class="scan-preview-placeholder">
+          <span class="material-symbols-rounded">image_search</span>
+          <p>A foto da receita aparecerá aqui</p>
+        </div>
+      </div>
+
+      <!-- status -->
+      <div id="scan-status-area"></div>
+
+      <!-- resultado -->
+      <div id="scan-result-area" style="display:none">
+        <div style="font-size:13px;font-weight:700;color:var(--n800);margin-bottom:var(--s2);display:flex;align-items:center;gap:6px">
+          <span class="material-symbols-rounded icon-sm" style="color:var(--g500)">check_circle</span>
+          Receita identificada — revise antes de salvar
+        </div>
+
+        <div class="input-group">
+          <label class="input-label">Nome da Receita *</label>
+          <input type="text" id="scan-nome" placeholder="Ex: Bolo de cenoura">
+        </div>
+
+        <div class="input-row cols-2">
+          <div class="input-group">
+            <label class="input-label">Rendimento (g)</label>
+            <input type="number" id="scan-rendimento" placeholder="Ex: 800">
+          </div>
+          <div class="input-group">
+            <label class="input-label">Porções</label>
+            <input type="number" id="scan-porcoes" placeholder="Ex: 8">
+          </div>
+        </div>
+
+        <div style="font-size:13px;font-weight:700;color:var(--n800);margin-bottom:var(--s2);display:flex;align-items:center;justify-content:space-between">
+          <span style="display:flex;align-items:center;gap:6px">
+            <span class="material-symbols-rounded icon-sm">format_list_bulleted</span>
+            Ingredientes
+          </span>
+          <span class="scan-badge" id="scan-ing-count-badge">0</span>
+        </div>
+        <div class="scan-result-box" id="scan-ing-list">
+          <div style="font-size:13px;color:var(--n400);padding:8px">Nenhum ingrediente identificado</div>
+        </div>
+
+        <div id="scan-modo-preparo-wrap" style="display:none;margin-bottom:var(--s3)">
+          <div style="font-size:13px;font-weight:700;color:var(--n800);margin-bottom:var(--s2);display:flex;align-items:center;gap:6px">
+            <span class="material-symbols-rounded icon-sm">menu_book</span>
+            Modo de Preparo
+          </div>
+          <textarea id="scan-modo-preparo" rows="4" style="font-size:13px;line-height:1.6" placeholder="Modo de preparo identificado..."></textarea>
+        </div>
+
+        <div id="scan-obs-wrap" style="display:none;margin-bottom:var(--s3)">
+          <div style="font-size:13px;font-weight:700;color:var(--n800);margin-bottom:var(--s2);display:flex;align-items:center;gap:6px">
+            <span class="material-symbols-rounded icon-sm">sticky_note_2</span>
+            Observações
+          </div>
+          <textarea id="scan-obs" rows="2" style="font-size:13px;line-height:1.6" placeholder="Observações da receita..."></textarea>
+        </div>
+
+        <div class="info-banner" style="margin-top:var(--s2);margin-bottom:var(--s3)">
+          <span class="material-symbols-rounded">info</span>
+          <span>Ingredientes sem correspondência no estoque terão custo R$ 0,00. Você pode ajustar depois.</span>
+        </div>
+
+        <div style="display:flex;gap:var(--s2)">
+          <button class="btn btn-secondary btn-sm" style="flex:1" onclick="resetScan()">
+            <span class="material-symbols-rounded">refresh</span> Nova foto
+          </button>
+          <button class="btn btn-primary" style="flex:2" onclick="confirmScanSave()">
+            <span class="material-symbols-rounded">save</span> Salvar Receita
+          </button>
+        </div>
+      </div>
+
+      <div style="margin-top:var(--s4)" id="scan-cancel-wrap">
+        <button class="btn btn-secondary btn-full" onclick="closeModal('modal-scan')">Cancelar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
@@ -584,6 +734,9 @@ let currentIngredients=[],selectedIngredient=null;
 let editingStockId=null,editingPhysicalId=null;
 let currentRecipeId=null,activeIngFilter=null;
 let ingSource='virtual',moveType='usar',movingPhysicalId=null;
+
+// ── Scanner state ──
+let scannedRecipeData=null;
 
 const defaultNutrition={
   'farinha':{kcal:361,carb:75,prot:9.8,fat:1.4,fiber:2.3,sodium:2},
@@ -1035,7 +1188,7 @@ function renderRecipes(filter='',ingFilter=null){
     const diff=totalCost-r.totalCost;
     return`<div class="recipe-card" onclick="viewRecipe(${r.id})">
       <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:var(--s2);margin-bottom:4px">
-        <div class="recipe-card-title">${r.nome}</div>
+        <div class="recipe-card-title">${r.nome}${r.origem==='scan'?` <span class="scan-badge" style="font-size:10px"><span class="material-symbols-rounded" style="font-size:12px">document_scanner</span>Scan</span>`:''}</div>
         <div style="display:flex;gap:6px;align-items:center;flex-shrink:0">
           ${changed?`<span style="font-size:11px;background:${diff>0?'var(--r100)':'var(--g50)'};color:${diff>0?'var(--r400)':'var(--g600)'};padding:2px 8px;border-radius:var(--r-pill);font-weight:700">${diff>0?'▲':'▼'} ${fmtBRL(Math.abs(diff))}</span>`:''}
           <span class="badge badge-green">${fmtBRL(totalCost)}</span>
@@ -1065,7 +1218,7 @@ function viewRecipe(id){
   const changed=hasPriceChanged(r.ingredients);
   const diff=totalCost-r.totalCost;
   document.getElementById('recipe-detail-content').innerHTML=`
-    <div style="font-size:20px;font-weight:800;margin-bottom:4px;letter-spacing:-0.4px">${r.nome}</div>
+    <div style="font-size:20px;font-weight:800;margin-bottom:4px;letter-spacing:-0.4px">${r.nome}${r.origem==='scan'?` <span class="scan-badge" style="font-size:10px"><span class="material-symbols-rounded" style="font-size:12px">document_scanner</span>Scan</span>`:''}</div>
     <div style="font-size:12px;color:var(--n600);margin-bottom:${changed?'12px':'20px'};font-weight:500;display:flex;align-items:center;gap:4px">
       <span class="material-symbols-rounded" style="font-size:14px">calendar_today</span>
       Criada em ${new Date(r.createdAt).toLocaleDateString('pt-BR')} · ${r.ingredients.length} ingrediente(s)
@@ -1100,7 +1253,15 @@ function viewRecipe(id){
         </div>
         <div class="ing-cost" style="${ingChanged?'color:'+(curPPG>i.savedPricePerG?'var(--r400)':'var(--g500)'):''}"> ${fmtBRL(i.cost)}</div>
       </div>`;
-    }).join('')}`;
+    }).join('')}
+    ${r.modoPreparo?`<div style="margin-top:var(--s4)">
+      <div style="font-size:11px;font-weight:700;color:var(--n600);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:var(--s2);display:flex;align-items:center;gap:4px">
+        <span class="material-symbols-rounded" style="font-size:14px">menu_book</span> Modo de Preparo
+      </div>
+      <div style="font-size:13px;color:var(--n800);line-height:1.7;background:var(--n50);border-radius:var(--r-md);padding:var(--s3) var(--s4)">${r.modoPreparo.replace(/\n/g,'<br>')}</div>
+    </div>`:''}
+    ${r.observacoes?`<div style="margin-top:var(--s3);font-size:12px;color:var(--n600);background:var(--warn-bg);border-radius:var(--r-md);padding:var(--s3) var(--s4);line-height:1.6">
+      <strong>Obs:</strong> ${r.observacoes}</div>`:''}`;
   document.getElementById('modal-recipe').classList.add('open');
 }
 function deleteCurrentRecipe(){
@@ -1160,6 +1321,8 @@ function exportRecipePDF(id){
     tfoot td:last-child{text-align:right;color:#27AE60;font-family:'Roboto Mono',monospace}
     footer{margin-top:28px;padding-top:12px;border-top:1px solid #E0E0E0;display:flex;justify-content:space-between;font-size:11px;color:#BDBDBD}
     .btn-print{display:inline-flex;align-items:center;gap:8px;background:#27AE60;color:#fff;border:none;padding:12px 24px;border-radius:999px;font-size:14px;font-family:'Inter',sans-serif;font-weight:700;cursor:pointer;margin-bottom:20px}
+    .prep{background:#F7F7F7;border-radius:10px;padding:14px 16px;margin-top:20px;font-size:13px;line-height:1.8;color:#3E3E3E}
+    .prep-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.6px;color:#717171;margin-bottom:8px}
   </style></head><body>
   <div class="no-print" style="display:flex;gap:12px;align-items:center;margin-bottom:20px">
     <button class="btn-print" onclick="window.print()">Salvar / Imprimir PDF</button>
@@ -1170,7 +1333,7 @@ function exportRecipePDF(id){
       <div class="logo-box">FT</div>
       <div><div style="font-size:18px;font-weight:800;color:#1A1A1A">FichaTec</div><div style="font-size:11px;color:#BDBDBD">Fichas Técnicas & Estoque</div></div>
     </div>
-    <div style="text-align:right;font-size:11px;color:#BDBDBD;line-height:2"><div>Gerado em ${now}</div><div>Criado em ${criado}</div></div>
+    <div style="text-align:right;font-size:11px;color:#BDBDBD;line-height:2"><div>Gerado em ${now}</div><div>Criado em ${criado}</div>${r.origem==='scan'?'<div style="color:#27AE60;font-weight:700">📷 Digitalizada</div>':''}</div>
   </div>
   <div style="margin-bottom:20px">
     <div style="font-size:22px;font-weight:800;margin-bottom:4px;letter-spacing:-0.5px">${r.nome}</div>
@@ -1186,11 +1349,200 @@ function exportRecipePDF(id){
   <table><thead><tr><th>Ingrediente</th><th>Quantidade</th><th style="text-align:right">Custo</th></tr></thead>
   <tbody>${rows}</tbody>
   <tfoot><tr><td colspan="2">Total</td><td>${fmtBRL(totalCost)}</td></tr></tfoot></table>
+  ${r.modoPreparo?`<div class="prep"><div class="prep-title">Modo de Preparo</div>${r.modoPreparo.replace(/\n/g,'<br>')}</div>`:''}
+  ${r.observacoes?`<div style="margin-top:12px;background:#FFF4E5;border-radius:10px;padding:12px 16px;font-size:12px;color:#FF8C00"><strong>Observações:</strong> ${r.observacoes}</div>`:''}
   <footer><span>FichaTec</span><span>${r.nome} · ${now}</span></footer>
   </body></html>`;
   const win=window.open('','_blank','width=800,height=920');
   if(!win){showToast('Permita pop-ups para gerar o PDF.');return;}
   win.document.write(html);win.document.close();
+}
+
+/* ══ SCANNER DE RECEITA ══ */
+function openScanModal(){
+  resetScan();
+  document.getElementById('modal-scan').classList.add('open');
+}
+
+function resetScan(){
+  scannedRecipeData=null;
+  document.getElementById('scan-preview-wrap').innerHTML=`
+    <div class="scan-preview-placeholder">
+      <span class="material-symbols-rounded">image_search</span>
+      <p>A foto da receita aparecerá aqui</p>
+    </div>`;
+  document.getElementById('scan-status-area').innerHTML='';
+  document.getElementById('scan-result-area').style.display='none';
+  document.getElementById('scan-cancel-wrap').style.display='block';
+  document.getElementById('scan-input-camera').value='';
+  document.getElementById('scan-input-gallery').value='';
+}
+
+function setScanStatus(type,msg){
+  const icons={loading:'hourglass_top',success:'check_circle',error:'error'};
+  document.getElementById('scan-status-area').innerHTML=
+    `<div class="scan-status-box ${type}">
+      <span class="material-symbols-rounded ${type==='loading'?'spin':''}">${icons[type]}</span>
+      <span>${msg}</span>
+    </div>`;
+}
+
+async function handleScanFile(event){
+  const file=event.target.files[0];
+  if(!file)return;
+  const reader=new FileReader();
+  reader.onload=async(e)=>{
+    const base64=e.target.result;
+    document.getElementById('scan-preview-wrap').innerHTML=
+      `<img src="${base64}" alt="Receita">`;
+    document.getElementById('scan-result-area').style.display='none';
+    document.getElementById('scan-cancel-wrap').style.display='none';
+    const compressed=await compressImage(base64,1400,0.88);
+    await analyzeRecipeImage(compressed);
+  };
+  reader.readAsDataURL(file);
+}
+
+function compressImage(base64,maxWidth,quality){
+  return new Promise(resolve=>{
+    const img=new Image();
+    img.onload=()=>{
+      const canvas=document.createElement('canvas');
+      let w=img.width,h=img.height;
+      if(w>maxWidth){h=Math.round(h*maxWidth/w);w=maxWidth;}
+      canvas.width=w;canvas.height=h;
+      canvas.getContext('2d').drawImage(img,0,0,w,h);
+      resolve(canvas.toDataURL('image/jpeg',quality));
+    };
+    img.src=base64;
+  });
+}
+
+async function analyzeRecipeImage(base64){
+  setScanStatus('loading','Lendo a receita com IA... aguarde alguns segundos.');
+  try{
+    const resp=await fetch('/api/scan-recipe',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({image:base64})
+    });
+    const data=await resp.json();
+    if(!resp.ok||!data.success)throw new Error(data.error||'Erro ao processar imagem.');
+    scannedRecipeData=data.recipe;
+    renderScanResult(data.recipe);
+    setScanStatus('success','Receita lida! Revise e salve abaixo.');
+    document.getElementById('scan-cancel-wrap').style.display='none';
+  }catch(err){
+    setScanStatus('error','Erro: '+(err.message||'Falha ao processar. Tente outra foto.'));
+    document.getElementById('scan-cancel-wrap').style.display='block';
+    console.error('Scan error:',err);
+  }
+}
+
+function renderScanResult(recipe){
+  document.getElementById('scan-nome').value=recipe.nome||'';
+  document.getElementById('scan-rendimento').value=recipe.rendimento||'';
+  document.getElementById('scan-porcoes').value=recipe.porcoes||'';
+
+  const ings=recipe.ingredientes||[];
+  document.getElementById('scan-ing-count-badge').textContent=ings.length;
+
+  document.getElementById('scan-ing-list').innerHTML=ings.length
+    ?ings.map((ing,i)=>`
+      <div class="scan-ing-row">
+        <div class="scan-ing-name">${ing.nome}</div>
+        <div class="scan-ing-qty">${ing.quantidade} ${ing.unidade}</div>
+        <button class="scan-ing-del" onclick="removeScanIng(${i})" title="Remover">
+          <span class="material-symbols-rounded">close</span>
+        </button>
+      </div>`).join('')
+    :`<div style="font-size:13px;color:var(--n400);padding:8px">Nenhum ingrediente identificado</div>`;
+
+  const mpWrap=document.getElementById('scan-modo-preparo-wrap');
+  if(recipe.modoPreparo){
+    mpWrap.style.display='block';
+    document.getElementById('scan-modo-preparo').value=recipe.modoPreparo;
+  }else{mpWrap.style.display='none';}
+
+  const obsWrap=document.getElementById('scan-obs-wrap');
+  if(recipe.observacoes){
+    obsWrap.style.display='block';
+    document.getElementById('scan-obs').value=recipe.observacoes;
+  }else{obsWrap.style.display='none';}
+
+  document.getElementById('scan-result-area').style.display='block';
+}
+
+function removeScanIng(index){
+  if(!scannedRecipeData||!scannedRecipeData.ingredientes)return;
+  scannedRecipeData.ingredientes.splice(index,1);
+  renderScanResult(scannedRecipeData);
+}
+
+function confirmScanSave(){
+  const nome=document.getElementById('scan-nome').value.trim();
+  if(!nome){showToast('Informe o nome da receita.');return;}
+  const ings=scannedRecipeData?.ingredientes||[];
+  if(!ings.length){showToast('Nenhum ingrediente para salvar.');return;}
+
+  const rendimento=parseFloat(document.getElementById('scan-rendimento').value)||0;
+  const porcoes=Math.max(parseFloat(document.getElementById('scan-porcoes').value)||1,1);
+
+  const mapped=ings.map(ing=>{
+    const isUn=ing.unidade==='un';
+    const qtyG=isUn?ing.quantidade:(ing.unidade==='kg'?ing.quantidade*1000:ing.quantidade);
+    // busca no estoque pelo nome mais próximo
+    const stockItem=stock.find(s=>
+      s.name.toLowerCase()===ing.nome.toLowerCase()||
+      s.name.toLowerCase().includes(ing.nome.toLowerCase())||
+      ing.nome.toLowerCase().includes(s.name.toLowerCase())
+    )||null;
+    const ppg=stockItem?pricePerUnit(stockItem):0;
+    return{
+      id:Date.now()+Math.random(),
+      stockId:stockItem?stockItem.id:null,
+      physicalId:null,
+      source:'virtual',
+      name:ing.nome,
+      qtyG,
+      qtyBruta:qtyG,
+      unit:ing.unidade,
+      rendimento:100,
+      cost:ppg*qtyG,
+      nutrition:stockItem?.nutrition||getNutrition(ing.nome),
+      savedPricePerG:ppg
+    };
+  });
+
+  const {totalCost,venda}=calcCosts(mapped,0);
+  const modoPreparo=document.getElementById('scan-modo-preparo').value.trim()||null;
+  const observacoes=document.getElementById('scan-obs').value.trim()||null;
+
+  const recipe={
+    id:Date.now(),nome,
+    ingredients:mapped,
+    rendimento,porcoes,
+    markup:0,totalCost,venda,
+    porcaoSize:100,
+    createdAt:new Date().toISOString(),
+    origem:'scan',
+    modoPreparo,
+    observacoes
+  };
+
+  const idx=recipes.findIndex(r=>r.nome.toLowerCase()===nome.toLowerCase());
+  if(idx>=0){
+    if(!confirm(`Receita "${nome}" já existe. Sobrescrever?`))return;
+    recipes[idx]=recipe;
+  }else{
+    recipes.push(recipe);
+  }
+  DB.save('fichatec_recipes',recipes);
+  closeModal('modal-scan');
+  resetScan();
+  showPage('receitas','nav-receitas');
+  renderRecipes('',null);
+  showToast(`"${nome}" digitalizada e salva! 📷`);
 }
 
 /* ══ EVENTOS ══ */
@@ -1200,6 +1552,17 @@ document.querySelectorAll('.modal-overlay').forEach(m=>{
 document.addEventListener('click',e=>{
   if(!document.getElementById('ing-search-wrap').contains(e.target))
     document.getElementById('ing-dropdown').classList.remove('open');
+});
+
+// Oculta o FAB do scanner quando qualquer modal está aberto
+const scanFabBtn=document.getElementById('scan-fab-btn');
+const fabObserver=new MutationObserver(()=>{
+  const anyOpen=document.querySelector('.modal-overlay.open');
+  scanFabBtn.style.opacity=anyOpen?'0':'1';
+  scanFabBtn.style.pointerEvents=anyOpen?'none':'auto';
+});
+document.querySelectorAll('.modal-overlay').forEach(m=>{
+  fabObserver.observe(m,{attributes:true,attributeFilter:['class']});
 });
 
 /* ══ SEED ══ */
