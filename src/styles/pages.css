@@ -43,6 +43,10 @@
     top: calc(var(--ft-header-height) + 20px);
   }
 
+  #ficha-totals .total-box {
+    margin-bottom: 16px;
+  }
+
   #stock-list,
   #recipes-list,
   #pstock-list {
@@ -63,6 +67,14 @@
   .section-label,
   #pstock-summary {
     grid-column: 1 / -1;
+  }
+
+  .page-header {
+    background: color-mix(in srgb, var(--md-sys-color-surface-container-lowest) 76%, transparent);
+    border: 1px solid color-mix(in srgb, var(--md-sys-color-outline-variant) 64%, transparent);
+    border-radius: var(--md-sys-shape-corner-extra-large);
+    padding: 16px 18px;
+    box-shadow: var(--md-sys-elevation-level-1);
   }
 }
 
@@ -85,5 +97,14 @@
 
   .page-header {
     margin-top: 8px;
+  }
+
+  .page-hero-title {
+    font-size: 30px;
+    line-height: 1.12;
+  }
+
+  #page-ficha .card {
+    padding: 20px;
   }
 }

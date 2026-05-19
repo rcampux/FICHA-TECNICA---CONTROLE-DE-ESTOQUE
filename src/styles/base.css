@@ -3,9 +3,7 @@ html {
 }
 
 body {
-  background:
-    radial-gradient(circle at top left, rgba(164, 61, 38, 0.10), transparent 34rem),
-    linear-gradient(180deg, #fff8f1 0%, var(--md-sys-color-surface) 34%, #fffaf4 100%);
+  background: linear-gradient(180deg, #fff8f1 0%, var(--md-sys-color-surface) 34%, #fffaf4 100%);
   color: var(--md-sys-color-on-surface);
   text-rendering: optimizeLegibility;
 }

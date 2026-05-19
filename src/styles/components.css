@@ -33,6 +33,7 @@
   background: color-mix(in srgb, var(--md-sys-color-surface-container-lowest) 90%, transparent);
   border-bottom: 1px solid color-mix(in srgb, var(--md-sys-color-outline-variant) 72%, transparent);
   backdrop-filter: blur(18px);
+  box-shadow: 0 1px 0 rgba(63, 43, 31, 0.04);
 }
 
 .app-logo {
@@ -214,6 +215,28 @@ textarea:focus {
   border: 1px solid var(--md-sys-color-outline-variant);
 }
 
+.page-hero {
+  border-bottom: 1px solid color-mix(in srgb, var(--md-sys-color-outline-variant) 58%, transparent);
+  margin-bottom: 4px;
+}
+
+.page-hero-label {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.page-hero-title {
+  max-width: 680px;
+}
+
+.total-value,
+.summary-item-val,
+.item-price,
+.ing-cost,
+.pstock-qty {
+  font-variant-numeric: tabular-nums;
+}
+
 @media (min-width: 768px) {
   .nav {
     position: fixed;
@@ -263,6 +286,10 @@ textarea:focus {
     max-width: 640px;
     border-radius: var(--md-sys-shape-corner-extra-large);
     padding: 0 24px 28px;
+  }
+
+  .page-hero {
+    padding-top: 8px;
   }
 }
 

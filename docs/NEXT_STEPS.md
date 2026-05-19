@@ -1,23 +1,39 @@
-# FichaTec - Proximo Passo Sequencial
+# FichaTec - Próximo Passo Sequencial
 
-## Estado atual
+## Estado Atual
 
-O projeto esta em fase de prototipo estruturado:
+O projeto está em fase de protótipo estruturado:
 
 - Diretrizes de produto documentadas.
-- Arquitetura tecnica documentada.
+- Arquitetura técnica documentada.
 - Design system baseado em Material 3 documentado.
 - HTML, CSS e JS separados.
 - Tokens visuais iniciais aplicados.
 - Layout mobile/tablet/desktop iniciado.
+- Revisão visual inicial aplicada: layout responsivo polido, paleta gastronômica/premium refinada, fundo sem ornamentos circulares/decorativos e hierarquia de cards ajustada.
 - Repository local isolando `localStorage`.
 - Estrutura futura para Supabase e Edge Functions criada.
 
-## Proximo passo recomendado
+## Próximo Passo Recomendado
 
-### Fase 1.1 - Revisao visual guiada do prototipo
+### Fase 1.2 - Modularização do JS
 
-Antes de quebrar mais o JavaScript em modulos, revisar o prototipo renderizado em:
+Depois da revisão visual inicial, o próximo passo é quebrar o `src/app.js` por domínio sem mudar comportamento.
+
+Ordem recomendada:
+
+1. Extrair utilitários de formatação.
+2. Extrair constantes e chaves de storage.
+3. Extrair repository e manter `localStorage` como implementação atual.
+4. Extrair módulo de estoque virtual.
+5. Extrair módulo de estoque físico.
+6. Extrair módulo de receitas/ficha técnica.
+7. Extrair módulo de scanner.
+8. Validar app a cada extração.
+
+## Checklist Visual Contínuo
+
+Continuar revisando o protótipo renderizado em:
 
 - Mobile: 390px a 430px.
 - Tablet: 768px a 1024px.
@@ -25,24 +41,12 @@ Antes de quebrar mais o JavaScript em modulos, revisar o prototipo renderizado e
 
 Checklist:
 
-- Navegacao inferior no mobile.
+- Navegação inferior no mobile.
 - Navigation rail no tablet.
 - Navigation drawer no desktop.
-- Ficha tecnica em duas colunas no tablet/desktop.
+- Ficha técnica em duas colunas no tablet/desktop.
 - Cards de estoque e receitas em grid.
-- Hierarquia de custo, margem e preco sugerido.
-- Logo generico provisório.
-- Paleta gastronomica/premium.
-
-### Fase 1.2 - Modularizacao do JS
-
-Depois da revisao visual:
-
-1. Extrair utilitarios de formatacao.
-2. Extrair repository e chaves de storage.
-3. Extrair modulo de estoque virtual.
-4. Extrair modulo de estoque fisico.
-5. Extrair modulo de receitas.
-6. Extrair modulo de scanner.
-7. Manter compatibilidade funcional a cada extracao.
+- Hierarquia de custo, margem e preço sugerido.
+- Logo genérico provisório.
+- Paleta gastronômica/premium.
 
