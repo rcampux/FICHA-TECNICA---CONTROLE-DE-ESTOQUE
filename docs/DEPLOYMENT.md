@@ -34,6 +34,14 @@ Configuracao prevista:
 
 O arquivo `vercel.json` redireciona `/` para `/public/index.html`.
 
+Link de importacao direta:
+
+```text
+https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Frcampux%2FFICHA-TECNICA---CONTROLE-DE-ESTOQUE
+```
+
+Observacao: para deploy automatico pela assistente e necessario ter Vercel CLI autenticada ou `VERCEL_TOKEN` disponivel no ambiente.
+
 ## Link local de prototipo
 
 Sempre que uma etapa visual ou funcional for concluida, manter uma forma clara de visualizar:
@@ -41,4 +49,3 @@ Sempre que uma etapa visual ou funcional for concluida, manter uma forma clara d
 - Local file: `public/index.html`.
 - Servidor local: `npm run dev`.
 - URL local: `http://localhost:4173/public/index.html`.
-

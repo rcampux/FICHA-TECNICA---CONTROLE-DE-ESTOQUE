@@ -32,3 +32,9 @@ Depois acesse:
 ```text
 http://localhost:4173/public/index.html
 ```
+
+## Deploy Vercel
+
+Importe o repositorio na Vercel por este link:
+
+[Deploy na Vercel](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Frcampux%2FFICHA-TECNICA---CONTROLE-DE-ESTOQUE)
