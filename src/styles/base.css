@@ -1,0 +1,28 @@
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background:
+    radial-gradient(circle at top left, rgba(164, 61, 38, 0.10), transparent 34rem),
+    linear-gradient(180deg, #fff8f1 0%, var(--md-sys-color-surface) 34%, #fffaf4 100%);
+  color: var(--md-sys-color-on-surface);
+  text-rendering: optimizeLegibility;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--md-sys-color-primary) 40%, transparent);
+  outline-offset: 2px;
+}
+
+::selection {
+  background: var(--md-sys-color-primary-container);
+  color: var(--md-sys-color-on-primary-container);
+}

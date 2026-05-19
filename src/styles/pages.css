@@ -1,0 +1,89 @@
+.page-hero-title,
+.page-title {
+  color: var(--md-sys-color-on-surface);
+  letter-spacing: 0;
+}
+
+.page-hero-label,
+.page-sub,
+.section-label,
+.input-label {
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+@media (min-width: 768px) {
+  .page.active {
+    display: grid;
+    align-items: start;
+    gap: 18px;
+  }
+
+  #page-ficha.page.active {
+    grid-template-columns: minmax(0, 1.15fr) minmax(320px, 0.85fr);
+  }
+
+  #page-ficha .page-hero,
+  #page-ficha > .input-group:first-of-type,
+  #page-ficha > .input-row,
+  #page-ficha > .card,
+  #page-ficha > .info-banner,
+  #page-ficha > .source-toggle,
+  #page-ficha > div[style*="position:relative"],
+  #page-ficha > div[style*="display:flex"] {
+    grid-column: 1;
+  }
+
+  #ingredients-list,
+  #ficha-totals {
+    grid-column: 2;
+  }
+
+  #ficha-totals {
+    position: sticky;
+    top: calc(var(--ft-header-height) + 20px);
+  }
+
+  #stock-list,
+  #recipes-list,
+  #pstock-list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  .item-card,
+  .pstock-card,
+  .recipe-card {
+    margin-bottom: 0;
+  }
+
+  .page-header,
+  .search-bar,
+  .filter-chips,
+  .section-label,
+  #pstock-summary {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (min-width: 1200px) {
+  #page-ficha.page.active {
+    grid-template-columns: minmax(0, 1fr) minmax(360px, 420px);
+    gap: 24px;
+  }
+
+  #stock-list,
+  #recipes-list,
+  #pstock-list {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+  }
+
+  .summary-box {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .page-header {
+    margin-top: 8px;
+  }
+}
