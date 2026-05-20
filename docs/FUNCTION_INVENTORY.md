@@ -19,6 +19,8 @@ Este arquivo e um inventario vivo das funcoes utilizadas no projeto. Toda nova f
 | `showToast` | `src/app.js` | 11 | function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);} |
 | `showPage` | `src/app.js` | 12 | function showPage(page,navId){ |
 | `closeModal` | `src/app.js` | 21 | function closeModal(id){document.getElementById(id).classList.remove('open');} |
+| `hydrateWorkspaceData` | `src/app.js` | 105 | Carrega estoque, estoque fisico e receitas do Supabase quando um workspace e selecionado. |
+| `applyRemoteSave` | `src/app.js` | 130 | Atualiza o estado em memoria depois que uma escrita remota retorna `remoteId`. |
 | `exposeStorageKeys` | `src/config/storageKeys.js` | 1 | (function exposeStorageKeys() { |
 | `exposeSupabaseConfig` | `src/config/supabase.js` | 1 | (function exposeSupabaseConfig() { |
 | `hasSupabaseConfig` | `src/config/supabase.js` | 5 | function hasSupabaseConfig() { |
@@ -29,15 +31,16 @@ Este arquivo e um inventario vivo das funcoes utilizadas no projeto. Toda nova f
 | `getElement` | `src/modules/auth/authSession.js` | 22 | Recupera elementos de UI usados no modal de acesso. |
 | `getAuthState` | `src/modules/auth/authSession.js` | 26 | Retorna estado publico de autenticacao, usuario e workspace ativo. |
 | `escapeHtml` | `src/modules/auth/authSession.js` | 36 | Escapa dados vindos do banco antes de renderizar workspaces. |
-| `initAuthSession` | `src/modules/auth/authSession.js` | 46 | Inicializa modo local ou Supabase Auth sem bloquear o prototipo. |
-| `syncSupabaseSession` | `src/modules/auth/authSession.js` | 77 | Sincroniza sessao Supabase no estado local do modulo. |
-| `loadOrganizations` | `src/modules/auth/authSession.js` | 87 | Carrega workspaces do usuario autenticado via `organization_members`. |
-| `renderAuthState` | `src/modules/auth/authSession.js` | 123 | Renderiza botao de sessao, formulario e lista de workspaces. |
-| `openAuthModal` | `src/modules/auth/authSession.js` | 187 | Abre o modal de acesso/workspace. |
-| `setAuthMode` | `src/modules/auth/authSession.js` | 192 | Alterna entre login e criacao de conta. |
-| `submitAuthForm` | `src/modules/auth/authSession.js` | 199 | Executa login ou cadastro usando Supabase Auth quando habilitado. |
-| `signOutAuth` | `src/modules/auth/authSession.js` | 235 | Encerra a sessao autenticada no Supabase. |
-| `selectOrganization` | `src/modules/auth/authSession.js` | 247 | Define o workspace ativo para futuras operacoes remotas. |
+| `dispatchWorkspaceChange` | `src/modules/auth/authSession.js` | 46 | Dispara evento de mudanca de workspace para hidratar dados remotos. |
+| `initAuthSession` | `src/modules/auth/authSession.js` | 53 | Inicializa modo local ou Supabase Auth sem bloquear o prototipo. |
+| `syncSupabaseSession` | `src/modules/auth/authSession.js` | 84 | Sincroniza sessao Supabase no estado local do modulo. |
+| `loadOrganizations` | `src/modules/auth/authSession.js` | 94 | Carrega workspaces do usuario autenticado via `organization_members`. |
+| `renderAuthState` | `src/modules/auth/authSession.js` | 131 | Renderiza botao de sessao, formulario e lista de workspaces. |
+| `openAuthModal` | `src/modules/auth/authSession.js` | 195 | Abre o modal de acesso/workspace. |
+| `setAuthMode` | `src/modules/auth/authSession.js` | 200 | Alterna entre login e criacao de conta. |
+| `submitAuthForm` | `src/modules/auth/authSession.js` | 207 | Executa login ou cadastro usando Supabase Auth quando habilitado. |
+| `signOutAuth` | `src/modules/auth/authSession.js` | 243 | Encerra a sessao autenticada no Supabase. |
+| `selectOrganization` | `src/modules/auth/authSession.js` | 255 | Define o workspace ativo para futuras operacoes remotas. |
 | `exposeRecipeSheetModule` | `src/modules/recipes/recipeSheet.js` | 1 | (function exposeRecipeSheetModule() { |
 | `createRecipeSheetModule` | `src/modules/recipes/recipeSheet.js` | 2 | function createRecipeSheetModule(deps) { |
 | `syncState` | `src/modules/recipes/recipeSheet.js` | 30 | function syncState() { |
@@ -105,13 +108,42 @@ Este arquivo e um inventario vivo das funcoes utilizadas no projeto. Toda nova f
 | `handleLaunchShortcut` | `src/pwa/registerServiceWorker.js` | 2 | function handleLaunchShortcut() { |
 | `registerServiceWorker` | `src/pwa/registerServiceWorker.js` | 13 | function registerServiceWorker() { |
 | `exposeHybridRepository` | `src/services/repositories/hybridRepository.js` | 1 | (function exposeHybridRepository() { |
-| `getMode` | `src/services/repositories/hybridRepository.js` | 12 | function getMode() { |
-| `getSupabaseClient` | `src/services/repositories/hybridRepository.js` | 16 | function getSupabaseClient() { |
-| `resolveTable` | `src/services/repositories/hybridRepository.js` | 24 | function resolveTable(key) { |
-| `load` | `src/services/repositories/hybridRepository.js` | 28 | function load(key) { |
-| `save` | `src/services/repositories/hybridRepository.js` | 32 | function save(key, value) { |
-| `loadRemote` | `src/services/repositories/hybridRepository.js` | 36 | async function loadRemote(key, organizationId) { |
-| `saveRemote` | `src/services/repositories/hybridRepository.js` | 52 | async function saveRemote(_key, _value, _organizationId) { |
+| `getMode` | `src/services/repositories/hybridRepository.js` | 7 | Retorna `local` ou `supabase` conforme configuracao ativa. |
+| `getSupabaseClient` | `src/services/repositories/hybridRepository.js` | 11 | Reusa a promise do cliente Supabase para leituras/escritas remotas. |
+| `getActiveOrganizationId` | `src/services/repositories/hybridRepository.js` | 19 | Lê o workspace ativo a partir do estado de autenticacao. |
+| `load` | `src/services/repositories/hybridRepository.js` | 23 | Carrega dados locais do `localStorage`. |
+| `save` | `src/services/repositories/hybridRepository.js` | 27 | Salva localmente e enfileira sincronizacao remota quando habilitada. |
+| `loadRemote` | `src/services/repositories/hybridRepository.js` | 32 | Carrega dados Supabase por chave de dominio e organizacao. |
+| `saveRemote` | `src/services/repositories/hybridRepository.js` | 38 | Salva dados Supabase por chave de dominio e atualiza cache local. |
+| `queueRemoteSave` | `src/services/repositories/hybridRepository.js` | 46 | Executa sincronizacao remota em background e emite evento de retorno. |
+| `exposeSupabaseDomainRepository` | `src/services/repositories/supabaseDomainRepository.js` | 1 | Expõe o repository de dominio Supabase para estoque, fichas e receitas. |
+| `normalizeNumber` | `src/services/repositories/supabaseDomainRepository.js` | 4 | Normaliza valores numericos vindos do app ou do banco. |
+| `centsFromCurrency` | `src/services/repositories/supabaseDomainRepository.js` | 9 | Converte valores em reais para centavos inteiros. |
+| `currencyFromCents` | `src/services/repositories/supabaseDomainRepository.js` | 13 | Converte centavos do banco para reais no app. |
+| `getRemoteId` | `src/services/repositories/supabaseDomainRepository.js` | 17 | Resolve o identificador remoto sem quebrar IDs locais do prototipo. |
+| `mapNutritionToRemote` | `src/services/repositories/supabaseDomainRepository.js` | 21 | Converte nutricao do app para `nutrition_facts`. |
+| `mapNutritionFromRemote` | `src/services/repositories/supabaseDomainRepository.js` | 37 | Converte `nutrition_facts` para o formato usado no app. |
+| `shouldReconcileDeletes` | `src/services/repositories/supabaseDomainRepository.js` | 49 | Define quando e seguro reconciliar exclusoes remotas. |
+| `softDeleteMissingRows` | `src/services/repositories/supabaseDomainRepository.js` | 53 | Marca como deletadas linhas remotas ausentes do snapshot local seguro. |
+| `deleteMissingRecipeIngredients` | `src/services/repositories/supabaseDomainRepository.js` | 67 | Remove ingredientes remotos ausentes da receita sincronizada. |
+| `mapStockToRemote` | `src/services/repositories/supabaseDomainRepository.js` | 80 | Converte estoque virtual para `stock_items`. |
+| `mapStockFromRemote` | `src/services/repositories/supabaseDomainRepository.js` | 95 | Converte `stock_items` para estoque virtual do app. |
+| `mapPhysicalToRemote` | `src/services/repositories/supabaseDomainRepository.js` | 110 | Converte estoque fisico para `physical_stock_items`. |
+| `mapPhysicalFromRemote` | `src/services/repositories/supabaseDomainRepository.js` | 126 | Converte `physical_stock_items` para estoque fisico do app. |
+| `mapRecipeToRemote` | `src/services/repositories/supabaseDomainRepository.js` | 144 | Converte receita/ficha tecnica para `recipes`. |
+| `mapRecipeFromRemote` | `src/services/repositories/supabaseDomainRepository.js` | 163 | Converte `recipes` com ingredientes para formato do app. |
+| `mapRecipeIngredientToRemote` | `src/services/repositories/supabaseDomainRepository.js` | 183 | Converte ingrediente da ficha para `recipe_ingredients`. |
+| `mapRecipeIngredientFromRemote` | `src/services/repositories/supabaseDomainRepository.js` | 204 | Converte `recipe_ingredients` para ingrediente do app. |
+| `upsertNutrition` | `src/services/repositories/supabaseDomainRepository.js` | 224 | Salva snapshot nutricional manual em `nutrition_facts`. |
+| `listStockItems` | `src/services/repositories/supabaseDomainRepository.js` | 237 | Lista estoque virtual remoto por organizacao. |
+| `saveStockItems` | `src/services/repositories/supabaseDomainRepository.js` | 249 | Salva estoque virtual remoto e retorna `remoteId`. |
+| `listPhysicalStockItems` | `src/services/repositories/supabaseDomainRepository.js` | 268 | Lista estoque fisico remoto por organizacao. |
+| `savePhysicalStockItems` | `src/services/repositories/supabaseDomainRepository.js` | 280 | Salva estoque fisico remoto e retorna `remoteId`. |
+| `listRecipes` | `src/services/repositories/supabaseDomainRepository.js` | 298 | Lista receitas remotas com ingredientes. |
+| `saveRecipes` | `src/services/repositories/supabaseDomainRepository.js` | 310 | Salva receitas e ingredientes no Supabase. |
+| `resolveDomain` | `src/services/repositories/supabaseDomainRepository.js` | 342 | Mapeia chave local para funcoes remotas de dominio. |
+| `loadByKey` | `src/services/repositories/supabaseDomainRepository.js` | 349 | Carrega dominio remoto a partir da chave local. |
+| `saveByKey` | `src/services/repositories/supabaseDomainRepository.js` | 355 | Salva dominio remoto a partir da chave local. |
 | `exposeLocalStorageRepository` | `src/services/repositories/localStorageRepository.js` | 1 | (function exposeLocalStorageRepository() { |
 | `load` | `src/services/repositories/localStorageRepository.js` | 3 | load(key) { |
 | `save` | `src/services/repositories/localStorageRepository.js` | 6 | save(key, value) { |

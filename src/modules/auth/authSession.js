@@ -43,6 +43,13 @@
       })[character]);
     }
 
+    function dispatchWorkspaceChange() {
+      if (!state.activeOrganizationId) return;
+      window.dispatchEvent(new CustomEvent("fichatec:workspace-change", {
+        detail: {organizationId: state.activeOrganizationId},
+      }));
+    }
+
     async function initAuthSession() {
       if (state.initialized) return getAuthState();
       state.initialized = true;
@@ -114,6 +121,7 @@
 
       if (!state.activeOrganizationId && state.organizations.length) {
         state.activeOrganizationId = state.organizations[0].id;
+        dispatchWorkspaceChange();
       }
 
       renderAuthState();
@@ -247,6 +255,7 @@
     function selectOrganization(id) {
       state.activeOrganizationId = id;
       renderAuthState();
+      dispatchWorkspaceChange();
       showToast("Workspace selecionado.");
     }
 
@@ -261,6 +270,7 @@
       signOutAuth,
       submitAuthForm,
       syncSupabaseSession,
+      dispatchWorkspaceChange,
     };
   }
 

@@ -46,6 +46,7 @@ Este documento deve ser seguido a cada nova etapa do projeto. Ele consolida dire
 - `src/utils/formatters.js`: formatacao de moeda e quantidade.
 - `src/services/repositories/localStorageRepository.js`: repository local temporario.
 - `src/services/repositories/hybridRepository.js`: ponte local/Supabase sem quebrar o prototipo atual.
+- `src/services/repositories/supabaseDomainRepository.js`: conversores e repositories remotos por dominio.
 - `src/services/supabaseClient.js`: carregamento seguro do client Supabase com anon key publica.
 - `src/config/supabase.js`: configuracao de modo local/Supabase.
 - `src/modules/auth/authSession.js`: estado de sessao, login/cadastro Supabase e selecao de workspace.
@@ -67,5 +68,5 @@ Entregaveis da Fase 2.1:
 - Concluido: fluxo visual de login.
 - Concluido: tela de estado autenticado.
 - Concluido: selecao de organizacao/workspace.
-- Proximo: repositories remotos para estoque, receitas e ficha tecnica.
-- teste de RLS com dois usuarios.
+- Concluido: repositories remotos para estoque, receitas e ficha tecnica.
+- Proximo: configurar Supabase real e testar RLS com dois usuarios.

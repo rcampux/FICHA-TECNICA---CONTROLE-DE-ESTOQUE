@@ -102,6 +102,41 @@ const authSessionModule=window.FichaTecAuthSession.createAuthSessionModule({
 const {getAuthState,initAuthSession,loadOrganizations,openAuthModal,renderAuthState,selectOrganization,setAuthMode,signOutAuth,submitAuthForm,syncSupabaseSession}=authSessionModule;
 Object.assign(window,{getAuthState,initAuthSession,loadOrganizations,openAuthModal,renderAuthState,selectOrganization,setAuthMode,signOutAuth,submitAuthForm,syncSupabaseSession});
 
+async function hydrateWorkspaceData(event){
+  const organizationId=event?.detail?.organizationId || DB.activeOrganizationId?.();
+  if(DB.mode()!=='supabase'||!organizationId)return;
+
+  try{
+    const [remoteStock,remotePhysicalStock,remoteRecipes]=await Promise.all([
+      DB.loadRemote(STORAGE_KEYS.stock,organizationId),
+      DB.loadRemote(STORAGE_KEYS.physicalStock,organizationId),
+      DB.loadRemote(STORAGE_KEYS.recipes,organizationId),
+    ]);
+
+    if(Array.isArray(remoteStock)){stock=remoteStock;DB.save(STORAGE_KEYS.stock,stock);}
+    if(Array.isArray(remotePhysicalStock)){physicalStock=remotePhysicalStock;DB.save(STORAGE_KEYS.physicalStock,physicalStock);}
+    if(Array.isArray(remoteRecipes)){recipes=remoteRecipes;DB.save(STORAGE_KEYS.recipes,recipes);}
+
+    renderStock();renderPhysical();renderRecipes();
+    showToast('Workspace sincronizado.');
+  }catch(error){
+    console.error(error);
+    showToast('Nao foi possivel sincronizar o workspace.');
+  }
+}
+Object.assign(window,{hydrateWorkspaceData});
+window.addEventListener('fichatec:workspace-change',hydrateWorkspaceData);
+
+function applyRemoteSave(event){
+  const {key,value}=event.detail || {};
+  if(!Array.isArray(value))return;
+  if(key===STORAGE_KEYS.stock)stock=value;
+  if(key===STORAGE_KEYS.physicalStock)physicalStock=value;
+  if(key===STORAGE_KEYS.recipes)recipes=value;
+}
+Object.assign(window,{applyRemoteSave});
+window.addEventListener('fichatec:remote-save',applyRemoteSave);
+
 /* ══ EVENTOS ══ */
 document.querySelectorAll('.modal-overlay').forEach(m=>{
   m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('open');});

@@ -1,13 +1,8 @@
 (function exposeHybridRepository() {
   const localRepository = window.FichaTecLocalStorageRepository;
   const supabaseService = window.FichaTecSupabaseClientService;
+  const domainRepository = window.FichaTecSupabaseDomainRepository;
   let supabaseClientPromise = null;
-
-  const tableByStorageKey = {
-    fichatec_stock: "stock_items",
-    fichatec_physical: "physical_stock_items",
-    fichatec_recipes: "recipes",
-  };
 
   function getMode() {
     return supabaseService?.isEnabled() ? "supabase" : "local";
@@ -21,8 +16,8 @@
     return supabaseClientPromise;
   }
 
-  function resolveTable(key) {
-    return tableByStorageKey[key] || null;
+  function getActiveOrganizationId() {
+    return window.getAuthState?.().activeOrganizationId || null;
   }
 
   function load(key) {
@@ -31,33 +26,46 @@
 
   function save(key, value) {
     localRepository.save(key, value);
+    queueRemoteSave(key, value);
   }
 
   async function loadRemote(key, organizationId) {
-    const table = resolveTable(key);
     const client = await getSupabaseClient();
-    if (!client || !table || !organizationId) return load(key);
-
-    const {data, error} = await client
-      .from(table)
-      .select("*")
-      .eq("organization_id", organizationId)
-      .is("deleted_at", null)
-      .order("created_at", {ascending:false});
-
-    if (error) throw error;
-    return data || [];
+    if (!client || !domainRepository || !organizationId) return load(key);
+    return domainRepository.loadByKey(client, key, organizationId);
   }
 
-  async function saveRemote(_key, _value, _organizationId) {
-    throw new Error("Supabase write sync is not enabled yet. Use domain-specific repositories in the next phase.");
+  async function saveRemote(key, value, organizationId) {
+    const client = await getSupabaseClient();
+    if (!client || !domainRepository || !organizationId) return value;
+    const saved = await domainRepository.saveByKey(client, key, organizationId, value);
+    localRepository.save(key, saved);
+    return saved;
+  }
+
+  function queueRemoteSave(key, value) {
+    if (getMode() !== "supabase") return;
+    const organizationId = getActiveOrganizationId();
+    if (!organizationId) return;
+
+    saveRemote(key, value, organizationId)
+      .then((saved) => {
+        window.dispatchEvent(new CustomEvent("fichatec:remote-save", {
+          detail: {key, value:saved},
+        }));
+      })
+      .catch((error) => {
+        console.error("Remote sync failed", error);
+      });
   }
 
   window.FichaTecRepository = {
     mode: getMode,
+    activeOrganizationId: getActiveOrganizationId,
     load,
     save,
     loadRemote,
     saveRemote,
+    queueRemoteSave,
   };
 })();
