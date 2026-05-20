@@ -6,6 +6,7 @@ Este documento acompanha a evolucao do app como PWA instalavel.
 
 - `manifest.webmanifest` na raiz do projeto.
 - `service-worker.js` com cache do app shell.
+- Copia dos assets PWA em `public/` para publicacao correta na Vercel.
 - Registro do service worker em `src/pwa/registerServiceWorker.js`.
 - Icone SVG temporario em `icons/icon.svg`.
 - Icones PNG temporarios em `icons/icon-192.png` e `icons/icon-512.png`.
