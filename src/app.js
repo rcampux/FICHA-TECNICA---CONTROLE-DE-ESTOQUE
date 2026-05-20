@@ -1,10 +1,11 @@
-const fmtBRL=v=>v.toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
-const fmtQty=(q,u)=>(q%1===0?q:parseFloat(q.toFixed(3)))+u;
+const {brl:fmtBRL,quantity:fmtQty}=window.FichaTecFormatters;
+const STORAGE_KEYS=window.FichaTecStorageKeys;
 const DB=window.FichaTecLocalStorageRepository;
+const {pricePerUnit}=window.FichaTecStockPricing;
 
-let stock=DB.load('fichatec_stock');
-let physicalStock=DB.load('fichatec_physical');
-let recipes=DB.load('fichatec_recipes');
+let stock=DB.load(STORAGE_KEYS.stock);
+let physicalStock=DB.load(STORAGE_KEYS.physicalStock);
+let recipes=DB.load(STORAGE_KEYS.recipes);
 let currentIngredients=[],selectedIngredient=null;
 let editingStockId=null,editingPhysicalId=null;
 let currentRecipeId=null,activeIngFilter=null;
@@ -13,36 +14,7 @@ let ingSource='virtual',moveType='usar',movingPhysicalId=null;
 // ── Scanner state ──
 let scannedRecipeData=null;
 
-const defaultNutrition={
-  'farinha':{kcal:361,carb:75,prot:9.8,fat:1.4,fiber:2.3,sodium:2},
-  'açúcar refinado':{kcal:399,carb:99.6,prot:0,fat:0,fiber:0,sodium:1},
-  'açúcar':{kcal:387,carb:99,prot:0,fat:0,fiber:0,sodium:1},
-  'manteiga':{kcal:741,carb:0,prot:0.5,fat:83,fiber:0,sodium:576},
-  'ovo':{kcal:146,carb:0.4,prot:12.6,fat:10,fiber:0,sodium:142},
-  'leite':{kcal:61,carb:4.7,prot:3.2,fat:3.3,fiber:0,sodium:38},
-  'sal':{kcal:0,carb:0,prot:0,fat:0,fiber:0,sodium:39300},
-  'azeite':{kcal:884,carb:0,prot:0,fat:100,fiber:0,sodium:0},
-  'óleo':{kcal:884,carb:0,prot:0,fat:100,fiber:0,sodium:0},
-  'arroz':{kcal:358,carb:79,prot:7.4,fat:0.3,fiber:1.6,sodium:1},
-  'feijão':{kcal:333,carb:61,prot:22,fat:1.6,fiber:15.5,sodium:5},
-  'frango':{kcal:162,carb:0,prot:24,fat:7,fiber:0,sodium:75},
-  'carne':{kcal:219,carb:0,prot:26,fat:13,fiber:0,sodium:66},
-  'patinho':{kcal:219,carb:0,prot:26,fat:13,fiber:0,sodium:66},
-  'tomate':{kcal:18,carb:3.9,prot:0.9,fat:0.2,fiber:1.2,sodium:5},
-  'cebola':{kcal:40,carb:9.3,prot:1.1,fat:0.1,fiber:1.7,sodium:4},
-  'alho':{kcal:149,carb:33,prot:6.4,fat:0.5,fiber:2.1,sodium:17},
-  'fermento':{kcal:105,carb:8,prot:12,fat:2,fiber:4,sodium:50},
-  'bicarbonato':{kcal:0,carb:0,prot:0,fat:0,fiber:0,sodium:27360},
-  'chocolate':{kcal:546,carb:60,prot:5,fat:32,fiber:7,sodium:10},
-  'creme de leite':{kcal:300,carb:3,prot:2.5,fat:30,fiber:0,sodium:40},
-  'queijo':{kcal:350,carb:2,prot:25,fat:27,fiber:0,sodium:600},
-  'vinagre':{kcal:22,carb:5,prot:0,fat:0,fiber:0,sodium:2},
-  'mel':{kcal:304,carb:82,prot:0.3,fat:0,fiber:0,sodium:4},
-  'default':{kcal:250,carb:30,prot:8,fat:5,fiber:2,sodium:100}
-};
-
-function getNutrition(n){const k=n.toLowerCase();for(const key in defaultNutrition)if(k.includes(key))return defaultNutrition[key];return defaultNutrition.default;}
-function pricePerUnit(s){return s.unit==='un'?s.price/s.qty:s.price/(s.unit==='kg'?s.qty*1000:s.qty);}
+const {getNutrition}=window.FichaTecNutrition;
 function findStockItem(stockId,name){
   if(stockId&&!String(stockId).startsWith('pf_')){const s=stock.find(x=>x.id===stockId||x.id===parseInt(stockId));if(s)return s;}
   return stock.find(x=>x.name.toLowerCase()===name.toLowerCase())||null;
@@ -101,14 +73,14 @@ function saveStock(){
   const nutrition={kcal:parseFloat(document.getElementById('nut-kcal').value)||null,carb:parseFloat(document.getElementById('nut-carb').value)||null,prot:parseFloat(document.getElementById('nut-prot').value)||null,fat:parseFloat(document.getElementById('nut-fat').value)||null,fiber:parseFloat(document.getElementById('nut-fiber').value)||null,sodium:parseFloat(document.getElementById('nut-sodium').value)||null};
   const item={id:editingStockId||Date.now(),name,qty,unit:document.getElementById('stock-unit').value,price,category:document.getElementById('stock-category').value,nutrition};
   stock=editingStockId?stock.map(s=>s.id===editingStockId?item:s):[...stock,item];
-  DB.save('fichatec_stock',stock);
+  DB.save(STORAGE_KEYS.stock,stock);
   closeModal('modal-stock');renderStock();
   renderRecipes(document.getElementById('recipe-search').value,activeIngFilter);
   showToast(editingStockId?'Produto atualizado!':'Produto adicionado!');
 }
 function deleteStock(id){
   if(!confirm('Remover este produto?'))return;
-  stock=stock.filter(s=>s.id!==id);DB.save('fichatec_stock',stock);renderStock();showToast('Removido.');
+  stock=stock.filter(s=>s.id!==id);DB.save(STORAGE_KEYS.stock,stock);renderStock();showToast('Removido.');
 }
 function renderStock(filter=''){
   const el=document.getElementById('stock-list');
@@ -171,18 +143,18 @@ function savePhysical(){
   }else{
     physicalStock.push({id:Date.now(),name,currentQty:qty,desiredQty:desired,unit,price,category,usedTotal:0,history:[{type:'entrada',qty,date:new Date().toISOString()}]});
   }
-  DB.save('fichatec_physical',physicalStock);
+  DB.save(STORAGE_KEYS.physicalStock,physicalStock);
   const existing=stock.find(s=>s.name.toLowerCase()===name.toLowerCase());
   if(!existing)stock.push({id:Date.now()+1,name,qty,unit,price,category,nutrition:getNutrition(name)});
   else stock=stock.map(s=>s.name.toLowerCase()===name.toLowerCase()?{...s,price,qty,unit,category}:s);
-  DB.save('fichatec_stock',stock);
+  DB.save(STORAGE_KEYS.stock,stock);
   closeModal('modal-pstock');renderPhysical();
   renderRecipes(document.getElementById('recipe-search').value,activeIngFilter);
   showToast(editingPhysicalId?'Atualizado!':'Adicionado e sincronizado!');
 }
 function deletePhysical(id){
   if(!confirm('Remover este produto?'))return;
-  physicalStock=physicalStock.filter(p=>p.id!==id);DB.save('fichatec_physical',physicalStock);renderPhysical();showToast('Removido.');
+  physicalStock=physicalStock.filter(p=>p.id!==id);DB.save(STORAGE_KEYS.physicalStock,physicalStock);renderPhysical();showToast('Removido.');
 }
 function renderPhysical(filter=''){
   const el=document.getElementById('pstock-list');
@@ -253,10 +225,10 @@ function confirmMove(){
   p.currentQty=parseFloat((p.currentQty+delta).toFixed(6));
   if(moveType==='usar')p.usedTotal=(p.usedTotal||0)+qty;
   (p.history=p.history||[]).push({type:moveType==='usar'?'saida':'entrada',qty,date:new Date().toISOString()});
-  DB.save('fichatec_physical',physicalStock);
+  DB.save(STORAGE_KEYS.physicalStock,physicalStock);
   const vn=p.name.toLowerCase();
   stock=stock.map(s=>s.name.toLowerCase()===vn?{...s,qty:Math.max(parseFloat((s.qty+delta).toFixed(6)),0)}:s);
-  DB.save('fichatec_stock',stock);
+  DB.save(STORAGE_KEYS.stock,stock);
   showToast(moveType==='usar'?`${fmtQty(qty,p.unit)} retirados.`:`${fmtQty(qty,p.unit)} adicionados.`);
   closeModal('modal-move');renderPhysical();
 }
@@ -338,10 +310,10 @@ function addIngredient(){
       if(p.id!==pid)return p;
       return{...p,currentQty:Math.max(parseFloat((p.currentQty-qtyBruta).toFixed(6)),0),usedTotal:(p.usedTotal||0)+qtyBruta,history:[...(p.history||[]),{type:'saida',qty:qtyBruta,date:new Date().toISOString()}]};
     });
-    DB.save('fichatec_physical',physicalStock);
+    DB.save(STORAGE_KEYS.physicalStock,physicalStock);
     const vn=selectedIngredient.name.toLowerCase();
     stock=stock.map(s=>s.name.toLowerCase()===vn?{...s,qty:Math.max(parseFloat((s.qty-qtyBruta).toFixed(6)),0)}:s);
-    DB.save('fichatec_stock',stock);
+    DB.save(STORAGE_KEYS.stock,stock);
   }
   ['ing-search','ing-qty','ing-rendimento'].forEach(f=>document.getElementById(f).value='');
   document.getElementById('ing-selected-info').style.display='none';
@@ -433,7 +405,7 @@ function saveRecipe(){
   const idx=recipes.findIndex(r=>r.nome.toLowerCase()===nome.toLowerCase());
   if(idx>=0){if(!confirm(`Receita "${nome}" já existe. Sobrescrever?`))return;recipes[idx]=recipe;}
   else recipes.push(recipe);
-  DB.save('fichatec_recipes',recipes);
+  DB.save(STORAGE_KEYS.recipes,recipes);
   showToast(`"${nome}" salva!`);
 }
 
@@ -542,7 +514,7 @@ function viewRecipe(id){
 function deleteCurrentRecipe(){
   if(!confirm('Excluir esta receita?'))return;
   recipes=recipes.filter(r=>r.id!==currentRecipeId);
-  DB.save('fichatec_recipes',recipes);
+  DB.save(STORAGE_KEYS.recipes,recipes);
   closeModal('modal-recipe');
   renderRecipes(document.getElementById('recipe-search').value,activeIngFilter);
   showToast('Receita excluída.');
@@ -812,7 +784,7 @@ function confirmScanSave(){
   }else{
     recipes.push(recipe);
   }
-  DB.save('fichatec_recipes',recipes);
+  DB.save(STORAGE_KEYS.recipes,recipes);
   closeModal('modal-scan');
   resetScan();
   showPage('receitas','nav-receitas');
@@ -856,7 +828,7 @@ if(!stock.length){
     {id:11,name:'Vinagre de maçã',qty:1,unit:'kg',price:5.00,category:'Temperos',nutrition:{kcal:22,carb:5,prot:0,fat:0,fiber:0,sodium:2}},
     {id:12,name:'Azeitona preta',qty:1,unit:'kg',price:6.71,category:'Outros',nutrition:{kcal:145,carb:4,prot:1,fat:15,fiber:3,sodium:1400}},
   ];
-  DB.save('fichatec_stock',stock);
+  DB.save(STORAGE_KEYS.stock,stock);
 }
 recipes=recipes.map(r=>({...r,ingredients:r.ingredients.map(i=>{
   if(i.savedPricePerG!==undefined)return i;

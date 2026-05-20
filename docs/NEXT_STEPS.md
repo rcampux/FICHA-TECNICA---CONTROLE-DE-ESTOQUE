@@ -12,6 +12,10 @@ O projeto está em fase de protótipo estruturado:
 - Layout mobile/tablet/desktop iniciado.
 - Revisão visual inicial aplicada: layout responsivo polido, paleta gastronômica/premium refinada, fundo sem ornamentos circulares/decorativos e hierarquia de cards ajustada.
 - Repository local isolando `localStorage`.
+- Formatadores extraídos para `src/utils/formatters.js`.
+- Chaves de storage extraídas para `src/config/storageKeys.js`.
+- Nutrição padrão extraída para `src/modules/nutrition/nutritionDefaults.js`.
+- Precificação por unidade extraída para `src/modules/stock/stockPricing.js`.
 - Estrutura futura para Supabase e Edge Functions criada.
 
 ## Próximo Passo Recomendado
@@ -22,14 +26,15 @@ Depois da revisão visual inicial, o próximo passo é quebrar o `src/app.js` po
 
 Ordem recomendada:
 
-1. Extrair utilitários de formatação.
-2. Extrair constantes e chaves de storage.
-3. Extrair repository e manter `localStorage` como implementação atual.
-4. Extrair módulo de estoque virtual.
-5. Extrair módulo de estoque físico.
-6. Extrair módulo de receitas/ficha técnica.
-7. Extrair módulo de scanner.
-8. Validar app a cada extração.
+1. Concluído: extrair utilitários de formatação.
+2. Concluído: extrair constantes e chaves de storage.
+3. Concluído: extrair repository e manter `localStorage` como implementação atual.
+4. Concluído: extrair nutrição padrão e precificação por unidade.
+5. Próximo: extrair módulo de estoque virtual.
+6. Depois: extrair módulo de estoque físico.
+7. Depois: extrair módulo de receitas/ficha técnica.
+8. Depois: extrair módulo de scanner.
+9. Validar app a cada extração.
 
 ## Checklist Visual Contínuo
 
@@ -49,4 +54,3 @@ Checklist:
 - Hierarquia de custo, margem e preço sugerido.
 - Logo genérico provisório.
 - Paleta gastronômica/premium.
-
