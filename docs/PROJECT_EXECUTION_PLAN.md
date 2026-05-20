@@ -10,7 +10,8 @@ Este documento deve ser seguido a cada nova etapa do projeto. Ele consolida dire
 - Toda nova funcao criada, movida, renomeada ou removida deve ser registrada em `docs/FUNCTION_INVENTORY.md`.
 - Toda diretriz primordial para o produto deve ser adicionada na documentacao do projeto.
 - A cada etapa relevante, validar localmente antes de finalizar.
-- Commit, push e deploy ficam para a task de fechamento combinada com o usuario.
+- Toda vez que um commit for criado, fazer tambem o push para GitHub e o deploy de producao na Vercel na mesma etapa.
+- Se push ou deploy falhar, registrar o motivo no fechamento da task e deixar o comando de retomada claro.
 
 ## Ordem Atual de Execucao
 
@@ -31,6 +32,7 @@ Este documento deve ser seguido a cada nova etapa do projeto. Ele consolida dire
 - `docs/NEXT_STEPS.md` atualizado com o proximo passo sequencial.
 - Scripts principais passam em validacao de sintaxe.
 - Prototipo local abre no link disponivel.
+- Commit criado implica push e deploy concluido na mesma etapa.
 - Ao final, responder sempre:
   - O que foi feito.
   - O que ainda falta.

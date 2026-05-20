@@ -21,6 +21,7 @@ O projeto esta em fase de prototipo estruturado:
 - Receitas e ficha tecnica extraidas para `src/modules/recipes/recipeSheet.js`.
 - Scanner de receita extraido para `src/modules/scanner/scannerRecipe.js`.
 - Plano de execucao continuo criado em `docs/PROJECT_EXECUTION_PLAN.md`.
+- Diretriz adicionada: todo commit deve ser seguido de push para GitHub e deploy de producao na Vercel.
 - Inventario vivo de funcoes criado em `docs/FUNCTION_INVENTORY.md` e atualizado a cada mudanca de funcao.
 - Estrutura futura para Supabase e Edge Functions criada.
 
