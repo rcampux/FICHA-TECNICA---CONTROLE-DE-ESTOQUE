@@ -52,6 +52,7 @@ Este documento deve ser seguido a cada nova etapa do projeto. Ele consolida dire
 - `src/modules/recipes/recipeSheet.js`: ficha tecnica e receitas.
 - `src/modules/scanner/scannerRecipe.js`: scanner de receita por imagem.
 - `src/pwa/registerServiceWorker.js`: registro PWA e atalhos de inicializacao.
+- `supabase/migrations/20260520190000_initial_multi_tenant_schema.sql`: schema inicial multiempresa com RLS.
 
 ## Proximo Marco Recomendado
 
@@ -59,7 +60,7 @@ Depois de concluir a base PWA, iniciar Fase 2.1: desenho do Supabase.
 
 Entregaveis da Fase 1.3:
 
-- schema inicial multiempresa.
-- Auth e papeis.
-- RLS por workspace.
-- plano de migracao do repository local para Supabase.
+- cliente Supabase no frontend.
+- repository hibrido local/Supabase.
+- fluxo de login.
+- teste de RLS com dois usuarios.
