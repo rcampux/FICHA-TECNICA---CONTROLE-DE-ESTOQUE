@@ -20,6 +20,8 @@ Este arquivo e um inventario vivo das funcoes utilizadas no projeto. Toda nova f
 | `showPage` | `src/app.js` | 12 | function showPage(page,navId){ |
 | `closeModal` | `src/app.js` | 21 | function closeModal(id){document.getElementById(id).classList.remove('open');} |
 | `exposeStorageKeys` | `src/config/storageKeys.js` | 1 | (function exposeStorageKeys() { |
+| `exposeSupabaseConfig` | `src/config/supabase.js` | 1 | (function exposeSupabaseConfig() { |
+| `hasSupabaseConfig` | `src/config/supabase.js` | 5 | function hasSupabaseConfig() { |
 | `exposeNutrition` | `src/modules/nutrition/nutritionDefaults.js` | 1 | (function exposeNutrition() { |
 | `getNutrition` | `src/modules/nutrition/nutritionDefaults.js` | 30 | function getNutrition(name) { |
 | `exposeRecipeSheetModule` | `src/modules/recipes/recipeSheet.js` | 1 | (function exposeRecipeSheetModule() { |
@@ -88,9 +90,21 @@ Este arquivo e um inventario vivo das funcoes utilizadas no projeto. Toda nova f
 | `registerFichaTecServiceWorker` | `src/pwa/registerServiceWorker.js` | 1 | (function registerFichaTecServiceWorker() { |
 | `handleLaunchShortcut` | `src/pwa/registerServiceWorker.js` | 2 | function handleLaunchShortcut() { |
 | `registerServiceWorker` | `src/pwa/registerServiceWorker.js` | 13 | function registerServiceWorker() { |
+| `exposeHybridRepository` | `src/services/repositories/hybridRepository.js` | 1 | (function exposeHybridRepository() { |
+| `getMode` | `src/services/repositories/hybridRepository.js` | 12 | function getMode() { |
+| `getSupabaseClient` | `src/services/repositories/hybridRepository.js` | 16 | function getSupabaseClient() { |
+| `resolveTable` | `src/services/repositories/hybridRepository.js` | 24 | function resolveTable(key) { |
+| `load` | `src/services/repositories/hybridRepository.js` | 28 | function load(key) { |
+| `save` | `src/services/repositories/hybridRepository.js` | 32 | function save(key, value) { |
+| `loadRemote` | `src/services/repositories/hybridRepository.js` | 36 | async function loadRemote(key, organizationId) { |
+| `saveRemote` | `src/services/repositories/hybridRepository.js` | 52 | async function saveRemote(_key, _value, _organizationId) { |
 | `exposeLocalStorageRepository` | `src/services/repositories/localStorageRepository.js` | 1 | (function exposeLocalStorageRepository() { |
 | `load` | `src/services/repositories/localStorageRepository.js` | 3 | load(key) { |
 | `save` | `src/services/repositories/localStorageRepository.js` | 6 | save(key, value) { |
+| `exposeSupabaseClientService` | `src/services/supabaseClient.js` | 1 | (function exposeSupabaseClientService() { |
+| `getSupabaseGlobal` | `src/services/supabaseClient.js` | 5 | function getSupabaseGlobal() { |
+| `loadSupabaseLibrary` | `src/services/supabaseClient.js` | 9 | function loadSupabaseLibrary() { |
+| `createClient` | `src/services/supabaseClient.js` | 32 | async function createClient() { |
 | `exposeFormatters` | `src/utils/formatters.js` | 1 | (function exposeFormatters() { |
 | `brl` | `src/utils/formatters.js` | 3 | brl(value) { |
 | `quantity` | `src/utils/formatters.js` | 9 | quantity(quantity, unit) { |

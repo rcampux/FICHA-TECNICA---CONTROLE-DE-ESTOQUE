@@ -45,6 +45,9 @@ Este documento deve ser seguido a cada nova etapa do projeto. Ele consolida dire
 - `src/config/storageKeys.js`: chaves de storage.
 - `src/utils/formatters.js`: formatacao de moeda e quantidade.
 - `src/services/repositories/localStorageRepository.js`: repository local temporario.
+- `src/services/repositories/hybridRepository.js`: ponte local/Supabase sem quebrar o prototipo atual.
+- `src/services/supabaseClient.js`: carregamento seguro do client Supabase com anon key publica.
+- `src/config/supabase.js`: configuracao de modo local/Supabase.
 - `src/modules/nutrition/nutritionDefaults.js`: nutricao padrao.
 - `src/modules/stock/stockPricing.js`: calculo de preco por unidade base.
 - `src/modules/stock/virtualStock.js`: estoque virtual.
@@ -60,7 +63,7 @@ Depois de concluir a base PWA, iniciar Fase 2.1: desenho do Supabase.
 
 Entregaveis da Fase 1.3:
 
-- cliente Supabase no frontend.
-- repository hibrido local/Supabase.
 - fluxo de login.
+- tela de estado autenticado.
+- selecao de organizacao/workspace.
 - teste de RLS com dois usuarios.

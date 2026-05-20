@@ -24,6 +24,7 @@ O projeto esta em fase de prototipo estruturado:
 - Diretriz adicionada: todo commit deve ser seguido de push para GitHub e deploy de producao na Vercel.
 - Base PWA criada com manifest, service worker, registro e icones temporarios.
 - Migration inicial Supabase multiempresa criada com Auth/RLS, receitas, estoque, scanner e assinaturas.
+- Cliente Supabase e repository hibrido criados no frontend, mantendo `localStorage` como modo padrao.
 - Inventario vivo de funcoes criado em `docs/FUNCTION_INVENTORY.md` e atualizado a cada mudanca de funcao.
 - Estrutura futura para Supabase e Edge Functions criada.
 
@@ -72,4 +73,5 @@ Fase 2.1 - Supabase seguro:
 2. Concluido: criar tabelas de usuarios, workspaces, receitas, ingredientes e estoque.
 3. Concluido: definir Auth e papeis: owner, admin, chef, viewer.
 4. Concluido: escrever politicas RLS por workspace.
-5. Proximo: criar cliente Supabase no frontend e repository hibrido.
+5. Concluido: criar cliente Supabase no frontend e repository hibrido.
+6. Proximo: criar fluxo visual de login e estado autenticado.

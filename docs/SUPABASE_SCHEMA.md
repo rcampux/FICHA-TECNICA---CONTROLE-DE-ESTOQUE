@@ -79,8 +79,31 @@ Ou aplicar o SQL no painel do Supabase em SQL Editor durante a fase inicial.
 
 ## Proximo Passo Tecnico
 
-1. Criar `src/config/supabase.js`.
-2. Criar `src/services/supabaseClient.js`.
-3. Criar repository hibrido: `localStorage` agora, Supabase quando autenticado.
-4. Adicionar tela/fluxo de login.
-5. Testar RLS com dois usuarios em organizacoes diferentes.
+1. Concluido: criar `src/config/supabase.js`.
+2. Concluido: criar `src/services/supabaseClient.js`.
+3. Concluido: criar repository hibrido: `localStorage` agora, Supabase quando autenticado.
+4. Proximo: adicionar tela/fluxo de login.
+5. Depois: testar RLS com dois usuarios em organizacoes diferentes.
+
+## Configuracao Frontend
+
+O app segue em modo local por padrao:
+
+```js
+window.FICHATEC_ENV = {
+  appName: "FichaTec",
+  dataMode: "local",
+  supabase: {
+    url: "",
+    anonKey: ""
+  }
+};
+```
+
+Para ativar Supabase no frontend, configurar:
+
+- `dataMode: "supabase"`.
+- `supabase.url` com a Project URL.
+- `supabase.anonKey` com a chave publica anon.
+
+A chave `anon` e publica, mas RLS precisa estar correto. Chaves `service_role` nunca entram no frontend.

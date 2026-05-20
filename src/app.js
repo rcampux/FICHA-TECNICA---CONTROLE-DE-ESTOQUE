@@ -1,6 +1,6 @@
 const {brl:fmtBRL,quantity:fmtQty}=window.FichaTecFormatters;
 const STORAGE_KEYS=window.FichaTecStorageKeys;
-const DB=window.FichaTecLocalStorageRepository;
+const DB=window.FichaTecRepository || window.FichaTecLocalStorageRepository;
 const {pricePerUnit}=window.FichaTecStockPricing;
 
 let stock=DB.load(STORAGE_KEYS.stock);
