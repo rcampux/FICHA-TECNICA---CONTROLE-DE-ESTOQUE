@@ -4,9 +4,9 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "build": "node scripts/sync-public-assets.mjs",
     "dev": "node scripts/dev-server.mjs",
     "start": "node scripts/dev-server.mjs",
     "check": "node --check scripts/dev-server.mjs"
   }
 }
-

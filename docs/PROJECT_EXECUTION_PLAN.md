@@ -11,6 +11,7 @@ Este documento deve ser seguido a cada nova etapa do projeto. Ele consolida dire
 - Toda diretriz primordial para o produto deve ser adicionada na documentacao do projeto.
 - A cada etapa relevante, validar localmente antes de finalizar.
 - Toda vez que um commit for criado, fazer tambem o push para GitHub e o deploy de producao na Vercel na mesma etapa.
+- Deploy de producao so deve acontecer depois do GitHub estar atualizado com o commit correspondente.
 - Se push ou deploy falhar, registrar o motivo no fechamento da task e deixar o comando de retomada claro.
 
 ## Ordem Atual de Execucao

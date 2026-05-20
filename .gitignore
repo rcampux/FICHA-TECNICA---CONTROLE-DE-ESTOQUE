@@ -1,5 +1,6 @@
 node_modules/
 .vercel/
+public/src/
 *.log
 dev-server.*.log
 .DS_Store
