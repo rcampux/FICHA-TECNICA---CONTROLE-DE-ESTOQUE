@@ -1,0 +1,64 @@
+{
+  "name": "FichaTec - Fichas Tecnicas e Estoque",
+  "short_name": "FichaTec",
+  "description": "PWA mobile first para fichas tecnicas, receitas e controle de estoque para cozinhas profissionais.",
+  "id": "/",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "display_override": ["window-controls-overlay", "standalone", "minimal-ui"],
+  "orientation": "portrait-primary",
+  "background_color": "#FFF8F1",
+  "theme_color": "#2F6F4E",
+  "categories": ["business", "food", "productivity"],
+  "lang": "pt-BR",
+  "dir": "ltr",
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Nova ficha tecnica",
+      "short_name": "Ficha",
+      "description": "Abrir a criacao de ficha tecnica.",
+      "url": "/",
+      "icons": [
+        {
+          "src": "icons/icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Digitalizar receita",
+      "short_name": "Scanner",
+      "description": "Abrir o scanner de receita por imagem.",
+      "url": "/?action=scanner",
+      "icons": [
+        {
+          "src": "icons/icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    }
+  ]
+}

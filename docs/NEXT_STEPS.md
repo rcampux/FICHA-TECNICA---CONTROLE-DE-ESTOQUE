@@ -22,6 +22,7 @@ O projeto esta em fase de prototipo estruturado:
 - Scanner de receita extraido para `src/modules/scanner/scannerRecipe.js`.
 - Plano de execucao continuo criado em `docs/PROJECT_EXECUTION_PLAN.md`.
 - Diretriz adicionada: todo commit deve ser seguido de push para GitHub e deploy de producao na Vercel.
+- Base PWA criada com manifest, service worker, registro e icones temporarios.
 - Inventario vivo de funcoes criado em `docs/FUNCTION_INVENTORY.md` e atualizado a cada mudanca de funcao.
 - Estrutura futura para Supabase e Edge Functions criada.
 
@@ -41,7 +42,7 @@ Ordem recomendada:
 6. Concluido: extrair modulo de estoque fisico.
 7. Concluido: extrair modulo de receitas/ficha tecnica.
 8. Concluido: extrair modulo de scanner.
-9. Proximo: fechar commit completo da modularizacao e iniciar PWA real.
+9. Concluido: fechar base PWA real.
 
 ## Checklist Visual Continuo
 
@@ -64,10 +65,10 @@ Checklist:
 
 ## Proximo Marco
 
-Fase 1.3 - PWA real:
+Fase 2.1 - Supabase seguro:
 
-1. Criar `manifest.webmanifest`.
-2. Criar `service-worker.js`.
-3. Adicionar icones temporarios.
-4. Validar instalabilidade em mobile.
-5. Preparar deploy Vercel apos commit completo.
+1. Definir schema inicial multiempresa.
+2. Criar tabelas de usuarios, workspaces, receitas, ingredientes e estoque.
+3. Definir Auth e papeis: dono, gerente, cozinheiro.
+4. Escrever politicas RLS por workspace.
+5. Planejar migracao do repository local para Supabase.

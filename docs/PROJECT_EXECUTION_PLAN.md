@@ -50,16 +50,15 @@ Este documento deve ser seguido a cada nova etapa do projeto. Ele consolida dire
 - `src/modules/stock/physicalStock.js`: estoque fisico.
 - `src/modules/recipes/recipeSheet.js`: ficha tecnica e receitas.
 - `src/modules/scanner/scannerRecipe.js`: scanner de receita por imagem.
+- `src/pwa/registerServiceWorker.js`: registro PWA e atalhos de inicializacao.
 
 ## Proximo Marco Recomendado
 
-Depois de commitar a modularizacao completa, iniciar Fase 1.3: PWA real.
+Depois de concluir a base PWA, iniciar Fase 2.1: desenho do Supabase.
 
 Entregaveis da Fase 1.3:
 
-- `manifest.webmanifest`.
-- `service-worker.js`.
-- icones temporarios do app.
-- estrategia de cache.
-- checklist de instalacao em celular.
-- validacao local e em Vercel.
+- schema inicial multiempresa.
+- Auth e papeis.
+- RLS por workspace.
+- plano de migracao do repository local para Supabase.

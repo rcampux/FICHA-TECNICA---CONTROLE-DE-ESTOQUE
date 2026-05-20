@@ -83,6 +83,9 @@ Este arquivo e um inventario vivo das funcoes utilizadas no projeto. Toda nova f
 | `saveStock` | `src/modules/stock/virtualStock.js` | 47 | function saveStock(){ |
 | `deleteStock` | `src/modules/stock/virtualStock.js` | 60 | function deleteStock(id){ |
 | `renderStock` | `src/modules/stock/virtualStock.js` | 64 | function renderStock(filter=''){ |
+| `registerFichaTecServiceWorker` | `src/pwa/registerServiceWorker.js` | 1 | (function registerFichaTecServiceWorker() { |
+| `handleLaunchShortcut` | `src/pwa/registerServiceWorker.js` | 2 | function handleLaunchShortcut() { |
+| `registerServiceWorker` | `src/pwa/registerServiceWorker.js` | 13 | function registerServiceWorker() { |
 | `exposeLocalStorageRepository` | `src/services/repositories/localStorageRepository.js` | 1 | (function exposeLocalStorageRepository() { |
 | `load` | `src/services/repositories/localStorageRepository.js` | 3 | load(key) { |
 | `save` | `src/services/repositories/localStorageRepository.js` | 6 | save(key, value) { |
