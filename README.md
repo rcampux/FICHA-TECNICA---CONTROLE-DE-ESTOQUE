@@ -7,6 +7,7 @@ Aplicativo PWA em evolucao para chefs e negocios de alimentacao criarem receitas
 - [Diretrizes de produto](docs/PRODUCT_GUIDELINES.md)
 - [Arquitetura tecnica](docs/TECHNICAL_ARCHITECTURE.md)
 - [Design system](docs/DESIGN_SYSTEM.md)
+- [Inventário de funções](docs/FUNCTION_INVENTORY.md)
 - [Roadmap](docs/ROADMAP.md)
 
 ## Estrutura atual

@@ -359,3 +359,12 @@ Antes de deploy:
 - Teste de exportacao PDF.
 - Teste mobile real.
 
+## 15. Inventario de Funcoes
+
+O projeto deve manter um inventario vivo em `docs/FUNCTION_INVENTORY.md`.
+
+Regras:
+
+- Toda funcao criada, movida, renomeada ou removida deve ser registrada.
+- O inventario deve ser atualizado antes de cada commit relevante.
+- O objetivo e apoiar documentacao final, auditoria tecnica e refatoracoes futuras.

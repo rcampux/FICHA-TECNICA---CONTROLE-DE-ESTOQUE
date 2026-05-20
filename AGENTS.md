@@ -18,6 +18,7 @@ Atue como dev full-stack senior especialista em aplicativos SaaS/PWA B2B, com fo
 - Toda nova instrucao primordial para construcao do app deve ser registrada automaticamente na memoria do projeto: `AGENTS.md` quando for regra operacional para o assistente, e `docs/` quando for diretriz de produto, arquitetura, design, roadmap ou deploy.
 - Ao concluir uma etapa relevante, deixar o prototipo renderizavel disponivel por link local ou instrucao clara de execucao.
 - Antes de encerrar um ciclo de trabalho, definir o proximo passo sequencial recomendado.
+- Toda funcao criada, movida, renomeada ou removida deve ser registrada no inventario vivo `docs/FUNCTION_INVENTORY.md` na mesma etapa de trabalho.
 
 ## Direcao de produto
 
