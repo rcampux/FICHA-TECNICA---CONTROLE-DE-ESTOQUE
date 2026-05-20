@@ -1,46 +1,50 @@
-# FichaTec - Próximo Passo Sequencial
+# FichaTec - Proximo Passo Sequencial
 
 ## Estado Atual
 
-O projeto está em fase de protótipo estruturado:
+O projeto esta em fase de prototipo estruturado:
 
 - Diretrizes de produto documentadas.
-- Arquitetura técnica documentada.
+- Arquitetura tecnica documentada.
 - Design system baseado em Material 3 documentado.
 - HTML, CSS e JS separados.
 - Tokens visuais iniciais aplicados.
 - Layout mobile/tablet/desktop iniciado.
-- Revisão visual inicial aplicada: layout responsivo polido, paleta gastronômica/premium refinada, fundo sem ornamentos circulares/decorativos e hierarquia de cards ajustada.
+- Revisao visual inicial aplicada: layout responsivo polido, paleta gastronomica/premium refinada, fundo sem ornamentos circulares/decorativos e hierarquia de cards ajustada.
 - Repository local isolando `localStorage`.
-- Formatadores extraídos para `src/utils/formatters.js`.
-- Chaves de storage extraídas para `src/config/storageKeys.js`.
-- Nutrição padrão extraída para `src/modules/nutrition/nutritionDefaults.js`.
-- Precificação por unidade extraída para `src/modules/stock/stockPricing.js`.
-- Estoque virtual extraído para `src/modules/stock/virtualStock.js`.
-- Inventário vivo de funções criado em `docs/FUNCTION_INVENTORY.md`.
+- Formatadores extraidos para `src/utils/formatters.js`.
+- Chaves de storage extraidas para `src/config/storageKeys.js`.
+- Nutricao padrao extraida para `src/modules/nutrition/nutritionDefaults.js`.
+- Precificacao por unidade extraida para `src/modules/stock/stockPricing.js`.
+- Estoque virtual extraido para `src/modules/stock/virtualStock.js`.
+- Estoque fisico extraido para `src/modules/stock/physicalStock.js`.
+- Receitas e ficha tecnica extraidas para `src/modules/recipes/recipeSheet.js`.
+- Scanner de receita extraido para `src/modules/scanner/scannerRecipe.js`.
+- Plano de execucao continuo criado em `docs/PROJECT_EXECUTION_PLAN.md`.
+- Inventario vivo de funcoes criado em `docs/FUNCTION_INVENTORY.md` e atualizado a cada mudanca de funcao.
 - Estrutura futura para Supabase e Edge Functions criada.
 
-## Próximo Passo Recomendado
+## Proximo Passo Recomendado
 
-### Fase 1.2 - Modularização do JS
+### Fase 1.2 - Modularizacao do JS
 
-Depois da revisão visual inicial, o próximo passo é quebrar o `src/app.js` por domínio sem mudar comportamento.
+Depois da revisao visual inicial, o proximo passo e quebrar o `src/app.js` por dominio sem mudar comportamento.
 
 Ordem recomendada:
 
-1. Concluído: extrair utilitários de formatação.
-2. Concluído: extrair constantes e chaves de storage.
-3. Concluído: extrair repository e manter `localStorage` como implementação atual.
-4. Concluído: extrair nutrição padrão e precificação por unidade.
-5. Concluído: extrair módulo de estoque virtual.
-6. Próximo: extrair módulo de estoque físico.
-7. Depois: extrair módulo de receitas/ficha técnica.
-8. Depois: extrair módulo de scanner.
-9. Validar app a cada extração.
+1. Concluido: extrair utilitarios de formatacao.
+2. Concluido: extrair constantes e chaves de storage.
+3. Concluido: extrair repository e manter `localStorage` como implementacao atual.
+4. Concluido: extrair nutricao padrao e precificacao por unidade.
+5. Concluido: extrair modulo de estoque virtual.
+6. Concluido: extrair modulo de estoque fisico.
+7. Concluido: extrair modulo de receitas/ficha tecnica.
+8. Concluido: extrair modulo de scanner.
+9. Proximo: fechar commit completo da modularizacao e iniciar PWA real.
 
-## Checklist Visual Contínuo
+## Checklist Visual Continuo
 
-Continuar revisando o protótipo renderizado em:
+Continuar revisando o prototipo renderizado em:
 
 - Mobile: 390px a 430px.
 - Tablet: 768px a 1024px.
@@ -48,11 +52,21 @@ Continuar revisando o protótipo renderizado em:
 
 Checklist:
 
-- Navegação inferior no mobile.
+- Navegacao inferior no mobile.
 - Navigation rail no tablet.
 - Navigation drawer no desktop.
-- Ficha técnica em duas colunas no tablet/desktop.
+- Ficha tecnica em duas colunas no tablet/desktop.
 - Cards de estoque e receitas em grid.
-- Hierarquia de custo, margem e preço sugerido.
-- Logo genérico provisório.
-- Paleta gastronômica/premium.
+- Hierarquia de custo, margem e preco sugerido.
+- Logo generico provisorio.
+- Paleta gastronomica/premium.
+
+## Proximo Marco
+
+Fase 1.3 - PWA real:
+
+1. Criar `manifest.webmanifest`.
+2. Criar `service-worker.js`.
+3. Adicionar icones temporarios.
+4. Validar instalabilidade em mobile.
+5. Preparar deploy Vercel apos commit completo.
