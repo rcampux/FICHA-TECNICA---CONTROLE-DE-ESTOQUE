@@ -42,6 +42,10 @@ Importe o repositorio na Vercel por este link:
 
 ## Preview publico
 
+Vercel produção:
+
+[https://ficha-tecnica-controle-de-estoque.vercel.app](https://ficha-tecnica-controle-de-estoque.vercel.app)
+
 GitHub Pages:
 
 [https://rcampux.github.io/FICHA-TECNICA---CONTROLE-DE-ESTOQUE/](https://rcampux.github.io/FICHA-TECNICA---CONTROLE-DE-ESTOQUE/)

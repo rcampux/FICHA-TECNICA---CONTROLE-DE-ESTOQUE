@@ -52,6 +52,12 @@ Sempre que uma etapa visual ou funcional for concluida, manter uma forma clara d
 
 ## Preview publico atual
 
+Vercel produção:
+
+```text
+https://ficha-tecnica-controle-de-estoque.vercel.app
+```
+
 GitHub Pages:
 
 ```text
