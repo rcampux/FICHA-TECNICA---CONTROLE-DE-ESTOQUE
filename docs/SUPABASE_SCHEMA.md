@@ -82,8 +82,9 @@ Ou aplicar o SQL no painel do Supabase em SQL Editor durante a fase inicial.
 1. Concluido: criar `src/config/supabase.js`.
 2. Concluido: criar `src/services/supabaseClient.js`.
 3. Concluido: criar repository hibrido: `localStorage` agora, Supabase quando autenticado.
-4. Proximo: adicionar tela/fluxo de login.
-5. Depois: testar RLS com dois usuarios em organizacoes diferentes.
+4. Concluido: adicionar tela/fluxo de login e selecao de workspace.
+5. Proximo: criar repositories remotos por dominio.
+6. Depois: testar RLS com dois usuarios em organizacoes diferentes.
 
 ## Configuracao Frontend
 
@@ -107,3 +108,11 @@ Para ativar Supabase no frontend, configurar:
 - `supabase.anonKey` com a chave publica anon.
 
 A chave `anon` e publica, mas RLS precisa estar correto. Chaves `service_role` nunca entram no frontend.
+
+## Fluxo Antes de Ligar Supabase
+
+- O app continua em `dataMode: "local"` para preservar o prototipo atual.
+- O modal de acesso ja renderiza login, cadastro e workspace quando `dataMode` for `supabase`.
+- O workspace ativo fica disponivel por `getAuthState().activeOrganizationId`.
+- Nenhuma escrita remota deve acontecer sem usuario autenticado e workspace ativo.
+- A proxima etapa e mapear `stock_items`, `physical_stock_items`, `recipes` e `recipe_ingredients` em repositories remotos.

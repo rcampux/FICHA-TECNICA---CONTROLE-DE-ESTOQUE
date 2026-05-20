@@ -25,6 +25,7 @@ O projeto esta em fase de prototipo estruturado:
 - Base PWA criada com manifest, service worker, registro e icones temporarios.
 - Migration inicial Supabase multiempresa criada com Auth/RLS, receitas, estoque, scanner e assinaturas.
 - Cliente Supabase e repository hibrido criados no frontend, mantendo `localStorage` como modo padrao.
+- Fluxo visual de acesso criado: estado local, modal de login/cadastro, sessao Supabase e selecao de workspace.
 - Inventario vivo de funcoes criado em `docs/FUNCTION_INVENTORY.md` e atualizado a cada mudanca de funcao.
 - Estrutura futura para Supabase e Edge Functions criada.
 
@@ -74,4 +75,5 @@ Fase 2.1 - Supabase seguro:
 3. Concluido: definir Auth e papeis: owner, admin, chef, viewer.
 4. Concluido: escrever politicas RLS por workspace.
 5. Concluido: criar cliente Supabase no frontend e repository hibrido.
-6. Proximo: criar fluxo visual de login e estado autenticado.
+6. Concluido: criar fluxo visual de login e estado autenticado.
+7. Proximo: mapear repositories remotos por dominio mantendo `localStorage` como fallback.

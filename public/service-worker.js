@@ -1,4 +1,4 @@
-const CACHE_VERSION = "fichatec-pwa-v1";
+const CACHE_VERSION = "fichatec-pwa-v2";
 const APP_SHELL = [
   "/",
   "/public/index.html",
@@ -13,6 +13,7 @@ const APP_SHELL = [
   "/src/services/repositories/localStorageRepository.js",
   "/src/services/supabaseClient.js",
   "/src/services/repositories/hybridRepository.js",
+  "/src/modules/auth/authSession.js",
   "/src/modules/nutrition/nutritionDefaults.js",
   "/src/modules/recipes/recipeSheet.js",
   "/src/modules/scanner/scannerRecipe.js",

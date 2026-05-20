@@ -48,6 +48,7 @@ Este documento deve ser seguido a cada nova etapa do projeto. Ele consolida dire
 - `src/services/repositories/hybridRepository.js`: ponte local/Supabase sem quebrar o prototipo atual.
 - `src/services/supabaseClient.js`: carregamento seguro do client Supabase com anon key publica.
 - `src/config/supabase.js`: configuracao de modo local/Supabase.
+- `src/modules/auth/authSession.js`: estado de sessao, login/cadastro Supabase e selecao de workspace.
 - `src/modules/nutrition/nutritionDefaults.js`: nutricao padrao.
 - `src/modules/stock/stockPricing.js`: calculo de preco por unidade base.
 - `src/modules/stock/virtualStock.js`: estoque virtual.
@@ -61,9 +62,10 @@ Este documento deve ser seguido a cada nova etapa do projeto. Ele consolida dire
 
 Depois de concluir a base PWA, iniciar Fase 2.1: desenho do Supabase.
 
-Entregaveis da Fase 1.3:
+Entregaveis da Fase 2.1:
 
-- fluxo de login.
-- tela de estado autenticado.
-- selecao de organizacao/workspace.
+- Concluido: fluxo visual de login.
+- Concluido: tela de estado autenticado.
+- Concluido: selecao de organizacao/workspace.
+- Proximo: repositories remotos para estoque, receitas e ficha tecnica.
 - teste de RLS com dois usuarios.

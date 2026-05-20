@@ -77,6 +77,42 @@
   color: var(--md-sys-color-on-surface-variant);
 }
 
+.auth-status-btn {
+  align-items: center;
+  background: var(--md-sys-color-surface-container);
+  border: 1px solid color-mix(in srgb, var(--md-sys-color-outline-variant) 76%, transparent);
+  border-radius: var(--md-sys-shape-corner-full);
+  color: var(--md-sys-color-on-surface-variant);
+  cursor: pointer;
+  display: inline-flex;
+  font-size: 12px;
+  font-weight: 800;
+  gap: 6px;
+  margin-left: auto;
+  max-width: 140px;
+  min-height: 40px;
+  overflow: hidden;
+  padding: 0 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.auth-status-btn .material-symbols-rounded {
+  color: var(--md-sys-color-primary);
+  font-size: 22px;
+  flex: 0 0 auto;
+}
+
+.auth-status-btn.is-authenticated {
+  background: var(--md-sys-color-tertiary-container);
+  color: var(--md-sys-color-on-tertiary-container);
+}
+
+.auth-status-btn span:last-child {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .nav {
   background: color-mix(in srgb, var(--md-sys-color-surface-container-lowest) 92%, transparent);
   border-top: 1px solid var(--md-sys-color-outline-variant);
@@ -215,6 +251,109 @@ textarea:focus {
   border: 1px solid var(--md-sys-color-outline-variant);
 }
 
+.auth-modal {
+  gap: var(--s4);
+}
+
+.auth-state-card {
+  align-items: flex-start;
+  background: var(--md-sys-color-surface-container-low);
+  border: 1px solid var(--md-sys-color-outline-variant);
+  border-radius: var(--md-sys-shape-corner-large);
+  display: flex;
+  gap: 12px;
+  margin-bottom: var(--s4);
+  padding: 14px;
+}
+
+.auth-state-card .material-symbols-rounded {
+  color: var(--md-sys-color-primary);
+}
+
+.auth-state-card strong {
+  color: var(--md-sys-color-on-surface);
+  display: block;
+  font-size: 14px;
+  line-height: 1.2;
+  margin-bottom: 3px;
+}
+
+.auth-state-card p {
+  color: var(--md-sys-color-on-surface-variant);
+  font-size: 12px;
+  line-height: 1.45;
+  margin: 0;
+}
+
+.auth-mode-tabs {
+  background: var(--md-sys-color-surface-container);
+  border-radius: var(--md-sys-shape-corner-full);
+  display: grid;
+  gap: 4px;
+  grid-template-columns: 1fr 1fr;
+  margin-bottom: var(--s4);
+  padding: 4px;
+}
+
+.auth-mode-tab {
+  background: transparent;
+  border: 0;
+  border-radius: var(--md-sys-shape-corner-full);
+  color: var(--md-sys-color-on-surface-variant);
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 800;
+  min-height: 38px;
+}
+
+.auth-mode-tab.active {
+  background: var(--md-sys-color-primary-container);
+  color: var(--md-sys-color-on-primary-container);
+}
+
+.workspace-option {
+  align-items: center;
+  background: var(--md-sys-color-surface-container-lowest);
+  border: 1px solid var(--md-sys-color-outline-variant);
+  border-radius: var(--md-sys-shape-corner-large);
+  color: var(--md-sys-color-on-surface);
+  cursor: pointer;
+  display: flex;
+  gap: 12px;
+  margin-bottom: var(--s2);
+  padding: 12px;
+  text-align: left;
+  width: 100%;
+}
+
+.workspace-option.active {
+  background: var(--md-sys-color-primary-container);
+  border-color: transparent;
+  color: var(--md-sys-color-on-primary-container);
+}
+
+.workspace-option strong,
+.workspace-option small {
+  display: block;
+}
+
+.workspace-option small {
+  color: currentColor;
+  font-size: 11px;
+  opacity: 0.76;
+  text-transform: uppercase;
+}
+
+.empty-state {
+  background: var(--md-sys-color-surface-container);
+  border-radius: var(--md-sys-shape-corner-large);
+  color: var(--md-sys-color-on-surface-variant);
+  font-size: 13px;
+  line-height: 1.5;
+  margin-bottom: var(--s4);
+  padding: 14px;
+}
+
 .page-hero {
   border-bottom: 1px solid color-mix(in srgb, var(--md-sys-color-outline-variant) 58%, transparent);
   margin-bottom: 4px;
@@ -339,5 +478,9 @@ textarea:focus {
     width: 30px;
     height: 30px;
     font-size: 15px;
+  }
+
+  .auth-status-btn {
+    max-width: 240px;
   }
 }

@@ -24,6 +24,20 @@ Este arquivo e um inventario vivo das funcoes utilizadas no projeto. Toda nova f
 | `hasSupabaseConfig` | `src/config/supabase.js` | 5 | function hasSupabaseConfig() { |
 | `exposeNutrition` | `src/modules/nutrition/nutritionDefaults.js` | 1 | (function exposeNutrition() { |
 | `getNutrition` | `src/modules/nutrition/nutritionDefaults.js` | 30 | function getNutrition(name) { |
+| `exposeAuthSessionModule` | `src/modules/auth/authSession.js` | 1 | Expõe o modulo de sessao, login e workspace para a aplicacao. |
+| `createAuthSessionModule` | `src/modules/auth/authSession.js` | 2 | Cria a camada de autenticacao desacoplada do app principal. |
+| `getElement` | `src/modules/auth/authSession.js` | 22 | Recupera elementos de UI usados no modal de acesso. |
+| `getAuthState` | `src/modules/auth/authSession.js` | 26 | Retorna estado publico de autenticacao, usuario e workspace ativo. |
+| `escapeHtml` | `src/modules/auth/authSession.js` | 36 | Escapa dados vindos do banco antes de renderizar workspaces. |
+| `initAuthSession` | `src/modules/auth/authSession.js` | 46 | Inicializa modo local ou Supabase Auth sem bloquear o prototipo. |
+| `syncSupabaseSession` | `src/modules/auth/authSession.js` | 77 | Sincroniza sessao Supabase no estado local do modulo. |
+| `loadOrganizations` | `src/modules/auth/authSession.js` | 87 | Carrega workspaces do usuario autenticado via `organization_members`. |
+| `renderAuthState` | `src/modules/auth/authSession.js` | 123 | Renderiza botao de sessao, formulario e lista de workspaces. |
+| `openAuthModal` | `src/modules/auth/authSession.js` | 187 | Abre o modal de acesso/workspace. |
+| `setAuthMode` | `src/modules/auth/authSession.js` | 192 | Alterna entre login e criacao de conta. |
+| `submitAuthForm` | `src/modules/auth/authSession.js` | 199 | Executa login ou cadastro usando Supabase Auth quando habilitado. |
+| `signOutAuth` | `src/modules/auth/authSession.js` | 235 | Encerra a sessao autenticada no Supabase. |
+| `selectOrganization` | `src/modules/auth/authSession.js` | 247 | Define o workspace ativo para futuras operacoes remotas. |
 | `exposeRecipeSheetModule` | `src/modules/recipes/recipeSheet.js` | 1 | (function exposeRecipeSheetModule() { |
 | `createRecipeSheetModule` | `src/modules/recipes/recipeSheet.js` | 2 | function createRecipeSheetModule(deps) { |
 | `syncState` | `src/modules/recipes/recipeSheet.js` | 30 | function syncState() { |

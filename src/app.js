@@ -93,6 +93,15 @@ const physicalStockModule=window.FichaTecPhysicalStock.createPhysicalStockModule
 const {stockColor,stockFlag,stockBar,openPhysicalModal,savePhysical,deletePhysical,renderPhysical,openMove,setMoveType,confirmMove}=physicalStockModule;
 Object.assign(window,{stockColor,stockFlag,stockBar,openPhysicalModal,savePhysical,deletePhysical,renderPhysical,openMove,setMoveType,confirmMove});
 
+const authSessionModule=window.FichaTecAuthSession.createAuthSessionModule({
+  closeModal,
+  config:window.FichaTecSupabaseConfig,
+  createSupabaseClient:window.FichaTecSupabaseClientService.createClient,
+  showToast,
+});
+const {getAuthState,initAuthSession,loadOrganizations,openAuthModal,renderAuthState,selectOrganization,setAuthMode,signOutAuth,submitAuthForm,syncSupabaseSession}=authSessionModule;
+Object.assign(window,{getAuthState,initAuthSession,loadOrganizations,openAuthModal,renderAuthState,selectOrganization,setAuthMode,signOutAuth,submitAuthForm,syncSupabaseSession});
+
 /* ══ EVENTOS ══ */
 document.querySelectorAll('.modal-overlay').forEach(m=>{
   m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('open');});
@@ -136,4 +145,4 @@ recipes=recipes.map(r=>({...r,ingredients:r.ingredients.map(i=>{
   const s=findStockItem(i.stockId,i.name);
   return{...i,savedPricePerG:s?pricePerUnit(s):0};
 })}));
-renderStock();renderRecipes();renderPhysical();
+renderStock();renderRecipes();renderPhysical();initAuthSession();
