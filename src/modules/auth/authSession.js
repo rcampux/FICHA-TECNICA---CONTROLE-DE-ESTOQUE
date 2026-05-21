@@ -50,6 +50,10 @@
       }));
     }
 
+    function getAuthRedirectUrl() {
+      return `${window.location.origin}${window.location.pathname}`;
+    }
+
     async function initAuthSession() {
       if (state.initialized) return getAuthState();
       state.initialized = true;
@@ -223,7 +227,11 @@
 
       const action = state.authMode === "login"
         ? state.client.auth.signInWithPassword({email, password})
-        : state.client.auth.signUp({email, password});
+        : state.client.auth.signUp({
+          email,
+          password,
+          options: {emailRedirectTo: getAuthRedirectUrl()},
+        });
 
       const {data, error} = await action;
       state.loading = false;
@@ -271,6 +279,7 @@
       submitAuthForm,
       syncSupabaseSession,
       dispatchWorkspaceChange,
+      getAuthRedirectUrl,
     };
   }
 

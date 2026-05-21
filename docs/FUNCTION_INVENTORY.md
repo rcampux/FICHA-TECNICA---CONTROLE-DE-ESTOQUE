@@ -34,15 +34,16 @@ Este arquivo e um inventario vivo das funcoes utilizadas no projeto. Toda nova f
 | `getAuthState` | `src/modules/auth/authSession.js` | 26 | Retorna estado publico de autenticacao, usuario e workspace ativo. |
 | `escapeHtml` | `src/modules/auth/authSession.js` | 36 | Escapa dados vindos do banco antes de renderizar workspaces. |
 | `dispatchWorkspaceChange` | `src/modules/auth/authSession.js` | 46 | Dispara evento de mudanca de workspace para hidratar dados remotos. |
-| `initAuthSession` | `src/modules/auth/authSession.js` | 53 | Inicializa modo local ou Supabase Auth sem bloquear o prototipo. |
-| `syncSupabaseSession` | `src/modules/auth/authSession.js` | 84 | Sincroniza sessao Supabase no estado local do modulo. |
-| `loadOrganizations` | `src/modules/auth/authSession.js` | 94 | Carrega workspaces do usuario autenticado via `organization_members`. |
-| `renderAuthState` | `src/modules/auth/authSession.js` | 131 | Renderiza botao de sessao, formulario e lista de workspaces. |
-| `openAuthModal` | `src/modules/auth/authSession.js` | 195 | Abre o modal de acesso/workspace. |
-| `setAuthMode` | `src/modules/auth/authSession.js` | 200 | Alterna entre login e criacao de conta. |
-| `submitAuthForm` | `src/modules/auth/authSession.js` | 207 | Executa login ou cadastro usando Supabase Auth quando habilitado. |
-| `signOutAuth` | `src/modules/auth/authSession.js` | 243 | Encerra a sessao autenticada no Supabase. |
-| `selectOrganization` | `src/modules/auth/authSession.js` | 255 | Define o workspace ativo para futuras operacoes remotas. |
+| `getAuthRedirectUrl` | `src/modules/auth/authSession.js` | 53 | Monta URL atual do app para redirecionamento de confirmacao de e-mail. |
+| `initAuthSession` | `src/modules/auth/authSession.js` | 57 | Inicializa modo local ou Supabase Auth sem bloquear o prototipo. |
+| `syncSupabaseSession` | `src/modules/auth/authSession.js` | 88 | Sincroniza sessao Supabase no estado local do modulo. |
+| `loadOrganizations` | `src/modules/auth/authSession.js` | 98 | Carrega workspaces do usuario autenticado via `organization_members`. |
+| `renderAuthState` | `src/modules/auth/authSession.js` | 135 | Renderiza botao de sessao, formulario e lista de workspaces. |
+| `openAuthModal` | `src/modules/auth/authSession.js` | 199 | Abre o modal de acesso/workspace. |
+| `setAuthMode` | `src/modules/auth/authSession.js` | 204 | Alterna entre login e criacao de conta. |
+| `submitAuthForm` | `src/modules/auth/authSession.js` | 211 | Executa login ou cadastro usando Supabase Auth quando habilitado. |
+| `signOutAuth` | `src/modules/auth/authSession.js` | 251 | Encerra a sessao autenticada no Supabase. |
+| `selectOrganization` | `src/modules/auth/authSession.js` | 263 | Define o workspace ativo para futuras operacoes remotas. |
 | `exposeRecipeSheetModule` | `src/modules/recipes/recipeSheet.js` | 1 | (function exposeRecipeSheetModule() { |
 | `createRecipeSheetModule` | `src/modules/recipes/recipeSheet.js` | 2 | function createRecipeSheetModule(deps) { |
 | `syncState` | `src/modules/recipes/recipeSheet.js` | 30 | function syncState() { |
