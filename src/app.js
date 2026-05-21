@@ -99,8 +99,8 @@ const authSessionModule=window.FichaTecAuthSession.createAuthSessionModule({
   createSupabaseClient:window.FichaTecSupabaseClientService.createClient,
   showToast,
 });
-const {getAuthState,initAuthSession,loadOrganizations,openAuthModal,renderAuthState,selectOrganization,setAuthMode,signOutAuth,submitAuthForm,syncSupabaseSession}=authSessionModule;
-Object.assign(window,{getAuthState,initAuthSession,loadOrganizations,openAuthModal,renderAuthState,selectOrganization,setAuthMode,signOutAuth,submitAuthForm,syncSupabaseSession});
+const {getAuthState,initAuthSession,loadOrganizations,openAuthModal,renderAuthState,resendConfirmationEmail,selectOrganization,setAuthMode,signOutAuth,submitAuthForm,syncSupabaseSession}=authSessionModule;
+Object.assign(window,{getAuthState,initAuthSession,loadOrganizations,openAuthModal,renderAuthState,resendConfirmationEmail,selectOrganization,setAuthMode,signOutAuth,submitAuthForm,syncSupabaseSession});
 
 async function hydrateWorkspaceData(event){
   const organizationId=event?.detail?.organizationId || DB.activeOrganizationId?.();

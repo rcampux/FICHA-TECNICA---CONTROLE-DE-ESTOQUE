@@ -248,6 +248,41 @@
       showToast(state.authMode === "login" ? "Login realizado." : "Conta criada.");
     }
 
+    async function resendConfirmationEmail() {
+      if (!state.isSupabaseEnabled || !state.client) {
+        showToast("Configure o Supabase antes de reenviar.");
+        return;
+      }
+
+      const email = getElement("auth-email")?.value.trim();
+
+      if (!email) {
+        showToast("Informe o e-mail para reenviar a confirmacao.");
+        return;
+      }
+
+      state.loading = true;
+      renderAuthState();
+
+      const {error} = await state.client.auth.resend({
+        type: "signup",
+        email,
+        options: {emailRedirectTo: getAuthRedirectUrl()},
+      });
+
+      state.loading = false;
+
+      if (error) {
+        console.error(error);
+        showToast(error.message || "Nao foi possivel reenviar.");
+        renderAuthState();
+        return;
+      }
+
+      showToast("E-mail de confirmacao reenviado.");
+      renderAuthState();
+    }
+
     async function signOutAuth() {
       if (!state.client) return;
       const {error} = await state.client.auth.signOut();
@@ -273,6 +308,7 @@
       loadOrganizations,
       openAuthModal,
       renderAuthState,
+      resendConfirmationEmail,
       selectOrganization,
       setAuthMode,
       signOutAuth,

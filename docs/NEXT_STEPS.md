@@ -32,6 +32,7 @@ O projeto esta em fase de prototipo estruturado:
 - Guia `docs/SUPABASE_SETUP.md` criado para ligar Supabase real.
 - Inventario vivo de funcoes criado em `docs/FUNCTION_INVENTORY.md` e atualizado a cada mudanca de funcao.
 - Estrutura futura para Supabase e Edge Functions criada.
+- Confirmacao de e-mail Supabase ajustada para redirecionar para a Vercel e botao de reenvio de confirmacao adicionado no modal de acesso.
 
 ## Proximo Passo Recomendado
 
@@ -82,4 +83,5 @@ Fase 2.1 - Supabase seguro:
 6. Concluido: criar fluxo visual de login e estado autenticado.
 7. Concluido: mapear repositories remotos por dominio mantendo `localStorage` como fallback.
 8. Concluido: preparar variaveis de ambiente para ligar Supabase na Vercel.
-9. Proximo: configurar projeto Supabase real, aplicar migration e testar Auth/RLS com dois usuarios.
+9. Concluido: configurar projeto Supabase real, aplicar migration e preparar redirect de Auth para Vercel.
+10. Proximo: testar login confirmado em producao, workspace automatico e RLS com dois usuarios.

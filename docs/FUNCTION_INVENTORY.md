@@ -42,8 +42,9 @@ Este arquivo e um inventario vivo das funcoes utilizadas no projeto. Toda nova f
 | `openAuthModal` | `src/modules/auth/authSession.js` | 199 | Abre o modal de acesso/workspace. |
 | `setAuthMode` | `src/modules/auth/authSession.js` | 204 | Alterna entre login e criacao de conta. |
 | `submitAuthForm` | `src/modules/auth/authSession.js` | 211 | Executa login ou cadastro usando Supabase Auth quando habilitado. |
-| `signOutAuth` | `src/modules/auth/authSession.js` | 251 | Encerra a sessao autenticada no Supabase. |
-| `selectOrganization` | `src/modules/auth/authSession.js` | 263 | Define o workspace ativo para futuras operacoes remotas. |
+| `resendConfirmationEmail` | `src/modules/auth/authSession.js` | 251 | Reenvia o e-mail de confirmacao do Supabase Auth usando o redirect atual da Vercel. |
+| `signOutAuth` | `src/modules/auth/authSession.js` | 286 | Encerra a sessao autenticada no Supabase. |
+| `selectOrganization` | `src/modules/auth/authSession.js` | 298 | Define o workspace ativo para futuras operacoes remotas. |
 | `exposeRecipeSheetModule` | `src/modules/recipes/recipeSheet.js` | 1 | (function exposeRecipeSheetModule() { |
 | `createRecipeSheetModule` | `src/modules/recipes/recipeSheet.js` | 2 | function createRecipeSheetModule(deps) { |
 | `syncState` | `src/modules/recipes/recipeSheet.js` | 30 | function syncState() { |
