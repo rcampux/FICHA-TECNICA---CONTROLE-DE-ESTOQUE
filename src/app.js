@@ -3,9 +3,9 @@ const STORAGE_KEYS=window.FichaTecStorageKeys;
 const DB=window.FichaTecRepository || window.FichaTecLocalStorageRepository;
 const {pricePerUnit}=window.FichaTecStockPricing;
 
-let stock=DB.load(STORAGE_KEYS.stock);
-let physicalStock=DB.load(STORAGE_KEYS.physicalStock);
-let recipes=DB.load(STORAGE_KEYS.recipes);
+let stock=DB.mode?.()==='supabase'?[]:DB.load(STORAGE_KEYS.stock);
+let physicalStock=DB.mode?.()==='supabase'?[]:DB.load(STORAGE_KEYS.physicalStock);
+let recipes=DB.mode?.()==='supabase'?[]:DB.load(STORAGE_KEYS.recipes);
 
 const {getNutrition}=window.FichaTecNutrition;
 function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
@@ -99,8 +99,8 @@ const authSessionModule=window.FichaTecAuthSession.createAuthSessionModule({
   createSupabaseClient:window.FichaTecSupabaseClientService.createClient,
   showToast,
 });
-const {getAuthState,initAuthSession,loadOrganizations,openAuthModal,renderAuthState,resendConfirmationEmail,selectOrganization,setAuthMode,signOutAuth,submitAuthForm,syncSupabaseSession}=authSessionModule;
-Object.assign(window,{getAuthState,initAuthSession,loadOrganizations,openAuthModal,renderAuthState,resendConfirmationEmail,selectOrganization,setAuthMode,signOutAuth,submitAuthForm,syncSupabaseSession});
+const {getAuthState,getPasswordValidation,initAuthSession,isStrongPassword,loadOrganizations,openAuthModal,renderAuthState,renderPasswordFeedback,resendConfirmationEmail,selectOrganization,setAuthMode,signOutAuth,submitAuthForm,syncSupabaseSession,togglePasswordVisibility}=authSessionModule;
+Object.assign(window,{getAuthState,getPasswordValidation,initAuthSession,isStrongPassword,loadOrganizations,openAuthModal,renderAuthState,renderPasswordFeedback,resendConfirmationEmail,selectOrganization,setAuthMode,signOutAuth,submitAuthForm,syncSupabaseSession,togglePasswordVisibility});
 
 async function hydrateWorkspaceData(event){
   const organizationId=event?.detail?.organizationId || DB.activeOrganizationId?.();
@@ -137,6 +137,16 @@ function applyRemoteSave(event){
 Object.assign(window,{applyRemoteSave});
 window.addEventListener('fichatec:remote-save',applyRemoteSave);
 
+function clearSessionData(){
+  if(DB.mode()!=='supabase')return;
+  stock=[];physicalStock=[];recipes=[];
+  [STORAGE_KEYS.stock,STORAGE_KEYS.physicalStock,STORAGE_KEYS.recipes].forEach(key=>DB.remove?.(key));
+  clearFicha({force:true,silent:true});
+  renderStock();renderPhysical();renderRecipes();
+}
+Object.assign(window,{clearSessionData});
+window.addEventListener('fichatec:auth-signed-out',clearSessionData);
+
 /* ══ EVENTOS ══ */
 document.querySelectorAll('.modal-overlay').forEach(m=>{
   m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('open');});
@@ -158,7 +168,7 @@ document.querySelectorAll('.modal-overlay').forEach(m=>{
 });
 
 /* ══ SEED ══ */
-if(!stock.length){
+if(DB.mode() === 'local' && !stock.length){
   stock=[
     {id:1,name:'Açúcar refinado',qty:1,unit:'kg',price:26.82,category:'Açúcares',nutrition:{kcal:399,carb:99.6,prot:0,fat:0,fiber:0,sodium:1}},
     {id:2,name:'Arroz branco',qty:1,unit:'kg',price:11.37,category:'Cereais',nutrition:{kcal:358,carb:79,prot:7.4,fat:0.3,fiber:1.6,sodium:1}},

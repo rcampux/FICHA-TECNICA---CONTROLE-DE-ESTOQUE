@@ -50,8 +50,27 @@
       }));
     }
 
+    function dispatchSignedOut() {
+      if (!state.isSupabaseEnabled) return;
+      window.dispatchEvent(new CustomEvent("fichatec:auth-signed-out"));
+    }
+
     function getAuthRedirectUrl() {
       return `${window.location.origin}${window.location.pathname}`;
+    }
+
+    function getPasswordValidation(password) {
+      return {
+        minLength: password.length >= 8,
+        uppercase: /[A-Z]/.test(password),
+        lowercase: /[a-z]/.test(password),
+        number: /\d/.test(password),
+        special: /[^A-Za-z0-9]/.test(password),
+      };
+    }
+
+    function isStrongPassword(password) {
+      return Object.values(getPasswordValidation(password)).every(Boolean);
     }
 
     async function initAuthSession() {
@@ -91,6 +110,7 @@
       if (!state.user) {
         state.activeOrganizationId = null;
         state.organizations = [];
+        dispatchSignedOut();
       }
       renderAuthState();
     }
@@ -194,6 +214,8 @@
           `).join("")
           : '<div class="empty-state">Nenhum workspace encontrado. A migration cria um workspace automaticamente para novos usuarios.</div>';
       }
+
+      renderPasswordFeedback();
     }
 
     function openAuthModal() {
@@ -201,11 +223,52 @@
       renderAuthState();
     }
 
+    function renderPasswordFeedback() {
+      const password = getElement("auth-password")?.value || "";
+      const feedback = getElement("auth-password-feedback");
+      if (!feedback) return;
+
+      if (state.authMode !== "signup") {
+        feedback.innerHTML = "";
+        feedback.style.display = "none";
+        return;
+      }
+
+      feedback.style.display = "flex";
+
+      const rules = [
+        ["minLength", "8+ caracteres"],
+        ["uppercase", "maiuscula"],
+        ["lowercase", "minuscula"],
+        ["number", "numero"],
+        ["special", "especial"],
+      ];
+      const validation = getPasswordValidation(password);
+
+      feedback.innerHTML = rules.map(([key, label]) => `
+        <span class="${validation[key] ? "valid" : ""}">
+          <span class="material-symbols-rounded">${validation[key] ? "check_circle" : "radio_button_unchecked"}</span>
+          ${label}
+        </span>
+      `).join("");
+    }
+
+    function togglePasswordVisibility() {
+      const input = getElement("auth-password");
+      const icon = getElement("auth-password-toggle-icon");
+      if (!input) return;
+
+      const shouldShow = input.type === "password";
+      input.type = shouldShow ? "text" : "password";
+      if (icon) icon.textContent = shouldShow ? "visibility_off" : "visibility";
+    }
+
     function setAuthMode(mode) {
       state.authMode = mode === "signup" ? "signup" : "login";
       getElement("auth-mode-login")?.classList.toggle("active", state.authMode === "login");
       getElement("auth-mode-signup")?.classList.toggle("active", state.authMode === "signup");
       renderAuthState();
+      renderPasswordFeedback();
     }
 
     async function submitAuthForm() {
@@ -219,6 +282,12 @@
 
       if (!email || !password) {
         showToast("Informe e-mail e senha.");
+        return;
+      }
+
+      if (state.authMode === "signup" && !isStrongPassword(password)) {
+        showToast("Use senha forte: 8+ caracteres, maiuscula, minuscula, numero e especial.");
+        renderPasswordFeedback();
         return;
       }
 
@@ -304,10 +373,13 @@
 
     return {
       getAuthState,
+      getPasswordValidation,
       initAuthSession,
+      isStrongPassword,
       loadOrganizations,
       openAuthModal,
       renderAuthState,
+      renderPasswordFeedback,
       resendConfirmationEmail,
       selectOrganization,
       setAuthMode,
@@ -316,6 +388,7 @@
       syncSupabaseSession,
       dispatchWorkspaceChange,
       getAuthRedirectUrl,
+      togglePasswordVisibility,
     };
   }
 

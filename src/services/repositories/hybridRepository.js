@@ -29,6 +29,10 @@
     queueRemoteSave(key, value);
   }
 
+  function remove(key) {
+    localRepository.remove(key);
+  }
+
   async function loadRemote(key, organizationId) {
     const client = await getSupabaseClient();
     if (!client || !domainRepository || !organizationId) return load(key);
@@ -64,6 +68,7 @@
     activeOrganizationId: getActiveOrganizationId,
     load,
     save,
+    remove,
     loadRemote,
     saveRemote,
     queueRemoteSave,

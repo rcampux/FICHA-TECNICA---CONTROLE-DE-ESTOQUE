@@ -33,6 +33,7 @@ O projeto esta em fase de prototipo estruturado:
 - Inventario vivo de funcoes criado em `docs/FUNCTION_INVENTORY.md` e atualizado a cada mudanca de funcao.
 - Estrutura futura para Supabase e Edge Functions criada.
 - Confirmacao de e-mail Supabase ajustada para redirecionar para a Vercel e botao de reenvio de confirmacao adicionado no modal de acesso.
+- Cache local de dados privados limpo em logout/sem sessao Supabase, senha forte exigida no cadastro e visibilidade de senha adicionada.
 
 ## Proximo Passo Recomendado
 

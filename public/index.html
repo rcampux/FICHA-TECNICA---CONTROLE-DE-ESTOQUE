@@ -493,7 +493,13 @@
       </div>
       <div class="input-group">
         <label class="input-label">Senha</label>
-        <input type="password" id="auth-password" placeholder="Minimo 6 caracteres" autocomplete="current-password">
+        <div class="password-field">
+          <input type="password" id="auth-password" placeholder="Senha forte" autocomplete="current-password" oninput="renderPasswordFeedback()">
+          <button class="password-toggle" onclick="togglePasswordVisibility()" type="button" aria-label="Mostrar ou ocultar senha">
+            <span class="material-symbols-rounded" id="auth-password-toggle-icon">visibility</span>
+          </button>
+        </div>
+        <div class="password-feedback" id="auth-password-feedback"></div>
       </div>
       <button class="btn btn-primary btn-full" id="auth-submit-btn" onclick="submitAuthForm()" type="button">
         <span class="material-symbols-rounded">login</span> Entrar

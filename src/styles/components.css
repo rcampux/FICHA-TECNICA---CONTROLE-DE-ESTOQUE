@@ -171,6 +171,13 @@
   letter-spacing: 0;
 }
 
+.modal [style*="display:flex"][style*="gap"],
+.card [style*="display:flex"][style*="gap"],
+.pstock-card [style*="display:flex"][style*="gap"],
+.recipe-card [style*="display:flex"][style*="gap"] {
+  row-gap: 10px !important;
+}
+
 .btn-primary {
   background: var(--md-sys-color-primary);
   color: var(--md-sys-color-on-primary);
@@ -309,6 +316,60 @@ textarea:focus {
 .auth-mode-tab.active {
   background: var(--md-sys-color-primary-container);
   color: var(--md-sys-color-on-primary-container);
+}
+
+.password-field {
+  position: relative;
+}
+
+.password-field input {
+  padding-right: 48px;
+}
+
+.password-toggle {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  border-radius: var(--md-sys-shape-corner-full);
+  color: var(--md-sys-color-on-surface-variant);
+  cursor: pointer;
+  display: inline-flex;
+  height: 38px;
+  justify-content: center;
+  position: absolute;
+  right: 5px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 38px;
+}
+
+.password-toggle:hover {
+  background: var(--md-sys-color-surface-container);
+  color: var(--md-sys-color-primary);
+}
+
+.password-feedback {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 10px;
+  margin-top: 8px;
+}
+
+.password-feedback span {
+  align-items: center;
+  color: var(--md-sys-color-on-surface-variant);
+  display: inline-flex;
+  font-size: 11px;
+  font-weight: 700;
+  gap: 3px;
+}
+
+.password-feedback .material-symbols-rounded {
+  font-size: 14px;
+}
+
+.password-feedback .valid {
+  color: var(--md-sys-color-tertiary);
 }
 
 .workspace-option {

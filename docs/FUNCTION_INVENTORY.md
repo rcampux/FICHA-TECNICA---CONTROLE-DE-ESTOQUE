@@ -23,6 +23,7 @@ Este arquivo e um inventario vivo das funcoes utilizadas no projeto. Toda nova f
 | `closeModal` | `src/app.js` | 21 | function closeModal(id){document.getElementById(id).classList.remove('open');} |
 | `hydrateWorkspaceData` | `src/app.js` | 105 | Carrega estoque, estoque fisico e receitas do Supabase quando um workspace e selecionado. |
 | `applyRemoteSave` | `src/app.js` | 130 | Atualiza o estado em memoria depois que uma escrita remota retorna `remoteId`. |
+| `clearSessionData` | `src/app.js` | 143 | Limpa cache local, estado em memoria e telas quando nao ha sessao Supabase ativa. |
 | `exposeStorageKeys` | `src/config/storageKeys.js` | 1 | (function exposeStorageKeys() { |
 | `exposeSupabaseConfig` | `src/config/supabase.js` | 1 | (function exposeSupabaseConfig() { |
 | `hasSupabaseConfig` | `src/config/supabase.js` | 5 | function hasSupabaseConfig() { |
@@ -34,11 +35,16 @@ Este arquivo e um inventario vivo das funcoes utilizadas no projeto. Toda nova f
 | `getAuthState` | `src/modules/auth/authSession.js` | 26 | Retorna estado publico de autenticacao, usuario e workspace ativo. |
 | `escapeHtml` | `src/modules/auth/authSession.js` | 36 | Escapa dados vindos do banco antes de renderizar workspaces. |
 | `dispatchWorkspaceChange` | `src/modules/auth/authSession.js` | 46 | Dispara evento de mudanca de workspace para hidratar dados remotos. |
-| `getAuthRedirectUrl` | `src/modules/auth/authSession.js` | 53 | Monta URL atual do app para redirecionamento de confirmacao de e-mail. |
+| `dispatchSignedOut` | `src/modules/auth/authSession.js` | 53 | Dispara evento para limpar dados locais quando a sessao Supabase termina. |
+| `getAuthRedirectUrl` | `src/modules/auth/authSession.js` | 58 | Monta URL atual do app para redirecionamento de confirmacao de e-mail. |
+| `getPasswordValidation` | `src/modules/auth/authSession.js` | 62 | Valida requisitos de senha forte para criacao de conta. |
+| `isStrongPassword` | `src/modules/auth/authSession.js` | 73 | Confirma se todos os requisitos de senha forte foram atendidos. |
 | `initAuthSession` | `src/modules/auth/authSession.js` | 57 | Inicializa modo local ou Supabase Auth sem bloquear o prototipo. |
 | `syncSupabaseSession` | `src/modules/auth/authSession.js` | 88 | Sincroniza sessao Supabase no estado local do modulo. |
 | `loadOrganizations` | `src/modules/auth/authSession.js` | 98 | Carrega workspaces do usuario autenticado via `organization_members`. |
 | `renderAuthState` | `src/modules/auth/authSession.js` | 135 | Renderiza botao de sessao, formulario e lista de workspaces. |
+| `renderPasswordFeedback` | `src/modules/auth/authSession.js` | 207 | Renderiza checklist visual dos requisitos de senha forte. |
+| `togglePasswordVisibility` | `src/modules/auth/authSession.js` | 228 | Alterna a visibilidade da senha no modal de acesso. |
 | `openAuthModal` | `src/modules/auth/authSession.js` | 199 | Abre o modal de acesso/workspace. |
 | `setAuthMode` | `src/modules/auth/authSession.js` | 204 | Alterna entre login e criacao de conta. |
 | `submitAuthForm` | `src/modules/auth/authSession.js` | 211 | Executa login ou cadastro usando Supabase Auth quando habilitado. |
@@ -60,7 +66,7 @@ Este arquivo e um inventario vivo das funcoes utilizadas no projeto. Toda nova f
 | `renderIngredients` | `src/modules/recipes/recipeSheet.js` | 140 | function renderIngredients(){ |
 | `calcFicha` | `src/modules/recipes/recipeSheet.js` | 155 | function calcFicha(){ |
 | `calcNutrition` | `src/modules/recipes/recipeSheet.js` | 168 | function calcNutrition(){ |
-| `clearFicha` | `src/modules/recipes/recipeSheet.js` | 196 | function clearFicha(){ |
+| `clearFicha` | `src/modules/recipes/recipeSheet.js` | 196 | Limpa a ficha atual; aceita modo forcado/silencioso para logout seguro. |
 | `saveRecipe` | `src/modules/recipes/recipeSheet.js` | 205 | function saveRecipe(){ |
 | `hasPriceChanged` | `src/modules/recipes/recipeSheet.js` | 228 | function hasPriceChanged(refs){ |
 | `renderRecipes` | `src/modules/recipes/recipeSheet.js` | 235 | function renderRecipes(filter='',ingFilter=null){ |
@@ -117,9 +123,10 @@ Este arquivo e um inventario vivo das funcoes utilizadas no projeto. Toda nova f
 | `getActiveOrganizationId` | `src/services/repositories/hybridRepository.js` | 19 | Lê o workspace ativo a partir do estado de autenticacao. |
 | `load` | `src/services/repositories/hybridRepository.js` | 23 | Carrega dados locais do `localStorage`. |
 | `save` | `src/services/repositories/hybridRepository.js` | 27 | Salva localmente e enfileira sincronizacao remota quando habilitada. |
-| `loadRemote` | `src/services/repositories/hybridRepository.js` | 32 | Carrega dados Supabase por chave de dominio e organizacao. |
-| `saveRemote` | `src/services/repositories/hybridRepository.js` | 38 | Salva dados Supabase por chave de dominio e atualiza cache local. |
-| `queueRemoteSave` | `src/services/repositories/hybridRepository.js` | 46 | Executa sincronizacao remota em background e emite evento de retorno. |
+| `remove` | `src/services/repositories/hybridRepository.js` | 32 | Remove uma chave local sem afetar dados remotos no Supabase. |
+| `loadRemote` | `src/services/repositories/hybridRepository.js` | 36 | Carrega dados Supabase por chave de dominio e organizacao. |
+| `saveRemote` | `src/services/repositories/hybridRepository.js` | 42 | Salva dados Supabase por chave de dominio e atualiza cache local. |
+| `queueRemoteSave` | `src/services/repositories/hybridRepository.js` | 50 | Executa sincronizacao remota em background e emite evento de retorno. |
 | `exposeSupabaseDomainRepository` | `src/services/repositories/supabaseDomainRepository.js` | 1 | Expõe o repository de dominio Supabase para estoque, fichas e receitas. |
 | `normalizeNumber` | `src/services/repositories/supabaseDomainRepository.js` | 4 | Normaliza valores numericos vindos do app ou do banco. |
 | `centsFromCurrency` | `src/services/repositories/supabaseDomainRepository.js` | 9 | Converte valores em reais para centavos inteiros. |
@@ -151,6 +158,7 @@ Este arquivo e um inventario vivo das funcoes utilizadas no projeto. Toda nova f
 | `exposeLocalStorageRepository` | `src/services/repositories/localStorageRepository.js` | 1 | (function exposeLocalStorageRepository() { |
 | `load` | `src/services/repositories/localStorageRepository.js` | 3 | load(key) { |
 | `save` | `src/services/repositories/localStorageRepository.js` | 6 | save(key, value) { |
+| `remove` | `src/services/repositories/localStorageRepository.js` | 9 | Remove uma chave local para limpar cache de sessao Supabase. |
 | `exposeSupabaseClientService` | `src/services/supabaseClient.js` | 1 | (function exposeSupabaseClientService() { |
 | `getSupabaseGlobal` | `src/services/supabaseClient.js` | 5 | function getSupabaseGlobal() { |
 | `loadSupabaseLibrary` | `src/services/supabaseClient.js` | 9 | function loadSupabaseLibrary() { |

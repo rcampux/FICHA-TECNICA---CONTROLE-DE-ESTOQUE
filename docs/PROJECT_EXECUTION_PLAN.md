@@ -13,6 +13,8 @@ Este documento deve ser seguido a cada nova etapa do projeto. Ele consolida dire
 - Toda vez que um commit for criado, fazer tambem o push para GitHub e o deploy de producao na Vercel na mesma etapa.
 - Deploy de producao so deve acontecer depois do GitHub estar atualizado com o commit correspondente.
 - Se push ou deploy falhar, registrar o motivo no fechamento da task e deixar o comando de retomada claro.
+- Em modo Supabase, dados privados em cache local devem ser limpos quando nao houver sessao autenticada ou quando o usuario fizer logout.
+- Cadastro deve exigir senha forte com pelo menos 8 caracteres, letra maiuscula, letra minuscula, numero e caractere especial.
 
 ## Ordem Atual de Execucao
 

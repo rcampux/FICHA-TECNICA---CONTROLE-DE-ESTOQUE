@@ -193,14 +193,14 @@
         </td>
       </tr>`).join('');
     }
-    function clearFicha(){
-      if(currentIngredients.length&&!confirm('Limpar todos os dados da ficha?'))return;
+    function clearFicha(options = {}){
+      if(currentIngredients.length&&!options.force&&!confirm('Limpar todos os dados da ficha?'))return;
       currentIngredients=[];
       ['ficha-nome','ficha-rendimento','ficha-porcoes','markup-pct'].forEach(f=>document.getElementById(f).value='');
       document.getElementById('portion-size').value='100';
       document.getElementById('ficha-totals').style.display='none';
       document.getElementById('ingredients-list').innerHTML='';
-      showToast('Ficha limpa.');
+      if(!options.silent)showToast('Ficha limpa.');
     }
     function saveRecipe(){
       const nome=document.getElementById('ficha-nome').value.trim();
