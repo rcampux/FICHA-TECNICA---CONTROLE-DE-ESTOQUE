@@ -88,3 +88,15 @@ Depois do deploy, remover a variavel da sessao:
 ```powershell
 Remove-Item Env:VERCEL_TOKEN
 ```
+
+## Variaveis para Supabase
+
+Quando for ligar Supabase em producao, configurar na Vercel:
+
+```text
+FICHATEC_DATA_MODE=supabase
+FICHATEC_SUPABASE_URL=https://SEU-PROJETO.supabase.co
+FICHATEC_SUPABASE_ANON_KEY=SUA_ANON_KEY_PUBLICA
+```
+
+O build gera `public/src/config/env.js` a partir dessas variaveis. Sem elas, a producao continua em modo local.

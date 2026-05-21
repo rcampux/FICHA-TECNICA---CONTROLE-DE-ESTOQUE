@@ -50,6 +50,7 @@ Este documento deve ser seguido a cada nova etapa do projeto. Ele consolida dire
 - `src/services/supabaseClient.js`: carregamento seguro do client Supabase com anon key publica.
 - `src/config/supabase.js`: configuracao de modo local/Supabase.
 - `src/modules/auth/authSession.js`: estado de sessao, login/cadastro Supabase e selecao de workspace.
+- `scripts/sync-public-assets.mjs`: sincroniza assets e injeta configuracao publica Supabase no build.
 - `src/modules/nutrition/nutritionDefaults.js`: nutricao padrao.
 - `src/modules/stock/stockPricing.js`: calculo de preco por unidade base.
 - `src/modules/stock/virtualStock.js`: estoque virtual.
@@ -69,4 +70,5 @@ Entregaveis da Fase 2.1:
 - Concluido: tela de estado autenticado.
 - Concluido: selecao de organizacao/workspace.
 - Concluido: repositories remotos para estoque, receitas e ficha tecnica.
+- Concluido: preparar build/env para ativar Supabase na Vercel.
 - Proximo: configurar Supabase real e testar RLS com dois usuarios.

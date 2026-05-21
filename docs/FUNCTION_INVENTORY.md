@@ -15,7 +15,9 @@ Este arquivo e um inventario vivo das funcoes utilizadas no projeto. Toda nova f
 | Funcao | Arquivo | Linha | Responsabilidade inicial |
 | --- | --- | ---: | --- |
 | `resolveRequestPath` | `scripts/dev-server.mjs` | 19 | function resolveRequestPath(url) { |
-| `syncPublicAssets` | `scripts/sync-public-assets.mjs` | 8 | async function syncPublicAssets() { |
+| `toQuotedString` | `scripts/sync-public-assets.mjs` | 9 | Serializa valores de ambiente para gerar JS publico seguro. |
+| `buildPublicEnvConfig` | `scripts/sync-public-assets.mjs` | 13 | Gera `public/src/config/env.js` com modo local ou Supabase no build. |
+| `syncPublicAssets` | `scripts/sync-public-assets.mjs` | 32 | Sincroniza `src` para `public/src` e injeta configuracao publica. |
 | `showToast` | `src/app.js` | 11 | function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);} |
 | `showPage` | `src/app.js` | 12 | function showPage(page,navId){ |
 | `closeModal` | `src/app.js` | 21 | function closeModal(id){document.getElementById(id).classList.remove('open');} |

@@ -84,8 +84,9 @@ Ou aplicar o SQL no painel do Supabase em SQL Editor durante a fase inicial.
 3. Concluido: criar repository hibrido: `localStorage` agora, Supabase quando autenticado.
 4. Concluido: adicionar tela/fluxo de login e selecao de workspace.
 5. Concluido: criar repositories remotos por dominio.
-6. Proximo: configurar projeto Supabase real e aplicar migration.
-7. Depois: testar RLS com dois usuarios em organizacoes diferentes.
+6. Concluido: preparar build/env da Vercel para ativar Supabase.
+7. Proximo: configurar projeto Supabase real e aplicar migration.
+8. Depois: testar RLS com dois usuarios em organizacoes diferentes.
 
 ## Configuracao Frontend
 
@@ -118,4 +119,5 @@ A chave `anon` e publica, mas RLS precisa estar correto. Chaves `service_role` n
 - Nenhuma escrita remota deve acontecer sem usuario autenticado e workspace ativo.
 - `stock_items`, `physical_stock_items`, `recipes`, `recipe_ingredients` e `nutrition_facts` ja possuem conversores no frontend.
 - Escritas remotas rodam em background quando `dataMode` e `supabase` e existe workspace ativo.
+- O build da Vercel aceita `FICHATEC_DATA_MODE`, `FICHATEC_SUPABASE_URL` e `FICHATEC_SUPABASE_ANON_KEY`.
 - A proxima etapa e aplicar a migration no Supabase real e validar RLS/Auth.

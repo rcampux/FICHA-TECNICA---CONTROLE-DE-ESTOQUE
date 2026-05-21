@@ -28,6 +28,8 @@ O projeto esta em fase de prototipo estruturado:
 - Fluxo visual de acesso criado: estado local, modal de login/cadastro, sessao Supabase e selecao de workspace.
 - Repository Supabase por dominio criado para estoque virtual, estoque fisico, receitas, ingredientes e nutricao.
 - Hidratação de dados por workspace criada e escrita remota em background preparada.
+- Build da Vercel preparado para injetar configuracao Supabase por variaveis de ambiente.
+- Guia `docs/SUPABASE_SETUP.md` criado para ligar Supabase real.
 - Inventario vivo de funcoes criado em `docs/FUNCTION_INVENTORY.md` e atualizado a cada mudanca de funcao.
 - Estrutura futura para Supabase e Edge Functions criada.
 
@@ -79,4 +81,5 @@ Fase 2.1 - Supabase seguro:
 5. Concluido: criar cliente Supabase no frontend e repository hibrido.
 6. Concluido: criar fluxo visual de login e estado autenticado.
 7. Concluido: mapear repositories remotos por dominio mantendo `localStorage` como fallback.
-8. Proximo: configurar projeto Supabase real, aplicar migration e testar Auth/RLS com dois usuarios.
+8. Concluido: preparar variaveis de ambiente para ligar Supabase na Vercel.
+9. Proximo: configurar projeto Supabase real, aplicar migration e testar Auth/RLS com dois usuarios.
