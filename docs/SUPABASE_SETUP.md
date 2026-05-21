@@ -36,10 +36,12 @@ SUPABASE_ANON_KEY
 
 1. Criar o projeto no Supabase.
 2. Rodar a migration SQL pelo Supabase SQL Editor ou CLI.
-3. Configurar as variaveis acima na Vercel.
-4. Fazer novo deploy de producao.
-5. Criar dois usuarios de teste.
-6. Confirmar que cada usuario ve somente os dados do seu workspace.
+3. Criar um usuario de teste e confirmar que o trigger criou `profiles`, `organizations` e `organization_members`.
+4. Configurar as variaveis acima na Vercel.
+5. Fazer novo deploy de producao.
+6. Criar dois usuarios de teste.
+7. Rodar `supabase/rls_smoke_test.sql` com os UUIDs reais.
+8. Confirmar que cada usuario ve somente os dados do seu workspace.
 
 ## Criterio de Validacao
 
@@ -48,3 +50,7 @@ SUPABASE_ANON_KEY
 - Depois do login, o modal deve listar o workspace ativo.
 - Criar/editar estoque e receitas deve persistir no Supabase.
 - Um segundo usuario fora do workspace nao deve conseguir ler esses dados.
+
+## Workspace Inicial
+
+A migration cria automaticamente uma organizacao padrao quando um usuario nasce no Supabase Auth. O usuario vira `owner` dessa organizacao pelo trigger `bootstrap_organization_owner`.

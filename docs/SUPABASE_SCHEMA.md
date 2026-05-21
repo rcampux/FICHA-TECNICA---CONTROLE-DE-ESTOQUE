@@ -40,6 +40,15 @@ Arquivo:
 
 - `audit_logs`: trilha futura para eventos sensiveis.
 
+## Provisionamento Inicial
+
+Quando um usuario e criado no Supabase Auth:
+
+1. `handle_new_user()` cria o registro em `profiles`.
+2. `handle_new_user()` cria uma organizacao padrao usando nome da organizacao, nome do usuario ou prefixo do e-mail.
+3. O trigger `bootstrap_organization_owner()` adiciona o usuario como `owner`.
+4. O mesmo trigger define `profiles.default_organization_id` quando ainda estiver vazio.
+
 ## Papeis
 
 - `owner`: dono da organizacao, gerencia tudo.
@@ -55,7 +64,7 @@ Funcoes auxiliares:
 - `is_organization_member(organization_id)`.
 - `can_manage_organization(organization_id)`.
 - `can_write_organization(organization_id)`.
-- `handle_new_user()`: cria `profiles` automaticamente a partir do Supabase Auth.
+- `handle_new_user()`: cria `profiles` e organizacao padrao automaticamente a partir do Supabase Auth.
 - `bootstrap_organization_owner()`: cria o membro `owner` automaticamente quando a organizacao nasce.
 
 Regras:

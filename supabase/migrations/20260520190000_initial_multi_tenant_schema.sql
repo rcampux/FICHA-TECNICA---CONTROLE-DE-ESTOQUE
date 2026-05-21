@@ -334,6 +334,8 @@ language plpgsql
 security definer
 set search_path = public
 as $$
+declare
+  organization_name text;
 begin
   insert into public.profiles (id, full_name, avatar_url)
   values (
@@ -342,6 +344,23 @@ begin
     new.raw_user_meta_data->>'avatar_url'
   )
   on conflict (id) do nothing;
+
+  organization_name := coalesce(
+    nullif(new.raw_user_meta_data->>'organization_name', ''),
+    nullif(new.raw_user_meta_data->>'company_name', ''),
+    nullif(new.raw_user_meta_data->>'full_name', ''),
+    split_part(new.email, '@', 1),
+    'Minha cozinha'
+  );
+
+  insert into public.organizations (name, slug, billing_email, owner_id)
+  values (
+    organization_name,
+    'cozinha-' || replace(new.id::text, '-', ''),
+    new.email,
+    new.id
+  )
+  on conflict (slug) do nothing;
 
   return new;
 end;

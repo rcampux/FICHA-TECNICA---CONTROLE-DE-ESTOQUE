@@ -161,5 +161,5 @@ Este arquivo e um inventario vivo das funcoes utilizadas no projeto. Toda nova f
 | `public.is_organization_member` | `supabase/migrations/20260520190000_initial_multi_tenant_schema.sql` | 296 | create or replace function public.is_organization_member(target_organization_id uuid) |
 | `public.can_manage_organization` | `supabase/migrations/20260520190000_initial_multi_tenant_schema.sql` | 311 | create or replace function public.can_manage_organization(target_organization_id uuid) |
 | `public.can_write_organization` | `supabase/migrations/20260520190000_initial_multi_tenant_schema.sql` | 321 | create or replace function public.can_write_organization(target_organization_id uuid) |
-| `public.handle_new_user` | `supabase/migrations/20260520190000_initial_multi_tenant_schema.sql` | 331 | create or replace function public.handle_new_user() |
-| `public.bootstrap_organization_owner` | `supabase/migrations/20260520190000_initial_multi_tenant_schema.sql` | 350 | create or replace function public.bootstrap_organization_owner() |
+| `public.handle_new_user` | `supabase/migrations/20260520190000_initial_multi_tenant_schema.sql` | 331 | Cria profile e organizacao padrao quando um usuario nasce no Supabase Auth. |
+| `public.bootstrap_organization_owner` | `supabase/migrations/20260520190000_initial_multi_tenant_schema.sql` | 368 | Adiciona o usuario como owner da organizacao criada e define workspace padrao. |
