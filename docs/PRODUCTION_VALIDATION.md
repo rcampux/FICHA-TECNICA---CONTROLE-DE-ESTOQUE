@@ -45,6 +45,11 @@ Estes testes exigem dois usuarios reais confirmados no Supabase Auth:
 10. Entrar com usuario B e confirmar isolamento de dados.
 11. Rodar `supabase/rls_smoke_test.sql` com os UUIDs reais dos usuarios.
 
+## Query de Apoio
+
+- Use `supabase/production_validation_by_email.sql` para validar usuarios, workspaces, papeis e receitas a partir dos e-mails confirmados.
+- Depois de obter `user_id` e `organization_id`, use `supabase/rls_smoke_test.sql` para validar isolamento RLS com contexto autenticado.
+
 ## Criterio Para Avancar
 
 Somente avancar para Fase 3.1 quando:
