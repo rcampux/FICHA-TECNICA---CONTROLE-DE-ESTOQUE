@@ -2,6 +2,7 @@
   function createRecipeSheetModule(deps) {
     const {
       closeModal,
+      confirmAction,
       db: DB,
       formatCurrency: fmtBRL,
       formatQuantity: fmtQty,
@@ -136,7 +137,10 @@
       selectedIngredient=null;
       renderIngredients();calcFicha();
     }
-    function removeIngredient(id){currentIngredients=currentIngredients.filter(i=>i.id!==id);renderIngredients();calcFicha();}
+    async function removeIngredient(id){
+      if(!await confirmAction('Deseja remover este ingrediente da ficha tecnica?','Remover ingrediente'))return;
+      currentIngredients=currentIngredients.filter(i=>i.id!==id);renderIngredients();calcFicha();
+    }
     function renderIngredients(){
       const el=document.getElementById('ingredients-list');
       if(!currentIngredients.length){el.innerHTML='';return;}
@@ -193,8 +197,8 @@
         </td>
       </tr>`).join('');
     }
-    function clearFicha(options = {}){
-      if(currentIngredients.length&&!options.force&&!confirm('Limpar todos os dados da ficha?'))return;
+    async function clearFicha(options = {}){
+      if(currentIngredients.length&&!options.force&&!await confirmAction('Deseja limpar todos os dados desta ficha tecnica?','Limpar ficha','Sim, limpar'))return;
       currentIngredients=[];
       ['ficha-nome','ficha-rendimento','ficha-porcoes','markup-pct'].forEach(f=>document.getElementById(f).value='');
       document.getElementById('portion-size').value='100';
@@ -202,7 +206,7 @@
       document.getElementById('ingredients-list').innerHTML='';
       if(!options.silent)showToast('Ficha limpa.');
     }
-    function saveRecipe(){
+    async function saveRecipe(){
       const nome=document.getElementById('ficha-nome').value.trim();
       if(!nome){showToast('Informe o nome da receita.');return;}
       if(!currentIngredients.length){showToast('Adicione pelo menos um ingrediente.');return;}
@@ -218,7 +222,7 @@
         createdAt:new Date().toISOString()
       };
       const idx=recipes.findIndex(r=>r.nome.toLowerCase()===nome.toLowerCase());
-      if(idx>=0){if(!confirm(`Receita "${nome}" já existe. Sobrescrever?`))return;recipes[idx]=recipe;}
+      if(idx>=0){if(!await confirmAction(`Receita "${nome}" ja existe. Deseja sobrescrever?`,'Sobrescrever receita','Sim, sobrescrever'))return;recipes[idx]=recipe;}
       else recipes.push(recipe);
       DB.save(STORAGE_KEYS.recipes,recipes);
       showToast(`"${nome}" salva!`);
@@ -254,11 +258,15 @@
             <button class="swipe-action delete" onclick="deleteRecipe(${r.id})" type="button"><span class="material-symbols-rounded">delete</span><span>Excluir</span></button>
           </div>
           <div class="swipe-content recipe-card" onclick="viewRecipe(${r.id})">
-          <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:var(--s2);margin-bottom:4px">
+          <div class="recipe-card-heading">
             <div class="recipe-card-title">${r.nome}${r.origem==='scan'?` <span class="scan-badge" style="font-size:10px"><span class="material-symbols-rounded" style="font-size:12px">document_scanner</span>Scan</span>`:''}</div>
             <div style="display:flex;gap:6px;align-items:center;flex-shrink:0">
               ${changed?`<span style="font-size:11px;background:${diff>0?'var(--r100)':'var(--g50)'};color:${diff>0?'var(--r400)':'var(--g600)'};padding:2px 8px;border-radius:var(--r-pill);font-weight:700">${diff>0?'▲':'▼'} ${fmtBRL(Math.abs(diff))}</span>`:''}
               <span class="badge badge-green">${fmtBRL(totalCost)}</span>
+              <span class="recipe-card-actions inline-actions">
+                <button class="btn btn-secondary btn-icon" onclick="event.stopPropagation();editRecipe(${r.id})" type="button"><span class="material-symbols-rounded">edit</span></button>
+                <button class="btn btn-danger btn-icon" onclick="event.stopPropagation();deleteRecipe(${r.id})" type="button"><span class="material-symbols-rounded">delete</span></button>
+              </span>
             </div>
           </div>
           <div class="recipe-card-meta"><span class="material-symbols-rounded">fork_spoon</span>${r.ingredients.length} ingrediente(s) · ${r.porcoes} porção(ões)${r.rendimento?' · '+r.rendimento+'g':''} · Markup ${r.markup}%</div>
@@ -332,8 +340,8 @@
           <strong>Obs:</strong> ${r.observacoes}</div>`:''}`;
       document.getElementById('modal-recipe').classList.add('open');
     }
-    function deleteCurrentRecipe(){
-      if(!confirm('Excluir esta receita?'))return;
+    async function deleteCurrentRecipe(){
+      if(!await confirmAction('Deseja excluir esta receita salva?','Excluir receita'))return;
       recipes=recipes.filter(r=>r.id!==currentRecipeId);
       DB.save(STORAGE_KEYS.recipes,recipes);
       closeModal('modal-recipe');
@@ -344,9 +352,9 @@
       currentRecipeId=id;
       loadRecipeToFicha();
     }
-    function deleteRecipe(id){
+    async function deleteRecipe(id){
       currentRecipeId=id;
-      deleteCurrentRecipe();
+      await deleteCurrentRecipe();
     }
     function loadRecipeToFicha(){
       const r=recipes.find(x=>x.id===currentRecipeId);if(!r)return;
@@ -441,6 +449,12 @@
       return function wrappedRecipeFunction(...args) {
         syncState();
         const result = fn(...args);
+        if (result && typeof result.then === 'function') {
+          return result.then(value => {
+            if (shouldCommit) commitState();
+            return value;
+          });
+        }
         if (shouldCommit) commitState();
         return result;
       };

@@ -2,6 +2,7 @@
   function createVirtualStockModule(deps) {
     const {
       closeModal,
+      confirmAction,
       db,
       formatCurrency,
       getActiveIngredientFilter,
@@ -57,8 +58,8 @@
       renderRecipes(document.getElementById('recipe-search').value,getActiveIngredientFilter());
       showToast(editingStockId?'Produto atualizado!':'Produto adicionado!');
     }
-    function deleteStock(id){
-      if(!confirm('Remover este produto?'))return;
+    async function deleteStock(id){
+      if(!await confirmAction('Deseja excluir este produto do estoque virtual?','Excluir produto'))return;
       setStock(getStock().filter(s=>s.id!==id));db.save(storageKeys.stock,getStock());renderStock();showToast('Removido.');
     }
     function renderStock(filter=''){

@@ -19,8 +19,10 @@ Este arquivo e um inventario vivo das funcoes utilizadas no projeto. Toda nova f
 | `buildPublicEnvConfig` | `scripts/sync-public-assets.mjs` | 13 | Gera `public/src/config/env.js` com modo local ou Supabase no build. |
 | `syncPublicAssets` | `scripts/sync-public-assets.mjs` | 32 | Sincroniza `src` para `public/src` e injeta configuracao publica. |
 | `showToast` | `src/app.js` | 11 | function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);} |
-| `showPage` | `src/app.js` | 12 | function showPage(page,navId){ |
-| `closeModal` | `src/app.js` | 21 | function closeModal(id){document.getElementById(id).classList.remove('open');} |
+| `confirmAction` | `src/app.js` | 13 | Abre modal de confirmacao visual com opcoes de sim/nao para acoes destrutivas. |
+| `closeConfirmAction` | `src/app.js` | 21 | Fecha o modal de confirmacao e resolve a decisao pendente. |
+| `showPage` | `src/app.js` | 25 | function showPage(page,navId){ |
+| `closeModal` | `src/app.js` | 34 | function closeModal(id){document.getElementById(id).classList.remove('open');} |
 | `hydrateWorkspaceData` | `src/app.js` | 105 | Carrega estoque, estoque fisico e receitas do Supabase quando um workspace e selecionado. |
 | `applyRemoteSave` | `src/app.js` | 130 | Atualiza o estado em memoria depois que uma escrita remota retorna `remoteId`. |
 | `clearSessionData` | `src/app.js` | 143 | Limpa cache local, estado em memoria e telas quando nao ha sessao Supabase ativa. |
@@ -64,17 +66,17 @@ Este arquivo e um inventario vivo das funcoes utilizadas no projeto. Toda nova f
 | `selectIngredient` | `src/modules/recipes/recipeSheet.js` | 82 | function selectIngredient(id){ |
 | `calcIngCost` | `src/modules/recipes/recipeSheet.js` | 97 | function calcIngCost(){ |
 | `addIngredient` | `src/modules/recipes/recipeSheet.js` | 107 | function addIngredient(){ |
-| `removeIngredient` | `src/modules/recipes/recipeSheet.js` | 139 | function removeIngredient(id){currentIngredients=currentIngredients.filter(i=>i.id!==id);renderIngredients();calcFicha();} |
+| `removeIngredient` | `src/modules/recipes/recipeSheet.js` | 139 | Remove ingrediente da ficha apos confirmacao visual. |
 | `renderIngredients` | `src/modules/recipes/recipeSheet.js` | 140 | function renderIngredients(){ |
 | `calcFicha` | `src/modules/recipes/recipeSheet.js` | 155 | function calcFicha(){ |
 | `calcNutrition` | `src/modules/recipes/recipeSheet.js` | 168 | function calcNutrition(){ |
-| `clearFicha` | `src/modules/recipes/recipeSheet.js` | 196 | Limpa a ficha atual; aceita modo forcado/silencioso para logout seguro. |
-| `saveRecipe` | `src/modules/recipes/recipeSheet.js` | 205 | function saveRecipe(){ |
+| `clearFicha` | `src/modules/recipes/recipeSheet.js` | 196 | Limpa a ficha atual apos confirmacao, com modo forcado/silencioso para logout seguro. |
+| `saveRecipe` | `src/modules/recipes/recipeSheet.js` | 205 | Salva ou sobrescreve receita apos confirmacao quando ja existir uma ficha com mesmo nome. |
 | `hasPriceChanged` | `src/modules/recipes/recipeSheet.js` | 228 | function hasPriceChanged(refs){ |
 | `renderRecipes` | `src/modules/recipes/recipeSheet.js` | 235 | function renderRecipes(filter='',ingFilter=null){ |
 | `setIngFilter` | `src/modules/recipes/recipeSheet.js` | 274 | function setIngFilter(val){activeIngFilter=val;renderRecipes(document.getElementById('recipe-search').value,val);} |
 | `viewRecipe` | `src/modules/recipes/recipeSheet.js` | 275 | function viewRecipe(id){ |
-| `deleteCurrentRecipe` | `src/modules/recipes/recipeSheet.js` | 329 | function deleteCurrentRecipe(){ |
+| `deleteCurrentRecipe` | `src/modules/recipes/recipeSheet.js` | 329 | Exclui a receita atual apos confirmacao visual. |
 | `editRecipe` | `src/modules/recipes/recipeSheet.js` | 343 | Define a receita atual e carrega seus dados na ficha tecnica para edicao. |
 | `deleteRecipe` | `src/modules/recipes/recipeSheet.js` | 347 | Define a receita atual e reaproveita o fluxo existente de exclusao. |
 | `loadRecipeToFicha` | `src/modules/recipes/recipeSheet.js` | 337 | function loadRecipeToFicha(){ |
@@ -94,8 +96,8 @@ Este arquivo e um inventario vivo das funcoes utilizadas no projeto. Toda nova f
 | `compressImage` | `src/modules/scanner/scannerRecipe.js` | 76 | function compressImage(base64, maxWidth, quality) { |
 | `analyzeRecipeImage` | `src/modules/scanner/scannerRecipe.js` | 96 | async function analyzeRecipeImage(base64) { |
 | `renderScanResult` | `src/modules/scanner/scannerRecipe.js` | 118 | function renderScanResult(recipe) { |
-| `removeScanIng` | `src/modules/scanner/scannerRecipe.js` | 155 | function removeScanIng(index) { |
-| `confirmScanSave` | `src/modules/scanner/scannerRecipe.js` | 161 | function confirmScanSave() { |
+| `removeScanIng` | `src/modules/scanner/scannerRecipe.js` | 155 | Remove ingrediente digitalizado apos confirmacao visual. |
+| `confirmScanSave` | `src/modules/scanner/scannerRecipe.js` | 161 | Salva receita digitalizada e confirma sobrescrita quando houver nome duplicado. |
 | `exposePhysicalStockModule` | `src/modules/stock/physicalStock.js` | 1 | (function exposePhysicalStockModule() { |
 | `createPhysicalStockModule` | `src/modules/stock/physicalStock.js` | 2 | function createPhysicalStockModule(deps) { |
 | `stockColor` | `src/modules/stock/physicalStock.js` | 23 | function stockColor(percent) { |
@@ -103,7 +105,7 @@ Este arquivo e um inventario vivo das funcoes utilizadas no projeto. Toda nova f
 | `stockBar` | `src/modules/stock/physicalStock.js` | 33 | function stockBar(percent) { |
 | `openPhysicalModal` | `src/modules/stock/physicalStock.js` | 37 | function openPhysicalModal(id = null) { |
 | `savePhysical` | `src/modules/stock/physicalStock.js` | 61 | function savePhysical() { |
-| `deletePhysical` | `src/modules/stock/physicalStock.js` | 109 | function deletePhysical(id) { |
+| `deletePhysical` | `src/modules/stock/physicalStock.js` | 109 | Exclui produto fisico apos confirmacao visual. |
 | `renderPhysical` | `src/modules/stock/physicalStock.js` | 118 | function renderPhysical(filter = "") { |
 | `openMove` | `src/modules/stock/physicalStock.js` | 167 | function openMove(id) { |
 | `setMoveType` | `src/modules/stock/physicalStock.js` | 185 | function setMoveType(type) { |
@@ -116,7 +118,7 @@ Este arquivo e um inventario vivo das funcoes utilizadas no projeto. Toda nova f
 | `updateGoogleLink` | `src/modules/stock/virtualStock.js` | 41 | function updateGoogleLink(){ |
 | `handleGoogleSearch` | `src/modules/stock/virtualStock.js` | 46 | function handleGoogleSearch(e){const h=document.getElementById('google-search-link').href;if(!h\|\|h==='#'){e.preventDefault();return;}window.open(h,'_blank');e |
 | `saveStock` | `src/modules/stock/virtualStock.js` | 47 | function saveStock(){ |
-| `deleteStock` | `src/modules/stock/virtualStock.js` | 60 | function deleteStock(id){ |
+| `deleteStock` | `src/modules/stock/virtualStock.js` | 60 | Exclui produto virtual apos confirmacao visual. |
 | `renderStock` | `src/modules/stock/virtualStock.js` | 64 | function renderStock(filter=''){ |
 | `registerFichaTecServiceWorker` | `src/pwa/registerServiceWorker.js` | 1 | (function registerFichaTecServiceWorker() { |
 | `handleLaunchShortcut` | `src/pwa/registerServiceWorker.js` | 2 | function handleLaunchShortcut() { |

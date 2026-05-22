@@ -550,6 +550,20 @@
 
 <div class="toast" id="toast"></div>
 
+<div class="modal-overlay" id="modal-confirm">
+  <div class="modal confirm-modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="confirm-title">Confirmar acao</div>
+    <p class="confirm-message" id="confirm-message">Tem certeza?</p>
+    <div class="confirm-actions">
+      <button class="btn btn-secondary btn-full" id="confirm-no-btn" onclick="closeConfirmAction(false)" type="button">Nao</button>
+      <button class="btn btn-danger btn-full" id="confirm-yes-btn" onclick="closeConfirmAction(true)" type="button">
+        <span class="material-symbols-rounded">delete</span> Sim, excluir
+      </button>
+    </div>
+  </div>
+</div>
+
 <script src="../src/config/env.js" defer></script>
 <script src="../src/config/supabase.js" defer></script>
 <script src="../src/config/storageKeys.js" defer></script>

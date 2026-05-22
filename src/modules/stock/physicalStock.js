@@ -2,6 +2,7 @@
   function createPhysicalStockModule(deps) {
     const {
       closeModal,
+      confirmAction,
       db,
       formatCurrency,
       formatQuantity,
@@ -106,8 +107,8 @@
       showToast(editingPhysicalId ? "Atualizado!" : "Adicionado e sincronizado!");
     }
 
-    function deletePhysical(id) {
-      if (!confirm("Remover este produto?")) return;
+    async function deletePhysical(id) {
+      if (!await confirmAction("Deseja excluir este produto do estoque fisico?", "Excluir produto")) return;
 
       setPhysicalStock(getPhysicalStock().filter((item) => item.id !== id));
       db.save(storageKeys.physicalStock, getPhysicalStock());

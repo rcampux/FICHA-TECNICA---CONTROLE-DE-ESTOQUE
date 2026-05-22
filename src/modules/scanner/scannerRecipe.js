@@ -3,6 +3,7 @@
     const {
       calcCosts,
       closeModal,
+      confirmAction,
       db: DB,
       findStockItem,
       getNutrition,
@@ -152,13 +153,14 @@
       document.getElementById("scan-result-area").style.display = "block";
     }
 
-    function removeScanIng(index) {
+    async function removeScanIng(index) {
       if (!scannedRecipeData || !scannedRecipeData.ingredientes) return;
+      if (!await confirmAction("Deseja remover este ingrediente digitalizado?", "Remover ingrediente")) return;
       scannedRecipeData.ingredientes.splice(index, 1);
       renderScanResult(scannedRecipeData);
     }
 
-    function confirmScanSave() {
+    async function confirmScanSave() {
       syncState();
 
       const nome = document.getElementById("scan-nome").value.trim();
@@ -221,7 +223,7 @@
 
       const index = recipes.findIndex((item) => item.nome.toLowerCase() === nome.toLowerCase());
       if (index >= 0) {
-        if (!confirm(`Receita "${nome}" ja existe. Sobrescrever?`)) return;
+        if (!await confirmAction(`Receita "${nome}" ja existe. Deseja sobrescrever?`, "Sobrescrever receita", "Sim, sobrescrever")) return;
         recipes[index] = recipe;
       } else {
         recipes.push(recipe);

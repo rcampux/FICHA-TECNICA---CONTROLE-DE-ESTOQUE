@@ -9,6 +9,20 @@ let recipes=DB.mode?.()==='supabase'?[]:DB.load(STORAGE_KEYS.recipes);
 
 const {getNutrition}=window.FichaTecNutrition;
 function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
+let pendingConfirmResolve=null;
+function confirmAction(message,title='Confirmar exclusao',yesLabel='Sim, excluir'){
+  const modal=document.getElementById('modal-confirm');
+  document.getElementById('confirm-title').textContent=title;
+  document.getElementById('confirm-message').textContent=message;
+  document.getElementById('confirm-yes-btn').innerHTML=`<span class="material-symbols-rounded">delete</span> ${yesLabel}`;
+  modal.classList.add('open');
+  return new Promise(resolve=>{pendingConfirmResolve=resolve;});
+}
+function closeConfirmAction(confirmed){
+  document.getElementById('modal-confirm').classList.remove('open');
+  if(pendingConfirmResolve)pendingConfirmResolve(Boolean(confirmed));
+  pendingConfirmResolve=null;
+}
 function showPage(page,navId){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
@@ -35,6 +49,7 @@ const recipeSheetModule=window.FichaTecRecipeSheet.createRecipeSheetModule({
   setStock:value=>{stock=value;},
   showPage,
   showToast,
+  confirmAction,
   storageKeys:STORAGE_KEYS,
 });
 const {findStockItem,calcCosts,setIngSource,searchIngredient,selectIngredient,calcIngCost,addIngredient,removeIngredient,renderIngredients,calcFicha,calcNutrition,clearFicha,saveRecipe,hasPriceChanged,renderRecipes,setIngFilter,viewRecipe,deleteCurrentRecipe,editRecipe,deleteRecipe,loadRecipeToFicha,exportRecipePDF}=recipeSheetModule;
@@ -55,6 +70,7 @@ const scannerRecipeModule=window.FichaTecScannerRecipe.createScannerRecipeModule
   setRecipes:value=>{recipes=value;},
   showPage,
   showToast,
+  confirmAction,
   storageKeys:STORAGE_KEYS,
 });
 const {openScanModal,resetScan,setScanStatus,handleScanFile,compressImage,analyzeRecipeImage,renderScanResult,removeScanIng,confirmScanSave}=scannerRecipeModule;
@@ -70,6 +86,7 @@ const virtualStockModule=window.FichaTecVirtualStock.createVirtualStockModule({
   renderRecipes,
   setStock:value=>{stock=value;},
   showToast,
+  confirmAction,
   storageKeys:STORAGE_KEYS,
 });
 const {openStockModal,updateGoogleLink,handleGoogleSearch,saveStock,deleteStock,renderStock}=virtualStockModule;
@@ -88,6 +105,7 @@ const physicalStockModule=window.FichaTecPhysicalStock.createPhysicalStockModule
   setPhysicalStock:value=>{physicalStock=value;},
   setStock:value=>{stock=value;},
   showToast,
+  confirmAction,
   storageKeys:STORAGE_KEYS,
 });
 const {stockColor,stockFlag,stockBar,openPhysicalModal,savePhysical,deletePhysical,renderPhysical,openMove,setMoveType,confirmMove}=physicalStockModule;
@@ -124,7 +142,7 @@ async function hydrateWorkspaceData(event){
     showToast('Nao foi possivel sincronizar o workspace.');
   }
 }
-Object.assign(window,{hydrateWorkspaceData});
+Object.assign(window,{confirmAction,closeConfirmAction,hydrateWorkspaceData});
 window.addEventListener('fichatec:workspace-change',hydrateWorkspaceData);
 
 function applyRemoteSave(event){
@@ -149,7 +167,11 @@ window.addEventListener('fichatec:auth-signed-out',clearSessionData);
 
 /* ══ EVENTOS ══ */
 document.querySelectorAll('.modal-overlay').forEach(m=>{
-  m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('open');});
+  m.addEventListener('click',e=>{
+    if(e.target!==m)return;
+    if(m.id==='modal-confirm'){closeConfirmAction(false);return;}
+    m.classList.remove('open');
+  });
 });
 document.addEventListener('click',e=>{
   if(!document.getElementById('ing-search-wrap').contains(e.target))

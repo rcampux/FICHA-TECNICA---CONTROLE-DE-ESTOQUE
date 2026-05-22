@@ -119,6 +119,8 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 .swipe-row.is-open .swipe-content{transform:translateX(-152px)}
 .swipe-row .item-card,.swipe-row .pstock-card,.swipe-row .recipe-card{margin-bottom:0}
 .pstock-move-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:var(--s3)}
+.recipe-card-heading{display:flex;justify-content:space-between;align-items:flex-start;gap:var(--s2);margin-bottom:4px}
+.recipe-card-actions{display:flex;gap:var(--s1);flex-shrink:0}
 
 /* ── Divider ── */
 .divider{height:1px;background:var(--n100);margin:var(--s4) 0}
@@ -145,6 +147,9 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 @keyframes slideUp{from{transform:translateY(60px);opacity:0}to{transform:translateY(0);opacity:1}}
 .modal-handle{width:40px;height:5px;background:var(--n200);border-radius:var(--r-pill);margin:12px auto 20px}
 .modal-title{font-size:20px;font-weight:800;color:var(--n900);margin-bottom:var(--s4);letter-spacing:-0.4px;line-height:1.2}
+.confirm-modal{max-width:420px}
+.confirm-message{font-size:14px;color:var(--n600);line-height:1.6;margin-bottom:var(--s4);font-weight:500}
+.confirm-actions{display:flex;gap:10px;flex-wrap:wrap}
 
 /* ── Ingredient Rows ── */
 .ingredient-row{display:flex;align-items:center;gap:var(--s3);padding:var(--s2) 0;border-bottom:1px solid var(--n100)}
@@ -270,14 +275,15 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
   .modal{border-radius:var(--r-lg);margin:auto;margin-bottom:0;max-width:440px}
   .modal-overlay{align-items:center}
 }
-@media(max-width:767px){
-  .inline-actions{display:none!important}
-}
 @media(min-width:768px){
   .swipe-actions{display:none}
   .swipe-row{overflow:visible;background:transparent}
   .swipe-row.is-open .swipe-content{transform:none}
   .inline-actions{display:flex}
+}
+@media(max-width:380px){
+  .recipe-card-heading{align-items:stretch;flex-direction:column}
+  .recipe-card-actions{align-self:flex-end}
 }
 ::-webkit-scrollbar{width:4px;height:4px}
 ::-webkit-scrollbar-track{background:transparent}

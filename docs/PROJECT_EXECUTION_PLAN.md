@@ -18,6 +18,7 @@ Este documento deve ser seguido a cada nova etapa do projeto. Ele consolida dire
 - O formulario de autenticacao nao deve manter senha ou dados sensiveis ao alternar entre login/cadastro, apos erro, ou apos envio de cadastro.
 - Apos criar conta com confirmacao de e-mail obrigatoria, o modal deve explicar que o usuario precisa verificar o e-mail antes de acessar o app.
 - No mobile, listas de produtos e receitas devem permitir gesto de arrastar para esquerda e toque longo de 1 segundo para revelar acoes de editar/excluir; no desktop, manter acoes explicitas e acessiveis.
+- Acoes destrutivas devem pedir confirmacao visual com opcoes claras de sim/nao antes de excluir ou sobrescrever dados.
 
 ## Ordem Atual de Execucao
 
