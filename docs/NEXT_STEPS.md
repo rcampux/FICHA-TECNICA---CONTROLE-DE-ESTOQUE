@@ -2,88 +2,68 @@
 
 ## Estado Atual
 
-O projeto esta em fase de prototipo estruturado:
+O projeto esta em fase de prototipo estruturado com Supabase ja conectado em producao.
 
-- Diretrizes de produto documentadas.
-- Arquitetura tecnica documentada.
-- Design system baseado em Material 3 documentado.
-- HTML, CSS e JS separados.
-- Tokens visuais iniciais aplicados.
-- Layout mobile/tablet/desktop iniciado.
-- Revisao visual inicial aplicada: layout responsivo polido, paleta gastronomica/premium refinada, fundo sem ornamentos circulares/decorativos e hierarquia de cards ajustada.
-- Repository local isolando `localStorage`.
-- Formatadores extraidos para `src/utils/formatters.js`.
-- Chaves de storage extraidas para `src/config/storageKeys.js`.
-- Nutricao padrao extraida para `src/modules/nutrition/nutritionDefaults.js`.
-- Precificacao por unidade extraida para `src/modules/stock/stockPricing.js`.
-- Estoque virtual extraido para `src/modules/stock/virtualStock.js`.
-- Estoque fisico extraido para `src/modules/stock/physicalStock.js`.
-- Receitas e ficha tecnica extraidas para `src/modules/recipes/recipeSheet.js`.
-- Scanner de receita extraido para `src/modules/scanner/scannerRecipe.js`.
-- Plano de execucao continuo criado em `docs/PROJECT_EXECUTION_PLAN.md`.
-- Diretriz adicionada: todo commit deve ser seguido de push para GitHub e deploy de producao na Vercel.
-- Base PWA criada com manifest, service worker, registro e icones temporarios.
-- Migration inicial Supabase multiempresa criada com Auth/RLS, receitas, estoque, scanner e assinaturas.
-- Cliente Supabase e repository hibrido criados no frontend, mantendo `localStorage` como modo padrao.
-- Fluxo visual de acesso criado: estado local, modal de login/cadastro, sessao Supabase e selecao de workspace.
-- Repository Supabase por dominio criado para estoque virtual, estoque fisico, receitas, ingredientes e nutricao.
-- Hidratação de dados por workspace criada e escrita remota em background preparada.
-- Build da Vercel preparado para injetar configuracao Supabase por variaveis de ambiente.
-- Guia `docs/SUPABASE_SETUP.md` criado para ligar Supabase real.
-- Inventario vivo de funcoes criado em `docs/FUNCTION_INVENTORY.md` e atualizado a cada mudanca de funcao.
-- Estrutura futura para Supabase e Edge Functions criada.
-- Confirmacao de e-mail Supabase ajustada para redirecionar para a Vercel e botao de reenvio de confirmacao adicionado no modal de acesso.
-- Cache local de dados privados limpo em logout/sem sessao Supabase, senha forte exigida no cadastro e visibilidade de senha adicionada.
-- Fluxo de cadastro ajustado para limpar campos sensiveis, exibir instrucao de verificacao por e-mail e evitar botoes colapsados no modal.
+- Diretrizes de produto, arquitetura tecnica, design system, PWA e Supabase documentados.
+- HTML, CSS e JS estao separados por dominio.
+- Base visual mobile-first aplicada com Material 3 e identidade gastronomica premium.
+- `src/app.js` foi reduzido para orquestracao dos modulos.
+- Estoque virtual, estoque fisico, receitas/ficha tecnica, scanner, auth, repositories e utilitarios foram modularizados.
+- `docs/FUNCTION_INVENTORY.md` e o inventario vivo das funcoes usadas no projeto.
+- PWA publicado com manifest, icones temporarios, service worker resiliente e cache que nao bloqueia Auth/CRUD/Supabase.
+- Supabase foi ativado com Auth, RLS, profiles, organizations, organization_members, recipes, recipe_ingredients, stock_items e physical_stock_items.
+- Vercel esta configurada para build com variaveis de ambiente Supabase.
+- GitHub e Vercel devem permanecer sincronizados: todo commit exige push e deploy de producao.
+- CRUD visual voltou para icones explicitos de editar/excluir nos cards, em mobile e desktop.
+- Exclusoes remotas foram ajustadas para funcionar tambem quando o usuario remove o ultimo item de uma lista.
 
 ## Proximo Passo Recomendado
 
-### Fase 1.2 - Modularizacao do JS
+### Fase 2.2 - Validacao de Producao Supabase
 
-Depois da revisao visual inicial, o proximo passo e quebrar o `src/app.js` por dominio sem mudar comportamento.
+Objetivo: provar que o app esta confiavel para uso B2B inicial com dados reais, antes de avancar para pagamento, IA e recursos premium.
 
 Ordem recomendada:
 
-1. Concluido: extrair utilitarios de formatacao.
-2. Concluido: extrair constantes e chaves de storage.
-3. Concluido: extrair repository e manter `localStorage` como implementacao atual.
-4. Concluido: extrair nutricao padrao e precificacao por unidade.
-5. Concluido: extrair modulo de estoque virtual.
-6. Concluido: extrair modulo de estoque fisico.
-7. Concluido: extrair modulo de receitas/ficha tecnica.
-8. Concluido: extrair modulo de scanner.
-9. Concluido: fechar base PWA real.
+1. Criar dois usuarios de teste confirmados no Supabase Auth.
+2. Validar que cada usuario recebe automaticamente `profile`, `organization` e papel `owner`.
+3. Em producao, com o usuario A, criar:
+   - 1 produto no estoque virtual.
+   - 1 produto no estoque fisico.
+   - 1 receita com ingrediente vinculado.
+4. Recarregar a pagina e confirmar que os dados persistem.
+5. Editar os tres tipos de item e confirmar persistencia depois do reload.
+6. Excluir os tres tipos de item, incluindo o caso de ser o ultimo item da lista.
+7. Confirmar no Supabase que os registros privados ficam com `deleted_at` quando aplicavel.
+8. Entrar com o usuario B e confirmar que ele nao ve dados do usuario A.
+9. Rodar `supabase/rls_smoke_test.sql` com UUIDs reais para validar isolamento por workspace.
+10. Registrar qualquer falha encontrada antes de iniciar novas features.
 
-## Checklist Visual Continuo
+## Checklist de Aceite
 
-Continuar revisando o prototipo renderizado em:
+- Login e cadastro funcionam na URL de producao.
+- Confirmacao de e-mail redireciona para a Vercel.
+- Modal de auth nao preserva senha entre fluxos.
+- Senha forte e validada no cadastro.
+- Logout limpa dados privados do navegador.
+- Criar, editar e excluir funciona para estoque virtual.
+- Criar, editar e excluir funciona para estoque fisico.
+- Criar, editar e excluir funciona para receitas.
+- Excluir o ultimo item de uma lista tambem sincroniza com Supabase.
+- Recarregar a pagina nao restaura itens excluidos.
+- Usuario fora do workspace nao acessa dados de outro workspace.
+- Service worker nao mostra erro de `addAll` nem cancela assets essenciais.
 
-- Mobile: 390px a 430px.
-- Tablet: 768px a 1024px.
-- Desktop: 1200px ou maior.
+## Se Tudo Passar
 
-Checklist:
+Avancar para Fase 3.1 - Estrutura de planos e permissoes:
 
-- Navegacao inferior no mobile.
-- Navigation rail no tablet.
-- Navigation drawer no desktop.
-- Ficha tecnica em duas colunas no tablet/desktop.
-- Cards de estoque e receitas em grid.
-- Hierarquia de custo, margem e preco sugerido.
-- Logo generico provisorio.
-- Paleta gastronomica/premium.
+1. Definir matriz de planos: trial, essencial, profissional e equipe.
+2. Implementar gate de recursos no frontend e preparar validacao backend.
+3. Criar base para limites de receitas, usuarios, scanner de rotulos e scanner de receitas.
+4. Preparar integracao com gateway de pagamento recorrente.
+5. Documentar webhooks e estados de assinatura antes de conectar cobranca real.
 
-## Proximo Marco
+## Link de Producao
 
-Fase 2.1 - Supabase seguro:
-
-1. Definir schema inicial multiempresa.
-2. Concluido: criar tabelas de usuarios, workspaces, receitas, ingredientes e estoque.
-3. Concluido: definir Auth e papeis: owner, admin, chef, viewer.
-4. Concluido: escrever politicas RLS por workspace.
-5. Concluido: criar cliente Supabase no frontend e repository hibrido.
-6. Concluido: criar fluxo visual de login e estado autenticado.
-7. Concluido: mapear repositories remotos por dominio mantendo `localStorage` como fallback.
-8. Concluido: preparar variaveis de ambiente para ligar Supabase na Vercel.
-9. Concluido: configurar projeto Supabase real, aplicar migration e preparar redirect de Auth para Vercel.
-10. Proximo: testar login confirmado em producao, workspace automatico e RLS com dois usuarios.
+- https://ficha-tecnica-controle-de-estoque.vercel.app
