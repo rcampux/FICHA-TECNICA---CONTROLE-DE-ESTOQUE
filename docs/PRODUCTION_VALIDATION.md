@@ -56,6 +56,9 @@ Estes testes exigem dois usuarios reais confirmados no Supabase Auth:
 - `r.camposarch@gmail.com`: usuario confirmado, profile criado, workspace proprio, papel `owner`, 1 receita ativa.
 - `r.camposdesign@gmail.com`: usuario confirmado, profile criado, workspace proprio, papel `owner`, 1 receita ativa.
 - Os dois usuarios estao em `organization_id` diferentes, como esperado para isolamento multi-tenant.
+- Validacao estrutural retornou `OK users loaded and orgs are different`.
+- Consulta cruzada executada como `postgres` mostrou receitas dos dois workspaces, o que e esperado porque `postgres` bypassa RLS no SQL Editor. Nao usar esse resultado como prova de vazamento.
+- Proximo teste RLS deve usar `supabase/rls_smoke_test_validated_users.sql`, com `set local role authenticated` e UUIDs ja validados.
 
 ## Criterio Para Avancar
 
