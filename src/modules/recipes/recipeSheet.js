@@ -252,18 +252,13 @@
         const {totalCost,venda}=calcCosts(r.ingredients,r.markup);
         const changed=hasPriceChanged(r.ingredients);
         const diff=totalCost-r.totalCost;
-        return`<div class="swipe-row">
-          <div class="swipe-actions" aria-hidden="true">
-            <button class="swipe-action edit" onclick="editRecipe(${r.id})" type="button"><span class="material-symbols-rounded">edit</span><span>Editar</span></button>
-            <button class="swipe-action delete" onclick="deleteRecipe(${r.id})" type="button"><span class="material-symbols-rounded">delete</span><span>Excluir</span></button>
-          </div>
-          <div class="swipe-content recipe-card" onclick="viewRecipe(${r.id})">
+        return`<div class="recipe-card" onclick="viewRecipe(${r.id})">
           <div class="recipe-card-heading">
             <div class="recipe-card-title">${r.nome}${r.origem==='scan'?` <span class="scan-badge" style="font-size:10px"><span class="material-symbols-rounded" style="font-size:12px">document_scanner</span>Scan</span>`:''}</div>
             <div style="display:flex;gap:6px;align-items:center;flex-shrink:0">
               ${changed?`<span style="font-size:11px;background:${diff>0?'var(--r100)':'var(--g50)'};color:${diff>0?'var(--r400)':'var(--g600)'};padding:2px 8px;border-radius:var(--r-pill);font-weight:700">${diff>0?'▲':'▼'} ${fmtBRL(Math.abs(diff))}</span>`:''}
               <span class="badge badge-green">${fmtBRL(totalCost)}</span>
-              <span class="recipe-card-actions inline-actions">
+              <span class="recipe-card-actions">
                 <button class="btn btn-secondary btn-icon" onclick="event.stopPropagation();editRecipe(${r.id})" type="button"><span class="material-symbols-rounded">edit</span></button>
                 <button class="btn btn-danger btn-icon" onclick="event.stopPropagation();deleteRecipe(${r.id})" type="button"><span class="material-symbols-rounded">delete</span></button>
               </span>
@@ -280,7 +275,6 @@
             <button class="btn btn-outlined btn-xs" onclick="event.stopPropagation();exportRecipePDF(${r.id})" style="margin-left:var(--s2)" type="button">
               <span class="material-symbols-rounded" style="font-size:14px">picture_as_pdf</span> PDF
             </button>
-          </div>
           </div>
         </div>`;
       }).join('');

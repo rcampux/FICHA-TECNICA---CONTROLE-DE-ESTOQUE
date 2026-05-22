@@ -72,21 +72,15 @@
       el.innerHTML=f.map(s=>{
         const ppg=pricePerUnit(s);
         const ps=s.unit==='ml'?formatCurrency(ppg*1000)+'/L · '+formatCurrency(ppg*100)+'/100ml':s.unit==='un'?formatCurrency(ppg)+'/un':formatCurrency(ppg*1000)+'/kg · '+formatCurrency(ppg*100)+'/100g';
-        return`<div class="swipe-row">
-          <div class="swipe-actions" aria-hidden="true">
-            <button class="swipe-action edit" onclick="openStockModal(${s.id})" type="button"><span class="material-symbols-rounded">edit</span><span>Editar</span></button>
-            <button class="swipe-action delete" onclick="deleteStock(${s.id})" type="button"><span class="material-symbols-rounded">delete</span><span>Excluir</span></button>
-          </div>
-          <div class="swipe-content item-card">
+        return`<div class="item-card">
           <div style="flex:1;min-width:0">
             <div class="item-name">${s.name}${s.category?` <span class="tag" style="margin-left:4px;font-size:10px">${s.category}</span>`:''}</div>
             <div class="item-meta">${s.qty}${s.unit} · ${formatCurrency(s.price)}</div>
             <div class="item-price">${ps}</div>
           </div>
-          <div class="item-actions inline-actions">
+          <div class="item-actions">
             <button class="btn btn-secondary btn-icon" onclick="openStockModal(${s.id})" type="button"><span class="material-symbols-rounded">edit</span></button>
             <button class="btn btn-danger btn-icon" onclick="deleteStock(${s.id})" type="button"><span class="material-symbols-rounded">delete</span></button>
-          </div>
           </div>
         </div>`;
       }).join('');

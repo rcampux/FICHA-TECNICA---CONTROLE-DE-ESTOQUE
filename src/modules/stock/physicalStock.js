@@ -146,15 +146,10 @@
 
       listElement.innerHTML = filtered.map((item) => {
         const percent = item.desiredQty > 0 ? (item.currentQty / item.desiredQty) * 100 : 0;
-        return `<div class="swipe-row">
-          <div class="swipe-actions" aria-hidden="true">
-            <button class="swipe-action edit" onclick="openPhysicalModal(${item.id})" type="button"><span class="material-symbols-rounded">edit</span><span>Editar</span></button>
-            <button class="swipe-action delete" onclick="deletePhysical(${item.id})" type="button"><span class="material-symbols-rounded">delete</span><span>Excluir</span></button>
-          </div>
-          <div class="swipe-content pstock-card">
+        return `<div class="pstock-card">
           <div class="pstock-header">
             <div class="pstock-name">${item.name}${item.category?` <span class="tag" style="font-size:10px">${item.category}</span>`:''}</div>
-            <div class="item-actions inline-actions">
+            <div class="item-actions">
               <button class="btn btn-secondary btn-icon" onclick="openPhysicalModal(${item.id})" type="button"><span class="material-symbols-rounded">edit</span></button>
               <button class="btn btn-danger btn-icon" onclick="deletePhysical(${item.id})" type="button"><span class="material-symbols-rounded">delete</span></button>
             </div>
@@ -165,7 +160,6 @@
           <div class="pstock-move-actions">
             <button class="btn btn-danger btn-sm" style="flex:1" onclick="openMove(${item.id})" type="button"><span class="material-symbols-rounded">output</span> Usar</button>
             <button class="btn btn-primary btn-sm" style="flex:1" onclick="openMove(${item.id});setMoveType('repor')" type="button"><span class="material-symbols-rounded">input</span> Repor</button>
-          </div>
           </div>
         </div>`;
       }).join("");

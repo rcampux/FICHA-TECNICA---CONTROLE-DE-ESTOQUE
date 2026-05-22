@@ -213,4 +213,3 @@ recipes=recipes.map(r=>({...r,ingredients:r.ingredients.map(i=>{
   return{...i,savedPricePerG:s?pricePerUnit(s):0};
 })}));
 renderStock();renderRecipes();renderPhysical();initAuthSession();
-window.FichaTecTouchActions?.initTouchActions();
