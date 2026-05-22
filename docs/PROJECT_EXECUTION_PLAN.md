@@ -21,6 +21,7 @@ Este documento deve ser seguido a cada nova etapa do projeto. Ele consolida dire
 - Acoes destrutivas devem pedir confirmacao visual com opcoes claras de sim/nao antes de excluir ou sobrescrever dados.
 - O service worker nao pode quebrar a instalacao/cache quando um asset opcional falhar; cache PWA deve ignorar respostas 404/falhas e nunca bloquear CRUD, auth ou chamadas Supabase.
 - O cliente Supabase deve ser singleton no navegador para evitar multiplas instancias GoTrue e comportamento instavel em Auth.
+- Exclusoes sincronizadas com Supabase precisam funcionar tambem quando o usuario remove o ultimo item de uma tabela/lista.
 
 ## Ordem Atual de Execucao
 

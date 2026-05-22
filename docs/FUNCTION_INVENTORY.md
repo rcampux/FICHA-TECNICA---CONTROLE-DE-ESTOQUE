@@ -145,9 +145,9 @@ Este arquivo e um inventario vivo das funcoes utilizadas no projeto. Toda nova f
 | `getRemoteId` | `src/services/repositories/supabaseDomainRepository.js` | 17 | Resolve o identificador remoto sem quebrar IDs locais do prototipo. |
 | `mapNutritionToRemote` | `src/services/repositories/supabaseDomainRepository.js` | 21 | Converte nutricao do app para `nutrition_facts`. |
 | `mapNutritionFromRemote` | `src/services/repositories/supabaseDomainRepository.js` | 37 | Converte `nutrition_facts` para o formato usado no app. |
-| `shouldReconcileDeletes` | `src/services/repositories/supabaseDomainRepository.js` | 49 | Define quando e seguro reconciliar exclusoes remotas. |
-| `softDeleteMissingRows` | `src/services/repositories/supabaseDomainRepository.js` | 53 | Marca como deletadas linhas remotas ausentes do snapshot local seguro. |
-| `deleteMissingRecipeIngredients` | `src/services/repositories/supabaseDomainRepository.js` | 67 | Remove ingredientes remotos ausentes da receita sincronizada. |
+| `shouldReconcileDeletes` | `src/services/repositories/supabaseDomainRepository.js` | 49 | Define quando e seguro reconciliar exclusoes remotas, incluindo snapshot vazio ja hidratado. |
+| `softDeleteMissingRows` | `src/services/repositories/supabaseDomainRepository.js` | 53 | Marca como deletadas linhas remotas ausentes do snapshot local seguro, inclusive quando todos os itens foram removidos. |
+| `deleteMissingRecipeIngredients` | `src/services/repositories/supabaseDomainRepository.js` | 73 | Remove ingredientes remotos ausentes da receita sincronizada, inclusive quando a lista fica vazia. |
 | `mapStockToRemote` | `src/services/repositories/supabaseDomainRepository.js` | 80 | Converte estoque virtual para `stock_items`. |
 | `mapStockFromRemote` | `src/services/repositories/supabaseDomainRepository.js` | 95 | Converte `stock_items` para estoque virtual do app. |
 | `mapPhysicalToRemote` | `src/services/repositories/supabaseDomainRepository.js` | 110 | Converte estoque fisico para `physical_stock_items`. |

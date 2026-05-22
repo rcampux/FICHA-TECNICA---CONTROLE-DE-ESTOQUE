@@ -47,19 +47,24 @@
   }
 
   function shouldReconcileDeletes(items) {
-    return items.length > 0 && items.every((item) => Boolean(getRemoteId(item)));
+    return items.every((item) => Boolean(getRemoteId(item)));
   }
 
   async function softDeleteMissingRows(client, table, organizationId, items) {
     if (!shouldReconcileDeletes(items)) return;
 
     const remoteIds = items.map(getRemoteId);
-    const {error} = await client
+    let query = client
       .from(table)
       .update({deleted_at: new Date().toISOString()})
       .eq("organization_id", organizationId)
-      .is("deleted_at", null)
-      .not("id", "in", `(${remoteIds.join(",")})`);
+      .is("deleted_at", null);
+
+    if (remoteIds.length) {
+      query = query.not("id", "in", `(${remoteIds.join(",")})`);
+    }
+
+    const {error} = await query;
 
     if (error) throw error;
   }
@@ -68,11 +73,16 @@
     if (!shouldReconcileDeletes(ingredients)) return;
 
     const remoteIds = ingredients.map(getRemoteId);
-    const {error} = await client
+    let query = client
       .from("recipe_ingredients")
       .delete()
-      .eq("recipe_id", recipeId)
-      .not("id", "in", `(${remoteIds.join(",")})`);
+      .eq("recipe_id", recipeId);
+
+    if (remoteIds.length) {
+      query = query.not("id", "in", `(${remoteIds.join(",")})`);
+    }
+
+    const {error} = await query;
 
     if (error) throw error;
   }
