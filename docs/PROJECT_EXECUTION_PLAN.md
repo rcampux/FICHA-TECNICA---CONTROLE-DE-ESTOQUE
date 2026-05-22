@@ -15,6 +15,8 @@ Este documento deve ser seguido a cada nova etapa do projeto. Ele consolida dire
 - Se push ou deploy falhar, registrar o motivo no fechamento da task e deixar o comando de retomada claro.
 - Em modo Supabase, dados privados em cache local devem ser limpos quando nao houver sessao autenticada ou quando o usuario fizer logout.
 - Cadastro deve exigir senha forte com pelo menos 8 caracteres, letra maiuscula, letra minuscula, numero e caractere especial.
+- O formulario de autenticacao nao deve manter senha ou dados sensiveis ao alternar entre login/cadastro, apos erro, ou apos envio de cadastro.
+- Apos criar conta com confirmacao de e-mail obrigatoria, o modal deve explicar que o usuario precisa verificar o e-mail antes de acessar o app.
 
 ## Ordem Atual de Execucao
 

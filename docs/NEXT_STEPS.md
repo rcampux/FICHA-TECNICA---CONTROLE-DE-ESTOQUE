@@ -34,6 +34,7 @@ O projeto esta em fase de prototipo estruturado:
 - Estrutura futura para Supabase e Edge Functions criada.
 - Confirmacao de e-mail Supabase ajustada para redirecionar para a Vercel e botao de reenvio de confirmacao adicionado no modal de acesso.
 - Cache local de dados privados limpo em logout/sem sessao Supabase, senha forte exigida no cadastro e visibilidade de senha adicionada.
+- Fluxo de cadastro ajustado para limpar campos sensiveis, exibir instrucao de verificacao por e-mail e evitar botoes colapsados no modal.
 
 ## Proximo Passo Recomendado
 

@@ -489,32 +489,50 @@
     <div id="auth-form-wrap">
       <div class="input-group">
         <label class="input-label">E-mail</label>
-        <input type="email" id="auth-email" placeholder="chef@cozinha.com.br" autocomplete="email">
+        <input type="email" id="auth-email" placeholder="chef@cozinha.com.br" autocomplete="off" autocapitalize="none" spellcheck="false">
       </div>
       <div class="input-group">
         <label class="input-label">Senha</label>
         <div class="password-field">
-          <input type="password" id="auth-password" placeholder="Senha forte" autocomplete="current-password" oninput="renderPasswordFeedback()">
+          <input type="password" id="auth-password" placeholder="Senha forte" autocomplete="new-password" oninput="renderPasswordFeedback()">
           <button class="password-toggle" onclick="togglePasswordVisibility()" type="button" aria-label="Mostrar ou ocultar senha">
             <span class="material-symbols-rounded" id="auth-password-toggle-icon">visibility</span>
           </button>
         </div>
         <div class="password-feedback" id="auth-password-feedback"></div>
       </div>
-      <button class="btn btn-primary btn-full" id="auth-submit-btn" onclick="submitAuthForm()" type="button">
-        <span class="material-symbols-rounded">login</span> Entrar
-      </button>
-      <button class="btn btn-secondary btn-full" onclick="resendConfirmationEmail()" type="button">
-        <span class="material-symbols-rounded">forward_to_inbox</span> Reenviar confirmacao
-      </button>
+      <div class="auth-action-stack">
+        <button class="btn btn-primary btn-full" id="auth-submit-btn" onclick="submitAuthForm()" type="button">
+          <span class="material-symbols-rounded">login</span> Entrar
+        </button>
+        <button class="btn btn-secondary btn-full" onclick="resendConfirmationEmail()" type="button">
+          <span class="material-symbols-rounded">forward_to_inbox</span> Reenviar confirmacao
+        </button>
+      </div>
+    </div>
+
+    <div class="auth-verification-card" id="auth-verification-wrap" style="display:none">
+      <span class="material-symbols-rounded">mark_email_read</span>
+      <strong>Confirme seu e-mail</strong>
+      <p>Enviamos um link para <span id="auth-verification-email"></span>. Abra sua caixa de entrada, confirme a conta e volte para o FichaTec.</p>
+      <div class="auth-action-stack">
+        <button class="btn btn-primary btn-full" onclick="resendConfirmationEmail()" type="button">
+          <span class="material-symbols-rounded">forward_to_inbox</span> Reenviar confirmacao
+        </button>
+        <button class="btn btn-secondary btn-full" onclick="backToAuthForm()" type="button">
+          Voltar para login
+        </button>
+      </div>
     </div>
 
     <div id="auth-workspace-wrap" style="display:none">
       <div class="section-label" style="margin-top:0">Workspace ativo</div>
       <div id="auth-workspace-list"></div>
-      <button class="btn btn-secondary btn-full" onclick="signOutAuth()" type="button">
-        <span class="material-symbols-rounded">logout</span> Sair
-      </button>
+      <div class="auth-action-stack">
+        <button class="btn btn-secondary btn-full" onclick="signOutAuth()" type="button">
+          <span class="material-symbols-rounded">logout</span> Sair
+        </button>
+      </div>
     </div>
 
     <div id="auth-local-wrap">
@@ -524,7 +542,9 @@
       </div>
     </div>
 
-    <button class="btn btn-secondary btn-full" onclick="closeModal('modal-auth')" type="button">Fechar</button>
+    <div class="auth-action-stack">
+      <button class="btn btn-secondary btn-full" onclick="closeModal('modal-auth')" type="button">Fechar</button>
+    </div>
   </div>
 </div>
 

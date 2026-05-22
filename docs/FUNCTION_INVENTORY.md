@@ -39,6 +39,7 @@ Este arquivo e um inventario vivo das funcoes utilizadas no projeto. Toda nova f
 | `getAuthRedirectUrl` | `src/modules/auth/authSession.js` | 58 | Monta URL atual do app para redirecionamento de confirmacao de e-mail. |
 | `getPasswordValidation` | `src/modules/auth/authSession.js` | 62 | Valida requisitos de senha forte para criacao de conta. |
 | `isStrongPassword` | `src/modules/auth/authSession.js` | 73 | Confirma se todos os requisitos de senha forte foram atendidos. |
+| `clearAuthInputs` | `src/modules/auth/authSession.js` | 77 | Limpa campos sensiveis do formulario de acesso e restaura o campo de senha. |
 | `initAuthSession` | `src/modules/auth/authSession.js` | 57 | Inicializa modo local ou Supabase Auth sem bloquear o prototipo. |
 | `syncSupabaseSession` | `src/modules/auth/authSession.js` | 88 | Sincroniza sessao Supabase no estado local do modulo. |
 | `loadOrganizations` | `src/modules/auth/authSession.js` | 98 | Carrega workspaces do usuario autenticado via `organization_members`. |
@@ -49,6 +50,7 @@ Este arquivo e um inventario vivo das funcoes utilizadas no projeto. Toda nova f
 | `setAuthMode` | `src/modules/auth/authSession.js` | 204 | Alterna entre login e criacao de conta. |
 | `submitAuthForm` | `src/modules/auth/authSession.js` | 211 | Executa login ou cadastro usando Supabase Auth quando habilitado. |
 | `resendConfirmationEmail` | `src/modules/auth/authSession.js` | 251 | Reenvia o e-mail de confirmacao do Supabase Auth usando o redirect atual da Vercel. |
+| `backToAuthForm` | `src/modules/auth/authSession.js` | 396 | Sai do estado de verificacao de email e volta para o formulario de login. |
 | `signOutAuth` | `src/modules/auth/authSession.js` | 286 | Encerra a sessao autenticada no Supabase. |
 | `selectOrganization` | `src/modules/auth/authSession.js` | 298 | Define o workspace ativo para futuras operacoes remotas. |
 | `exposeRecipeSheetModule` | `src/modules/recipes/recipeSheet.js` | 1 | (function exposeRecipeSheetModule() { |

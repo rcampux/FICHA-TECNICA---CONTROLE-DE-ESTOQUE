@@ -318,6 +318,49 @@ textarea:focus {
   color: var(--md-sys-color-on-primary-container);
 }
 
+.auth-action-stack {
+  display: grid;
+  gap: 10px;
+}
+
+.auth-action-stack + .auth-action-stack,
+#auth-form-wrap + .auth-verification-card,
+#auth-workspace-wrap + #auth-local-wrap,
+#auth-local-wrap + .auth-action-stack {
+  margin-top: 10px;
+}
+
+.auth-verification-card {
+  background: var(--md-sys-color-tertiary-container);
+  border: 1px solid color-mix(in srgb, var(--md-sys-color-tertiary) 28%, transparent);
+  border-radius: var(--md-sys-shape-corner-large);
+  color: var(--md-sys-color-on-tertiary-container);
+  margin-bottom: var(--s4);
+  padding: 16px;
+}
+
+.auth-verification-card > .material-symbols-rounded {
+  color: var(--md-sys-color-tertiary);
+  font-size: 28px;
+  margin-bottom: 8px;
+}
+
+.auth-verification-card strong {
+  display: block;
+  font-size: 15px;
+  margin-bottom: 4px;
+}
+
+.auth-verification-card p {
+  font-size: 13px;
+  line-height: 1.5;
+  margin: 0 0 14px;
+}
+
+.auth-verification-card p span {
+  font-weight: 800;
+}
+
 .password-field {
   position: relative;
 }

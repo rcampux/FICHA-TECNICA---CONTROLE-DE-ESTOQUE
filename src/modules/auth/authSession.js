@@ -15,6 +15,7 @@
       isSupabaseEnabled: Boolean(config?.enabled),
       loading: false,
       organizations: [],
+      pendingVerificationEmail: "",
       session: null,
       user: null,
     };
@@ -71,6 +72,21 @@
 
     function isStrongPassword(password) {
       return Object.values(getPasswordValidation(password)).every(Boolean);
+    }
+
+    function clearAuthInputs(options = {}) {
+      const emailInput = getElement("auth-email");
+      const passwordInput = getElement("auth-password");
+      const passwordIcon = getElement("auth-password-toggle-icon");
+
+      if (emailInput && options.clearEmail) emailInput.value = "";
+      if (passwordInput) {
+        passwordInput.value = "";
+        passwordInput.type = "password";
+      }
+      if (passwordIcon) passwordIcon.textContent = "visibility";
+
+      renderPasswordFeedback();
     }
 
     async function initAuthSession() {
@@ -161,6 +177,8 @@
       const localWrap = getElement("auth-local-wrap");
       const workspaceWrap = getElement("auth-workspace-wrap");
       const workspaceList = getElement("auth-workspace-list");
+      const verificationWrap = getElement("auth-verification-wrap");
+      const verificationEmail = getElement("auth-verification-email");
       const tabs = getElement("auth-mode-tabs");
       const submitButton = getElement("auth-submit-btn");
 
@@ -185,12 +203,23 @@
 
       localWrap.style.display = "none";
       tabs.style.display = state.user ? "none" : "grid";
-      formWrap.style.display = state.user ? "none" : "block";
+      formWrap.style.display = state.user || state.pendingVerificationEmail ? "none" : "block";
       workspaceWrap.style.display = state.user ? "block" : "none";
-      stateTitle.textContent = state.user ? "Sessao ativa" : "Login Supabase";
+      if (verificationWrap) {
+        verificationWrap.style.display = !state.user && state.pendingVerificationEmail ? "block" : "none";
+      }
+      if (verificationEmail) verificationEmail.textContent = state.pendingVerificationEmail;
+
+      stateTitle.textContent = state.user
+        ? "Sessao ativa"
+        : state.pendingVerificationEmail
+          ? "Verifique seu e-mail"
+          : "Login Supabase";
       stateDescription.textContent = state.user
         ? "Escolha o workspace de trabalho antes de salvar dados remotos."
-        : "Entre ou crie uma conta para sincronizar dados com seguranca.";
+        : state.pendingVerificationEmail
+          ? "Enviamos um link de confirmacao. Abra seu e-mail e confirme a conta para voltar ao app."
+          : "Entre ou crie uma conta para sincronizar dados com seguranca.";
 
       if (submitButton) {
         submitButton.innerHTML = state.loading
@@ -265,6 +294,8 @@
 
     function setAuthMode(mode) {
       state.authMode = mode === "signup" ? "signup" : "login";
+      state.pendingVerificationEmail = "";
+      clearAuthInputs({clearEmail: true});
       getElement("auth-mode-login")?.classList.toggle("active", state.authMode === "login");
       getElement("auth-mode-signup")?.classList.toggle("active", state.authMode === "signup");
       renderAuthState();
@@ -307,14 +338,24 @@
 
       if (error) {
         console.error(error);
+        clearAuthInputs();
         showToast(error.message || "Falha no acesso.");
         renderAuthState();
         return;
       }
 
+      clearAuthInputs();
+      if (state.authMode === "signup" && !data.session) {
+        state.pendingVerificationEmail = email;
+        renderAuthState();
+        showToast("Conta criada. Verifique seu e-mail para ativar o acesso.");
+        return;
+      }
+
+      state.pendingVerificationEmail = "";
       syncSupabaseSession(data.session);
       await loadOrganizations();
-      showToast(state.authMode === "login" ? "Login realizado." : "Conta criada.");
+      showToast(state.authMode === "login" ? "Login realizado." : "Conta criada e login realizado.");
     }
 
     async function resendConfirmationEmail() {
@@ -323,7 +364,7 @@
         return;
       }
 
-      const email = getElement("auth-email")?.value.trim();
+      const email = state.pendingVerificationEmail || getElement("auth-email")?.value.trim();
 
       if (!email) {
         showToast("Informe o e-mail para reenviar a confirmacao.");
@@ -352,6 +393,11 @@
       renderAuthState();
     }
 
+    function backToAuthForm() {
+      state.pendingVerificationEmail = "";
+      setAuthMode("login");
+    }
+
     async function signOutAuth() {
       if (!state.client) return;
       const {error} = await state.client.auth.signOut();
@@ -374,6 +420,8 @@
     return {
       getAuthState,
       getPasswordValidation,
+      backToAuthForm,
+      clearAuthInputs,
       initAuthSession,
       isStrongPassword,
       loadOrganizations,

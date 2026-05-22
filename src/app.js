@@ -99,8 +99,8 @@ const authSessionModule=window.FichaTecAuthSession.createAuthSessionModule({
   createSupabaseClient:window.FichaTecSupabaseClientService.createClient,
   showToast,
 });
-const {getAuthState,getPasswordValidation,initAuthSession,isStrongPassword,loadOrganizations,openAuthModal,renderAuthState,renderPasswordFeedback,resendConfirmationEmail,selectOrganization,setAuthMode,signOutAuth,submitAuthForm,syncSupabaseSession,togglePasswordVisibility}=authSessionModule;
-Object.assign(window,{getAuthState,getPasswordValidation,initAuthSession,isStrongPassword,loadOrganizations,openAuthModal,renderAuthState,renderPasswordFeedback,resendConfirmationEmail,selectOrganization,setAuthMode,signOutAuth,submitAuthForm,syncSupabaseSession,togglePasswordVisibility});
+const {backToAuthForm,clearAuthInputs,getAuthState,getPasswordValidation,initAuthSession,isStrongPassword,loadOrganizations,openAuthModal,renderAuthState,renderPasswordFeedback,resendConfirmationEmail,selectOrganization,setAuthMode,signOutAuth,submitAuthForm,syncSupabaseSession,togglePasswordVisibility}=authSessionModule;
+Object.assign(window,{backToAuthForm,clearAuthInputs,getAuthState,getPasswordValidation,initAuthSession,isStrongPassword,loadOrganizations,openAuthModal,renderAuthState,renderPasswordFeedback,resendConfirmationEmail,selectOrganization,setAuthMode,signOutAuth,submitAuthForm,syncSupabaseSession,togglePasswordVisibility});
 
 async function hydrateWorkspaceData(event){
   const organizationId=event?.detail?.organizationId || DB.activeOrganizationId?.();
