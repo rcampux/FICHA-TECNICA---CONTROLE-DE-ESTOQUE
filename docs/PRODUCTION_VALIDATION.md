@@ -48,7 +48,14 @@ Estes testes exigem dois usuarios reais confirmados no Supabase Auth:
 ## Query de Apoio
 
 - Use `supabase/production_validation_by_email.sql` para validar usuarios, workspaces, papeis e receitas a partir dos e-mails confirmados.
-- Depois de obter `user_id` e `organization_id`, use `supabase/rls_smoke_test.sql` para validar isolamento RLS com contexto autenticado.
+- Use `supabase/rls_smoke_test_by_email.sql` para validar isolamento RLS sem copiar UUIDs manualmente.
+- Alternativa manual: depois de obter `user_id` e `organization_id`, use `supabase/rls_smoke_test.sql`.
+
+## Resultado Manual Recebido
+
+- `r.camposarch@gmail.com`: usuario confirmado, profile criado, workspace proprio, papel `owner`, 1 receita ativa.
+- `r.camposdesign@gmail.com`: usuario confirmado, profile criado, workspace proprio, papel `owner`, 1 receita ativa.
+- Os dois usuarios estao em `organization_id` diferentes, como esperado para isolamento multi-tenant.
 
 ## Criterio Para Avancar
 
