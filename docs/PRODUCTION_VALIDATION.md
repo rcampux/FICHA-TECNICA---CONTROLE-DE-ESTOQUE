@@ -73,3 +73,14 @@ Somente avancar para Fase 3.1 quando:
 ## Proxima Acao
 
 Executar o checklist autenticado com dois usuarios de teste confirmados.
+
+## Regra Para Novos Testes
+
+- Cada teste enviado ao usuario deve validar uma unica hipotese.
+- Sempre enviar o SQL/comando completo e ja preenchido quando os dados forem conhecidos.
+- Sempre informar antes do SQL:
+  - objetivo do teste;
+  - onde rodar;
+  - o que copiar;
+  - qual resultado aprova ou reprova.
+- Evitar enviar alternativas simultaneas quando uma unica validacao cirurgica resolve a etapa.

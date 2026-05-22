@@ -22,6 +22,7 @@ Este documento deve ser seguido a cada nova etapa do projeto. Ele consolida dire
 - O service worker nao pode quebrar a instalacao/cache quando um asset opcional falhar; cache PWA deve ignorar respostas 404/falhas e nunca bloquear CRUD, auth ou chamadas Supabase.
 - O cliente Supabase deve ser singleton no navegador para evitar multiplas instancias GoTrue e comportamento instavel em Auth.
 - Exclusoes sincronizadas com Supabase precisam funcionar tambem quando o usuario remove o ultimo item de uma tabela/lista.
+- Testes solicitados ao usuario devem ser cirurgicos: um objetivo por vez, passo a passo curto, comando/SQL exato ja preenchido quando possivel, resultado esperado e criterio claro de aprovado/reprovado.
 
 ## Ordem Atual de Execucao
 
