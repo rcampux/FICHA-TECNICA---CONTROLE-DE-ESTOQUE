@@ -248,7 +248,12 @@
         const {totalCost,venda}=calcCosts(r.ingredients,r.markup);
         const changed=hasPriceChanged(r.ingredients);
         const diff=totalCost-r.totalCost;
-        return`<div class="recipe-card" onclick="viewRecipe(${r.id})">
+        return`<div class="swipe-row">
+          <div class="swipe-actions" aria-hidden="true">
+            <button class="swipe-action edit" onclick="editRecipe(${r.id})" type="button"><span class="material-symbols-rounded">edit</span><span>Editar</span></button>
+            <button class="swipe-action delete" onclick="deleteRecipe(${r.id})" type="button"><span class="material-symbols-rounded">delete</span><span>Excluir</span></button>
+          </div>
+          <div class="swipe-content recipe-card" onclick="viewRecipe(${r.id})">
           <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:var(--s2);margin-bottom:4px">
             <div class="recipe-card-title">${r.nome}${r.origem==='scan'?` <span class="scan-badge" style="font-size:10px"><span class="material-symbols-rounded" style="font-size:12px">document_scanner</span>Scan</span>`:''}</div>
             <div style="display:flex;gap:6px;align-items:center;flex-shrink:0">
@@ -264,9 +269,10 @@
               ${r.ingredients.slice(0,4).map(i=>`<span class="tag">${i.name}</span>`).join('')}
               ${r.ingredients.length>4?`<span class="tag">+${r.ingredients.length-4}</span>`:''}
             </div>
-            <button class="btn btn-outlined btn-xs" onclick="event.stopPropagation();exportRecipePDF(${r.id})" style="margin-left:var(--s2)">
+            <button class="btn btn-outlined btn-xs" onclick="event.stopPropagation();exportRecipePDF(${r.id})" style="margin-left:var(--s2)" type="button">
               <span class="material-symbols-rounded" style="font-size:14px">picture_as_pdf</span> PDF
             </button>
+          </div>
           </div>
         </div>`;
       }).join('');
@@ -333,6 +339,14 @@
       closeModal('modal-recipe');
       renderRecipes(document.getElementById('recipe-search').value,activeIngFilter);
       showToast('Receita excluída.');
+    }
+    function editRecipe(id){
+      currentRecipeId=id;
+      loadRecipeToFicha();
+    }
+    function deleteRecipe(id){
+      currentRecipeId=id;
+      deleteCurrentRecipe();
     }
     function loadRecipeToFicha(){
       const r=recipes.find(x=>x.id===currentRecipeId);if(!r)return;
@@ -454,6 +468,8 @@
       setIngFilter: runWithState(setIngFilter),
       viewRecipe: runWithState(viewRecipe),
       deleteCurrentRecipe: runWithState(deleteCurrentRecipe),
+      editRecipe: runWithState(editRecipe),
+      deleteRecipe: runWithState(deleteRecipe),
       loadRecipeToFicha: runWithState(loadRecipeToFicha),
       exportRecipePDF: runWithState(exportRecipePDF, {commit:false}),
       getActiveIngredientFilter,

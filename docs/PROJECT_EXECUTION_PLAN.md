@@ -17,6 +17,7 @@ Este documento deve ser seguido a cada nova etapa do projeto. Ele consolida dire
 - Cadastro deve exigir senha forte com pelo menos 8 caracteres, letra maiuscula, letra minuscula, numero e caractere especial.
 - O formulario de autenticacao nao deve manter senha ou dados sensiveis ao alternar entre login/cadastro, apos erro, ou apos envio de cadastro.
 - Apos criar conta com confirmacao de e-mail obrigatoria, o modal deve explicar que o usuario precisa verificar o e-mail antes de acessar o app.
+- No mobile, listas de produtos e receitas devem permitir gesto de arrastar para esquerda e toque longo de 1 segundo para revelar acoes de editar/excluir; no desktop, manter acoes explicitas e acessiveis.
 
 ## Ordem Atual de Execucao
 
@@ -62,6 +63,7 @@ Este documento deve ser seguido a cada nova etapa do projeto. Ele consolida dire
 - `src/modules/recipes/recipeSheet.js`: ficha tecnica e receitas.
 - `src/modules/scanner/scannerRecipe.js`: scanner de receita por imagem.
 - `src/pwa/registerServiceWorker.js`: registro PWA e atalhos de inicializacao.
+- `src/utils/touchActions.js`: gesto mobile reutilizavel para revelar acoes contextuais em listas.
 - `supabase/migrations/20260520190000_initial_multi_tenant_schema.sql`: schema inicial multiempresa com RLS.
 
 ## Proximo Marco Recomendado

@@ -75,6 +75,8 @@ Este arquivo e um inventario vivo das funcoes utilizadas no projeto. Toda nova f
 | `setIngFilter` | `src/modules/recipes/recipeSheet.js` | 274 | function setIngFilter(val){activeIngFilter=val;renderRecipes(document.getElementById('recipe-search').value,val);} |
 | `viewRecipe` | `src/modules/recipes/recipeSheet.js` | 275 | function viewRecipe(id){ |
 | `deleteCurrentRecipe` | `src/modules/recipes/recipeSheet.js` | 329 | function deleteCurrentRecipe(){ |
+| `editRecipe` | `src/modules/recipes/recipeSheet.js` | 343 | Define a receita atual e carrega seus dados na ficha tecnica para edicao. |
+| `deleteRecipe` | `src/modules/recipes/recipeSheet.js` | 347 | Define a receita atual e reaproveita o fluxo existente de exclusao. |
 | `loadRecipeToFicha` | `src/modules/recipes/recipeSheet.js` | 337 | function loadRecipeToFicha(){ |
 | `exportRecipePDF` | `src/modules/recipes/recipeSheet.js` | 350 | function exportRecipePDF(id){ |
 | `runWithState` | `src/modules/recipes/recipeSheet.js` | 425 | function runWithState(fn, options = {}) { |
@@ -168,6 +170,17 @@ Este arquivo e um inventario vivo das funcoes utilizadas no projeto. Toda nova f
 | `exposeFormatters` | `src/utils/formatters.js` | 1 | (function exposeFormatters() { |
 | `brl` | `src/utils/formatters.js` | 3 | brl(value) { |
 | `quantity` | `src/utils/formatters.js` | 9 | quantity(quantity, unit) { |
+| `exposeTouchActions` | `src/utils/touchActions.js` | 1 | Expoe o modulo de gestos de swipe/toque longo para listas mobile. |
+| `getSwipeRow` | `src/utils/touchActions.js` | 9 | Encontra o container `.swipe-row` associado ao alvo do evento. |
+| `getSwipeContent` | `src/utils/touchActions.js` | 13 | Encontra a area deslizavel `.swipe-content` associada ao alvo do evento. |
+| `isInteractiveTarget` | `src/utils/touchActions.js` | 17 | Identifica elementos interativos para preservar cliques, botoes e campos. |
+| `closeSwipeActions` | `src/utils/touchActions.js` | 21 | Fecha acoes contextuais abertas, preservando opcionalmente uma linha. |
+| `openSwipeActions` | `src/utils/touchActions.js` | 27 | Abre as acoes de uma linha e fecha as demais. |
+| `handlePointerDown` | `src/utils/touchActions.js` | 33 | Inicia rastreamento de toque/ponteiro e timer de toque longo. |
+| `handlePointerMove` | `src/utils/touchActions.js` | 52 | Cancela toque longo quando ha movimento e bloqueia scroll horizontal acidental. |
+| `handlePointerEnd` | `src/utils/touchActions.js` | 67 | Decide abrir ou fechar a linha conforme distancia do gesto horizontal. |
+| `handleClick` | `src/utils/touchActions.js` | 79 | Fecha linhas abertas ao tocar fora ou tocar no conteudo aberto. |
+| `initTouchActions` | `src/utils/touchActions.js` | 98 | Registra listeners globais idempotentes para swipe e toque longo. |
 | `public.set_updated_at` | `supabase/migrations/20260520190000_initial_multi_tenant_schema.sql` | 272 | create or replace function public.set_updated_at() |
 | `public.current_user_role` | `supabase/migrations/20260520190000_initial_multi_tenant_schema.sql` | 282 | create or replace function public.current_user_role(target_organization_id uuid) |
 | `public.is_organization_member` | `supabase/migrations/20260520190000_initial_multi_tenant_schema.sql` | 296 | create or replace function public.is_organization_member(target_organization_id uuid) |

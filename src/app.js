@@ -37,8 +37,8 @@ const recipeSheetModule=window.FichaTecRecipeSheet.createRecipeSheetModule({
   showToast,
   storageKeys:STORAGE_KEYS,
 });
-const {findStockItem,calcCosts,setIngSource,searchIngredient,selectIngredient,calcIngCost,addIngredient,removeIngredient,renderIngredients,calcFicha,calcNutrition,clearFicha,saveRecipe,hasPriceChanged,renderRecipes,setIngFilter,viewRecipe,deleteCurrentRecipe,loadRecipeToFicha,exportRecipePDF}=recipeSheetModule;
-Object.assign(window,{findStockItem,calcCosts,setIngSource,searchIngredient,selectIngredient,calcIngCost,addIngredient,removeIngredient,renderIngredients,calcFicha,calcNutrition,clearFicha,saveRecipe,hasPriceChanged,renderRecipes,setIngFilter,viewRecipe,deleteCurrentRecipe,loadRecipeToFicha,exportRecipePDF});
+const {findStockItem,calcCosts,setIngSource,searchIngredient,selectIngredient,calcIngCost,addIngredient,removeIngredient,renderIngredients,calcFicha,calcNutrition,clearFicha,saveRecipe,hasPriceChanged,renderRecipes,setIngFilter,viewRecipe,deleteCurrentRecipe,editRecipe,deleteRecipe,loadRecipeToFicha,exportRecipePDF}=recipeSheetModule;
+Object.assign(window,{findStockItem,calcCosts,setIngSource,searchIngredient,selectIngredient,calcIngCost,addIngredient,removeIngredient,renderIngredients,calcFicha,calcNutrition,clearFicha,saveRecipe,hasPriceChanged,renderRecipes,setIngFilter,viewRecipe,deleteCurrentRecipe,editRecipe,deleteRecipe,loadRecipeToFicha,exportRecipePDF});
 Object.defineProperty(window,'activeIngFilter',{get:()=>recipeSheetModule.getActiveIngredientFilter()});
 Object.defineProperty(window,'currentRecipeId',{get:()=>recipeSheetModule.getCurrentRecipeId()});
 
@@ -191,3 +191,4 @@ recipes=recipes.map(r=>({...r,ingredients:r.ingredients.map(i=>{
   return{...i,savedPricePerG:s?pricePerUnit(s):0};
 })}));
 renderStock();renderRecipes();renderPhysical();initAuthSession();
+window.FichaTecTouchActions?.initTouchActions();
