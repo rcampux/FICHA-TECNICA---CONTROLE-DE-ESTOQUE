@@ -1,7 +1,6 @@
-const CACHE_VERSION = "fichatec-pwa-v3";
+const CACHE_VERSION = "fichatec-pwa-v4";
 const APP_SHELL = [
   "/",
-  "/public/index.html",
   "/manifest.webmanifest",
   "/icons/icon-192.png",
   "/icons/icon-512.png",
@@ -22,22 +21,66 @@ const APP_SHELL = [
   "/src/modules/stock/virtualStock.js",
   "/src/modules/stock/physicalStock.js",
   "/src/pwa/registerServiceWorker.js",
-  "/src/styles/app.css"
+  "/src/styles/app.css",
+  "/src/styles/legacy.css"
 ];
 
-self.addEventListener("install", (event) => {
-  event.waitUntil(
-    caches.open(CACHE_VERSION).then((cache) => cache.addAll(APP_SHELL))
+function shouldCacheResponse(response) {
+  return response?.ok && response.type === "basic";
+}
+
+async function cacheAppShell() {
+  const cache = await caches.open(CACHE_VERSION);
+
+  await Promise.allSettled(
+    APP_SHELL.map(async (url) => {
+      const response = await fetch(url, {cache:"reload"});
+      if (shouldCacheResponse(response)) {
+        await cache.put(url, response);
+      }
+    })
   );
+}
+
+async function deleteOldCaches() {
+  const keys = await caches.keys();
+  await Promise.all(keys.filter((key) => key !== CACHE_VERSION).map((key) => caches.delete(key)));
+}
+
+async function networkFirstNavigation(request) {
+  try {
+    const response = await fetch(request);
+    if (shouldCacheResponse(response)) {
+      const cache = await caches.open(CACHE_VERSION);
+      await cache.put(request, response.clone());
+      await cache.put("/", response.clone());
+    }
+    return response;
+  } catch (error) {
+    const cachedPage = await caches.match(request);
+    return cachedPage || caches.match("/") || Response.error();
+  }
+}
+
+async function cacheFirstAsset(request) {
+  const cached = await caches.match(request);
+  if (cached) return cached;
+
+  const response = await fetch(request);
+  if (shouldCacheResponse(response)) {
+    const cache = await caches.open(CACHE_VERSION);
+    await cache.put(request, response.clone());
+  }
+  return response;
+}
+
+self.addEventListener("install", (event) => {
+  event.waitUntil(cacheAppShell());
   self.skipWaiting();
 });
 
 self.addEventListener("activate", (event) => {
-  event.waitUntil(
-    caches.keys().then((keys) =>
-      Promise.all(keys.filter((key) => key !== CACHE_VERSION).map((key) => caches.delete(key)))
-    )
-  );
+  event.waitUntil(deleteOldCaches());
   self.clients.claim();
 });
 
@@ -61,29 +104,9 @@ self.addEventListener("fetch", (event) => {
   }
 
   if (request.mode === "navigate") {
-    event.respondWith(
-      fetch(request)
-        .then((response) => {
-          const copy = response.clone();
-          caches.open(CACHE_VERSION).then((cache) => cache.put(request, copy));
-          return response;
-        })
-        .catch(() => caches.match("/") || caches.match("/public/index.html"))
-    );
+    event.respondWith(networkFirstNavigation(request));
     return;
   }
 
-  event.respondWith(
-    caches.match(request).then((cached) => {
-      if (cached) return cached;
-
-      return fetch(request).then((response) => {
-        if (response.ok) {
-          const copy = response.clone();
-          caches.open(CACHE_VERSION).then((cache) => cache.put(request, copy));
-        }
-        return response;
-      });
-    })
-  );
+  event.respondWith(cacheFirstAsset(request));
 });

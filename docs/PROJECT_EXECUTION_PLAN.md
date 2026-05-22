@@ -19,6 +19,8 @@ Este documento deve ser seguido a cada nova etapa do projeto. Ele consolida dire
 - Apos criar conta com confirmacao de e-mail obrigatoria, o modal deve explicar que o usuario precisa verificar o e-mail antes de acessar o app.
 - No mobile e desktop, listas de produtos e receitas devem manter apenas icones explicitos de editar/excluir nos cards, sem depender de gesto para acessar CRUD.
 - Acoes destrutivas devem pedir confirmacao visual com opcoes claras de sim/nao antes de excluir ou sobrescrever dados.
+- O service worker nao pode quebrar a instalacao/cache quando um asset opcional falhar; cache PWA deve ignorar respostas 404/falhas e nunca bloquear CRUD, auth ou chamadas Supabase.
+- O cliente Supabase deve ser singleton no navegador para evitar multiplas instancias GoTrue e comportamento instavel em Auth.
 
 ## Ordem Atual de Execucao
 

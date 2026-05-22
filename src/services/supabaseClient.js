@@ -1,5 +1,6 @@
 (function exposeSupabaseClientService() {
   const config = window.FichaTecSupabaseConfig;
+  let libraryPromise = null;
   let clientPromise = null;
 
   function getSupabaseGlobal() {
@@ -8,9 +9,9 @@
 
   function loadSupabaseLibrary() {
     if (getSupabaseGlobal()) return Promise.resolve(getSupabaseGlobal());
-    if (clientPromise) return clientPromise;
+    if (libraryPromise) return libraryPromise;
 
-    clientPromise = new Promise((resolve, reject) => {
+    libraryPromise = new Promise((resolve, reject) => {
       const script = document.createElement("script");
       script.src = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2";
       script.async = true;
@@ -26,20 +27,28 @@
       document.head.appendChild(script);
     });
 
-    return clientPromise;
+    return libraryPromise;
   }
 
   async function createClient() {
     if (!config?.enabled) return null;
+    if (clientPromise) return clientPromise;
 
-    const supabaseGlobal = await loadSupabaseLibrary();
-    return supabaseGlobal.createClient(config.url, config.anonKey, {
-      auth: {
-        persistSession: true,
-        autoRefreshToken: true,
-        detectSessionInUrl: true,
-      },
-    });
+    clientPromise = loadSupabaseLibrary()
+      .then((supabaseGlobal) => supabaseGlobal.createClient(config.url, config.anonKey, {
+        auth: {
+          storageKey: "fichatec-auth-token",
+          persistSession: true,
+          autoRefreshToken: true,
+          detectSessionInUrl: true,
+        },
+      }))
+      .catch((error) => {
+        clientPromise = null;
+        throw error;
+      });
+
+    return clientPromise;
   }
 
   window.FichaTecSupabaseClientService = {

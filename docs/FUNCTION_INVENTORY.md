@@ -123,6 +123,11 @@ Este arquivo e um inventario vivo das funcoes utilizadas no projeto. Toda nova f
 | `registerFichaTecServiceWorker` | `src/pwa/registerServiceWorker.js` | 1 | (function registerFichaTecServiceWorker() { |
 | `handleLaunchShortcut` | `src/pwa/registerServiceWorker.js` | 2 | function handleLaunchShortcut() { |
 | `registerServiceWorker` | `src/pwa/registerServiceWorker.js` | 13 | function registerServiceWorker() { |
+| `shouldCacheResponse` | `service-worker.js` / `public/service-worker.js` | 27 | Valida respostas antes de inserir no cache PWA, evitando cache de 404/HTML inesperado. |
+| `cacheAppShell` | `service-worker.js` / `public/service-worker.js` | 31 | Pre-carrega assets principais com tolerancia a falhas individuais. |
+| `deleteOldCaches` | `service-worker.js` / `public/service-worker.js` | 45 | Remove versoes antigas do cache PWA na ativacao. |
+| `networkFirstNavigation` | `service-worker.js` / `public/service-worker.js` | 50 | Tenta navegacao online primeiro e usa app shell cacheado como fallback offline. |
+| `cacheFirstAsset` | `service-worker.js` / `public/service-worker.js` | 65 | Entrega assets pelo cache quando possivel e grava apenas respostas validas. |
 | `exposeHybridRepository` | `src/services/repositories/hybridRepository.js` | 1 | (function exposeHybridRepository() { |
 | `getMode` | `src/services/repositories/hybridRepository.js` | 7 | Retorna `local` ou `supabase` conforme configuracao ativa. |
 | `getSupabaseClient` | `src/services/repositories/hybridRepository.js` | 11 | Reusa a promise do cliente Supabase para leituras/escritas remotas. |
@@ -168,7 +173,7 @@ Este arquivo e um inventario vivo das funcoes utilizadas no projeto. Toda nova f
 | `exposeSupabaseClientService` | `src/services/supabaseClient.js` | 1 | (function exposeSupabaseClientService() { |
 | `getSupabaseGlobal` | `src/services/supabaseClient.js` | 5 | function getSupabaseGlobal() { |
 | `loadSupabaseLibrary` | `src/services/supabaseClient.js` | 9 | function loadSupabaseLibrary() { |
-| `createClient` | `src/services/supabaseClient.js` | 32 | async function createClient() { |
+| `createClient` | `src/services/supabaseClient.js` | 33 | Cria e reutiliza uma unica instancia Supabase no navegador para evitar multiplos GoTrueClient. |
 | `exposeFormatters` | `src/utils/formatters.js` | 1 | (function exposeFormatters() { |
 | `brl` | `src/utils/formatters.js` | 3 | brl(value) { |
 | `quantity` | `src/utils/formatters.js` | 9 | quantity(quantity, unit) { |

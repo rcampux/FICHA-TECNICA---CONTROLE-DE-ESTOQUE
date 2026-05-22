@@ -5,7 +5,7 @@ Este documento acompanha a evolucao do app como PWA instalavel.
 ## Implementado
 
 - `manifest.webmanifest` na raiz do projeto.
-- `service-worker.js` com cache do app shell.
+- `service-worker.js` com cache resiliente do app shell, ignorando assets ausentes sem cancelar a instalacao.
 - Copia dos assets PWA em `public/` para publicacao correta na Vercel.
 - Build `npm run build` sincroniza `src` para `public/src`, garantindo CSS e JS em producao na Vercel.
 - Registro do service worker em `src/pwa/registerServiceWorker.js`.
@@ -16,9 +16,10 @@ Este documento acompanha a evolucao do app como PWA instalavel.
 
 ## Estrategia Atual
 
-- Cache-first para arquivos estaticos do app.
+- Cache-first para arquivos estaticos validos do app, salvando apenas respostas `ok` da mesma origem.
 - Network-first para navegacao, com fallback para app shell.
 - Sem cache para rotas `/api/`, porque scanner/IA e futuras chamadas autenticadas devem buscar dados atuais.
+- Cache inicial usa `Promise.allSettled` para que um asset 404 nao derrube o service worker nem cancele CRUD/Auth/Supabase.
 
 ## Validacao Manual
 
