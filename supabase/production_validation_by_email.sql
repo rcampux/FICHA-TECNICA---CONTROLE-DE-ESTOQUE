@@ -1,11 +1,11 @@
 -- FichaTec production validation by e-mail.
 -- Run in Supabase SQL Editor using the postgres role.
--- Replace the two values in target_users with the confirmed test user e-mails.
+-- Test users currently configured for production validation.
 
 with target_users(email) as (
   values
-    ('USER_A_EMAIL_HERE'),
-    ('USER_B_EMAIL_HERE')
+    ('r.camposarch@gmail.com'),
+    ('r.camposdesign@gmail.com')
 ),
 user_context as (
   select

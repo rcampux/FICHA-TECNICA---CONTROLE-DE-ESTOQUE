@@ -1,17 +1,17 @@
 -- FichaTec RLS smoke test by e-mail.
 -- Run in Supabase SQL Editor using the postgres role.
--- Replace the two e-mails below with confirmed Auth users.
+-- Test users currently configured for production validation.
 -- Expected cross-workspace counts must be 0.
 
 select set_config(
   'fichatec.user_a_id',
-  (select id::text from auth.users where email = 'USER_A_EMAIL_HERE'),
+  (select id::text from auth.users where email = 'r.camposarch@gmail.com'),
   false
 );
 
 select set_config(
   'fichatec.user_b_id',
-  (select id::text from auth.users where email = 'USER_B_EMAIL_HERE'),
+  (select id::text from auth.users where email = 'r.camposdesign@gmail.com'),
   false
 );
 
