@@ -1,7 +1,8 @@
-const CACHE_VERSION = "fichatec-pwa-v8";
+const CACHE_VERSION = "fichatec-pwa-v9-hotfix-1";
 const NETWORK_FIRST_EXTENSIONS = new Set([".css", ".html", ".js", ".webmanifest"]);
 const APP_SHELL = [
   "/",
+  "/index.html",
   "/manifest.webmanifest",
   "/icons/icon-192.png",
   "/icons/icon-512.png",

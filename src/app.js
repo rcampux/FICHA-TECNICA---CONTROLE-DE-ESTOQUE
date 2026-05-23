@@ -87,12 +87,11 @@ function showBootSplash(duration=BOOT_DURATION_MS){
 function showStartScreen(){
   const start=document.getElementById('app-start');
   hideBootScreen();
-  setAppShellVisible(false);
-  document.body.classList.add('app-start-mode');
-  if(start){
-    start.hidden=false;
-    start.classList.add('is-active');
-  }
+  if(start){start.hidden=true;start.classList.remove('is-active');}
+  document.body.classList.remove('app-start-mode');
+  setAppShellVisible(true);
+  showPage('ficha','nav-ficha');
+  openStartLogin();
 }
 
 function enterAppExperience(){
@@ -114,7 +113,21 @@ async function exitToStartExperience(){
 
 function openStartLogin(){
   if(typeof window.setAuthMode==='function')window.setAuthMode('login');
-  if(typeof window.openAuthModal==='function')window.openAuthModal();
+  if(typeof window.openAuthModal==='function'){
+    window.openAuthModal();
+    return;
+  }
+  const authModal=document.getElementById('modal-auth');
+  if(authModal)authModal.classList.add('open');
+}
+
+function failSafeReleaseBoot(openAuth=true){
+  hideBootScreen();
+  setAppShellVisible(true);
+  document.body.classList.remove('app-start-mode');
+  const start=document.getElementById('app-start');
+  if(start){start.hidden=true;start.classList.remove('is-active');}
+  if(openAuth)openStartLogin();
 }
 
 const recipeSheetModule=window.FichaTecRecipeSheet.createRecipeSheetModule({
@@ -325,11 +338,16 @@ renderPhysical();
 bootstrapAppExperience();
 
 async function bootstrapAppExperience(){
-  const authState=await initAuthSession();
-  await showBootSplash(BOOT_DURATION_MS);
-  if(authState?.isAuthenticated){
-    enterAppExperience();
-    return;
+  try{
+    const authState=await initAuthSession();
+    await showBootSplash(BOOT_DURATION_MS);
+    if(authState?.isAuthenticated){
+      enterAppExperience();
+      return;
+    }
+    showStartScreen();
+  }catch(error){
+    console.error('Bootstrap failed:',error);
+    failSafeReleaseBoot(true);
   }
-  showStartScreen();
 }

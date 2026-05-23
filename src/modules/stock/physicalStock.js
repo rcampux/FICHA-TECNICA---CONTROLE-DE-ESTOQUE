@@ -61,6 +61,20 @@
       };
     }
 
+    function bindPhysicalCategoryPanel(panel) {
+      panel.onchange = (event) => {
+        const input = event.target.closest("[data-physical-category]");
+        if (!input || !panel.contains(input)) return;
+        togglePhysicalCategoryFilter(input.dataset.physicalCategory || "");
+      };
+
+      panel.onclick = (event) => {
+        const clearButton = event.target.closest("[data-clear-physical-categories]");
+        if (!clearButton || !panel.contains(clearButton)) return;
+        clearPhysicalCategoryFilters();
+      };
+    }
+
     async function persistPhysicalSnapshot(nextPhysicalStock) {
       setPhysicalStock(nextPhysicalStock);
       if (db.saveLocal) db.saveLocal(storageKeys.physicalStock, nextPhysicalStock);
@@ -138,12 +152,13 @@
         <div class="category-filter-options">
           ${categories.map((category) => `
             <label class="category-filter-option">
-              <input type="checkbox" ${selectedPhysicalCategories.has(category) ? "checked" : ""} onchange="togglePhysicalCategoryFilter('${category.replace(/'/g, "\\'")}')">
+              <input type="checkbox" data-physical-category="${escapeAttribute(category)}" ${selectedPhysicalCategories.has(category) ? "checked" : ""}>
               <span>${category}</span>
             </label>
           `).join("")}
         </div>
-        <button class="category-clear-btn" onclick="clearPhysicalCategoryFilters()" type="button">Limpar filtros</button>`;
+        <button class="category-clear-btn" data-clear-physical-categories type="button">Limpar filtros</button>`;
+      bindPhysicalCategoryPanel(panel);
     }
 
     function togglePhysicalCategoryPanel() {

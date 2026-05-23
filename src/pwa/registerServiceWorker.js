@@ -1,4 +1,8 @@
 (function registerFichaTecServiceWorker() {
+  const SW_BUILD = "2026-05-23-hotfix-1";
+  const SW_BUILD_KEY = "fichatec.sw.build";
+  const SW_URL = `/service-worker.js?v=${encodeURIComponent(SW_BUILD)}`;
+
   function handleLaunchShortcut() {
     const params = new URLSearchParams(window.location.search);
     if (params.get("action") !== "scanner") return;
@@ -8,6 +12,26 @@
         window.openScanModal();
       }
     });
+  }
+
+  async function clearServiceWorkerStateIfNeeded() {
+    if (!("serviceWorker" in navigator)) return;
+
+    const previousBuild = localStorage.getItem(SW_BUILD_KEY);
+    if (previousBuild === SW_BUILD) return;
+
+    try {
+      const registrations = await navigator.serviceWorker.getRegistrations();
+      await Promise.all(registrations.map((registration) => registration.unregister()));
+      if ("caches" in window) {
+        const keys = await caches.keys();
+        await Promise.all(keys.map((key) => caches.delete(key)));
+      }
+    } catch (error) {
+      console.warn("Service worker reset failed:", error);
+    }
+
+    localStorage.setItem(SW_BUILD_KEY, SW_BUILD);
   }
 
   function registerServiceWorker() {
@@ -20,8 +44,10 @@
       window.location.reload();
     });
 
-    window.addEventListener("load", () => {
-      navigator.serviceWorker.register("../service-worker.js", {scope:"../"})
+    window.addEventListener("load", async () => {
+      await clearServiceWorkerStateIfNeeded();
+
+      navigator.serviceWorker.register(SW_URL, {scope:"/"})
         .then((registration) => {
           registration.update();
           if (registration.waiting) {

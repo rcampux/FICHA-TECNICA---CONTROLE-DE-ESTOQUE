@@ -707,5 +707,30 @@
 <script src="../src/modules/stock/physicalStock.js" defer></script>
 <script src="../src/pwa/registerServiceWorker.js" defer></script>
 <script src="../src/app.js" defer></script>
+<script>
+  window.setTimeout(function releaseBootFailSafe() {
+    if (!document.body.classList.contains("app-booting")) return;
+
+    document.body.classList.remove("app-booting", "app-start-mode");
+    var boot = document.getElementById("app-boot");
+    var shell = document.getElementById("app-shell");
+    var start = document.getElementById("app-start");
+    var authModal = document.getElementById("modal-auth");
+
+    if (boot) {
+      boot.classList.remove("is-active");
+      boot.hidden = true;
+    }
+    if (start) {
+      start.classList.remove("is-active");
+      start.hidden = true;
+    }
+    if (shell) {
+      shell.hidden = false;
+      shell.setAttribute("aria-hidden", "false");
+    }
+    if (authModal) authModal.classList.add("open");
+  }, 5500);
+</script>
 </body>
 </html>

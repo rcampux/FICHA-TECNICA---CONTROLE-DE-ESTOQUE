@@ -47,6 +47,20 @@
       };
     }
 
+    function bindStockCategoryPanel(panel) {
+      panel.onchange = (event) => {
+        const input = event.target.closest("[data-stock-category]");
+        if (!input || !panel.contains(input)) return;
+        toggleStockCategoryFilter(input.dataset.stockCategory || "");
+      };
+
+      panel.onclick = (event) => {
+        const clearButton = event.target.closest("[data-clear-stock-categories]");
+        if (!clearButton || !panel.contains(clearButton)) return;
+        clearStockCategoryFilters();
+      };
+    }
+
     async function persistStockSnapshot(nextStock) {
       setStock(nextStock);
       if (db.saveLocal) db.saveLocal(storageKeys.stock, nextStock);
@@ -104,12 +118,13 @@
         <div class="category-filter-options">
           ${categories.map((category) => `
             <label class="category-filter-option">
-              <input type="checkbox" ${selectedStockCategories.has(category) ? "checked" : ""} onchange="toggleStockCategoryFilter('${category.replace(/'/g, "\\'")}')">
+              <input type="checkbox" data-stock-category="${escapeAttribute(category)}" ${selectedStockCategories.has(category) ? "checked" : ""}>
               <span>${category}</span>
             </label>
           `).join("")}
         </div>
-        <button class="category-clear-btn" onclick="clearStockCategoryFilters()" type="button">Limpar filtros</button>`;
+        <button class="category-clear-btn" data-clear-stock-categories type="button">Limpar filtros</button>`;
+      bindStockCategoryPanel(panel);
     }
 
     function toggleStockCategoryPanel() {
