@@ -184,3 +184,10 @@ Este arquivo e um inventario vivo das funcoes utilizadas no projeto. Toda nova f
 | `public.can_write_organization` | `supabase/migrations/20260520190000_initial_multi_tenant_schema.sql` | 321 | create or replace function public.can_write_organization(target_organization_id uuid) |
 | `public.handle_new_user` | `supabase/migrations/20260520190000_initial_multi_tenant_schema.sql` | 331 | Cria profile e organizacao padrao quando um usuario nasce no Supabase Auth. |
 | `public.bootstrap_organization_owner` | `supabase/migrations/20260520190000_initial_multi_tenant_schema.sql` | 368 | Adiciona o usuario como owner da organizacao criada e define workspace padrao. |
+| `private.set_updated_at` | `supabase/migrations/20260523090000_harden_internal_functions.sql` | 10 | Trigger interno com `search_path` fixo para atualizar `updated_at`. |
+| `private.current_user_role` | `supabase/migrations/20260523090000_harden_internal_functions.sql` | 21 | Helper interno de RLS para papel do usuario no workspace. |
+| `private.is_organization_member` | `supabase/migrations/20260523090000_harden_internal_functions.sql` | 35 | Helper interno de RLS para validar membro do workspace. |
+| `private.can_manage_organization` | `supabase/migrations/20260523090000_harden_internal_functions.sql` | 50 | Helper interno de RLS para permissao administrativa. |
+| `private.can_write_organization` | `supabase/migrations/20260523090000_harden_internal_functions.sql` | 60 | Helper interno de RLS para escrita operacional. |
+| `private.handle_new_user` | `supabase/migrations/20260523090000_harden_internal_functions.sql` | 70 | Trigger interno para criar profile e organizacao inicial. |
+| `private.bootstrap_organization_owner` | `supabase/migrations/20260523090000_harden_internal_functions.sql` | 108 | Trigger interno para vincular owner ao workspace inicial. |

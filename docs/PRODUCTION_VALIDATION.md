@@ -29,21 +29,17 @@ Data da validacao: 2026-05-22.
   - `recipes`
   - `recipe_ingredients`
 
-## Pendente Com Usuario Autenticado
+## Validacao Com Usuario Autenticado
 
-Estes testes exigem dois usuarios reais confirmados no Supabase Auth:
+Data da validacao: 2026-05-23.
 
-1. Entrar em producao com o usuario A.
-2. Confirmar que o workspace automatico aparece no modal.
-3. Criar um produto no estoque virtual.
-4. Criar um produto no estoque fisico.
-5. Criar uma receita usando ingrediente vinculado.
-6. Recarregar a pagina e confirmar persistencia dos tres cadastros.
-7. Editar os tres tipos de cadastro e recarregar novamente.
-8. Excluir os tres tipos de cadastro.
-9. Confirmar que excluir o ultimo item nao restaura dados apos reload.
-10. Entrar com usuario B e confirmar isolamento de dados.
-11. Rodar `supabase/rls_smoke_test.sql` com os UUIDs reais dos usuarios.
+- `r.camposarch@gmail.com`: criou a receita `Achocolatado`.
+- `r.camposdesign@gmail.com`: criou a receita `Bolo de whey`.
+- `arch_reads_own_recipe`: retornou 1 linha com `Achocolatado`.
+- `arch_reads_design_recipe`: retornou 0 linhas.
+- `design_reads_own_recipe`: retornou 1 linha com `Bolo de whey`.
+- `design_reads_arch_recipe`: retornou 0 linhas.
+- Resultado: isolamento RLS entre os dois workspaces aprovado.
 
 ## Query de Apoio
 
@@ -56,9 +52,17 @@ Estes testes exigem dois usuarios reais confirmados no Supabase Auth:
 - `r.camposarch@gmail.com`: usuario confirmado, profile criado, workspace proprio, papel `owner`, 1 receita ativa.
 - `r.camposdesign@gmail.com`: usuario confirmado, profile criado, workspace proprio, papel `owner`, 1 receita ativa.
 - Os dois usuarios estao em `organization_id` diferentes, como esperado para isolamento multi-tenant.
-- Validacao estrutural retornou `OK users loaded and orgs are different`.
-- Consulta cruzada executada como `postgres` mostrou receitas dos dois workspaces, o que e esperado porque `postgres` bypassa RLS no SQL Editor. Nao usar esse resultado como prova de vazamento.
-- Proximo teste RLS deve usar `supabase/rls_smoke_test_validated_users.sql`, com `set local role authenticated` e UUIDs ja validados.
+- Validacao RLS autenticada comprovou que cada usuario acessa apenas a propria receita.
+
+## Warnings Do Security Advisor
+
+Data de revisao: 2026-05-23.
+
+- Foram reportados 16 warnings no Supabase Security Advisor.
+- O warning `function_search_path_mutable` para `public.set_updated_at` foi enderecado na migration `20260523090000_harden_internal_functions.sql`.
+- Os warnings de funcoes `SECURITY DEFINER` executaveis via RPC foram enderecados movendo helpers internos para o schema `private`, que nao deve ficar exposto pela API REST.
+- As funcoes internas publicas antigas sao removidas ao final da migration de hardening.
+- O warning `auth_leaked_password_protection` exige ajuste manual no painel do Supabase Auth: habilitar protecao contra senhas vazadas.
 
 ## Criterio Para Avancar
 
@@ -67,12 +71,13 @@ Somente avancar para Fase 3.1 quando:
 - CRUD autenticado passar em producao.
 - Persistencia apos reload estiver comprovada.
 - Exclusao do ultimo item estiver comprovada.
-- RLS estiver comprovado com dois usuarios diferentes.
+- RLS estiver comprovado com dois usuarios diferentes. Concluido em 2026-05-23.
 - Nenhum dado privado aparecer sem login.
+- Security Advisor estiver sem warnings criticos relacionados a funcoes internas.
 
 ## Proxima Acao
 
-Executar o checklist autenticado com dois usuarios de teste confirmados.
+Aplicar a migration `20260523090000_harden_internal_functions.sql`, reexecutar o teste RLS com dois usuarios e atualizar o Security Advisor.
 
 ## Regra Para Novos Testes
 

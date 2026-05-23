@@ -58,14 +58,16 @@ Quando um usuario e criado no Supabase Auth:
 
 ## RLS Base
 
-Funcoes auxiliares:
+Funcoes auxiliares internas:
 
-- `current_user_role(organization_id)`.
-- `is_organization_member(organization_id)`.
-- `can_manage_organization(organization_id)`.
-- `can_write_organization(organization_id)`.
-- `handle_new_user()`: cria `profiles` e organizacao padrao automaticamente a partir do Supabase Auth.
-- `bootstrap_organization_owner()`: cria o membro `owner` automaticamente quando a organizacao nasce.
+- `private.current_user_role(organization_id)`.
+- `private.is_organization_member(organization_id)`.
+- `private.can_manage_organization(organization_id)`.
+- `private.can_write_organization(organization_id)`.
+- `private.handle_new_user()`: cria `profiles` e organizacao padrao automaticamente a partir do Supabase Auth.
+- `private.bootstrap_organization_owner()`: cria o membro `owner` automaticamente quando a organizacao nasce.
+
+Essas funcoes devem permanecer fora do schema `public` exposto pela API REST. Elas existem para policies RLS e triggers internas, nao para chamadas diretas via `/rpc`.
 
 Regras:
 

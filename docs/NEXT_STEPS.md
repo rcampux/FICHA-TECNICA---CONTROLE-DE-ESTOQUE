@@ -16,28 +16,22 @@ O projeto esta em fase de prototipo estruturado com Supabase ja conectado em pro
 - GitHub e Vercel devem permanecer sincronizados: todo commit exige push e deploy de producao.
 - CRUD visual voltou para icones explicitos de editar/excluir nos cards, em mobile e desktop.
 - Exclusoes remotas foram ajustadas para funcionar tambem quando o usuario remove o ultimo item de uma lista.
+- RLS foi validado em producao com dois usuarios reais: `Achocolatado` ficou isolado em `r.camposarch@gmail.com` e `Bolo de whey` ficou isolado em `r.camposdesign@gmail.com`.
+- Security Advisor reportou warnings de funcoes internas; a migration `20260523090000_harden_internal_functions.sql` foi preparada para hardening.
 
 ## Proximo Passo Recomendado
 
-### Fase 2.2 - Validacao de Producao Supabase
+### Fase 2.3 - Hardening Supabase
 
-Objetivo: provar que o app esta confiavel para uso B2B inicial com dados reais, antes de avancar para pagamento, IA e recursos premium.
+Objetivo: remover warnings de seguranca do Supabase antes de avancar para pagamento, IA e recursos premium.
 
 Ordem recomendada:
 
-1. Criar dois usuarios de teste confirmados no Supabase Auth.
-2. Validar que cada usuario recebe automaticamente `profile`, `organization` e papel `owner`.
-3. Em producao, com o usuario A, criar:
-   - 1 produto no estoque virtual.
-   - 1 produto no estoque fisico.
-   - 1 receita com ingrediente vinculado.
-4. Recarregar a pagina e confirmar que os dados persistem.
-5. Editar os tres tipos de item e confirmar persistencia depois do reload.
-6. Excluir os tres tipos de item, incluindo o caso de ser o ultimo item da lista.
-7. Confirmar no Supabase que os registros privados ficam com `deleted_at` quando aplicavel.
-8. Entrar com o usuario B e confirmar que ele nao ve dados do usuario A.
-9. Rodar `supabase/rls_smoke_test.sql` com UUIDs reais para validar isolamento por workspace.
-10. Registrar qualquer falha encontrada antes de iniciar novas features.
+1. Aplicar `supabase/migrations/20260523090000_harden_internal_functions.sql` no Supabase.
+2. Reexecutar o teste de isolamento com os dois usuarios reais.
+3. Atualizar o Security Advisor e confirmar que os warnings de funcoes internas sairam.
+4. Habilitar `Leaked Password Protection` no painel Supabase Auth.
+5. Registrar qualquer warning residual antes de iniciar novas features.
 
 ## Checklist de Aceite
 
@@ -53,6 +47,8 @@ Ordem recomendada:
 - Recarregar a pagina nao restaura itens excluidos.
 - Usuario fora do workspace nao acessa dados de outro workspace.
 - Service worker nao mostra erro de `addAll` nem cancela assets essenciais.
+- Funcoes internas `SECURITY DEFINER` nao ficam expostas via `/rpc`.
+- `Leaked Password Protection` fica habilitado no Supabase Auth.
 
 ## Se Tudo Passar
 

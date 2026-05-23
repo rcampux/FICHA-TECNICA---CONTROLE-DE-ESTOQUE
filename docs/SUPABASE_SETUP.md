@@ -31,11 +31,13 @@ SUPABASE_ANON_KEY
 - A `anon key` pode ir para o frontend porque e publica.
 - A `service_role key` nunca deve entrar no frontend, no GitHub ou na Vercel como variavel exposta ao build estatico.
 - Toda protecao real depende das policies RLS.
+- Funcoes internas usadas por RLS/triggers devem ficar no schema `private`, fora da API REST publica.
+- Funcoes `SECURITY DEFINER` nao devem ficar executaveis por `anon` via `/rpc`.
 
 ## Ordem Para Ligar
 
 1. Criar o projeto no Supabase.
-2. Rodar a migration SQL pelo Supabase SQL Editor ou CLI.
+2. Rodar as migrations SQL pelo Supabase SQL Editor ou CLI.
 3. Criar um usuario de teste e confirmar que o trigger criou `profiles`, `organizations` e `organization_members`.
 4. Configurar as variaveis acima na Vercel.
 5. Fazer novo deploy de producao.
@@ -53,4 +55,10 @@ SUPABASE_ANON_KEY
 
 ## Workspace Inicial
 
-A migration cria automaticamente uma organizacao padrao quando um usuario nasce no Supabase Auth. O usuario vira `owner` dessa organizacao pelo trigger `bootstrap_organization_owner`.
+A migration cria automaticamente uma organizacao padrao quando um usuario nasce no Supabase Auth. O usuario vira `owner` dessa organizacao pelo trigger `private.bootstrap_organization_owner`.
+
+## Hardening Do Security Advisor
+
+- Aplicar `supabase/migrations/20260523090000_harden_internal_functions.sql` depois da migration inicial.
+- Reexecutar o teste RLS de dois usuarios depois do hardening.
+- No painel Supabase Auth, habilitar `Leaked Password Protection` antes de considerar o ambiente pronto para producao paga.
