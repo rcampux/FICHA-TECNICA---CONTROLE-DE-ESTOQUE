@@ -161,12 +161,14 @@ Este arquivo e um inventario vivo das funcoes utilizadas no projeto. Toda nova f
 | `renderStock` | `src/modules/stock/virtualStock.js` | 143 | Renderiza estoque virtual com `data-stock-id` e delegacao de eventos para CRUD estavel apos refresh. |
 | `registerFichaTecServiceWorker` | `src/pwa/registerServiceWorker.js` | 1 | (function registerFichaTecServiceWorker() { |
 | `handleLaunchShortcut` | `src/pwa/registerServiceWorker.js` | 2 | function handleLaunchShortcut() { |
-| `registerServiceWorker` | `src/pwa/registerServiceWorker.js` | 13 | function registerServiceWorker() { |
+| `registerServiceWorker` | `src/pwa/registerServiceWorker.js` | 13 | Registra o Service Worker, forca checagem de atualizacao e recarrega uma vez quando a nova versao assume controle. |
 | `shouldCacheResponse` | `service-worker.js` / `public/service-worker.js` | 27 | Valida respostas antes de inserir no cache PWA, evitando cache de 404/HTML inesperado. |
 | `cacheAppShell` | `service-worker.js` / `public/service-worker.js` | 31 | Pre-carrega assets principais com tolerancia a falhas individuais. |
 | `deleteOldCaches` | `service-worker.js` / `public/service-worker.js` | 45 | Remove versoes antigas do cache PWA na ativacao. |
 | `networkFirstNavigation` | `service-worker.js` / `public/service-worker.js` | 50 | Tenta navegacao online primeiro e usa app shell cacheado como fallback offline. |
-| `cacheFirstAsset` | `service-worker.js` / `public/service-worker.js` | 65 | Entrega assets pelo cache quando possivel e grava apenas respostas validas. |
+| `cacheFirstAsset` | `service-worker.js` / `public/service-worker.js` | 65 | Entrega imagens/icones pelo cache quando possivel e grava apenas respostas validas. |
+| `shouldUseNetworkFirstAsset` | `service-worker.js` / `public/service-worker.js` | 85 | Identifica HTML, JS, CSS e manifest como assets criticos que devem buscar rede antes do cache. |
+| `networkFirstAsset` | `service-worker.js` / `public/service-worker.js` | 91 | Busca assets criticos na rede primeiro e usa cache apenas como fallback offline, evitando JS antigo apos F5. |
 | `exposeHybridRepository` | `src/services/repositories/hybridRepository.js` | 1 | (function exposeHybridRepository() { |
 | `getMode` | `src/services/repositories/hybridRepository.js` | 7 | Retorna `local` ou `supabase` conforme configuracao ativa. |
 | `getSupabaseClient` | `src/services/repositories/hybridRepository.js` | 11 | Reusa a promise do cliente Supabase para leituras/escritas remotas. |

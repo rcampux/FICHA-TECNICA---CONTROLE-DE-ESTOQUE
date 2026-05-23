@@ -1,4 +1,5 @@
-const CACHE_VERSION = "fichatec-pwa-v7";
+const CACHE_VERSION = "fichatec-pwa-v8";
+const NETWORK_FIRST_EXTENSIONS = new Set([".css", ".html", ".js", ".webmanifest"]);
 const APP_SHELL = [
   "/",
   "/manifest.webmanifest",
@@ -81,6 +82,25 @@ async function cacheFirstAsset(request) {
   return response;
 }
 
+function shouldUseNetworkFirstAsset(url) {
+  if (url.pathname === "/" || url.pathname.endsWith("/index.html")) return true;
+  const extension = url.pathname.slice(url.pathname.lastIndexOf("."));
+  return NETWORK_FIRST_EXTENSIONS.has(extension);
+}
+
+async function networkFirstAsset(request) {
+  try {
+    const response = await fetch(new Request(request, {cache:"reload"}));
+    if (shouldCacheResponse(response)) {
+      const cache = await caches.open(CACHE_VERSION);
+      await cache.put(request, response.clone());
+    }
+    return response;
+  } catch (error) {
+    return await caches.match(request) || Response.error();
+  }
+}
+
 self.addEventListener("install", (event) => {
   event.waitUntil(cacheAppShell());
   self.skipWaiting();
@@ -112,6 +132,11 @@ self.addEventListener("fetch", (event) => {
 
   if (request.mode === "navigate") {
     event.respondWith(networkFirstNavigation(request));
+    return;
+  }
+
+  if (shouldUseNetworkFirstAsset(url)) {
+    event.respondWith(networkFirstAsset(request));
     return;
   }
 
