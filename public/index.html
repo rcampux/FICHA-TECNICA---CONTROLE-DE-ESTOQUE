@@ -177,28 +177,37 @@
 
 <!-- PAGE: ESTOQUE VIRTUAL -->
 <div class="page" id="page-estoque">
-  <div class="page-header">
-    <div><div class="page-title">Est. Virtual</div><div class="page-sub">Ingredientes para precificação</div></div>
-    <button class="btn btn-primary btn-sm" onclick="openStockModal()">
+  <div class="stock-category-card">
+    <div class="stock-category-title">Categorias</div>
+    <div class="stock-category-search">
+      <input type="text" id="stock-category-search" placeholder="Busque por categoria" oninput="renderStockCategoryFilters()">
+      <span class="material-symbols-rounded">search</span>
+    </div>
+    <button class="stock-filter-btn" onclick="toggleStockCategoryPanel()" type="button" title="Filtrar categorias">
+      <span class="material-symbols-rounded">filter_list</span>
+    </button>
+    <button class="btn btn-primary btn-sm" onclick="showToast('Cadastro de categoria entra na proxima etapa.')" type="button">
       <span class="material-symbols-rounded">add</span> Novo
     </button>
+    <div class="category-filter-panel" id="stock-category-panel" hidden></div>
   </div>
-  <div class="stock-toolbar">
-    <button class="btn btn-secondary btn-sm" type="button">
-      <span class="material-symbols-rounded">category</span> Criar Categoria
+  <div class="stock-add-card">
+    <div class="stock-add-title">Adicionar Produto</div>
+    <button class="btn btn-primary btn-sm" onclick="openStockModal()" type="button">
+      <span class="material-symbols-rounded">add</span> Novo
     </button>
-    <div class="view-toggle" aria-label="Modo de visualizacao do estoque virtual">
-      <button class="view-toggle-btn active" id="stock-view-grid" onclick="setStockViewMode('grid')" type="button" title="Visualizar em grid">
-        <span class="material-symbols-rounded">grid_view</span>
-      </button>
-      <button class="view-toggle-btn" id="stock-view-list" onclick="setStockViewMode('list')" type="button" title="Visualizar em lista">
-        <span class="material-symbols-rounded">view_list</span>
-      </button>
-    </div>
   </div>
   <div class="search-bar">
     <span class="material-symbols-rounded search-icon">search</span>
     <input type="text" placeholder="Buscar produto..." oninput="renderStock(this.value)">
+  </div>
+  <div class="stock-view-row">
+    <button class="stock-view-icon active" id="stock-view-grid" onclick="setStockViewMode('grid')" type="button" title="Visualizar em grid">
+      <span class="material-symbols-rounded">grid_view</span>
+    </button>
+    <button class="stock-view-icon" id="stock-view-list" onclick="setStockViewMode('list')" type="button" title="Visualizar em lista">
+      <span class="material-symbols-rounded">view_list</span>
+    </button>
   </div>
   <div id="stock-list"></div>
 </div>
@@ -219,29 +228,38 @@
 
 <!-- PAGE: ESTOQUE FÍSICO -->
 <div class="page" id="page-fisico">
-  <div class="page-header">
-    <div><div class="page-title">Est. Físico</div><div class="page-sub">Controle real de quantidade</div></div>
-    <button class="btn btn-primary btn-sm" onclick="openPhysicalModal()">
+  <div class="stock-category-card">
+    <div class="stock-category-title">Categorias</div>
+    <div class="stock-category-search">
+      <input type="text" id="pstock-category-search" placeholder="Busque por categoria" oninput="renderPhysicalCategoryFilters()">
+      <span class="material-symbols-rounded">search</span>
+    </div>
+    <button class="stock-filter-btn" onclick="togglePhysicalCategoryPanel()" type="button" title="Filtrar categorias">
+      <span class="material-symbols-rounded">filter_list</span>
+    </button>
+    <button class="btn btn-primary btn-sm" onclick="showToast('Cadastro de categoria entra na proxima etapa.')" type="button">
       <span class="material-symbols-rounded">add</span> Novo
     </button>
+    <div class="category-filter-panel" id="pstock-category-panel" hidden></div>
   </div>
-  <div class="stock-toolbar">
-    <button class="btn btn-secondary btn-sm" type="button">
-      <span class="material-symbols-rounded">category</span> Criar Categoria
+  <div class="stock-add-card">
+    <div class="stock-add-title">Adicionar Produto</div>
+    <button class="btn btn-primary btn-sm" onclick="openPhysicalModal()" type="button">
+      <span class="material-symbols-rounded">add</span> Novo
     </button>
-    <div class="view-toggle" aria-label="Modo de visualizacao do estoque fisico">
-      <button class="view-toggle-btn active" id="pstock-view-grid" onclick="setPhysicalViewMode('grid')" type="button" title="Visualizar em grid">
-        <span class="material-symbols-rounded">grid_view</span>
-      </button>
-      <button class="view-toggle-btn" id="pstock-view-list" onclick="setPhysicalViewMode('list')" type="button" title="Visualizar em lista">
-        <span class="material-symbols-rounded">view_list</span>
-      </button>
-    </div>
   </div>
   <div id="pstock-summary" class="summary-box" style="display:none"></div>
   <div class="search-bar">
     <span class="material-symbols-rounded search-icon">search</span>
     <input type="text" placeholder="Buscar produto..." oninput="renderPhysical(this.value)">
+  </div>
+  <div class="stock-view-row">
+    <button class="stock-view-icon active" id="pstock-view-grid" onclick="setPhysicalViewMode('grid')" type="button" title="Visualizar em grid">
+      <span class="material-symbols-rounded">grid_view</span>
+    </button>
+    <button class="stock-view-icon" id="pstock-view-list" onclick="setPhysicalViewMode('list')" type="button" title="Visualizar em lista">
+      <span class="material-symbols-rounded">view_list</span>
+    </button>
   </div>
   <div id="pstock-list"></div>
 </div>
@@ -545,12 +563,12 @@
     <div id="auth-form-wrap">
       <div class="input-group">
         <label class="input-label">E-mail</label>
-        <input type="email" id="auth-email" placeholder="chef@cozinha.com.br" autocomplete="off" autocapitalize="none" spellcheck="false">
+        <input type="email" id="auth-email" placeholder="chef@cozinha.com.br" autocomplete="off" autocapitalize="none" spellcheck="false" onkeydown="handleAuthKeydown(event)">
       </div>
       <div class="input-group">
         <label class="input-label">Senha</label>
         <div class="password-field">
-          <input type="password" id="auth-password" placeholder="Senha forte" autocomplete="new-password" oninput="renderPasswordFeedback()">
+          <input type="password" id="auth-password" placeholder="Senha forte" autocomplete="new-password" oninput="renderPasswordFeedback()" onkeydown="handleAuthKeydown(event)">
           <button class="password-toggle" onclick="togglePasswordVisibility()" type="button" aria-label="Mostrar ou ocultar senha">
             <span class="material-symbols-rounded" id="auth-password-toggle-icon">visibility</span>
           </button>

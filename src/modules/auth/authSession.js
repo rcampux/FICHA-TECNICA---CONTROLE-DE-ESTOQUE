@@ -74,6 +74,19 @@
       return Object.values(getPasswordValidation(password)).every(Boolean);
     }
 
+    function showInitialUserScreen() {
+      closeModal("modal-auth");
+      if (typeof window.showPage === "function") {
+        window.showPage("ficha", "nav-ficha");
+      }
+    }
+
+    function handleAuthKeydown(event) {
+      if (event.key !== "Enter" || state.loading) return;
+      event.preventDefault();
+      submitAuthForm();
+    }
+
     function clearAuthInputs(options = {}) {
       const emailInput = getElement("auth-email");
       const passwordInput = getElement("auth-password");
@@ -355,6 +368,7 @@
       state.pendingVerificationEmail = "";
       syncSupabaseSession(data.session);
       await loadOrganizations();
+      showInitialUserScreen();
       showToast(state.authMode === "login" ? "Login realizado." : "Conta criada e login realizado.");
     }
 
@@ -422,6 +436,7 @@
       getPasswordValidation,
       backToAuthForm,
       clearAuthInputs,
+      handleAuthKeydown,
       initAuthSession,
       isStrongPassword,
       loadOrganizations,

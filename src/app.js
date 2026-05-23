@@ -89,8 +89,8 @@ const virtualStockModule=window.FichaTecVirtualStock.createVirtualStockModule({
   confirmAction,
   storageKeys:STORAGE_KEYS,
 });
-const {openStockModal,applyStockViewMode,setStockViewMode,updateGoogleLink,handleGoogleSearch,saveStock,deleteStock,renderStock}=virtualStockModule;
-Object.assign(window,{openStockModal,applyStockViewMode,setStockViewMode,updateGoogleLink,handleGoogleSearch,saveStock,deleteStock,renderStock});
+const {openStockModal,applyStockViewMode,setStockViewMode,renderStockCategoryFilters,toggleStockCategoryPanel,toggleStockCategoryFilter,clearStockCategoryFilters,updateGoogleLink,handleGoogleSearch,saveStock,deleteStock,renderStock}=virtualStockModule;
+Object.assign(window,{openStockModal,applyStockViewMode,setStockViewMode,renderStockCategoryFilters,toggleStockCategoryPanel,toggleStockCategoryFilter,clearStockCategoryFilters,updateGoogleLink,handleGoogleSearch,saveStock,deleteStock,renderStock});
 
 const physicalStockModule=window.FichaTecPhysicalStock.createPhysicalStockModule({
   closeModal,
@@ -108,8 +108,8 @@ const physicalStockModule=window.FichaTecPhysicalStock.createPhysicalStockModule
   confirmAction,
   storageKeys:STORAGE_KEYS,
 });
-const {stockColor,stockFlag,stockBar,applyPhysicalViewMode,setPhysicalViewMode,openPhysicalModal,savePhysical,deletePhysical,renderPhysical,openMove,setMoveType,confirmMove}=physicalStockModule;
-Object.assign(window,{stockColor,stockFlag,stockBar,applyPhysicalViewMode,setPhysicalViewMode,openPhysicalModal,savePhysical,deletePhysical,renderPhysical,openMove,setMoveType,confirmMove});
+const {stockColor,stockFlag,stockBar,applyPhysicalViewMode,setPhysicalViewMode,renderPhysicalCategoryFilters,togglePhysicalCategoryPanel,togglePhysicalCategoryFilter,clearPhysicalCategoryFilters,openPhysicalModal,savePhysical,deletePhysical,renderPhysical,openMove,setMoveType,confirmMove}=physicalStockModule;
+Object.assign(window,{stockColor,stockFlag,stockBar,applyPhysicalViewMode,setPhysicalViewMode,renderPhysicalCategoryFilters,togglePhysicalCategoryPanel,togglePhysicalCategoryFilter,clearPhysicalCategoryFilters,openPhysicalModal,savePhysical,deletePhysical,renderPhysical,openMove,setMoveType,confirmMove});
 
 const authSessionModule=window.FichaTecAuthSession.createAuthSessionModule({
   closeModal,
@@ -117,8 +117,8 @@ const authSessionModule=window.FichaTecAuthSession.createAuthSessionModule({
   createSupabaseClient:window.FichaTecSupabaseClientService.createClient,
   showToast,
 });
-const {backToAuthForm,clearAuthInputs,getAuthState,getPasswordValidation,initAuthSession,isStrongPassword,loadOrganizations,openAuthModal,renderAuthState,renderPasswordFeedback,resendConfirmationEmail,selectOrganization,setAuthMode,signOutAuth,submitAuthForm,syncSupabaseSession,togglePasswordVisibility}=authSessionModule;
-Object.assign(window,{backToAuthForm,clearAuthInputs,getAuthState,getPasswordValidation,initAuthSession,isStrongPassword,loadOrganizations,openAuthModal,renderAuthState,renderPasswordFeedback,resendConfirmationEmail,selectOrganization,setAuthMode,signOutAuth,submitAuthForm,syncSupabaseSession,togglePasswordVisibility});
+const {backToAuthForm,clearAuthInputs,getAuthState,getPasswordValidation,handleAuthKeydown,initAuthSession,isStrongPassword,loadOrganizations,openAuthModal,renderAuthState,renderPasswordFeedback,resendConfirmationEmail,selectOrganization,setAuthMode,signOutAuth,submitAuthForm,syncSupabaseSession,togglePasswordVisibility}=authSessionModule;
+Object.assign(window,{backToAuthForm,clearAuthInputs,getAuthState,getPasswordValidation,handleAuthKeydown,initAuthSession,isStrongPassword,loadOrganizations,openAuthModal,renderAuthState,renderPasswordFeedback,resendConfirmationEmail,selectOrganization,setAuthMode,signOutAuth,submitAuthForm,syncSupabaseSession,togglePasswordVisibility});
 
 async function hydrateWorkspaceData(event){
   const organizationId=event?.detail?.organizationId || DB.activeOrganizationId?.();

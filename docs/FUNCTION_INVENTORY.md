@@ -41,7 +41,9 @@ Este arquivo e um inventario vivo das funcoes utilizadas no projeto. Toda nova f
 | `getAuthRedirectUrl` | `src/modules/auth/authSession.js` | 58 | Monta URL atual do app para redirecionamento de confirmacao de e-mail. |
 | `getPasswordValidation` | `src/modules/auth/authSession.js` | 62 | Valida requisitos de senha forte para criacao de conta. |
 | `isStrongPassword` | `src/modules/auth/authSession.js` | 73 | Confirma se todos os requisitos de senha forte foram atendidos. |
-| `clearAuthInputs` | `src/modules/auth/authSession.js` | 77 | Limpa campos sensiveis do formulario de acesso e restaura o campo de senha. |
+| `showInitialUserScreen` | `src/modules/auth/authSession.js` | 77 | Fecha o modal de acesso e retorna para a tela inicial do usuario apos login. |
+| `handleAuthKeydown` | `src/modules/auth/authSession.js` | 84 | Submete login/cadastro ao pressionar Enter nos campos de acesso. |
+| `clearAuthInputs` | `src/modules/auth/authSession.js` | 90 | Limpa campos sensiveis do formulario de acesso e restaura o campo de senha. |
 | `initAuthSession` | `src/modules/auth/authSession.js` | 57 | Inicializa modo local ou Supabase Auth sem bloquear o prototipo. |
 | `syncSupabaseSession` | `src/modules/auth/authSession.js` | 88 | Sincroniza sessao Supabase no estado local do modulo. |
 | `loadOrganizations` | `src/modules/auth/authSession.js` | 98 | Carrega workspaces do usuario autenticado via `organization_members`. |
@@ -102,13 +104,18 @@ Este arquivo e um inventario vivo das funcoes utilizadas no projeto. Toda nova f
 | `createPhysicalStockModule` | `src/modules/stock/physicalStock.js` | 2 | function createPhysicalStockModule(deps) { |
 | `applyPhysicalViewMode` | `src/modules/stock/physicalStock.js` | 26 | Aplica classe e estado visual do modo grid/lista no estoque fisico. |
 | `setPhysicalViewMode` | `src/modules/stock/physicalStock.js` | 34 | Persiste a preferencia grid/lista do estoque fisico e re-renderiza a lista atual. |
-| `stockColor` | `src/modules/stock/physicalStock.js` | 40 | function stockColor(percent) { |
-| `stockFlag` | `src/modules/stock/physicalStock.js` | 44 | function stockFlag(percent) { |
-| `stockBar` | `src/modules/stock/physicalStock.js` | 50 | function stockBar(percent) { |
-| `openPhysicalModal` | `src/modules/stock/physicalStock.js` | 54 | function openPhysicalModal(id = null) { |
-| `savePhysical` | `src/modules/stock/physicalStock.js` | 78 | function savePhysical() { |
-| `deletePhysical` | `src/modules/stock/physicalStock.js` | 126 | Exclui produto fisico apos confirmacao visual. |
-| `renderPhysical` | `src/modules/stock/physicalStock.js` | 134 | function renderPhysical(filter = "") { |
+| `getPhysicalCategories` | `src/modules/stock/physicalStock.js` | 42 | Retorna categorias unicas do estoque fisico para filtro multi-selecao. |
+| `renderPhysicalCategoryFilters` | `src/modules/stock/physicalStock.js` | 47 | Renderiza lista de categorias selecionaveis no painel do funil fisico. |
+| `togglePhysicalCategoryPanel` | `src/modules/stock/physicalStock.js` | 72 | Abre ou fecha o painel de categorias do estoque fisico. |
+| `togglePhysicalCategoryFilter` | `src/modules/stock/physicalStock.js` | 80 | Alterna uma categoria no filtro multi-selecao do estoque fisico. |
+| `clearPhysicalCategoryFilters` | `src/modules/stock/physicalStock.js` | 90 | Limpa filtros de categoria aplicados ao estoque fisico. |
+| `stockColor` | `src/modules/stock/physicalStock.js` | 96 | function stockColor(percent) { |
+| `stockFlag` | `src/modules/stock/physicalStock.js` | 100 | function stockFlag(percent) { |
+| `stockBar` | `src/modules/stock/physicalStock.js` | 106 | function stockBar(percent) { |
+| `openPhysicalModal` | `src/modules/stock/physicalStock.js` | 110 | function openPhysicalModal(id = null) { |
+| `savePhysical` | `src/modules/stock/physicalStock.js` | 134 | function savePhysical() { |
+| `deletePhysical` | `src/modules/stock/physicalStock.js` | 183 | Exclui produto fisico apos confirmacao visual. |
+| `renderPhysical` | `src/modules/stock/physicalStock.js` | 193 | function renderPhysical(filter = "") { |
 | `openMove` | `src/modules/stock/physicalStock.js` | 167 | function openMove(id) { |
 | `setMoveType` | `src/modules/stock/physicalStock.js` | 185 | function setMoveType(type) { |
 | `confirmMove` | `src/modules/stock/physicalStock.js` | 193 | function confirmMove() { |
@@ -118,12 +125,17 @@ Este arquivo e um inventario vivo das funcoes utilizadas no projeto. Toda nova f
 | `createVirtualStockModule` | `src/modules/stock/virtualStock.js` | 2 | function createVirtualStockModule(deps) { |
 | `applyStockViewMode` | `src/modules/stock/virtualStock.js` | 21 | Aplica classe e estado visual do modo grid/lista no estoque virtual. |
 | `setStockViewMode` | `src/modules/stock/virtualStock.js` | 29 | Persiste a preferencia grid/lista do estoque virtual e re-renderiza a lista atual. |
-| `openStockModal` | `src/modules/stock/virtualStock.js` | 36 | function openStockModal(id=null){ |
-| `updateGoogleLink` | `src/modules/stock/virtualStock.js` | 58 | function updateGoogleLink(){ |
-| `handleGoogleSearch` | `src/modules/stock/virtualStock.js` | 63 | function handleGoogleSearch(e){const h=document.getElementById('google-search-link').href;if(!h\|\|h==='#'){e.preventDefault();return;}window.open(h,'_blank');e |
-| `saveStock` | `src/modules/stock/virtualStock.js` | 64 | function saveStock(){ |
-| `deleteStock` | `src/modules/stock/virtualStock.js` | 77 | Exclui produto virtual apos confirmacao visual. |
-| `renderStock` | `src/modules/stock/virtualStock.js` | 81 | function renderStock(filter=''){ |
+| `getStockCategories` | `src/modules/stock/virtualStock.js` | 37 | Retorna categorias unicas do estoque virtual para filtro multi-selecao. |
+| `renderStockCategoryFilters` | `src/modules/stock/virtualStock.js` | 42 | Renderiza lista de categorias selecionaveis no painel do funil virtual. |
+| `toggleStockCategoryPanel` | `src/modules/stock/virtualStock.js` | 67 | Abre ou fecha o painel de categorias do estoque virtual. |
+| `toggleStockCategoryFilter` | `src/modules/stock/virtualStock.js` | 75 | Alterna uma categoria no filtro multi-selecao do estoque virtual. |
+| `clearStockCategoryFilters` | `src/modules/stock/virtualStock.js` | 85 | Limpa filtros de categoria aplicados ao estoque virtual. |
+| `openStockModal` | `src/modules/stock/virtualStock.js` | 94 | function openStockModal(id=null){ |
+| `updateGoogleLink` | `src/modules/stock/virtualStock.js` | 116 | function updateGoogleLink(){ |
+| `handleGoogleSearch` | `src/modules/stock/virtualStock.js` | 121 | function handleGoogleSearch(e){const h=document.getElementById('google-search-link').href;if(!h\|\|h==='#'){e.preventDefault();return;}window.open(h,'_blank');e |
+| `saveStock` | `src/modules/stock/virtualStock.js` | 122 | function saveStock(){ |
+| `deleteStock` | `src/modules/stock/virtualStock.js` | 135 | Exclui produto virtual apos confirmacao visual. |
+| `renderStock` | `src/modules/stock/virtualStock.js` | 139 | function renderStock(filter=''){ |
 | `registerFichaTecServiceWorker` | `src/pwa/registerServiceWorker.js` | 1 | (function registerFichaTecServiceWorker() { |
 | `handleLaunchShortcut` | `src/pwa/registerServiceWorker.js` | 2 | function handleLaunchShortcut() { |
 | `registerServiceWorker` | `src/pwa/registerServiceWorker.js` | 13 | function registerServiceWorker() { |

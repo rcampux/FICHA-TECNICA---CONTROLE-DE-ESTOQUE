@@ -16,6 +16,7 @@
 
     let editingStockId = null;
     let currentStockFilter = "";
+    let selectedStockCategories = new Set();
     let stockViewMode = localStorage.getItem("fichatec.stock.viewMode") || "grid";
 
     function applyStockViewMode() {
@@ -30,6 +31,60 @@
       stockViewMode = mode === "list" ? "list" : "grid";
       localStorage.setItem("fichatec.stock.viewMode", stockViewMode);
       applyStockViewMode();
+      renderStock(currentStockFilter);
+    }
+
+    function getStockCategories() {
+      return [...new Set(getStock().map((item) => item.category).filter(Boolean))]
+        .sort((a, b) => a.localeCompare(b, "pt-BR"));
+    }
+
+    function renderStockCategoryFilters() {
+      const panel = document.getElementById("stock-category-panel");
+      if (!panel) return;
+
+      const query = (document.getElementById("stock-category-search")?.value || "").trim().toLowerCase();
+      const categories = getStockCategories().filter((category) => category.toLowerCase().includes(query));
+
+      if (!categories.length) {
+        panel.innerHTML = '<div class="category-filter-empty">Nenhuma categoria encontrada.</div>';
+        return;
+      }
+
+      panel.innerHTML = `
+        <div class="category-filter-title">Filtrar por categoria</div>
+        <div class="category-filter-options">
+          ${categories.map((category) => `
+            <label class="category-filter-option">
+              <input type="checkbox" ${selectedStockCategories.has(category) ? "checked" : ""} onchange="toggleStockCategoryFilter('${category.replace(/'/g, "\\'")}')">
+              <span>${category}</span>
+            </label>
+          `).join("")}
+        </div>
+        <button class="category-clear-btn" onclick="clearStockCategoryFilters()" type="button">Limpar filtros</button>`;
+    }
+
+    function toggleStockCategoryPanel() {
+      const panel = document.getElementById("stock-category-panel");
+      if (!panel) return;
+      const shouldOpen = panel.hidden;
+      panel.hidden = !shouldOpen;
+      if (shouldOpen) renderStockCategoryFilters();
+    }
+
+    function toggleStockCategoryFilter(category) {
+      if (selectedStockCategories.has(category)) {
+        selectedStockCategories.delete(category);
+      } else {
+        selectedStockCategories.add(category);
+      }
+      renderStockCategoryFilters();
+      renderStock(currentStockFilter);
+    }
+
+    function clearStockCategoryFilters() {
+      selectedStockCategories = new Set();
+      renderStockCategoryFilters();
       renderStock(currentStockFilter);
     }
 
@@ -71,19 +126,24 @@
       const item={id:editingStockId||Date.now(),name,qty,unit:document.getElementById('stock-unit').value,price,category:document.getElementById('stock-category').value,nutrition};
       setStock(editingStockId?getStock().map(s=>s.id===editingStockId?item:s):[...getStock(),item]);
       db.save(storageKeys.stock,getStock());
-      closeModal('modal-stock');renderStock();
+      closeModal('modal-stock');renderStock();renderStockCategoryFilters();
       renderRecipes(document.getElementById('recipe-search').value,getActiveIngredientFilter());
       showToast(editingStockId?'Produto atualizado!':'Produto adicionado!');
     }
     async function deleteStock(id){
       if(!await confirmAction('Deseja excluir este produto do estoque virtual?','Excluir produto'))return;
-      setStock(getStock().filter(s=>s.id!==id));db.save(storageKeys.stock,getStock());renderStock();showToast('Removido.');
+      setStock(getStock().filter(s=>s.id!==id));db.save(storageKeys.stock,getStock());renderStock();renderStockCategoryFilters();showToast('Removido.');
     }
     function renderStock(filter=''){
       currentStockFilter = filter || "";
       const el=document.getElementById('stock-list');
       applyStockViewMode();
-      const f=getStock().filter(s=>s.name.toLowerCase().includes(filter.toLowerCase()));
+      renderStockCategoryFilters();
+      const f=getStock().filter((s) => {
+        const matchesName = s.name.toLowerCase().includes(filter.toLowerCase());
+        const matchesCategory = !selectedStockCategories.size || selectedStockCategories.has(s.category);
+        return matchesName && matchesCategory;
+      });
       if(!f.length){
         el.innerHTML=`<div class="empty-state"><span class="empty-icon"><span class="material-symbols-rounded" style="font-size:52px;font-variation-settings:'FILL' 0,'wght' 300,'GRAD' 0,'opsz' 48">inventory_2</span></span><div class="empty-text">${filter?'Nenhum produto encontrado.':'Estoque vazio. Clique em "+ Novo"!'}</div></div>`;
         return;
@@ -111,6 +171,10 @@
       openStockModal,
       applyStockViewMode,
       setStockViewMode,
+      renderStockCategoryFilters,
+      toggleStockCategoryPanel,
+      toggleStockCategoryFilter,
+      clearStockCategoryFilters,
       updateGoogleLink,
       handleGoogleSearch,
       saveStock,

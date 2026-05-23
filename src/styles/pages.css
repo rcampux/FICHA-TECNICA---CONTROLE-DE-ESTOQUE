@@ -63,11 +63,30 @@
 
   .page-header,
   .stock-toolbar,
+  .stock-category-card,
+  .stock-add-card,
+  .stock-view-row,
   .search-bar,
   .filter-chips,
   .section-label,
   #pstock-summary {
     grid-column: 1 / -1;
+  }
+
+  .stock-category-card {
+    grid-template-columns: auto minmax(260px, 1fr) auto auto;
+    padding: 18px 20px;
+  }
+
+  .stock-add-card {
+    padding: 22px 22px;
+  }
+
+  .category-filter-panel {
+    left: auto;
+    min-width: 320px;
+    right: 96px;
+    top: calc(100% + 10px);
   }
 
   .page-header {
@@ -98,6 +117,21 @@
 
   .page-header {
     margin-top: 8px;
+  }
+
+  .stock-category-card,
+  .stock-add-card {
+    margin-inline: auto;
+    width: min(100%, 1420px);
+  }
+
+  .stock-category-title,
+  .stock-add-title {
+    font-size: 24px;
+  }
+
+  .stock-category-search input {
+    font-size: 18px;
   }
 
   .page-hero-title {

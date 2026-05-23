@@ -21,6 +21,7 @@
     let moveType = "usar";
     let movingPhysicalId = null;
     let currentPhysicalFilter = "";
+    let selectedPhysicalCategories = new Set();
     let physicalViewMode = localStorage.getItem("fichatec.physicalStock.viewMode") || "grid";
 
     function applyPhysicalViewMode() {
@@ -35,6 +36,60 @@
       physicalViewMode = mode === "list" ? "list" : "grid";
       localStorage.setItem("fichatec.physicalStock.viewMode", physicalViewMode);
       applyPhysicalViewMode();
+      renderPhysical(currentPhysicalFilter);
+    }
+
+    function getPhysicalCategories() {
+      return [...new Set(getPhysicalStock().map((item) => item.category).filter(Boolean))]
+        .sort((a, b) => a.localeCompare(b, "pt-BR"));
+    }
+
+    function renderPhysicalCategoryFilters() {
+      const panel = document.getElementById("pstock-category-panel");
+      if (!panel) return;
+
+      const query = (document.getElementById("pstock-category-search")?.value || "").trim().toLowerCase();
+      const categories = getPhysicalCategories().filter((category) => category.toLowerCase().includes(query));
+
+      if (!categories.length) {
+        panel.innerHTML = '<div class="category-filter-empty">Nenhuma categoria encontrada.</div>';
+        return;
+      }
+
+      panel.innerHTML = `
+        <div class="category-filter-title">Filtrar por categoria</div>
+        <div class="category-filter-options">
+          ${categories.map((category) => `
+            <label class="category-filter-option">
+              <input type="checkbox" ${selectedPhysicalCategories.has(category) ? "checked" : ""} onchange="togglePhysicalCategoryFilter('${category.replace(/'/g, "\\'")}')">
+              <span>${category}</span>
+            </label>
+          `).join("")}
+        </div>
+        <button class="category-clear-btn" onclick="clearPhysicalCategoryFilters()" type="button">Limpar filtros</button>`;
+    }
+
+    function togglePhysicalCategoryPanel() {
+      const panel = document.getElementById("pstock-category-panel");
+      if (!panel) return;
+      const shouldOpen = panel.hidden;
+      panel.hidden = !shouldOpen;
+      if (shouldOpen) renderPhysicalCategoryFilters();
+    }
+
+    function togglePhysicalCategoryFilter(category) {
+      if (selectedPhysicalCategories.has(category)) {
+        selectedPhysicalCategories.delete(category);
+      } else {
+        selectedPhysicalCategories.add(category);
+      }
+      renderPhysicalCategoryFilters();
+      renderPhysical(currentPhysicalFilter);
+    }
+
+    function clearPhysicalCategoryFilters() {
+      selectedPhysicalCategories = new Set();
+      renderPhysicalCategoryFilters();
       renderPhysical(currentPhysicalFilter);
     }
 
@@ -120,6 +175,7 @@
 
       closeModal("modal-pstock");
       renderPhysical();
+      renderPhysicalCategoryFilters();
       renderRecipes(document.getElementById("recipe-search").value, getActiveIngredientFilter());
       showToast(editingPhysicalId ? "Atualizado!" : "Adicionado e sincronizado!");
     }
@@ -130,6 +186,7 @@
       setPhysicalStock(getPhysicalStock().filter((item) => item.id !== id));
       db.save(storageKeys.physicalStock, getPhysicalStock());
       renderPhysical();
+      renderPhysicalCategoryFilters();
       showToast("Removido.");
     }
 
@@ -137,7 +194,12 @@
       currentPhysicalFilter = filter || "";
       const listElement = document.getElementById("pstock-list");
       applyPhysicalViewMode();
-      const filtered = getPhysicalStock().filter((item) => item.name.toLowerCase().includes(filter.toLowerCase()));
+      renderPhysicalCategoryFilters();
+      const filtered = getPhysicalStock().filter((item) => {
+        const matchesName = item.name.toLowerCase().includes(filter.toLowerCase());
+        const matchesCategory = !selectedPhysicalCategories.size || selectedPhysicalCategories.has(item.category);
+        return matchesName && matchesCategory;
+      });
       const summaryElement = document.getElementById("pstock-summary");
 
       if (getPhysicalStock().length) {
@@ -258,6 +320,10 @@
       stockBar,
       applyPhysicalViewMode,
       setPhysicalViewMode,
+      renderPhysicalCategoryFilters,
+      togglePhysicalCategoryPanel,
+      togglePhysicalCategoryFilter,
+      clearPhysicalCategoryFilters,
       openPhysicalModal,
       savePhysical,
       deletePhysical,
