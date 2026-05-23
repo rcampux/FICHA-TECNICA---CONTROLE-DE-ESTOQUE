@@ -4,12 +4,15 @@
       closeModal,
       confirmAction,
       db,
+      ensureCategory,
       formatCurrency,
       formatQuantity,
       getActiveIngredientFilter,
+      getCategoryNames,
       getNutrition,
       getPhysicalStock,
       getStock,
+      renderCategoryOptions,
       renderRecipes,
       setPhysicalStock,
       setStock,
@@ -40,7 +43,7 @@
     }
 
     function getPhysicalCategories() {
-      return [...new Set(getPhysicalStock().map((item) => item.category).filter(Boolean))]
+      return getCategoryNames ? getCategoryNames() : [...new Set(getPhysicalStock().map((item) => item.category).filter(Boolean))]
         .sort((a, b) => a.localeCompare(b, "pt-BR"));
     }
 
@@ -112,6 +115,7 @@
 
       if (id !== null) {
         const item = getPhysicalStock().find((entry) => entry.id === id);
+        renderCategoryOptions?.("pstock-category", item.category || "");
         document.getElementById("modal-pstock-title").textContent = "Editar Produto";
         document.getElementById("pstock-name").value = item.name;
         document.getElementById("pstock-qty").value = item.currentQty;
@@ -120,6 +124,7 @@
         document.getElementById("pstock-desired").value = item.desiredQty;
         document.getElementById("pstock-category").value = item.category || "";
       } else {
+        renderCategoryOptions?.("pstock-category", "");
         document.getElementById("modal-pstock-title").textContent = "Novo Produto Físico";
         ["pstock-name", "pstock-qty", "pstock-price", "pstock-desired"].forEach((field) => {
           document.getElementById(field).value = "";
@@ -143,7 +148,7 @@
         return;
       }
 
-      const category = document.getElementById("pstock-category").value;
+      const category = ensureCategory ? ensureCategory(document.getElementById("pstock-category").value) : document.getElementById("pstock-category").value;
       const nextPhysicalStock = editingPhysicalId !== null
         ? getPhysicalStock().map((item) => item.id === editingPhysicalId
           ? {...item,name,currentQty:qty,unit,price,desiredQty:desired,category}

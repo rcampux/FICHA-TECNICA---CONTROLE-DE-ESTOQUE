@@ -20,6 +20,9 @@ Este documento registra as features prioritarias para evoluir os modulos de Esto
 - Categorias devem ser definidas livremente pelo usuario.
 - Exemplos: proteinas, carboidratos, gorduras, leguminosas, hortifruti, laticinios, bebidas.
 - Categorias devem ser persistidas e reutilizaveis em ambos os estoques.
+- O cadastro de categoria deve ser independente do cadastro de produto.
+- O cadastro de produto deve aceitar categoria vazia; a vinculacao pode ser feita depois na edicao do produto.
+- Quando o usuario escolher uma categoria inexistente em um produto, o app deve normalizar e reaproveitar essa categoria no catalogo.
 - A modelagem deve suportar categoria e subcategoria para filtro taxonomico.
 
 ### 1.2 Modos De Visualizacao
@@ -155,11 +158,13 @@ Adicionar no cadastro do produto fisico:
 - Melhorar hierarquia da aba Ficha.
 - Melhorar espacamentos, controles e responsividade dos estoques.
 - Adicionar toggle Lista/Grid com preferencia local.
+- Implementado: catalogo local compartilhado de categorias para cadastro independente e vinculacao posterior via edicao do produto.
 - Preservar CRUD e repositories existentes.
 
 ### Fase B - Schema E Persistencia
 
 - Criar tabela de categorias multi-tenant.
+- Migrar o catalogo local de categorias para Supabase com RLS por organizacao.
 - Adicionar suporte a subcategorias.
 - Adicionar campos de lote/fabricacao/vencimento no estoque fisico.
 - Revisar repositories Supabase e conversores.

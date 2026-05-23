@@ -104,7 +104,7 @@ Este arquivo e um inventario vivo das funcoes utilizadas no projeto. Toda nova f
 | `createPhysicalStockModule` | `src/modules/stock/physicalStock.js` | 2 | function createPhysicalStockModule(deps) { |
 | `applyPhysicalViewMode` | `src/modules/stock/physicalStock.js` | 26 | Aplica classe e estado visual do modo grid/lista no estoque fisico. |
 | `setPhysicalViewMode` | `src/modules/stock/physicalStock.js` | 34 | Persiste a preferencia grid/lista do estoque fisico e re-renderiza a lista atual. |
-| `getPhysicalCategories` | `src/modules/stock/physicalStock.js` | 42 | Retorna categorias unicas do estoque fisico para filtro multi-selecao. |
+| `getPhysicalCategories` | `src/modules/stock/physicalStock.js` | 42 | Retorna categorias do catalogo compartilhado para filtro multi-selecao no estoque fisico. |
 | `renderPhysicalCategoryFilters` | `src/modules/stock/physicalStock.js` | 47 | Renderiza lista de categorias selecionaveis no painel do funil fisico. |
 | `togglePhysicalCategoryPanel` | `src/modules/stock/physicalStock.js` | 72 | Abre ou fecha o painel de categorias do estoque fisico. |
 | `togglePhysicalCategoryFilter` | `src/modules/stock/physicalStock.js` | 80 | Alterna uma categoria no filtro multi-selecao do estoque fisico. |
@@ -121,11 +121,23 @@ Este arquivo e um inventario vivo das funcoes utilizadas no projeto. Toda nova f
 | `confirmMove` | `src/modules/stock/physicalStock.js` | 193 | function confirmMove() { |
 | `exposeStockPricing` | `src/modules/stock/stockPricing.js` | 1 | (function exposeStockPricing() { |
 | `pricePerUnit` | `src/modules/stock/stockPricing.js` | 2 | function pricePerUnit(stockItem) { |
+| `exposeCategoryCatalogModule` | `src/modules/stock/categoryCatalog.js` | 1 | Expoe o catalogo compartilhado de categorias para estoque virtual e fisico. |
+| `createCategoryCatalogModule` | `src/modules/stock/categoryCatalog.js` | 2 | Cria o modulo centralizado de cadastro, normalizacao e listagem de categorias. |
+| `normalizeCategoryName` | `src/modules/stock/categoryCatalog.js` | 31 | Normaliza nome de categoria antes de salvar ou comparar. |
+| `escapeOptionValue` | `src/modules/stock/categoryCatalog.js` | 35 | Escapa valores renderizados em `option` para evitar HTML invalido. |
+| `getDefaultCategoryNames` | `src/modules/stock/categoryCatalog.js` | 41 | Retorna categorias padrao reutilizaveis nos dois estoques. |
+| `getCategoryNames` | `src/modules/stock/categoryCatalog.js` | 45 | Mescla categorias padrao, cadastradas e usadas em produtos existentes. |
+| `persistCategories` | `src/modules/stock/categoryCatalog.js` | 56 | Persiste o catalogo local de categorias reutilizaveis. |
+| `ensureCategory` | `src/modules/stock/categoryCatalog.js` | 63 | Garante existencia de uma categoria antes de vincula-la a um produto. |
+| `renderCategoryOptions` | `src/modules/stock/categoryCatalog.js` | 74 | Preenche selects de categoria do estoque virtual e fisico. |
+| `openCategoryModal` | `src/modules/stock/categoryCatalog.js` | 90 | Abre modal de cadastro independente de categoria. |
+| `saveCategory` | `src/modules/stock/categoryCatalog.js` | 98 | Salva categoria avulsa e atualiza filtros/opcoes dos estoques. |
+| `handleCategoryKeydown` | `src/modules/stock/categoryCatalog.js` | 115 | Permite salvar categoria pressionando Enter no modal. |
 | `exposeVirtualStockModule` | `src/modules/stock/virtualStock.js` | 1 | (function exposeVirtualStockModule() { |
 | `createVirtualStockModule` | `src/modules/stock/virtualStock.js` | 2 | function createVirtualStockModule(deps) { |
 | `applyStockViewMode` | `src/modules/stock/virtualStock.js` | 21 | Aplica classe e estado visual do modo grid/lista no estoque virtual. |
 | `setStockViewMode` | `src/modules/stock/virtualStock.js` | 29 | Persiste a preferencia grid/lista do estoque virtual e re-renderiza a lista atual. |
-| `getStockCategories` | `src/modules/stock/virtualStock.js` | 37 | Retorna categorias unicas do estoque virtual para filtro multi-selecao. |
+| `getStockCategories` | `src/modules/stock/virtualStock.js` | 37 | Retorna categorias do catalogo compartilhado para filtro multi-selecao no estoque virtual. |
 | `renderStockCategoryFilters` | `src/modules/stock/virtualStock.js` | 42 | Renderiza lista de categorias selecionaveis no painel do funil virtual. |
 | `toggleStockCategoryPanel` | `src/modules/stock/virtualStock.js` | 67 | Abre ou fecha o painel de categorias do estoque virtual. |
 | `toggleStockCategoryFilter` | `src/modules/stock/virtualStock.js` | 75 | Alterna uma categoria no filtro multi-selecao do estoque virtual. |

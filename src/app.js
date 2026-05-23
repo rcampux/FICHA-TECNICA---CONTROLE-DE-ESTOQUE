@@ -6,6 +6,7 @@ const {pricePerUnit}=window.FichaTecStockPricing;
 let stock=DB.mode?.()==='supabase'?[]:DB.load(STORAGE_KEYS.stock);
 let physicalStock=DB.mode?.()==='supabase'?[]:DB.load(STORAGE_KEYS.physicalStock);
 let recipes=DB.mode?.()==='supabase'?[]:DB.load(STORAGE_KEYS.recipes);
+let categories=DB.load(STORAGE_KEYS.categories);
 
 const {getNutrition}=window.FichaTecNutrition;
 function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
@@ -76,14 +77,32 @@ const scannerRecipeModule=window.FichaTecScannerRecipe.createScannerRecipeModule
 const {openScanModal,resetScan,setScanStatus,handleScanFile,compressImage,analyzeRecipeImage,renderScanResult,removeScanIng,confirmScanSave}=scannerRecipeModule;
 Object.assign(window,{openScanModal,resetScan,setScanStatus,handleScanFile,compressImage,analyzeRecipeImage,renderScanResult,removeScanIng,confirmScanSave});
 
+const categoryCatalogModule=window.FichaTecCategoryCatalog.createCategoryCatalogModule({
+  closeModal,
+  db:DB,
+  getCategories:()=>categories,
+  getPhysicalStock:()=>physicalStock,
+  getStock:()=>stock,
+  renderPhysical:()=>renderPhysical(),
+  renderStock:()=>renderStock(),
+  setCategories:value=>{categories=value;},
+  showToast,
+  storageKeys:STORAGE_KEYS,
+});
+const {ensureCategory,getCategoryNames,getDefaultCategoryNames,handleCategoryKeydown,normalizeCategoryName,openCategoryModal,persistCategories,renderCategoryOptions,saveCategory}=categoryCatalogModule;
+Object.assign(window,{ensureCategory,getCategoryNames,getDefaultCategoryNames,handleCategoryKeydown,normalizeCategoryName,openCategoryModal,persistCategories,renderCategoryOptions,saveCategory});
+
 const virtualStockModule=window.FichaTecVirtualStock.createVirtualStockModule({
   closeModal,
   db:DB,
+  ensureCategory,
   formatCurrency:fmtBRL,
   getActiveIngredientFilter:()=>recipeSheetModule.getActiveIngredientFilter(),
+  getCategoryNames,
   getStock:()=>stock,
   pricePerUnit,
   renderRecipes,
+  renderCategoryOptions,
   setStock:value=>{stock=value;},
   showToast,
   confirmAction,
@@ -95,12 +114,15 @@ Object.assign(window,{openStockModal,applyStockViewMode,setStockViewMode,renderS
 const physicalStockModule=window.FichaTecPhysicalStock.createPhysicalStockModule({
   closeModal,
   db:DB,
+  ensureCategory,
   formatCurrency:fmtBRL,
   formatQuantity:fmtQty,
   getActiveIngredientFilter:()=>recipeSheetModule.getActiveIngredientFilter(),
+  getCategoryNames,
   getNutrition,
   getPhysicalStock:()=>physicalStock,
   getStock:()=>stock,
+  renderCategoryOptions,
   renderRecipes,
   setPhysicalStock:value=>{physicalStock=value;},
   setStock:value=>{stock=value;},
@@ -151,14 +173,15 @@ function applyRemoteSave(event){
   if(key===STORAGE_KEYS.stock)stock=value;
   if(key===STORAGE_KEYS.physicalStock)physicalStock=value;
   if(key===STORAGE_KEYS.recipes)recipes=value;
+  if(key===STORAGE_KEYS.categories)categories=value;
 }
 Object.assign(window,{applyRemoteSave});
 window.addEventListener('fichatec:remote-save',applyRemoteSave);
 
 function clearSessionData(){
   if(DB.mode()!=='supabase')return;
-  stock=[];physicalStock=[];recipes=[];
-  [STORAGE_KEYS.stock,STORAGE_KEYS.physicalStock,STORAGE_KEYS.recipes].forEach(key=>DB.remove?.(key));
+  stock=[];physicalStock=[];recipes=[];categories=[];
+  [STORAGE_KEYS.stock,STORAGE_KEYS.physicalStock,STORAGE_KEYS.recipes,STORAGE_KEYS.categories].forEach(key=>DB.remove?.(key));
   clearFicha({force:true,silent:true});
   renderStock();renderPhysical();renderRecipes();
 }

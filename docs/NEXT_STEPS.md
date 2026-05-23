@@ -19,8 +19,21 @@ O projeto esta em fase de prototipo estruturado com Supabase ja conectado em pro
 - RLS foi validado em producao com dois usuarios reais: `Achocolatado` ficou isolado em `r.camposarch@gmail.com` e `Bolo de whey` ficou isolado em `r.camposdesign@gmail.com`.
 - Security Advisor reportou warnings de funcoes internas; a migration `20260523090000_harden_internal_functions.sql` foi preparada para hardening.
 - Especificacao de evolucao de Estoque/Receitas registrada em `docs/STOCK_RECIPES_FEATURE_SPEC.md`.
+- Categorias agora podem ser cadastradas independentemente de produtos e reutilizadas no Estoque Virtual e Fisico; a vinculacao pode acontecer depois editando o produto.
 
 ## Proximo Passo Recomendado
+
+### Fase 2.5 - Persistencia Supabase Para Categorias
+
+Objetivo: levar o catalogo de categorias, hoje local e compartilhado na UI, para uma tabela multi-tenant com RLS.
+
+Ordem recomendada:
+
+1. Criar tabela `product_categories` com `organization_id`, `name`, `parent_id`, `deleted_at` e unicidade por workspace.
+2. Criar policies RLS usando as mesmas funcoes internas de organizacao.
+3. Atualizar repository Supabase para carregar/salvar categorias por workspace.
+4. Migrar categorias locais e categorias ja usadas em produtos para a nova tabela.
+5. Revalidar isolamento com os usuarios `r.camposarch@gmail.com` e `r.camposdesign@gmail.com`.
 
 ### Fase 2.3 - Hardening Supabase
 

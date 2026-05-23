@@ -186,7 +186,7 @@
     <button class="stock-filter-btn" onclick="toggleStockCategoryPanel()" type="button" title="Filtrar categorias">
       <span class="material-symbols-rounded">filter_list</span>
     </button>
-    <button class="btn btn-primary btn-sm" onclick="showToast('Cadastro de categoria entra na proxima etapa.')" type="button">
+    <button class="btn btn-primary btn-sm" onclick="openCategoryModal('virtual')" type="button">
       <span class="material-symbols-rounded">add</span> Novo
     </button>
     <div class="category-filter-panel" id="stock-category-panel" hidden></div>
@@ -237,7 +237,7 @@
     <button class="stock-filter-btn" onclick="togglePhysicalCategoryPanel()" type="button" title="Filtrar categorias">
       <span class="material-symbols-rounded">filter_list</span>
     </button>
-    <button class="btn btn-primary btn-sm" onclick="showToast('Cadastro de categoria entra na proxima etapa.')" type="button">
+    <button class="btn btn-primary btn-sm" onclick="openCategoryModal('physical')" type="button">
       <span class="material-symbols-rounded">add</span> Novo
     </button>
     <div class="category-filter-panel" id="pstock-category-panel" hidden></div>
@@ -288,6 +288,29 @@
   <span class="material-symbols-rounded">document_scanner</span>
 </button>
 
+<!-- MODAL: CATEGORIA -->
+<div class="modal-overlay" id="modal-category">
+  <div class="modal category-modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="modal-category-title">Nova Categoria</div>
+    <div class="info-banner">
+      <span class="material-symbols-rounded">category</span>
+      <span>A categoria fica disponivel para produtos do Estoque Virtual e Fisico.</span>
+    </div>
+    <input type="hidden" id="category-source" value="virtual">
+    <div class="input-group">
+      <label class="input-label">Nome da Categoria *</label>
+      <input type="text" id="category-name" placeholder="Ex: Proteinas, Bebidas, Embalagens..." onkeydown="handleCategoryKeydown(event)">
+    </div>
+    <div style="display:flex;gap:var(--s2);margin-top:var(--s5);flex-wrap:wrap">
+      <button class="btn btn-secondary" style="flex:1;min-width:120px" onclick="closeModal('modal-category')" type="button">Cancelar</button>
+      <button class="btn btn-primary" style="flex:1;min-width:120px" onclick="saveCategory()" type="button">
+        <span class="material-symbols-rounded">save</span> Salvar Categoria
+      </button>
+    </div>
+  </div>
+</div>
+
 <!-- MODAL: ESTOQUE VIRTUAL -->
 <div class="modal-overlay" id="modal-stock">
   <div class="modal">
@@ -303,13 +326,7 @@
     <div class="input-group"><label class="input-label">Valor Pago (R$) *</label><input type="number" id="stock-price" placeholder="Ex: 10.00" step="0.01"></div>
     <div class="input-group"><label class="input-label">Categoria</label>
       <select id="stock-category">
-        <option value="">Selecionar...</option>
-        <option value="Proteínas">Proteínas</option><option value="Carboidratos">Carboidratos</option>
-        <option value="Laticínios">Laticínios</option><option value="Carnes">Carnes</option>
-        <option value="Cereais">Cereais</option><option value="Farinhas">Farinhas</option>
-        <option value="Açúcares">Açúcares</option><option value="Óleos e Gorduras">Óleos e Gorduras</option>
-        <option value="Temperos">Temperos</option><option value="Hortifrúti">Hortifrúti</option>
-        <option value="Leguminosas">Leguminosas</option><option value="Outros">Outros</option>
+        <option value="">Sem categoria</option>
       </select>
     </div>
     <div class="divider"></div>
@@ -375,13 +392,7 @@
     <div class="input-group"><label class="input-label">Estoque Desejado (meta) *</label><input type="number" id="pstock-desired" placeholder="Ex: 10 — será seu 100%" step="0.001"></div>
     <div class="input-group"><label class="input-label">Categoria</label>
       <select id="pstock-category">
-        <option value="">Selecionar...</option>
-        <option value="Proteínas">Proteínas</option><option value="Carnes">Carnes</option>
-        <option value="Laticínios">Laticínios</option><option value="Cereais">Cereais</option>
-        <option value="Farinhas">Farinhas</option><option value="Açúcares">Açúcares</option>
-        <option value="Óleos e Gorduras">Óleos e Gorduras</option><option value="Temperos">Temperos</option>
-        <option value="Hortifrúti">Hortifrúti</option><option value="Leguminosas">Leguminosas</option>
-        <option value="Outros">Outros</option>
+        <option value="">Sem categoria</option>
       </select>
     </div>
     <div class="info-banner">
@@ -651,6 +662,7 @@
 <script src="../src/modules/recipes/recipeSheet.js" defer></script>
 <script src="../src/modules/scanner/scannerRecipe.js" defer></script>
 <script src="../src/modules/stock/stockPricing.js" defer></script>
+<script src="../src/modules/stock/categoryCatalog.js" defer></script>
 <script src="../src/modules/stock/virtualStock.js" defer></script>
 <script src="../src/modules/stock/physicalStock.js" defer></script>
 <script src="../src/pwa/registerServiceWorker.js" defer></script>

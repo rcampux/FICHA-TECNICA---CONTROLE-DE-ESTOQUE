@@ -3,6 +3,6 @@
     stock: "fichatec_stock",
     physicalStock: "fichatec_physical",
     recipes: "fichatec_recipes",
+    categories: "fichatec_categories",
   };
 })();
-

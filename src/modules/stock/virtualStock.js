@@ -4,11 +4,14 @@
       closeModal,
       confirmAction,
       db,
+      ensureCategory,
       formatCurrency,
       getActiveIngredientFilter,
+      getCategoryNames,
       getStock,
       pricePerUnit,
       renderRecipes,
+      renderCategoryOptions,
       setStock,
       showToast,
       storageKeys,
@@ -35,7 +38,7 @@
     }
 
     function getStockCategories() {
-      return [...new Set(getStock().map((item) => item.category).filter(Boolean))]
+      return getCategoryNames ? getCategoryNames() : [...new Set(getStock().map((item) => item.category).filter(Boolean))]
         .sort((a, b) => a.localeCompare(b, "pt-BR"));
     }
 
@@ -94,6 +97,7 @@
       const nf=['nut-kcal','nut-carb','nut-prot','nut-fat','nut-fiber','nut-sodium'];
       if(id!==null){
         const s=getStock().find(x=>x.id===id);
+        renderCategoryOptions?.('stock-category',s.category||'');
         document.getElementById('modal-stock-title').textContent='Editar Produto';
         document.getElementById('stock-name').value=s.name;
         document.getElementById('stock-qty').value=s.qty;
@@ -103,6 +107,7 @@
         const n=s.nutrition||{};
         nf.forEach(f=>document.getElementById(f).value=n[f.replace('nut-','')]||'');
       }else{
+        renderCategoryOptions?.('stock-category','');
         document.getElementById('modal-stock-title').textContent='Novo Produto';
         ['stock-name','stock-qty','stock-price',...nf].forEach(f=>document.getElementById(f).value='');
         document.getElementById('stock-unit').value='kg';
@@ -123,7 +128,8 @@
       const price=parseFloat(document.getElementById('stock-price').value);
       if(!name||isNaN(qty)||qty<=0||isNaN(price)||price<0){showToast('Preencha nome, quantidade e valor.');return;}
       const nutrition={kcal:parseFloat(document.getElementById('nut-kcal').value)||null,carb:parseFloat(document.getElementById('nut-carb').value)||null,prot:parseFloat(document.getElementById('nut-prot').value)||null,fat:parseFloat(document.getElementById('nut-fat').value)||null,fiber:parseFloat(document.getElementById('nut-fiber').value)||null,sodium:parseFloat(document.getElementById('nut-sodium').value)||null};
-      const item={id:editingStockId||Date.now(),name,qty,unit:document.getElementById('stock-unit').value,price,category:document.getElementById('stock-category').value,nutrition};
+      const category = ensureCategory ? ensureCategory(document.getElementById('stock-category').value) : document.getElementById('stock-category').value;
+      const item={id:editingStockId||Date.now(),name,qty,unit:document.getElementById('stock-unit').value,price,category,nutrition};
       setStock(editingStockId?getStock().map(s=>s.id===editingStockId?item:s):[...getStock(),item]);
       db.save(storageKeys.stock,getStock());
       closeModal('modal-stock');renderStock();renderStockCategoryFilters();

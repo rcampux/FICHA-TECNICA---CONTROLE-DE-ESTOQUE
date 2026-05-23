@@ -26,6 +26,7 @@ Este documento deve ser seguido a cada nova etapa do projeto. Ele consolida dire
 - Features de Estoque/Receitas devem seguir `docs/STOCK_RECIPES_FEATURE_SPEC.md`.
 - Ajustes de UX/design nao devem alterar CRUD, repositories, Supabase, RLS ou regras de negocio sem uma etapa explicita de schema/logica.
 - Toda alteracao visual deve ser revisada como designer UX/UI senior: checar eixo X/Y, hierarquia, responsividade mobile/tablet/desktop, espacamento entre linhas quebradas e ausencia de elementos colapsados antes de finalizar.
+- Categorias e produtos devem poder ser cadastrados de forma independente; a vinculacao produto-categoria deve poder acontecer depois, por edicao do produto, sem bloquear cadastro avulso.
 
 ## Ordem Atual de Execucao
 
@@ -67,6 +68,7 @@ Este documento deve ser seguido a cada nova etapa do projeto. Ele consolida dire
 - `scripts/sync-public-assets.mjs`: sincroniza assets e injeta configuracao publica Supabase no build.
 - `src/modules/nutrition/nutritionDefaults.js`: nutricao padrao.
 - `src/modules/stock/stockPricing.js`: calculo de preco por unidade base.
+- `src/modules/stock/categoryCatalog.js`: catalogo compartilhado de categorias para estoque virtual e fisico.
 - `src/modules/stock/virtualStock.js`: estoque virtual.
 - `src/modules/stock/physicalStock.js`: estoque fisico.
 - `src/modules/recipes/recipeSheet.js`: ficha tecnica e receitas.
