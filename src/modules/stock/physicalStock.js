@@ -232,20 +232,21 @@
 
       listElement.innerHTML = filtered.map((item) => {
         const percent = item.desiredQty > 0 ? (item.currentQty / item.desiredQty) * 100 : 0;
+        const physicalIdArg = JSON.stringify(item.id);
         return `<div class="pstock-card">
           <div class="pstock-header">
             <div class="pstock-name">${item.name}${item.category?` <span class="tag" style="font-size:10px">${item.category}</span>`:''}</div>
             <div class="item-actions">
-              <button class="btn btn-secondary btn-icon" onclick="openPhysicalModal(${item.id})" type="button"><span class="material-symbols-rounded">edit</span></button>
-              <button class="btn btn-danger btn-icon" onclick="deletePhysical(${item.id})" type="button"><span class="material-symbols-rounded">delete</span></button>
+              <button class="btn btn-secondary btn-icon" onclick="openPhysicalModal(${physicalIdArg})" type="button"><span class="material-symbols-rounded">edit</span></button>
+              <button class="btn btn-danger btn-icon" onclick="deletePhysical(${physicalIdArg})" type="button"><span class="material-symbols-rounded">delete</span></button>
             </div>
           </div>
           <div class="pstock-qty">${formatQuantity(item.currentQty,item.unit)}</div>
           <div class="pstock-meta">Meta: ${formatQuantity(item.desiredQty,item.unit)} · Usado: ${formatQuantity(item.usedTotal||0,item.unit)} · ${formatCurrency(item.price)}</div>
           ${stockBar(percent)}${stockFlag(percent)}
           <div class="pstock-move-actions">
-            <button class="btn btn-danger btn-sm" style="flex:1" onclick="openMove(${item.id})" type="button"><span class="material-symbols-rounded">output</span> Usar</button>
-            <button class="btn btn-primary btn-sm" style="flex:1" onclick="openMove(${item.id});setMoveType('repor')" type="button"><span class="material-symbols-rounded">input</span> Repor</button>
+            <button class="btn btn-danger btn-sm" style="flex:1" onclick="openMove(${physicalIdArg})" type="button"><span class="material-symbols-rounded">output</span> Usar</button>
+            <button class="btn btn-primary btn-sm" style="flex:1" onclick="openMove(${physicalIdArg});setMoveType('repor')" type="button"><span class="material-symbols-rounded">input</span> Repor</button>
           </div>
         </div>`;
       }).join("");

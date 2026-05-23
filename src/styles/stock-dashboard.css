@@ -53,8 +53,8 @@
   display: grid;
   gap: 10px;
   grid-template-columns: minmax(0, 1fr) auto;
-  height: 56px;
-  padding: 0 22px 0 26px;
+  height: 50px;
+  padding: 0 20px 0 24px;
 }
 
 #page-estoque .stock-category-search input,
@@ -92,9 +92,9 @@
   color: #fff;
   cursor: pointer;
   display: inline-flex;
-  height: 52px;
+  height: 44px;
   justify-content: center;
-  min-width: 96px;
+  min-width: 78px;
 }
 
 #page-estoque .stock-filter-btn .material-symbols-rounded,
@@ -107,8 +107,9 @@
 #page-fisico .btn-primary.btn-sm {
   font-size: 14px;
   font-weight: 600;
-  min-height: 48px;
-  padding: 0 22px;
+  min-height: 44px;
+  min-width: 104px;
+  padding: 0 20px;
 }
 
 #page-estoque > .search-bar,
@@ -144,9 +145,9 @@
   background: transparent;
   border: 0;
   color: var(--md-sys-color-on-surface);
-  height: 48px;
+  height: 42px;
   padding: 0;
-  width: 48px;
+  width: 42px;
 }
 
 #page-estoque .stock-view-icon .material-symbols-rounded,
@@ -168,14 +169,39 @@
   box-shadow: 0 2px 7px rgba(70, 45, 32, 0.12);
 }
 
+#page-estoque .item-actions,
+#page-fisico .item-actions {
+  align-items: center;
+  gap: 8px;
+}
+
+#page-estoque .item-actions .btn-icon,
+#page-fisico .item-actions .btn-icon {
+  height: 36px;
+  width: 36px;
+}
+
+#page-estoque .item-actions .btn-icon .material-symbols-rounded,
+#page-fisico .item-actions .btn-icon .material-symbols-rounded {
+  font-size: 18px;
+}
+
 #page-estoque .item-card {
   min-height: 108px;
   padding: 18px 20px;
 }
 
 #page-fisico .pstock-card {
-  min-height: 282px;
-  padding: 22px;
+  min-height: 264px;
+  padding: 20px;
+}
+
+#page-fisico .pstock-move-actions {
+  gap: 12px;
+}
+
+#page-fisico .pstock-move-actions .btn-sm {
+  min-height: 42px;
 }
 
 #page-fisico .summary-box {
@@ -288,14 +314,15 @@
   #page-estoque .stock-filter-btn,
   #page-fisico .stock-filter-btn {
     height: 48px;
-    min-width: 64px;
-    width: 64px;
+    min-width: 56px;
+    width: 56px;
   }
 
   #page-estoque .stock-category-card > .btn,
   #page-fisico .stock-category-card > .btn {
     grid-column: 1 / -1;
     min-height: 48px;
+    min-width: 0;
     order: 3;
     width: 100%;
   }
@@ -318,6 +345,7 @@
   #page-fisico .btn-primary.btn-sm {
     font-size: 14px;
     font-weight: 600;
+    min-height: 44px;
     padding-inline: 20px;
   }
 
@@ -348,6 +376,21 @@
   #page-fisico #pstock-list {
     display: grid;
     gap: 18px;
+  }
+
+  #page-estoque .item-actions .btn-icon,
+  #page-fisico .item-actions .btn-icon {
+    height: 38px;
+    width: 38px;
+  }
+
+  #page-fisico .pstock-card {
+    min-height: 248px;
+    padding: 18px;
+  }
+
+  #page-fisico .pstock-move-actions {
+    gap: 12px;
   }
 
   #page-estoque .empty-state,

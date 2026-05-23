@@ -1,4 +1,4 @@
-const CACHE_VERSION = "fichatec-pwa-v6";
+const CACHE_VERSION = "fichatec-pwa-v7";
 const APP_SHELL = [
   "/",
   "/manifest.webmanifest",

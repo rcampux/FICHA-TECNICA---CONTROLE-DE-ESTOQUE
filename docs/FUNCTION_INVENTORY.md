@@ -61,6 +61,8 @@ Este arquivo e um inventario vivo das funcoes utilizadas no projeto. Toda nova f
 | `createRecipeSheetModule` | `src/modules/recipes/recipeSheet.js` | 2 | function createRecipeSheetModule(deps) { |
 | `syncState` | `src/modules/recipes/recipeSheet.js` | 30 | function syncState() { |
 | `commitState` | `src/modules/recipes/recipeSheet.js` | 36 | function commitState() { |
+| `persistRecipesSnapshot` | `src/modules/recipes/recipeSheet.js` | 43 | Persiste receitas localmente e, quando Supabase esta ativo, aguarda a escrita remota para preservar `remoteId` em editar/deletar. |
+| `focusRecipeCard` | `src/modules/recipes/recipeSheet.js` | 65 | Localiza a ultima receita salva, destaca o card e rola a aba Receitas ate ela. |
 | `findStockItem` | `src/modules/recipes/recipeSheet.js` | 42 | function findStockItem(stockId,name){ |
 | `calcCosts` | `src/modules/recipes/recipeSheet.js` | 46 | function calcCosts(ingredients,markup=0){ |
 | `setIngSource` | `src/modules/recipes/recipeSheet.js` | 52 | function setIngSource(src){ |
@@ -73,12 +75,12 @@ Este arquivo e um inventario vivo das funcoes utilizadas no projeto. Toda nova f
 | `calcFicha` | `src/modules/recipes/recipeSheet.js` | 155 | function calcFicha(){ |
 | `calcNutrition` | `src/modules/recipes/recipeSheet.js` | 168 | function calcNutrition(){ |
 | `clearFicha` | `src/modules/recipes/recipeSheet.js` | 196 | Limpa a ficha atual apos confirmacao, com modo forcado/silencioso para logout seguro. |
-| `saveRecipe` | `src/modules/recipes/recipeSheet.js` | 205 | Salva ou sobrescreve receita apos confirmacao quando ja existir uma ficha com mesmo nome. |
+| `saveRecipe` | `src/modules/recipes/recipeSheet.js` | 243 | Salva ou sobrescreve receita preservando `id/remoteId`, redireciona para Receitas, foca a ultima ficha salva e limpa a montagem. |
 | `hasPriceChanged` | `src/modules/recipes/recipeSheet.js` | 228 | function hasPriceChanged(refs){ |
-| `renderRecipes` | `src/modules/recipes/recipeSheet.js` | 235 | function renderRecipes(filter='',ingFilter=null){ |
+| `renderRecipes` | `src/modules/recipes/recipeSheet.js` | 280 | Renderiza cards de receitas com IDs seguros para UUID em editar, deletar, visualizar e exportar PDF. |
 | `setIngFilter` | `src/modules/recipes/recipeSheet.js` | 274 | function setIngFilter(val){activeIngFilter=val;renderRecipes(document.getElementById('recipe-search').value,val);} |
 | `viewRecipe` | `src/modules/recipes/recipeSheet.js` | 275 | function viewRecipe(id){ |
-| `deleteCurrentRecipe` | `src/modules/recipes/recipeSheet.js` | 329 | Exclui a receita atual apos confirmacao visual. |
+| `deleteCurrentRecipe` | `src/modules/recipes/recipeSheet.js` | 379 | Exclui a receita atual apos confirmacao visual e sincroniza o snapshot com Supabase quando ativo. |
 | `editRecipe` | `src/modules/recipes/recipeSheet.js` | 343 | Define a receita atual e carrega seus dados na ficha tecnica para edicao. |
 | `deleteRecipe` | `src/modules/recipes/recipeSheet.js` | 347 | Define a receita atual e reaproveita o fluxo existente de exclusao. |
 | `loadRecipeToFicha` | `src/modules/recipes/recipeSheet.js` | 337 | function loadRecipeToFicha(){ |
@@ -115,7 +117,7 @@ Este arquivo e um inventario vivo das funcoes utilizadas no projeto. Toda nova f
 | `openPhysicalModal` | `src/modules/stock/physicalStock.js` | 110 | function openPhysicalModal(id = null) { |
 | `savePhysical` | `src/modules/stock/physicalStock.js` | 134 | function savePhysical() { |
 | `deletePhysical` | `src/modules/stock/physicalStock.js` | 183 | Exclui produto fisico apos confirmacao visual. |
-| `renderPhysical` | `src/modules/stock/physicalStock.js` | 193 | function renderPhysical(filter = "") { |
+| `renderPhysical` | `src/modules/stock/physicalStock.js` | 198 | Renderiza estoque fisico com botoes de editar/deletar/usar/repor usando IDs seguros para UUID. |
 | `openMove` | `src/modules/stock/physicalStock.js` | 167 | function openMove(id) { |
 | `setMoveType` | `src/modules/stock/physicalStock.js` | 185 | function setMoveType(type) { |
 | `confirmMove` | `src/modules/stock/physicalStock.js` | 193 | function confirmMove() { |
@@ -147,7 +149,7 @@ Este arquivo e um inventario vivo das funcoes utilizadas no projeto. Toda nova f
 | `handleGoogleSearch` | `src/modules/stock/virtualStock.js` | 121 | function handleGoogleSearch(e){const h=document.getElementById('google-search-link').href;if(!h\|\|h==='#'){e.preventDefault();return;}window.open(h,'_blank');e |
 | `saveStock` | `src/modules/stock/virtualStock.js` | 122 | function saveStock(){ |
 | `deleteStock` | `src/modules/stock/virtualStock.js` | 135 | Exclui produto virtual apos confirmacao visual. |
-| `renderStock` | `src/modules/stock/virtualStock.js` | 139 | function renderStock(filter=''){ |
+| `renderStock` | `src/modules/stock/virtualStock.js` | 143 | Renderiza estoque virtual com botoes de editar/deletar usando IDs seguros para UUID. |
 | `registerFichaTecServiceWorker` | `src/pwa/registerServiceWorker.js` | 1 | (function registerFichaTecServiceWorker() { |
 | `handleLaunchShortcut` | `src/pwa/registerServiceWorker.js` | 2 | function handleLaunchShortcut() { |
 | `registerServiceWorker` | `src/pwa/registerServiceWorker.js` | 13 | function registerServiceWorker() { |

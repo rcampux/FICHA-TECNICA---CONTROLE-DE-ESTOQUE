@@ -780,6 +780,50 @@ textarea:focus {
   font-variant-numeric: tabular-nums;
 }
 
+.recipe-card-focus {
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--md-sys-color-primary) 26%, transparent), var(--md-sys-elevation-level-2);
+}
+
+@media (max-width: 767px) {
+  body {
+    padding-bottom: calc(86px + env(safe-area-inset-bottom, 0px));
+  }
+
+  .nav {
+    height: calc(66px + env(safe-area-inset-bottom, 0px));
+    min-height: calc(66px + env(safe-area-inset-bottom, 0px));
+    padding: 0 8px env(safe-area-inset-bottom, 0px);
+  }
+
+  .nav-btn {
+    font-size: 10px;
+    gap: 2px;
+    min-width: 0;
+  }
+
+  .nav-btn .material-symbols-rounded {
+    font-size: 22px;
+  }
+
+  .nav-btn.active .material-symbols-rounded {
+    padding: 3px 14px;
+  }
+
+  .nav-fab {
+    width: 50px;
+    height: 50px;
+    margin-top: -18px;
+    border-width: 4px;
+  }
+
+  .scan-fab {
+    bottom: calc(82px + env(safe-area-inset-bottom, 0px));
+    right: 16px;
+    width: 50px;
+    height: 50px;
+  }
+}
+
 @media (min-width: 768px) {
   .nav {
     position: fixed;

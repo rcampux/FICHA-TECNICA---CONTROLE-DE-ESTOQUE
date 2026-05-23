@@ -40,6 +40,40 @@
       setRecipes(recipes);
     }
 
+    async function persistRecipesSnapshot(nextRecipes) {
+      recipes = nextRecipes;
+      setRecipes(recipes);
+      DB.save(STORAGE_KEYS.recipes, recipes);
+
+      const organizationId = DB.activeOrganizationId?.();
+      if (DB.mode?.() === "supabase" && DB.saveRemote && organizationId) {
+        try {
+          const savedRecipes = await DB.saveRemote(STORAGE_KEYS.recipes, recipes, organizationId);
+          if (Array.isArray(savedRecipes)) {
+            recipes = savedRecipes;
+            setRecipes(recipes);
+          }
+        } catch (error) {
+          console.error("Recipe remote sync failed", error);
+          showToast("Receita salva localmente; sincronizacao remota pendente.");
+        }
+      }
+
+      return recipes;
+    }
+
+    function focusRecipeCard(recipeId) {
+      window.requestAnimationFrame(() => {
+        const card = [...document.querySelectorAll("#recipes-list .recipe-card")]
+          .find((element) => String(element.dataset.recipeId) === String(recipeId));
+        if (!card) return;
+
+        card.classList.add("recipe-card-focus");
+        card.scrollIntoView({behavior:"smooth", block:"center"});
+        window.setTimeout(() => card.classList.remove("recipe-card-focus"), 1800);
+      });
+    }
+
     function findStockItem(stockId,name){
       if(stockId&&!String(stockId).startsWith('pf_')){const s=stock.find(x=>x.id===stockId||x.id===parseInt(stockId));if(s)return s;}
       return stock.find(x=>x.name.toLowerCase()===name.toLowerCase())||null;
@@ -213,19 +247,26 @@
       const markup=parseFloat(document.getElementById('markup-pct').value)||0;
       const ingredientRefs=currentIngredients.map(i=>({...i,savedPricePerG:pricePerUnit(findStockItem(i.stockId,i.name)||{price:0,qty:1,unit:'kg'})}));
       const {totalCost,venda}=calcCosts(ingredientRefs,markup);
+      const idx=recipes.findIndex(r=>r.nome.toLowerCase()===nome.toLowerCase());
+      const existingRecipe=idx>=0?recipes[idx]:null;
+      const now=new Date().toISOString();
       const recipe={
-        id:Date.now(),nome,ingredients:ingredientRefs,
+        id:existingRecipe?.id||Date.now(),remoteId:existingRecipe?.remoteId,nome,ingredients:ingredientRefs,
         rendimento:parseFloat(document.getElementById('ficha-rendimento').value)||0,
         porcoes:parseFloat(document.getElementById('ficha-porcoes').value)||1,
         markup,totalCost,venda,
         porcaoSize:parseFloat(document.getElementById('portion-size').value)||100,
-        createdAt:new Date().toISOString()
+        createdAt:existingRecipe?.createdAt||now,
+        updatedAt:now
       };
-      const idx=recipes.findIndex(r=>r.nome.toLowerCase()===nome.toLowerCase());
       if(idx>=0){if(!await confirmAction(`Receita "${nome}" ja existe. Deseja sobrescrever?`,'Sobrescrever receita','Sim, sobrescrever'))return;recipes[idx]=recipe;}
       else recipes.push(recipe);
-      DB.save(STORAGE_KEYS.recipes,recipes);
+      await persistRecipesSnapshot(recipes);
       showToast(`"${nome}" salva!`);
+      showPage('receitas','nav-receitas');
+      renderRecipes('',null);
+      focusRecipeCard(recipe.id);
+      await clearFicha({force:true,silent:true});
     }
     
     /* ══ RECEITAS ══ */
@@ -252,15 +293,16 @@
         const {totalCost,venda}=calcCosts(r.ingredients,r.markup);
         const changed=hasPriceChanged(r.ingredients);
         const diff=totalCost-r.totalCost;
-        return`<div class="recipe-card" onclick="viewRecipe(${r.id})">
+        const recipeIdArg=JSON.stringify(r.id);
+        return`<div class="recipe-card" data-recipe-id="${r.id}" onclick="viewRecipe(${recipeIdArg})">
           <div class="recipe-card-heading">
             <div class="recipe-card-title">${r.nome}${r.origem==='scan'?` <span class="scan-badge" style="font-size:10px"><span class="material-symbols-rounded" style="font-size:12px">document_scanner</span>Scan</span>`:''}</div>
             <div style="display:flex;gap:6px;align-items:center;flex-shrink:0">
               ${changed?`<span style="font-size:11px;background:${diff>0?'var(--r100)':'var(--g50)'};color:${diff>0?'var(--r400)':'var(--g600)'};padding:2px 8px;border-radius:var(--r-pill);font-weight:700">${diff>0?'▲':'▼'} ${fmtBRL(Math.abs(diff))}</span>`:''}
               <span class="badge badge-green">${fmtBRL(totalCost)}</span>
               <span class="recipe-card-actions">
-                <button class="btn btn-secondary btn-icon" onclick="event.stopPropagation();editRecipe(${r.id})" type="button"><span class="material-symbols-rounded">edit</span></button>
-                <button class="btn btn-danger btn-icon" onclick="event.stopPropagation();deleteRecipe(${r.id})" type="button"><span class="material-symbols-rounded">delete</span></button>
+                <button class="btn btn-secondary btn-icon" onclick="event.stopPropagation();editRecipe(${recipeIdArg})" type="button"><span class="material-symbols-rounded">edit</span></button>
+                <button class="btn btn-danger btn-icon" onclick="event.stopPropagation();deleteRecipe(${recipeIdArg})" type="button"><span class="material-symbols-rounded">delete</span></button>
               </span>
             </div>
           </div>
@@ -272,7 +314,7 @@
               ${r.ingredients.slice(0,4).map(i=>`<span class="tag">${i.name}</span>`).join('')}
               ${r.ingredients.length>4?`<span class="tag">+${r.ingredients.length-4}</span>`:''}
             </div>
-            <button class="btn btn-outlined btn-xs" onclick="event.stopPropagation();exportRecipePDF(${r.id})" style="margin-left:var(--s2)" type="button">
+            <button class="btn btn-outlined btn-xs" onclick="event.stopPropagation();exportRecipePDF(${recipeIdArg})" style="margin-left:var(--s2)" type="button">
               <span class="material-symbols-rounded" style="font-size:14px">picture_as_pdf</span> PDF
             </button>
           </div>
@@ -337,7 +379,7 @@
     async function deleteCurrentRecipe(){
       if(!await confirmAction('Deseja excluir esta receita salva?','Excluir receita'))return;
       recipes=recipes.filter(r=>r.id!==currentRecipeId);
-      DB.save(STORAGE_KEYS.recipes,recipes);
+      await persistRecipesSnapshot(recipes);
       closeModal('modal-recipe');
       renderRecipes(document.getElementById('recipe-search').value,activeIngFilter);
       showToast('Receita excluída.');

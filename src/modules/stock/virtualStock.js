@@ -156,6 +156,7 @@
       }
       el.innerHTML=f.map(s=>{
         const ppg=pricePerUnit(s);
+        const stockIdArg=JSON.stringify(s.id);
         const ps=s.unit==='ml'?formatCurrency(ppg*1000)+'/L · '+formatCurrency(ppg*100)+'/100ml':s.unit==='un'?formatCurrency(ppg)+'/un':formatCurrency(ppg*1000)+'/kg · '+formatCurrency(ppg*100)+'/100g';
         return`<div class="item-card">
           <div style="flex:1;min-width:0">
@@ -164,8 +165,8 @@
             <div class="item-price">${ps}</div>
           </div>
           <div class="item-actions">
-            <button class="btn btn-secondary btn-icon" onclick="openStockModal(${s.id})" type="button"><span class="material-symbols-rounded">edit</span></button>
-            <button class="btn btn-danger btn-icon" onclick="deleteStock(${s.id})" type="button"><span class="material-symbols-rounded">delete</span></button>
+            <button class="btn btn-secondary btn-icon" onclick="openStockModal(${stockIdArg})" type="button"><span class="material-symbols-rounded">edit</span></button>
+            <button class="btn btn-danger btn-icon" onclick="deleteStock(${stockIdArg})" type="button"><span class="material-symbols-rounded">delete</span></button>
           </div>
         </div>`;
       }).join('');
