@@ -63,7 +63,8 @@ Este arquivo e um inventario vivo das funcoes utilizadas no projeto. Toda nova f
 | `commitState` | `src/modules/recipes/recipeSheet.js` | 36 | function commitState() { |
 | `persistRecipesSnapshot` | `src/modules/recipes/recipeSheet.js` | 43 | Persiste receitas localmente e, quando Supabase esta ativo, aguarda a escrita remota para preservar `remoteId` em editar/deletar. |
 | `focusRecipeCard` | `src/modules/recipes/recipeSheet.js` | 65 | Localiza a ultima receita salva, destaca o card e rola a aba Receitas ate ela. |
-| `getActionIdArg` | `src/modules/recipes/recipeSheet.js` | 78 | Gera argumento seguro para handlers inline com IDs UUID sem quebrar atributos HTML. |
+| `escapeAttribute` | `src/modules/recipes/recipeSheet.js` | 78 | Escapa IDs e valores renderizados em atributos `data-*` dos cards de receitas. |
+| `bindRecipeCardActions` | `src/modules/recipes/recipeSheet.js` | 86 | Centraliza cliques de visualizar, editar, deletar e exportar PDF sem handlers inline. |
 | `findStockItem` | `src/modules/recipes/recipeSheet.js` | 42 | function findStockItem(stockId,name){ |
 | `calcCosts` | `src/modules/recipes/recipeSheet.js` | 46 | function calcCosts(ingredients,markup=0){ |
 | `setIngSource` | `src/modules/recipes/recipeSheet.js` | 52 | function setIngSource(src){ |
@@ -78,7 +79,7 @@ Este arquivo e um inventario vivo das funcoes utilizadas no projeto. Toda nova f
 | `clearFicha` | `src/modules/recipes/recipeSheet.js` | 196 | Limpa a ficha atual apos confirmacao, com modo forcado/silencioso para logout seguro. |
 | `saveRecipe` | `src/modules/recipes/recipeSheet.js` | 247 | Salva ou sobrescreve receita preservando `id/remoteId`, exige confirmacao do Supabase quando ativo, redireciona para Receitas, foca a ultima ficha salva e limpa a montagem. |
 | `hasPriceChanged` | `src/modules/recipes/recipeSheet.js` | 228 | function hasPriceChanged(refs){ |
-| `renderRecipes` | `src/modules/recipes/recipeSheet.js` | 280 | Renderiza cards de receitas com IDs seguros para UUID em editar, deletar, visualizar e exportar PDF. |
+| `renderRecipes` | `src/modules/recipes/recipeSheet.js` | 280 | Renderiza cards de receitas com `data-recipe-id` e delegacao de eventos para evitar SyntaxError apos refresh. |
 | `setIngFilter` | `src/modules/recipes/recipeSheet.js` | 274 | function setIngFilter(val){activeIngFilter=val;renderRecipes(document.getElementById('recipe-search').value,val);} |
 | `viewRecipe` | `src/modules/recipes/recipeSheet.js` | 275 | function viewRecipe(id){ |
 | `deleteCurrentRecipe` | `src/modules/recipes/recipeSheet.js` | 379 | Exclui a receita atual apos confirmacao visual e sincroniza o snapshot com Supabase quando ativo. |
@@ -105,7 +106,8 @@ Este arquivo e um inventario vivo das funcoes utilizadas no projeto. Toda nova f
 | `confirmScanSave` | `src/modules/scanner/scannerRecipe.js` | 161 | Salva receita digitalizada e confirma sobrescrita quando houver nome duplicado. |
 | `exposePhysicalStockModule` | `src/modules/stock/physicalStock.js` | 1 | (function exposePhysicalStockModule() { |
 | `createPhysicalStockModule` | `src/modules/stock/physicalStock.js` | 2 | function createPhysicalStockModule(deps) { |
-| `getActionIdArg` | `src/modules/stock/physicalStock.js` | 30 | Gera argumento seguro para handlers inline com IDs UUID no estoque fisico. |
+| `escapeAttribute` | `src/modules/stock/physicalStock.js` | 30 | Escapa IDs remotos antes de inserir nos atributos dos cards de estoque fisico. |
+| `bindPhysicalCardActions` | `src/modules/stock/physicalStock.js` | 38 | Centraliza acoes de editar, deletar, usar e repor estoque fisico via eventos `data-*`. |
 | `persistPhysicalSnapshot` | `src/modules/stock/physicalStock.js` | 34 | Persiste estoque fisico localmente e aguarda sincronizacao Supabase quando houver workspace ativo. |
 | `persistVirtualStockSnapshot` | `src/modules/stock/physicalStock.js` | 51 | Sincroniza o estoque virtual gerado a partir do estoque fisico sem enfileirar escrita remota duplicada. |
 | `applyPhysicalViewMode` | `src/modules/stock/physicalStock.js` | 26 | Aplica classe e estado visual do modo grid/lista no estoque fisico. |
@@ -121,7 +123,7 @@ Este arquivo e um inventario vivo das funcoes utilizadas no projeto. Toda nova f
 | `openPhysicalModal` | `src/modules/stock/physicalStock.js` | 110 | function openPhysicalModal(id = null) { |
 | `savePhysical` | `src/modules/stock/physicalStock.js` | 171 | Salva ou edita produto fisico preservando IDs remotos e aguardando Supabase quando ativo. |
 | `deletePhysical` | `src/modules/stock/physicalStock.js` | 223 | Exclui produto fisico apos confirmacao visual e sincroniza o snapshot remoto. |
-| `renderPhysical` | `src/modules/stock/physicalStock.js` | 198 | Renderiza estoque fisico com botoes de editar/deletar/usar/repor usando IDs seguros para UUID. |
+| `renderPhysical` | `src/modules/stock/physicalStock.js` | 198 | Renderiza estoque fisico com `data-physical-id` e delegacao de eventos para CRUD estavel apos refresh. |
 | `openMove` | `src/modules/stock/physicalStock.js` | 167 | function openMove(id) { |
 | `setMoveType` | `src/modules/stock/physicalStock.js` | 185 | function setMoveType(type) { |
 | `confirmMove` | `src/modules/stock/physicalStock.js` | 193 | function confirmMove() { |
@@ -141,7 +143,8 @@ Este arquivo e um inventario vivo das funcoes utilizadas no projeto. Toda nova f
 | `handleCategoryKeydown` | `src/modules/stock/categoryCatalog.js` | 115 | Permite salvar categoria pressionando Enter no modal. |
 | `exposeVirtualStockModule` | `src/modules/stock/virtualStock.js` | 1 | (function exposeVirtualStockModule() { |
 | `createVirtualStockModule` | `src/modules/stock/virtualStock.js` | 2 | function createVirtualStockModule(deps) { |
-| `getActionIdArg` | `src/modules/stock/virtualStock.js` | 25 | Gera argumento seguro para handlers inline com IDs UUID no estoque virtual. |
+| `escapeAttribute` | `src/modules/stock/virtualStock.js` | 25 | Escapa IDs remotos antes de inserir nos atributos dos cards de estoque virtual. |
+| `bindStockCardActions` | `src/modules/stock/virtualStock.js` | 33 | Centraliza cliques de editar/deletar estoque virtual via eventos `data-*`, sem JavaScript inline. |
 | `persistStockSnapshot` | `src/modules/stock/virtualStock.js` | 29 | Persiste estoque virtual localmente e aguarda sincronizacao Supabase quando houver workspace ativo. |
 | `applyStockViewMode` | `src/modules/stock/virtualStock.js` | 21 | Aplica classe e estado visual do modo grid/lista no estoque virtual. |
 | `setStockViewMode` | `src/modules/stock/virtualStock.js` | 29 | Persiste a preferencia grid/lista do estoque virtual e re-renderiza a lista atual. |
@@ -155,7 +158,7 @@ Este arquivo e um inventario vivo das funcoes utilizadas no projeto. Toda nova f
 | `handleGoogleSearch` | `src/modules/stock/virtualStock.js` | 121 | function handleGoogleSearch(e){const h=document.getElementById('google-search-link').href;if(!h\|\|h==='#'){e.preventDefault();return;}window.open(h,'_blank');e |
 | `saveStock` | `src/modules/stock/virtualStock.js` | 145 | Salva ou edita produto virtual preservando IDs remotos e aguardando Supabase quando ativo. |
 | `deleteStock` | `src/modules/stock/virtualStock.js` | 163 | Exclui produto virtual apos confirmacao visual e sincroniza o snapshot remoto. |
-| `renderStock` | `src/modules/stock/virtualStock.js` | 143 | Renderiza estoque virtual com botoes de editar/deletar usando IDs seguros para UUID. |
+| `renderStock` | `src/modules/stock/virtualStock.js` | 143 | Renderiza estoque virtual com `data-stock-id` e delegacao de eventos para CRUD estavel apos refresh. |
 | `registerFichaTecServiceWorker` | `src/pwa/registerServiceWorker.js` | 1 | (function registerFichaTecServiceWorker() { |
 | `handleLaunchShortcut` | `src/pwa/registerServiceWorker.js` | 2 | function handleLaunchShortcut() { |
 | `registerServiceWorker` | `src/pwa/registerServiceWorker.js` | 13 | function registerServiceWorker() { |
@@ -204,8 +207,8 @@ Este arquivo e um inventario vivo das funcoes utilizadas no projeto. Toda nova f
 | `loadByKey` | `src/services/repositories/supabaseDomainRepository.js` | 349 | Carrega dominio remoto a partir da chave local. |
 | `saveByKey` | `src/services/repositories/supabaseDomainRepository.js` | 355 | Salva dominio remoto a partir da chave local. |
 | `exposeLocalStorageRepository` | `src/services/repositories/localStorageRepository.js` | 1 | (function exposeLocalStorageRepository() { |
-| `load` | `src/services/repositories/localStorageRepository.js` | 3 | load(key) { |
-| `save` | `src/services/repositories/localStorageRepository.js` | 6 | save(key, value) { |
+| `load` | `src/services/repositories/localStorageRepository.js` | 3 | Carrega cache local com `try/catch`, limpa JSON corrompido e retorna lista vazia como fallback seguro. |
+| `save` | `src/services/repositories/localStorageRepository.js` | 6 | Salva cache local sempre como JSON valido, usando lista vazia quando o valor vier nulo. |
 | `remove` | `src/services/repositories/localStorageRepository.js` | 9 | Remove uma chave local para limpar cache de sessao Supabase. |
 | `exposeSupabaseClientService` | `src/services/supabaseClient.js` | 1 | (function exposeSupabaseClientService() { |
 | `getSupabaseGlobal` | `src/services/supabaseClient.js` | 5 | function getSupabaseGlobal() { |

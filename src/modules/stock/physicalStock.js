@@ -27,8 +27,38 @@
     let selectedPhysicalCategories = new Set();
     let physicalViewMode = localStorage.getItem("fichatec.physicalStock.viewMode") || "grid";
 
-    function getActionIdArg(id) {
-      return JSON.stringify(id).replace(/"/g, "&quot;");
+    function escapeAttribute(value) {
+      return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/"/g, "&quot;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;");
+    }
+
+    function bindPhysicalCardActions(listElement) {
+      listElement.onclick = async (event) => {
+        const button = event.target.closest("[data-physical-action]");
+        if (!button || !listElement.contains(button)) return;
+
+        const id = button.dataset.physicalId;
+        const action = button.dataset.physicalAction;
+        if (action === "edit") {
+          openPhysicalModal(id);
+          return;
+        }
+        if (action === "delete") {
+          await deletePhysical(id);
+          return;
+        }
+        if (action === "use") {
+          openMove(id);
+          return;
+        }
+        if (action === "replenish") {
+          openMove(id);
+          setMoveType("repor");
+        }
+      };
     }
 
     async function persistPhysicalSnapshot(nextPhysicalStock) {
@@ -283,30 +313,32 @@
       }
 
       if (!filtered.length) {
+        listElement.onclick = null;
         listElement.innerHTML = `<div class="empty-state"><span class="empty-icon"><span class="material-symbols-rounded" style="font-size:52px;font-variation-settings:'FILL' 0,'wght' 300,'GRAD' 0,'opsz' 48">storefront</span></span><div class="empty-text">${filter?'Nenhum produto encontrado.':'Estoque físico vazio. Clique em "+ Novo"!'}</div></div>`;
         return;
       }
 
       listElement.innerHTML = filtered.map((item) => {
         const percent = item.desiredQty > 0 ? (item.currentQty / item.desiredQty) * 100 : 0;
-        const physicalIdArg = getActionIdArg(item.id);
+        const physicalId = escapeAttribute(item.id);
         return `<div class="pstock-card">
           <div class="pstock-header">
             <div class="pstock-name">${item.name}${item.category?` <span class="tag" style="font-size:10px">${item.category}</span>`:''}</div>
             <div class="item-actions">
-              <button class="btn btn-secondary btn-icon" onclick="openPhysicalModal(${physicalIdArg})" type="button"><span class="material-symbols-rounded">edit</span></button>
-              <button class="btn btn-danger btn-icon" onclick="deletePhysical(${physicalIdArg})" type="button"><span class="material-symbols-rounded">delete</span></button>
+              <button class="btn btn-secondary btn-icon" data-physical-action="edit" data-physical-id="${physicalId}" type="button"><span class="material-symbols-rounded">edit</span></button>
+              <button class="btn btn-danger btn-icon" data-physical-action="delete" data-physical-id="${physicalId}" type="button"><span class="material-symbols-rounded">delete</span></button>
             </div>
           </div>
           <div class="pstock-qty">${formatQuantity(item.currentQty,item.unit)}</div>
           <div class="pstock-meta">Meta: ${formatQuantity(item.desiredQty,item.unit)} · Usado: ${formatQuantity(item.usedTotal||0,item.unit)} · ${formatCurrency(item.price)}</div>
           ${stockBar(percent)}${stockFlag(percent)}
           <div class="pstock-move-actions">
-            <button class="btn btn-danger btn-sm" style="flex:1" onclick="openMove(${physicalIdArg})" type="button"><span class="material-symbols-rounded">output</span> Usar</button>
-            <button class="btn btn-primary btn-sm" style="flex:1" onclick="openMove(${physicalIdArg});setMoveType('repor')" type="button"><span class="material-symbols-rounded">input</span> Repor</button>
+            <button class="btn btn-danger btn-sm" style="flex:1" data-physical-action="use" data-physical-id="${physicalId}" type="button"><span class="material-symbols-rounded">output</span> Usar</button>
+            <button class="btn btn-primary btn-sm" style="flex:1" data-physical-action="replenish" data-physical-id="${physicalId}" type="button"><span class="material-symbols-rounded">input</span> Repor</button>
           </div>
         </div>`;
       }).join("");
+      bindPhysicalCardActions(listElement);
     }
 
     function openMove(id) {

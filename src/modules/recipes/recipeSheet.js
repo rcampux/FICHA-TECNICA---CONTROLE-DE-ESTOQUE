@@ -78,8 +78,36 @@
       });
     }
 
-    function getActionIdArg(id) {
-      return JSON.stringify(id).replace(/"/g, "&quot;");
+    function escapeAttribute(value) {
+      return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/"/g, "&quot;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;");
+    }
+
+    function bindRecipeCardActions(listElement) {
+      listElement.onclick = async (event) => {
+        const card = event.target.closest(".recipe-card");
+        if (!card || !listElement.contains(card)) return;
+
+        const id = card.dataset.recipeId;
+        const actionElement = event.target.closest("[data-recipe-action]");
+        const action = actionElement?.dataset.recipeAction || "view";
+        if (action === "edit") {
+          editRecipe(id);
+          return;
+        }
+        if (action === "delete") {
+          await deleteRecipe(id);
+          return;
+        }
+        if (action === "pdf") {
+          exportRecipePDF(id);
+          return;
+        }
+        viewRecipe(id);
+      };
     }
 
     function findStockItem(stockId,name){
@@ -302,6 +330,7 @@
       if(ingFilter)f=f.filter(r=>r.ingredients.some(i=>i.name===ingFilter));
       const el=document.getElementById('recipes-list');
       if(!f.length){
+        el.onclick = null;
         el.innerHTML=`<div class="empty-state"><span class="empty-icon"><span class="material-symbols-rounded" style="font-size:52px;font-variation-settings:'FILL' 0,'wght' 300,'GRAD' 0,'opsz' 48">menu_book</span></span><div class="empty-text">${filter||ingFilter?'Nenhuma receita encontrada.':'Nenhuma receita salva ainda.'}</div></div>`;
         return;
       }
@@ -309,16 +338,16 @@
         const {totalCost,venda}=calcCosts(r.ingredients,r.markup);
         const changed=hasPriceChanged(r.ingredients);
         const diff=totalCost-r.totalCost;
-        const recipeIdArg=getActionIdArg(r.id);
-        return`<div class="recipe-card" data-recipe-id="${r.id}" onclick="viewRecipe(${recipeIdArg})">
+        const recipeId=escapeAttribute(r.id);
+        return`<div class="recipe-card" data-recipe-id="${recipeId}">
           <div class="recipe-card-heading">
             <div class="recipe-card-title">${r.nome}${r.origem==='scan'?` <span class="scan-badge" style="font-size:10px"><span class="material-symbols-rounded" style="font-size:12px">document_scanner</span>Scan</span>`:''}</div>
             <div style="display:flex;gap:6px;align-items:center;flex-shrink:0">
               ${changed?`<span style="font-size:11px;background:${diff>0?'var(--r100)':'var(--g50)'};color:${diff>0?'var(--r400)':'var(--g600)'};padding:2px 8px;border-radius:var(--r-pill);font-weight:700">${diff>0?'▲':'▼'} ${fmtBRL(Math.abs(diff))}</span>`:''}
               <span class="badge badge-green">${fmtBRL(totalCost)}</span>
               <span class="recipe-card-actions">
-                <button class="btn btn-secondary btn-icon" onclick="event.stopPropagation();editRecipe(${recipeIdArg})" type="button"><span class="material-symbols-rounded">edit</span></button>
-                <button class="btn btn-danger btn-icon" onclick="event.stopPropagation();deleteRecipe(${recipeIdArg})" type="button"><span class="material-symbols-rounded">delete</span></button>
+                <button class="btn btn-secondary btn-icon" data-recipe-action="edit" type="button"><span class="material-symbols-rounded">edit</span></button>
+                <button class="btn btn-danger btn-icon" data-recipe-action="delete" type="button"><span class="material-symbols-rounded">delete</span></button>
               </span>
             </div>
           </div>
@@ -330,16 +359,17 @@
               ${r.ingredients.slice(0,4).map(i=>`<span class="tag">${i.name}</span>`).join('')}
               ${r.ingredients.length>4?`<span class="tag">+${r.ingredients.length-4}</span>`:''}
             </div>
-            <button class="btn btn-outlined btn-xs" onclick="event.stopPropagation();exportRecipePDF(${recipeIdArg})" style="margin-left:var(--s2)" type="button">
+            <button class="btn btn-outlined btn-xs" data-recipe-action="pdf" style="margin-left:var(--s2)" type="button">
               <span class="material-symbols-rounded" style="font-size:14px">picture_as_pdf</span> PDF
             </button>
           </div>
         </div>`;
       }).join('');
+      bindRecipeCardActions(el);
     }
     function setIngFilter(val){activeIngFilter=val;renderRecipes(document.getElementById('recipe-search').value,val);}
     function viewRecipe(id){
-      const r=recipes.find(x=>x.id===id);if(!r)return;
+      const r=recipes.find(x=>String(x.id)===String(id));if(!r)return;
       currentRecipeId=id;
       const {ingredients,totalCost,venda}=calcCosts(r.ingredients,r.markup);
       const porcoes=Math.max(r.porcoes||1,1);
@@ -394,7 +424,7 @@
     }
     async function deleteCurrentRecipe(){
       if(!await confirmAction('Deseja excluir esta receita salva?','Excluir receita'))return;
-      recipes=recipes.filter(r=>r.id!==currentRecipeId);
+      recipes=recipes.filter(r=>String(r.id)!==String(currentRecipeId));
       try {
         await persistRecipesSnapshot(recipes);
       } catch (error) {
@@ -415,7 +445,7 @@
       await deleteCurrentRecipe();
     }
     function loadRecipeToFicha(){
-      const r=recipes.find(x=>x.id===currentRecipeId);if(!r)return;
+      const r=recipes.find(x=>String(x.id)===String(currentRecipeId));if(!r)return;
       closeModal('modal-recipe');
       currentIngredients=[...r.ingredients];
       document.getElementById('ficha-nome').value=r.nome;
@@ -428,7 +458,7 @@
     
     /* ══ PDF ══ */
     function exportRecipePDF(id){
-      const r=recipes.find(x=>x.id===id);if(!r)return;
+      const r=recipes.find(x=>String(x.id)===String(id));if(!r)return;
       const {ingredients,totalCost,venda}=calcCosts(r.ingredients,r.markup);
       const porcoes=Math.max(r.porcoes||1,1);
       const now=new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});

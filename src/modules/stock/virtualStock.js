@@ -22,8 +22,29 @@
     let selectedStockCategories = new Set();
     let stockViewMode = localStorage.getItem("fichatec.stock.viewMode") || "grid";
 
-    function getActionIdArg(id) {
-      return JSON.stringify(id).replace(/"/g, "&quot;");
+    function escapeAttribute(value) {
+      return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/"/g, "&quot;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;");
+    }
+
+    function bindStockCardActions(listElement) {
+      listElement.onclick = async (event) => {
+        const button = event.target.closest("[data-stock-action]");
+        if (!button || !listElement.contains(button)) return;
+
+        const id = button.dataset.stockId;
+        if (button.dataset.stockAction === "edit") {
+          openStockModal(id);
+          return;
+        }
+
+        if (button.dataset.stockAction === "delete") {
+          await deleteStock(id);
+        }
+      };
     }
 
     async function persistStockSnapshot(nextStock) {
@@ -181,12 +202,13 @@
         return matchesName && matchesCategory;
       });
       if(!f.length){
+        el.onclick = null;
         el.innerHTML=`<div class="empty-state"><span class="empty-icon"><span class="material-symbols-rounded" style="font-size:52px;font-variation-settings:'FILL' 0,'wght' 300,'GRAD' 0,'opsz' 48">inventory_2</span></span><div class="empty-text">${filter?'Nenhum produto encontrado.':'Estoque vazio. Clique em "+ Novo"!'}</div></div>`;
         return;
       }
       el.innerHTML=f.map(s=>{
         const ppg=pricePerUnit(s);
-        const stockIdArg=getActionIdArg(s.id);
+        const stockId=escapeAttribute(s.id);
         const ps=s.unit==='ml'?formatCurrency(ppg*1000)+'/L · '+formatCurrency(ppg*100)+'/100ml':s.unit==='un'?formatCurrency(ppg)+'/un':formatCurrency(ppg*1000)+'/kg · '+formatCurrency(ppg*100)+'/100g';
         return`<div class="item-card">
           <div style="flex:1;min-width:0">
@@ -195,11 +217,12 @@
             <div class="item-price">${ps}</div>
           </div>
           <div class="item-actions">
-            <button class="btn btn-secondary btn-icon" onclick="openStockModal(${stockIdArg})" type="button"><span class="material-symbols-rounded">edit</span></button>
-            <button class="btn btn-danger btn-icon" onclick="deleteStock(${stockIdArg})" type="button"><span class="material-symbols-rounded">delete</span></button>
+            <button class="btn btn-secondary btn-icon" data-stock-action="edit" data-stock-id="${stockId}" type="button"><span class="material-symbols-rounded">edit</span></button>
+            <button class="btn btn-danger btn-icon" data-stock-action="delete" data-stock-id="${stockId}" type="button"><span class="material-symbols-rounded">delete</span></button>
           </div>
         </div>`;
       }).join('');
+      bindStockCardActions(el);
     }
     
     
