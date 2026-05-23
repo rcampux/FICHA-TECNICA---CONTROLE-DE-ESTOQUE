@@ -26,6 +26,7 @@ Este documento deve ser seguido a cada nova etapa do projeto. Ele consolida dire
 - Features de Estoque/Receitas devem seguir `docs/STOCK_RECIPES_FEATURE_SPEC.md`.
 - Ajustes de UX/design nao devem alterar CRUD, repositories, Supabase, RLS ou regras de negocio sem uma etapa explicita de schema/logica.
 - Toda alteracao visual deve ser revisada como designer UX/UI senior: checar eixo X/Y, hierarquia, responsividade mobile/tablet/desktop, espacamento entre linhas quebradas e ausencia de elementos colapsados antes de finalizar.
+- Quando houver referencia visual enviada pelo usuario, a implementacao deve ser fiel a composicao da imagem: largura dos blocos, alinhamento dos controles, hierarquia, ritmo vertical e adaptacao por device.
 - Categorias e produtos devem poder ser cadastrados de forma independente; a vinculacao produto-categoria deve poder acontecer depois, por edicao do produto, sem bloquear cadastro avulso.
 
 ## Ordem Atual de Execucao

@@ -1,4 +1,4 @@
-const CACHE_VERSION = "fichatec-pwa-v4";
+const CACHE_VERSION = "fichatec-pwa-v5";
 const APP_SHELL = [
   "/",
   "/manifest.webmanifest",
@@ -17,12 +17,19 @@ const APP_SHELL = [
   "/src/modules/nutrition/nutritionDefaults.js",
   "/src/modules/recipes/recipeSheet.js",
   "/src/modules/scanner/scannerRecipe.js",
+  "/src/modules/stock/categoryCatalog.js",
   "/src/modules/stock/stockPricing.js",
   "/src/modules/stock/virtualStock.js",
   "/src/modules/stock/physicalStock.js",
   "/src/pwa/registerServiceWorker.js",
   "/src/styles/app.css",
-  "/src/styles/legacy.css"
+  "/src/styles/base.css",
+  "/src/styles/components.css",
+  "/src/styles/layout.css",
+  "/src/styles/legacy.css",
+  "/src/styles/pages.css",
+  "/src/styles/stock-dashboard.css",
+  "/src/styles/tokens.css"
 ];
 
 function shouldCacheResponse(response) {
