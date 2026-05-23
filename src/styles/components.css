@@ -178,6 +178,120 @@
   row-gap: 10px !important;
 }
 
+.ingredient-builder-card {
+  display: grid;
+  gap: 14px;
+}
+
+.builder-step {
+  background: color-mix(in srgb, var(--md-sys-color-surface-container-lowest) 80%, var(--md-sys-color-surface-container));
+  border: 1px solid color-mix(in srgb, var(--md-sys-color-outline-variant) 70%, transparent);
+  border-radius: var(--md-sys-shape-corner-large);
+  padding: 14px;
+}
+
+.builder-step-header {
+  align-items: flex-start;
+  display: flex;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.builder-step-number {
+  align-items: center;
+  background: var(--md-sys-color-primary);
+  border-radius: var(--md-sys-shape-corner-full);
+  color: var(--md-sys-color-on-primary);
+  display: inline-flex;
+  flex: 0 0 26px;
+  font-size: 12px;
+  font-weight: 900;
+  height: 26px;
+  justify-content: center;
+}
+
+.builder-step-title {
+  color: var(--md-sys-color-on-surface);
+  font-size: 14px;
+  font-weight: 850;
+  line-height: 1.2;
+}
+
+.builder-step-sub {
+  color: var(--md-sys-color-on-surface-variant);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.45;
+  margin-top: 3px;
+}
+
+.ingredient-source-toggle {
+  margin-bottom: 0;
+}
+
+.ingredient-search-shell {
+  position: relative;
+}
+
+.ingredient-search-field {
+  position: relative;
+}
+
+.ingredient-search-field input {
+  background: var(--md-sys-color-surface-container) !important;
+  border: 1px solid var(--md-sys-color-outline-variant) !important;
+}
+
+.stock-toolbar {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: space-between;
+}
+
+.view-toggle {
+  align-items: center;
+  background: var(--md-sys-color-surface-container);
+  border: 1px solid color-mix(in srgb, var(--md-sys-color-outline-variant) 80%, transparent);
+  border-radius: var(--md-sys-shape-corner-full);
+  display: inline-flex;
+  gap: 4px;
+  padding: 4px;
+}
+
+.view-toggle-btn {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  border-radius: var(--md-sys-shape-corner-full);
+  color: var(--md-sys-color-on-surface-variant);
+  cursor: pointer;
+  display: inline-flex;
+  height: 34px;
+  justify-content: center;
+  width: 42px;
+}
+
+.view-toggle-btn.active {
+  background: var(--md-sys-color-primary-container);
+  color: var(--md-sys-color-on-primary-container);
+}
+
+.view-toggle-btn .material-symbols-rounded {
+  font-size: 21px;
+}
+
+#stock-list.view-list,
+#pstock-list.view-list {
+  grid-template-columns: 1fr !important;
+}
+
+#stock-list.view-list .item-card,
+#pstock-list.view-list .pstock-card {
+  max-width: none;
+}
+
 .btn-primary {
   background: var(--md-sys-color-primary);
   color: var(--md-sys-color-on-primary);

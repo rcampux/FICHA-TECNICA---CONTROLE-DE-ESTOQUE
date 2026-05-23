@@ -20,6 +20,23 @@
     let editingPhysicalId = null;
     let moveType = "usar";
     let movingPhysicalId = null;
+    let currentPhysicalFilter = "";
+    let physicalViewMode = localStorage.getItem("fichatec.physicalStock.viewMode") || "grid";
+
+    function applyPhysicalViewMode() {
+      const listElement = document.getElementById("pstock-list");
+      listElement?.classList.toggle("view-list", physicalViewMode === "list");
+      listElement?.classList.toggle("view-grid", physicalViewMode !== "list");
+      document.getElementById("pstock-view-grid")?.classList.toggle("active", physicalViewMode !== "list");
+      document.getElementById("pstock-view-list")?.classList.toggle("active", physicalViewMode === "list");
+    }
+
+    function setPhysicalViewMode(mode) {
+      physicalViewMode = mode === "list" ? "list" : "grid";
+      localStorage.setItem("fichatec.physicalStock.viewMode", physicalViewMode);
+      applyPhysicalViewMode();
+      renderPhysical(currentPhysicalFilter);
+    }
 
     function stockColor(percent) {
       return percent >= 80 ? "green" : percent >= 50 ? "orange" : "red";
@@ -117,7 +134,9 @@
     }
 
     function renderPhysical(filter = "") {
+      currentPhysicalFilter = filter || "";
       const listElement = document.getElementById("pstock-list");
+      applyPhysicalViewMode();
       const filtered = getPhysicalStock().filter((item) => item.name.toLowerCase().includes(filter.toLowerCase()));
       const summaryElement = document.getElementById("pstock-summary");
 
@@ -237,6 +256,8 @@
       stockColor,
       stockFlag,
       stockBar,
+      applyPhysicalViewMode,
+      setPhysicalViewMode,
       openPhysicalModal,
       savePhysical,
       deletePhysical,

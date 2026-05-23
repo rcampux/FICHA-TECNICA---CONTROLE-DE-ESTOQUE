@@ -89,8 +89,8 @@ const virtualStockModule=window.FichaTecVirtualStock.createVirtualStockModule({
   confirmAction,
   storageKeys:STORAGE_KEYS,
 });
-const {openStockModal,updateGoogleLink,handleGoogleSearch,saveStock,deleteStock,renderStock}=virtualStockModule;
-Object.assign(window,{openStockModal,updateGoogleLink,handleGoogleSearch,saveStock,deleteStock,renderStock});
+const {openStockModal,applyStockViewMode,setStockViewMode,updateGoogleLink,handleGoogleSearch,saveStock,deleteStock,renderStock}=virtualStockModule;
+Object.assign(window,{openStockModal,applyStockViewMode,setStockViewMode,updateGoogleLink,handleGoogleSearch,saveStock,deleteStock,renderStock});
 
 const physicalStockModule=window.FichaTecPhysicalStock.createPhysicalStockModule({
   closeModal,
@@ -108,8 +108,8 @@ const physicalStockModule=window.FichaTecPhysicalStock.createPhysicalStockModule
   confirmAction,
   storageKeys:STORAGE_KEYS,
 });
-const {stockColor,stockFlag,stockBar,openPhysicalModal,savePhysical,deletePhysical,renderPhysical,openMove,setMoveType,confirmMove}=physicalStockModule;
-Object.assign(window,{stockColor,stockFlag,stockBar,openPhysicalModal,savePhysical,deletePhysical,renderPhysical,openMove,setMoveType,confirmMove});
+const {stockColor,stockFlag,stockBar,applyPhysicalViewMode,setPhysicalViewMode,openPhysicalModal,savePhysical,deletePhysical,renderPhysical,openMove,setMoveType,confirmMove}=physicalStockModule;
+Object.assign(window,{stockColor,stockFlag,stockBar,applyPhysicalViewMode,setPhysicalViewMode,openPhysicalModal,savePhysical,deletePhysical,renderPhysical,openMove,setMoveType,confirmMove});
 
 const authSessionModule=window.FichaTecAuthSession.createAuthSessionModule({
   closeModal,

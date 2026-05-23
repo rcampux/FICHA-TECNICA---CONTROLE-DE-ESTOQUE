@@ -15,6 +15,23 @@
     } = deps;
 
     let editingStockId = null;
+    let currentStockFilter = "";
+    let stockViewMode = localStorage.getItem("fichatec.stock.viewMode") || "grid";
+
+    function applyStockViewMode() {
+      const listElement = document.getElementById("stock-list");
+      listElement?.classList.toggle("view-list", stockViewMode === "list");
+      listElement?.classList.toggle("view-grid", stockViewMode !== "list");
+      document.getElementById("stock-view-grid")?.classList.toggle("active", stockViewMode !== "list");
+      document.getElementById("stock-view-list")?.classList.toggle("active", stockViewMode === "list");
+    }
+
+    function setStockViewMode(mode) {
+      stockViewMode = mode === "list" ? "list" : "grid";
+      localStorage.setItem("fichatec.stock.viewMode", stockViewMode);
+      applyStockViewMode();
+      renderStock(currentStockFilter);
+    }
 
     
     function openStockModal(id=null){
@@ -63,7 +80,9 @@
       setStock(getStock().filter(s=>s.id!==id));db.save(storageKeys.stock,getStock());renderStock();showToast('Removido.');
     }
     function renderStock(filter=''){
+      currentStockFilter = filter || "";
       const el=document.getElementById('stock-list');
+      applyStockViewMode();
       const f=getStock().filter(s=>s.name.toLowerCase().includes(filter.toLowerCase()));
       if(!f.length){
         el.innerHTML=`<div class="empty-state"><span class="empty-icon"><span class="material-symbols-rounded" style="font-size:52px;font-variation-settings:'FILL' 0,'wght' 300,'GRAD' 0,'opsz' 48">inventory_2</span></span><div class="empty-text">${filter?'Nenhum produto encontrado.':'Estoque vazio. Clique em "+ Novo"!'}</div></div>`;
@@ -90,6 +109,8 @@
 
     return {
       openStockModal,
+      applyStockViewMode,
+      setStockViewMode,
       updateGoogleLink,
       handleGoogleSearch,
       saveStock,

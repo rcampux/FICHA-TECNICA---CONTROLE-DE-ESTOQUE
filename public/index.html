@@ -58,47 +58,77 @@
   </div>
 
   <div class="section-label">Adicionar Ingrediente</div>
-  <div class="card">
-    <div class="source-toggle">
-      <button class="source-btn active" id="src-btn-virtual" onclick="setIngSource('virtual')">
-        <span class="material-symbols-rounded icon-xs" style="vertical-align:middle">inventory_2</span> Virtual<br>
-        <span style="font-size:9px;font-weight:400;opacity:0.8">fichas & precificação</span>
-      </button>
-      <button class="source-btn" id="src-btn-fisico" onclick="setIngSource('fisico')">
-        <span class="material-symbols-rounded icon-xs" style="vertical-align:middle">storefront</span> Físico<br>
-        <span style="font-size:9px;font-weight:400;opacity:0.8">desconta estoque real</span>
-      </button>
-    </div>
-    <div style="position:relative" id="ing-search-wrap">
-      <span class="material-symbols-rounded search-icon">search</span>
-      <input type="text" id="ing-search" placeholder="Buscar ingrediente..." oninput="searchIngredient()" autocomplete="off"
-        style="background:var(--g50);border:none;border-radius:var(--r-pill);padding:13px var(--s4) 13px 44px;width:100%;font-family:'Inter',sans-serif;font-size:14px;outline:none">
-      <div class="autocomplete-dropdown" id="ing-dropdown"></div>
-    </div>
-    <div id="ing-selected-info"><div id="ing-sel-name"></div><div id="ing-sel-price"></div></div>
-    <div class="input-row cols-2" style="margin-top:var(--s3)">
-      <div class="input-group" style="margin-bottom:0">
-        <label class="input-label">Quantidade usada</label>
-        <input type="number" id="ing-qty" placeholder="Ex: 200" oninput="calcIngCost()">
+  <div class="card ingredient-builder-card">
+    <div class="builder-step">
+      <div class="builder-step-header">
+        <span class="builder-step-number">1</span>
+        <div>
+          <div class="builder-step-title">Origem do ingrediente</div>
+          <div class="builder-step-sub">Escolha de onde o produto entra na ficha.</div>
+        </div>
       </div>
-      <div class="input-group" style="margin-bottom:0">
-        <label class="input-label">Unidade</label>
-        <select id="ing-unit" onchange="calcIngCost()">
-          <option value="g">Gramas (g)</option>
-          <option value="kg">Quilograma (kg)</option>
-          <option value="ml">Mililitros (ml)</option>
-          <option value="un">Unidade (un)</option>
-        </select>
+      <div class="source-toggle ingredient-source-toggle">
+        <button class="source-btn active" id="src-btn-virtual" onclick="setIngSource('virtual')">
+          <span class="material-symbols-rounded icon-xs" style="vertical-align:middle">inventory_2</span> Virtual<br>
+          <span style="font-size:9px;font-weight:400;opacity:0.8">fichas & precificação</span>
+        </button>
+        <button class="source-btn" id="src-btn-fisico" onclick="setIngSource('fisico')">
+          <span class="material-symbols-rounded icon-xs" style="vertical-align:middle">storefront</span> Físico<br>
+          <span style="font-size:9px;font-weight:400;opacity:0.8">desconta estoque real</span>
+        </button>
       </div>
     </div>
-    <div id="ing-cost-preview"></div>
-    <div class="input-group" style="margin-top:var(--s3);margin-bottom:0">
-      <label class="input-label">Rendimento do ingrediente % <span style="font-weight:400;color:var(--n400)">(padrão 100%)</span></label>
-      <input type="number" id="ing-rendimento" placeholder="Ex: 85 para 15% de perda" min="1" max="100">
+    <div class="builder-step">
+      <div class="builder-step-header">
+        <span class="builder-step-number">2</span>
+        <div>
+          <div class="builder-step-title">Ingrediente</div>
+          <div class="builder-step-sub">Pesquise pelo nome e selecione um produto cadastrado.</div>
+        </div>
+      </div>
+      <div class="ingredient-search-shell" id="ing-search-wrap">
+        <label class="input-label" for="ing-search">Ingrediente</label>
+        <div class="ingredient-search-field">
+          <span class="material-symbols-rounded search-icon">search</span>
+          <input type="text" id="ing-search" placeholder="Buscar ingrediente..." oninput="searchIngredient()" autocomplete="off"
+            style="background:var(--g50);border:none;border-radius:var(--r-pill);padding:13px var(--s4) 13px 44px;width:100%;font-family:'Inter',sans-serif;font-size:14px;outline:none">
+          <div class="autocomplete-dropdown" id="ing-dropdown"></div>
+        </div>
+      </div>
+      <div id="ing-selected-info"><div id="ing-sel-name"></div><div id="ing-sel-price"></div></div>
     </div>
-    <button class="btn btn-primary btn-full" style="margin-top:var(--s4)" onclick="addIngredient()">
-      <span class="material-symbols-rounded">add</span> Adicionar Ingrediente
-    </button>
+    <div class="builder-step builder-step-final">
+      <div class="builder-step-header">
+        <span class="builder-step-number">3</span>
+        <div>
+          <div class="builder-step-title">Quantidade e rendimento</div>
+          <div class="builder-step-sub">Informe uso, unidade e perda de preparo.</div>
+        </div>
+      </div>
+      <div class="input-row cols-2">
+        <div class="input-group" style="margin-bottom:0">
+          <label class="input-label">Quantidade usada</label>
+          <input type="number" id="ing-qty" placeholder="Ex: 200" oninput="calcIngCost()">
+        </div>
+        <div class="input-group" style="margin-bottom:0">
+          <label class="input-label">Unidade</label>
+          <select id="ing-unit" onchange="calcIngCost()">
+            <option value="g">Gramas (g)</option>
+            <option value="kg">Quilograma (kg)</option>
+            <option value="ml">Mililitros (ml)</option>
+            <option value="un">Unidade (un)</option>
+          </select>
+        </div>
+      </div>
+      <div id="ing-cost-preview"></div>
+      <div class="input-group" style="margin-top:var(--s3);margin-bottom:0">
+        <label class="input-label">Rendimento do ingrediente % <span style="font-weight:400;color:var(--n400)">(padrão 100%)</span></label>
+        <input type="number" id="ing-rendimento" placeholder="Ex: 85 para 15% de perda" min="1" max="100">
+      </div>
+      <button class="btn btn-primary btn-full" style="margin-top:var(--s4)" onclick="addIngredient()">
+        <span class="material-symbols-rounded">add</span> Adicionar Ingrediente
+      </button>
+    </div>
   </div>
 
   <div id="ingredients-list"></div>
@@ -153,6 +183,19 @@
       <span class="material-symbols-rounded">add</span> Novo
     </button>
   </div>
+  <div class="stock-toolbar">
+    <button class="btn btn-secondary btn-sm" type="button">
+      <span class="material-symbols-rounded">category</span> Criar Categoria
+    </button>
+    <div class="view-toggle" aria-label="Modo de visualizacao do estoque virtual">
+      <button class="view-toggle-btn active" id="stock-view-grid" onclick="setStockViewMode('grid')" type="button" title="Visualizar em grid">
+        <span class="material-symbols-rounded">grid_view</span>
+      </button>
+      <button class="view-toggle-btn" id="stock-view-list" onclick="setStockViewMode('list')" type="button" title="Visualizar em lista">
+        <span class="material-symbols-rounded">view_list</span>
+      </button>
+    </div>
+  </div>
   <div class="search-bar">
     <span class="material-symbols-rounded search-icon">search</span>
     <input type="text" placeholder="Buscar produto..." oninput="renderStock(this.value)">
@@ -181,6 +224,19 @@
     <button class="btn btn-primary btn-sm" onclick="openPhysicalModal()">
       <span class="material-symbols-rounded">add</span> Novo
     </button>
+  </div>
+  <div class="stock-toolbar">
+    <button class="btn btn-secondary btn-sm" type="button">
+      <span class="material-symbols-rounded">category</span> Criar Categoria
+    </button>
+    <div class="view-toggle" aria-label="Modo de visualizacao do estoque fisico">
+      <button class="view-toggle-btn active" id="pstock-view-grid" onclick="setPhysicalViewMode('grid')" type="button" title="Visualizar em grid">
+        <span class="material-symbols-rounded">grid_view</span>
+      </button>
+      <button class="view-toggle-btn" id="pstock-view-list" onclick="setPhysicalViewMode('list')" type="button" title="Visualizar em lista">
+        <span class="material-symbols-rounded">view_list</span>
+      </button>
+    </div>
   </div>
   <div id="pstock-summary" class="summary-box" style="display:none"></div>
   <div class="search-bar">

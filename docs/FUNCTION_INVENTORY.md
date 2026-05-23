@@ -100,13 +100,15 @@ Este arquivo e um inventario vivo das funcoes utilizadas no projeto. Toda nova f
 | `confirmScanSave` | `src/modules/scanner/scannerRecipe.js` | 161 | Salva receita digitalizada e confirma sobrescrita quando houver nome duplicado. |
 | `exposePhysicalStockModule` | `src/modules/stock/physicalStock.js` | 1 | (function exposePhysicalStockModule() { |
 | `createPhysicalStockModule` | `src/modules/stock/physicalStock.js` | 2 | function createPhysicalStockModule(deps) { |
-| `stockColor` | `src/modules/stock/physicalStock.js` | 23 | function stockColor(percent) { |
-| `stockFlag` | `src/modules/stock/physicalStock.js` | 27 | function stockFlag(percent) { |
-| `stockBar` | `src/modules/stock/physicalStock.js` | 33 | function stockBar(percent) { |
-| `openPhysicalModal` | `src/modules/stock/physicalStock.js` | 37 | function openPhysicalModal(id = null) { |
-| `savePhysical` | `src/modules/stock/physicalStock.js` | 61 | function savePhysical() { |
-| `deletePhysical` | `src/modules/stock/physicalStock.js` | 109 | Exclui produto fisico apos confirmacao visual. |
-| `renderPhysical` | `src/modules/stock/physicalStock.js` | 118 | function renderPhysical(filter = "") { |
+| `applyPhysicalViewMode` | `src/modules/stock/physicalStock.js` | 26 | Aplica classe e estado visual do modo grid/lista no estoque fisico. |
+| `setPhysicalViewMode` | `src/modules/stock/physicalStock.js` | 34 | Persiste a preferencia grid/lista do estoque fisico e re-renderiza a lista atual. |
+| `stockColor` | `src/modules/stock/physicalStock.js` | 40 | function stockColor(percent) { |
+| `stockFlag` | `src/modules/stock/physicalStock.js` | 44 | function stockFlag(percent) { |
+| `stockBar` | `src/modules/stock/physicalStock.js` | 50 | function stockBar(percent) { |
+| `openPhysicalModal` | `src/modules/stock/physicalStock.js` | 54 | function openPhysicalModal(id = null) { |
+| `savePhysical` | `src/modules/stock/physicalStock.js` | 78 | function savePhysical() { |
+| `deletePhysical` | `src/modules/stock/physicalStock.js` | 126 | Exclui produto fisico apos confirmacao visual. |
+| `renderPhysical` | `src/modules/stock/physicalStock.js` | 134 | function renderPhysical(filter = "") { |
 | `openMove` | `src/modules/stock/physicalStock.js` | 167 | function openMove(id) { |
 | `setMoveType` | `src/modules/stock/physicalStock.js` | 185 | function setMoveType(type) { |
 | `confirmMove` | `src/modules/stock/physicalStock.js` | 193 | function confirmMove() { |
@@ -114,12 +116,14 @@ Este arquivo e um inventario vivo das funcoes utilizadas no projeto. Toda nova f
 | `pricePerUnit` | `src/modules/stock/stockPricing.js` | 2 | function pricePerUnit(stockItem) { |
 | `exposeVirtualStockModule` | `src/modules/stock/virtualStock.js` | 1 | (function exposeVirtualStockModule() { |
 | `createVirtualStockModule` | `src/modules/stock/virtualStock.js` | 2 | function createVirtualStockModule(deps) { |
-| `openStockModal` | `src/modules/stock/virtualStock.js` | 19 | function openStockModal(id=null){ |
-| `updateGoogleLink` | `src/modules/stock/virtualStock.js` | 41 | function updateGoogleLink(){ |
-| `handleGoogleSearch` | `src/modules/stock/virtualStock.js` | 46 | function handleGoogleSearch(e){const h=document.getElementById('google-search-link').href;if(!h\|\|h==='#'){e.preventDefault();return;}window.open(h,'_blank');e |
-| `saveStock` | `src/modules/stock/virtualStock.js` | 47 | function saveStock(){ |
-| `deleteStock` | `src/modules/stock/virtualStock.js` | 60 | Exclui produto virtual apos confirmacao visual. |
-| `renderStock` | `src/modules/stock/virtualStock.js` | 64 | function renderStock(filter=''){ |
+| `applyStockViewMode` | `src/modules/stock/virtualStock.js` | 21 | Aplica classe e estado visual do modo grid/lista no estoque virtual. |
+| `setStockViewMode` | `src/modules/stock/virtualStock.js` | 29 | Persiste a preferencia grid/lista do estoque virtual e re-renderiza a lista atual. |
+| `openStockModal` | `src/modules/stock/virtualStock.js` | 36 | function openStockModal(id=null){ |
+| `updateGoogleLink` | `src/modules/stock/virtualStock.js` | 58 | function updateGoogleLink(){ |
+| `handleGoogleSearch` | `src/modules/stock/virtualStock.js` | 63 | function handleGoogleSearch(e){const h=document.getElementById('google-search-link').href;if(!h\|\|h==='#'){e.preventDefault();return;}window.open(h,'_blank');e |
+| `saveStock` | `src/modules/stock/virtualStock.js` | 64 | function saveStock(){ |
+| `deleteStock` | `src/modules/stock/virtualStock.js` | 77 | Exclui produto virtual apos confirmacao visual. |
+| `renderStock` | `src/modules/stock/virtualStock.js` | 81 | function renderStock(filter=''){ |
 | `registerFichaTecServiceWorker` | `src/pwa/registerServiceWorker.js` | 1 | (function registerFichaTecServiceWorker() { |
 | `handleLaunchShortcut` | `src/pwa/registerServiceWorker.js` | 2 | function handleLaunchShortcut() { |
 | `registerServiceWorker` | `src/pwa/registerServiceWorker.js` | 13 | function registerServiceWorker() { |
