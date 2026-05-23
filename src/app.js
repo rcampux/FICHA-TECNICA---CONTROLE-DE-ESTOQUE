@@ -35,6 +35,88 @@ function showPage(page,navId){
 }
 function closeModal(id){document.getElementById(id).classList.remove('open');}
 
+const BOOT_DURATION_MS=2000;
+let bootTimerId=null;
+
+function setAppShellVisible(isVisible){
+  const shell=document.getElementById('app-shell');
+  if(!shell)return;
+  shell.hidden=!isVisible;
+  shell.setAttribute('aria-hidden',String(!isVisible));
+}
+
+function stopBootTimer(){
+  if(!bootTimerId)return;
+  window.clearTimeout(bootTimerId);
+  bootTimerId=null;
+}
+
+function hideBootScreen(){
+  const boot=document.getElementById('app-boot');
+  if(!boot)return;
+  boot.classList.remove('is-active');
+  boot.hidden=true;
+  document.body.classList.remove('app-booting');
+}
+
+function showBootSplash(duration=BOOT_DURATION_MS){
+  const boot=document.getElementById('app-boot');
+  const start=document.getElementById('app-start');
+  document.body.classList.add('app-booting');
+  document.body.classList.remove('app-start-mode');
+  if(start){start.hidden=true;start.classList.remove('is-active');}
+  setAppShellVisible(false);
+
+  if(!boot){
+    document.body.classList.remove('app-booting');
+    return Promise.resolve();
+  }
+
+  boot.hidden=false;
+  boot.classList.add('is-active');
+
+  return new Promise(resolve=>{
+    stopBootTimer();
+    bootTimerId=window.setTimeout(()=>{
+      hideBootScreen();
+      resolve();
+    },duration);
+  });
+}
+
+function showStartScreen(){
+  const start=document.getElementById('app-start');
+  hideBootScreen();
+  setAppShellVisible(false);
+  document.body.classList.add('app-start-mode');
+  if(start){
+    start.hidden=false;
+    start.classList.add('is-active');
+  }
+}
+
+function enterAppExperience(){
+  const start=document.getElementById('app-start');
+  hideBootScreen();
+  document.body.classList.remove('app-start-mode');
+  if(start){
+    start.hidden=true;
+    start.classList.remove('is-active');
+  }
+  setAppShellVisible(true);
+  showPage('ficha','nav-ficha');
+}
+
+async function exitToStartExperience(){
+  await showBootSplash(BOOT_DURATION_MS);
+  showStartScreen();
+}
+
+function openStartLogin(){
+  if(typeof window.setAuthMode==='function')window.setAuthMode('login');
+  if(typeof window.openAuthModal==='function')window.openAuthModal();
+}
+
 const recipeSheetModule=window.FichaTecRecipeSheet.createRecipeSheetModule({
   closeModal,
   db:DB,
@@ -137,10 +219,12 @@ const authSessionModule=window.FichaTecAuthSession.createAuthSessionModule({
   closeModal,
   config:window.FichaTecSupabaseConfig,
   createSupabaseClient:window.FichaTecSupabaseClientService.createClient,
+  enterAppView:enterAppExperience,
+  exitToStartView:exitToStartExperience,
   showToast,
 });
 const {backToAuthForm,clearAuthInputs,getAuthState,getPasswordValidation,handleAuthKeydown,initAuthSession,isStrongPassword,loadOrganizations,openAuthModal,renderAuthState,renderPasswordFeedback,resendConfirmationEmail,selectOrganization,setAuthMode,signOutAuth,submitAuthForm,syncSupabaseSession,togglePasswordVisibility}=authSessionModule;
-Object.assign(window,{backToAuthForm,clearAuthInputs,getAuthState,getPasswordValidation,handleAuthKeydown,initAuthSession,isStrongPassword,loadOrganizations,openAuthModal,renderAuthState,renderPasswordFeedback,resendConfirmationEmail,selectOrganization,setAuthMode,signOutAuth,submitAuthForm,syncSupabaseSession,togglePasswordVisibility});
+Object.assign(window,{backToAuthForm,clearAuthInputs,getAuthState,getPasswordValidation,handleAuthKeydown,initAuthSession,isStrongPassword,loadOrganizations,openAuthModal,renderAuthState,renderPasswordFeedback,resendConfirmationEmail,selectOrganization,setAuthMode,signOutAuth,submitAuthForm,syncSupabaseSession,togglePasswordVisibility,openStartLogin,showBootSplash,showStartScreen,enterAppExperience,exitToStartExperience});
 
 async function hydrateWorkspaceData(event){
   const organizationId=event?.detail?.organizationId || DB.activeOrganizationId?.();
@@ -235,4 +319,17 @@ recipes=recipes.map(r=>({...r,ingredients:r.ingredients.map(i=>{
   const s=findStockItem(i.stockId,i.name);
   return{...i,savedPricePerG:s?pricePerUnit(s):0};
 })}));
-renderStock();renderRecipes();renderPhysical();initAuthSession();
+renderStock();
+renderRecipes();
+renderPhysical();
+bootstrapAppExperience();
+
+async function bootstrapAppExperience(){
+  const authState=await initAuthSession();
+  await showBootSplash(BOOT_DURATION_MS);
+  if(authState?.isAuthenticated){
+    enterAppExperience();
+    return;
+  }
+  showStartScreen();
+}

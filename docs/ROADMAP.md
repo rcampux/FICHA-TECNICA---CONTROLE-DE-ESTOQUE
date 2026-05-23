@@ -58,6 +58,8 @@ Objetivo: criar area logada segura.
 
 Entregas:
 
+- Splash de inicializacao (2s) com identidade visual de app.
+- Tela inicial de acesso para usuarios sem sessao.
 - Projeto Supabase.
 - Tabelas base.
 - RLS.

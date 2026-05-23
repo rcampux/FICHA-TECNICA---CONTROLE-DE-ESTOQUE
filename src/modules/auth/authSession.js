@@ -4,6 +4,8 @@
       closeModal,
       config,
       createSupabaseClient,
+      enterAppView,
+      exitToStartView,
       showToast,
     } = deps;
 
@@ -76,9 +78,11 @@
 
     function showInitialUserScreen() {
       closeModal("modal-auth");
-      if (typeof window.showPage === "function") {
-        window.showPage("ficha", "nav-ficha");
+      if (typeof enterAppView === "function") {
+        enterAppView();
+        return;
       }
+      if (typeof window.showPage === "function") window.showPage("ficha", "nav-ficha");
     }
 
     function handleAuthKeydown(event) {
@@ -421,6 +425,7 @@
       }
       syncSupabaseSession(null);
       closeModal("modal-auth");
+      if (typeof exitToStartView === "function") await exitToStartView();
       showToast("Sessao encerrada.");
     }
 

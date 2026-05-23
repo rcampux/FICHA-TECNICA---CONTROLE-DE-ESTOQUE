@@ -17,7 +17,35 @@
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
 <link rel="stylesheet" href="../src/styles/app.css">
 </head>
-<body>
+<body class="app-booting">
+
+<div class="boot-screen" id="app-boot" aria-live="polite" role="status">
+  <div class="boot-screen-content">
+    <div class="boot-logo-wrap">
+      <span class="boot-logo-mark">FT</span>
+    </div>
+    <div class="boot-brand">FichaTec</div>
+    <div class="boot-tagline">Fichas técnicas e controle de estoque</div>
+    <div class="boot-loader" aria-hidden="true">
+      <span></span><span></span><span></span>
+    </div>
+  </div>
+</div>
+
+<section class="start-screen" id="app-start" hidden>
+  <div class="start-card">
+    <div class="start-logo-wrap">
+      <span class="start-logo-mark">FT</span>
+    </div>
+    <h1>Bem-vindo ao FichaTec</h1>
+    <p>Entre para acessar seu workspace e sincronizar receitas e estoques com segurança.</p>
+    <button class="btn btn-primary btn-full" onclick="openStartLogin()" type="button">
+      <span class="material-symbols-rounded">login</span> Entrar
+    </button>
+  </div>
+</section>
+
+<div class="app-shell" id="app-shell" aria-hidden="true">
 
 <!-- TOP BAR -->
 <div class="app-header">
@@ -287,6 +315,8 @@
 <button class="scan-fab" id="scan-fab-btn" onclick="openScanModal()" title="Digitalizar receita com câmera">
   <span class="material-symbols-rounded">document_scanner</span>
 </button>
+
+</div>
 
 <!-- MODAL: CATEGORIA -->
 <div class="modal-overlay" id="modal-category">

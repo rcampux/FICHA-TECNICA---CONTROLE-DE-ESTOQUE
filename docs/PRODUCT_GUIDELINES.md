@@ -45,6 +45,14 @@ O app deve transmitir:
 
 A experiencia principal deve funcionar perfeitamente no celular. Desktop e tablet devem expandir densidade e comparacao, nao mudar a logica.
 
+### Fluxo de acesso com cara de app
+
+- Sempre iniciar com splash animada de 2 segundos (mobile e desktop).
+- Depois da splash, exibir tela inicial de login quando nao houver sessao ativa.
+- Ao autenticar com sucesso, ocultar tela inicial e abrir direto na experiencia principal.
+- Ao encerrar sessao, voltar para uma experiencia de inicio com splash + tela de login.
+- A tecla Enter no formulario de acesso deve submeter login/cadastro.
+
 ### Poucos passos por tarefa
 
 Criar uma ficha tecnica deve ser um fluxo guiado:
@@ -233,4 +241,3 @@ Fase futura.
 - Separacao entre dado privado, dado comunitario e dado patrocinado.
 - Consentimento para uso de receitas em comunidade.
 - Tratamento de LGPD: exportar dados, apagar conta e politica de privacidade.
-
