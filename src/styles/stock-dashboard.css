@@ -1,6 +1,6 @@
 #page-estoque,
 #page-fisico {
-  gap: 26px;
+  gap: 28px;
 }
 
 #page-estoque .stock-category-card,
@@ -39,10 +39,10 @@
 #page-estoque .stock-add-title,
 #page-fisico .stock-add-title {
   color: var(--md-sys-color-on-surface);
-  font-size: 23px;
-  font-weight: 820;
+  font-size: 20px;
+  font-weight: 600;
   letter-spacing: 0;
-  line-height: 1.12;
+  line-height: 1.18;
 }
 
 #page-estoque .stock-category-search,
@@ -63,8 +63,8 @@
   border: 0 !important;
   box-shadow: none !important;
   color: var(--md-sys-color-on-surface);
-  font-size: 17px;
-  font-weight: 450;
+  font-size: 15px;
+  font-weight: 430;
   height: 100%;
   min-width: 0;
   outline: 0;
@@ -80,7 +80,7 @@
 #page-estoque .stock-category-search .material-symbols-rounded,
 #page-fisico .stock-category-search .material-symbols-rounded {
   color: #858585;
-  font-size: 26px;
+  font-size: 24px;
 }
 
 #page-estoque .stock-filter-btn,
@@ -99,14 +99,14 @@
 
 #page-estoque .stock-filter-btn .material-symbols-rounded,
 #page-fisico .stock-filter-btn .material-symbols-rounded {
-  font-size: 32px;
-  font-variation-settings: "FILL" 0, "wght" 650, "GRAD" 0, "opsz" 40;
+  font-size: 30px;
+  font-variation-settings: "FILL" 0, "wght" 600, "GRAD" 0, "opsz" 36;
 }
 
 #page-estoque .btn-primary.btn-sm,
 #page-fisico .btn-primary.btn-sm {
   font-size: 14px;
-  font-weight: 760;
+  font-weight: 600;
   min-height: 48px;
   padding: 0 22px;
 }
@@ -120,9 +120,9 @@
 #page-fisico > .search-bar input {
   background: var(--md-sys-color-surface-container);
   border-radius: var(--md-sys-shape-corner-full);
-  font-size: 15px;
-  font-weight: 450;
-  min-height: 58px;
+  font-size: 14px;
+  font-weight: 430;
+  min-height: 54px;
   padding-left: 58px;
 }
 
@@ -136,7 +136,7 @@
   align-items: center;
   display: flex;
   gap: 18px;
-  margin-top: -10px;
+  margin-top: -6px;
 }
 
 #page-estoque .stock-view-icon,
@@ -151,8 +151,8 @@
 
 #page-estoque .stock-view-icon .material-symbols-rounded,
 #page-fisico .stock-view-icon .material-symbols-rounded {
-  font-size: 34px;
-  font-variation-settings: "FILL" 1, "wght" 650, "GRAD" 0, "opsz" 40;
+  font-size: 32px;
+  font-variation-settings: "FILL" 1, "wght" 600, "GRAD" 0, "opsz" 36;
 }
 
 #page-estoque #stock-list,
@@ -191,8 +191,8 @@
 
 #page-estoque .item-name,
 #page-fisico .pstock-name {
-  font-size: 15px;
-  font-weight: 780;
+  font-size: 14px;
+  font-weight: 600;
   letter-spacing: 0;
 }
 
@@ -231,13 +231,13 @@
 
   #page-estoque #stock-list {
     display: grid;
-    gap: 16px;
+    gap: 22px;
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   #page-fisico #pstock-list {
     display: grid;
-    gap: 16px;
+    gap: 22px;
     grid-template-columns: repeat(2, minmax(0, 450px));
   }
 }
@@ -260,26 +260,50 @@
 @media (max-width: 767px) {
   #page-estoque .stock-category-card,
   #page-fisico .stock-category-card {
+    gap: 14px;
     grid-template-columns: 1fr auto;
+    margin-bottom: 18px;
+    min-height: auto;
+    padding: 18px 20px 20px;
+  }
+
+  #page-estoque .stock-add-card,
+  #page-fisico .stock-add-card,
+  #page-fisico .summary-box,
+  #page-estoque > .search-bar,
+  #page-fisico > .search-bar,
+  #page-estoque .stock-view-row,
+  #page-fisico .stock-view-row {
+    margin-bottom: 18px;
   }
 
   #page-estoque .stock-category-search,
   #page-fisico .stock-category-search {
     grid-column: 1 / -1;
+    height: 48px;
     order: 2;
+    padding: 0 18px 0 22px;
   }
 
   #page-estoque .stock-filter-btn,
   #page-fisico .stock-filter-btn {
-    min-width: 56px;
-    width: 56px;
+    height: 48px;
+    min-width: 64px;
+    width: 64px;
   }
 
   #page-estoque .stock-category-card > .btn,
   #page-fisico .stock-category-card > .btn {
     grid-column: 1 / -1;
+    min-height: 48px;
     order: 3;
     width: 100%;
+  }
+
+  #page-estoque .stock-add-card,
+  #page-fisico .stock-add-card {
+    min-height: 82px;
+    padding: 18px 20px;
   }
 
   #page-estoque .stock-category-title,
@@ -287,5 +311,47 @@
   #page-estoque .stock-add-title,
   #page-fisico .stock-add-title {
     font-size: 20px;
+    font-weight: 600;
+  }
+
+  #page-estoque .btn-primary.btn-sm,
+  #page-fisico .btn-primary.btn-sm {
+    font-size: 14px;
+    font-weight: 600;
+    padding-inline: 20px;
+  }
+
+  #page-estoque > .search-bar input,
+  #page-fisico > .search-bar input {
+    font-size: 14px;
+    min-height: 52px;
+  }
+
+  #page-estoque .stock-view-row,
+  #page-fisico .stock-view-row {
+    gap: 14px;
+    margin-top: 0;
+  }
+
+  #page-estoque .stock-view-icon,
+  #page-fisico .stock-view-icon {
+    height: 42px;
+    width: 42px;
+  }
+
+  #page-estoque .stock-view-icon .material-symbols-rounded,
+  #page-fisico .stock-view-icon .material-symbols-rounded {
+    font-size: 30px;
+  }
+
+  #page-estoque #stock-list,
+  #page-fisico #pstock-list {
+    display: grid;
+    gap: 18px;
+  }
+
+  #page-estoque .empty-state,
+  #page-fisico .empty-state {
+    min-height: 180px;
   }
 }
