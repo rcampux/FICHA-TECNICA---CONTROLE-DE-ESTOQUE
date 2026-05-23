@@ -18,6 +18,7 @@ O projeto esta em fase de prototipo estruturado com Supabase ja conectado em pro
 - Exclusoes remotas foram ajustadas para funcionar tambem quando o usuario remove o ultimo item de uma lista.
 - RLS foi validado em producao com dois usuarios reais: `Achocolatado` ficou isolado em `r.camposarch@gmail.com` e `Bolo de whey` ficou isolado em `r.camposdesign@gmail.com`.
 - Security Advisor reportou warnings de funcoes internas; a migration `20260523090000_harden_internal_functions.sql` foi preparada para hardening.
+- Especificacao de evolucao de Estoque/Receitas registrada em `docs/STOCK_RECIPES_FEATURE_SPEC.md`.
 
 ## Proximo Passo Recomendado
 
@@ -32,6 +33,18 @@ Ordem recomendada:
 3. Atualizar o Security Advisor e confirmar que os warnings de funcoes internas sairam.
 4. Habilitar `Leaked Password Protection` no painel Supabase Auth.
 5. Registrar qualquer warning residual antes de iniciar novas features.
+
+### Fase 2.4 - UX Estoque/Receitas Sem Alterar Logica
+
+Objetivo: melhorar a experiencia visual antes de alterar schema, mantendo CRUD, Supabase e regras de negocio intactos.
+
+Ordem recomendada:
+
+1. Redesenhar visualmente a aba Ficha para separar origem, selecao e parametros do ingrediente.
+2. Melhorar consistencia visual entre Estoque Fisico e Estoque Virtual.
+3. Adicionar toggle visual Lista/Grid com persistencia local, sem mudar estrutura remota.
+4. Revisar responsividade de cards, filtros, botoes e modais em mobile, tablet e desktop.
+5. Validar que criar, editar, excluir e salvar receita continuam funcionando igual.
 
 ## Checklist de Aceite
 
@@ -59,6 +72,8 @@ Avancar para Fase 3.1 - Estrutura de planos e permissoes:
 3. Criar base para limites de receitas, usuarios, scanner de rotulos e scanner de receitas.
 4. Preparar integracao com gateway de pagamento recorrente.
 5. Documentar webhooks e estados de assinatura antes de conectar cobranca real.
+
+Depois disso, seguir o fatiamento de `docs/STOCK_RECIPES_FEATURE_SPEC.md` para categorias, nutricao, validade/lote e dashboards.
 
 ## Link de Producao
 

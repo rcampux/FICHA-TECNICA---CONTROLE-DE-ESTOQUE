@@ -23,6 +23,8 @@ Este documento deve ser seguido a cada nova etapa do projeto. Ele consolida dire
 - O cliente Supabase deve ser singleton no navegador para evitar multiplas instancias GoTrue e comportamento instavel em Auth.
 - Exclusoes sincronizadas com Supabase precisam funcionar tambem quando o usuario remove o ultimo item de uma tabela/lista.
 - Testes solicitados ao usuario devem ser cirurgicos: um objetivo por vez, passo a passo curto, comando/SQL exato ja preenchido quando possivel, resultado esperado e criterio claro de aprovado/reprovado.
+- Features de Estoque/Receitas devem seguir `docs/STOCK_RECIPES_FEATURE_SPEC.md`.
+- Ajustes de UX/design nao devem alterar CRUD, repositories, Supabase, RLS ou regras de negocio sem uma etapa explicita de schema/logica.
 
 ## Ordem Atual de Execucao
 
@@ -35,6 +37,7 @@ Este documento deve ser seguido a cada nova etapa do projeto. Ele consolida dire
 7. Evoluir scanner/OCR com fila, revisao e limite por plano.
 8. Preparar busca de precos online com fonte/API definida.
 9. Preparar arquitetura futura para comunidade e patrocinadores.
+10. Evoluir Estoque/Receitas em fases: UX sem schema, schema/persistencia, nutricao/ficha tecnica e analytics.
 
 ## Criterio de Pronto Por Etapa
 
