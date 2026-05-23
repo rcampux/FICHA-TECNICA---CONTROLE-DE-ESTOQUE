@@ -39,10 +39,10 @@
 #page-estoque .stock-add-title,
 #page-fisico .stock-add-title {
   color: var(--md-sys-color-on-surface);
-  font-size: 28px;
-  font-weight: 900;
+  font-size: 23px;
+  font-weight: 820;
   letter-spacing: 0;
-  line-height: 1.05;
+  line-height: 1.12;
 }
 
 #page-estoque .stock-category-search,
@@ -63,8 +63,8 @@
   border: 0 !important;
   box-shadow: none !important;
   color: var(--md-sys-color-on-surface);
-  font-size: 20px;
-  font-weight: 500;
+  font-size: 17px;
+  font-weight: 450;
   height: 100%;
   min-width: 0;
   outline: 0;
@@ -80,7 +80,7 @@
 #page-estoque .stock-category-search .material-symbols-rounded,
 #page-fisico .stock-category-search .material-symbols-rounded {
   color: #858585;
-  font-size: 30px;
+  font-size: 26px;
 }
 
 #page-estoque .stock-filter-btn,
@@ -99,16 +99,16 @@
 
 #page-estoque .stock-filter-btn .material-symbols-rounded,
 #page-fisico .stock-filter-btn .material-symbols-rounded {
-  font-size: 38px;
-  font-variation-settings: "FILL" 0, "wght" 800, "GRAD" 0, "opsz" 48;
+  font-size: 32px;
+  font-variation-settings: "FILL" 0, "wght" 650, "GRAD" 0, "opsz" 40;
 }
 
 #page-estoque .btn-primary.btn-sm,
 #page-fisico .btn-primary.btn-sm {
-  font-size: 16px;
-  font-weight: 850;
+  font-size: 14px;
+  font-weight: 760;
   min-height: 48px;
-  padding: 0 24px;
+  padding: 0 22px;
 }
 
 #page-estoque > .search-bar,
@@ -120,7 +120,8 @@
 #page-fisico > .search-bar input {
   background: var(--md-sys-color-surface-container);
   border-radius: var(--md-sys-shape-corner-full);
-  font-size: 16px;
+  font-size: 15px;
+  font-weight: 450;
   min-height: 58px;
   padding-left: 58px;
 }
@@ -150,8 +151,8 @@
 
 #page-estoque .stock-view-icon .material-symbols-rounded,
 #page-fisico .stock-view-icon .material-symbols-rounded {
-  font-size: 42px;
-  font-variation-settings: "FILL" 1, "wght" 800, "GRAD" 0, "opsz" 48;
+  font-size: 34px;
+  font-variation-settings: "FILL" 1, "wght" 650, "GRAD" 0, "opsz" 40;
 }
 
 #page-estoque #stock-list,
@@ -184,8 +185,24 @@
 }
 
 #page-fisico .summary-item-val {
-  font-size: 30px;
+  font-size: 26px;
   line-height: 1;
+}
+
+#page-estoque .item-name,
+#page-fisico .pstock-name {
+  font-size: 15px;
+  font-weight: 780;
+  letter-spacing: 0;
+}
+
+#page-estoque .item-meta,
+#page-fisico .pstock-meta,
+#page-estoque .empty-text,
+#page-fisico .empty-text {
+  font-size: 14px;
+  font-weight: 450;
+  line-height: 1.45;
 }
 
 #page-estoque .empty-state,
@@ -269,6 +286,6 @@
   #page-fisico .stock-category-title,
   #page-estoque .stock-add-title,
   #page-fisico .stock-add-title {
-    font-size: 22px;
+    font-size: 20px;
   }
 }
