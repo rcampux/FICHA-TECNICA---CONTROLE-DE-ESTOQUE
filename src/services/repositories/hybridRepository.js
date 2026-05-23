@@ -29,6 +29,10 @@
     queueRemoteSave(key, value);
   }
 
+  function saveLocal(key, value) {
+    localRepository.save(key, value);
+  }
+
   function remove(key) {
     localRepository.remove(key);
   }
@@ -68,6 +72,7 @@
     activeOrganizationId: getActiveOrganizationId,
     load,
     save,
+    saveLocal,
     remove,
     loadRemote,
     saveRemote,

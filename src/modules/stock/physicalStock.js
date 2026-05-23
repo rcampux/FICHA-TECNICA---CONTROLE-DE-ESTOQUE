@@ -27,6 +27,50 @@
     let selectedPhysicalCategories = new Set();
     let physicalViewMode = localStorage.getItem("fichatec.physicalStock.viewMode") || "grid";
 
+    function getActionIdArg(id) {
+      return JSON.stringify(id).replace(/"/g, "&quot;");
+    }
+
+    async function persistPhysicalSnapshot(nextPhysicalStock) {
+      setPhysicalStock(nextPhysicalStock);
+      if (db.saveLocal) db.saveLocal(storageKeys.physicalStock, nextPhysicalStock);
+      else db.save(storageKeys.physicalStock, nextPhysicalStock);
+
+      const organizationId = db.activeOrganizationId?.();
+      if (db.mode?.() === "supabase" && !organizationId) {
+        throw new Error("Workspace Supabase ativo nao encontrado.");
+      }
+      if (db.mode?.() === "supabase" && db.saveRemote && organizationId) {
+        const savedPhysicalStock = await db.saveRemote(storageKeys.physicalStock, nextPhysicalStock, organizationId);
+        if (Array.isArray(savedPhysicalStock)) {
+          setPhysicalStock(savedPhysicalStock);
+          return savedPhysicalStock;
+        }
+      }
+
+      return nextPhysicalStock;
+    }
+
+    async function persistVirtualStockSnapshot(nextStock) {
+      setStock(nextStock);
+      if (db.saveLocal) db.saveLocal(storageKeys.stock, nextStock);
+      else db.save(storageKeys.stock, nextStock);
+
+      const organizationId = db.activeOrganizationId?.();
+      if (db.mode?.() === "supabase" && !organizationId) {
+        throw new Error("Workspace Supabase ativo nao encontrado.");
+      }
+      if (db.mode?.() === "supabase" && db.saveRemote && organizationId) {
+        const savedStock = await db.saveRemote(storageKeys.stock, nextStock, organizationId);
+        if (Array.isArray(savedStock)) {
+          setStock(savedStock);
+          return savedStock;
+        }
+      }
+
+      return nextStock;
+    }
+
     function applyPhysicalViewMode() {
       const listElement = document.getElementById("pstock-list");
       listElement?.classList.toggle("view-list", physicalViewMode === "list");
@@ -114,7 +158,11 @@
       editingPhysicalId = id;
 
       if (id !== null) {
-        const item = getPhysicalStock().find((entry) => entry.id === id);
+        const item = getPhysicalStock().find((entry) => String(entry.id) === String(id));
+        if (!item) {
+          showToast("Produto nao encontrado.");
+          return;
+        }
         renderCategoryOptions?.("pstock-category", item.category || "");
         document.getElementById("modal-pstock-title").textContent = "Editar Produto";
         document.getElementById("pstock-name").value = item.name;
@@ -136,7 +184,7 @@
       document.getElementById("modal-pstock").classList.add("open");
     }
 
-    function savePhysical() {
+    async function savePhysical() {
       const name = document.getElementById("pstock-name").value.trim();
       const qty = parseFloat(document.getElementById("pstock-qty").value);
       const unit = document.getElementById("pstock-unit").value;
@@ -150,7 +198,7 @@
 
       const category = ensureCategory ? ensureCategory(document.getElementById("pstock-category").value) : document.getElementById("pstock-category").value;
       const nextPhysicalStock = editingPhysicalId !== null
-        ? getPhysicalStock().map((item) => item.id === editingPhysicalId
+        ? getPhysicalStock().map((item) => String(item.id) === String(editingPhysicalId)
           ? {...item,name,currentQty:qty,unit,price,desiredQty:desired,category}
           : item)
         : [...getPhysicalStock(), {
@@ -165,9 +213,6 @@
           history: [{type:"entrada",qty,date:new Date().toISOString()}],
         }];
 
-      setPhysicalStock(nextPhysicalStock);
-      db.save(storageKeys.physicalStock, getPhysicalStock());
-
       const existing = getStock().find((item) => item.name.toLowerCase() === name.toLowerCase());
       const nextStock = existing
         ? getStock().map((item) => item.name.toLowerCase() === name.toLowerCase()
@@ -175,8 +220,14 @@
           : item)
         : [...getStock(), {id:Date.now()+1,name,qty,unit,price,category,nutrition:getNutrition(name)}];
 
-      setStock(nextStock);
-      db.save(storageKeys.stock, getStock());
+      try {
+        await persistPhysicalSnapshot(nextPhysicalStock);
+        await persistVirtualStockSnapshot(nextStock);
+      } catch (error) {
+        console.error(error);
+        showToast("Nao foi possivel salvar o produto no Supabase.");
+        return;
+      }
 
       closeModal("modal-pstock");
       renderPhysical();
@@ -188,8 +239,14 @@
     async function deletePhysical(id) {
       if (!await confirmAction("Deseja excluir este produto do estoque fisico?", "Excluir produto")) return;
 
-      setPhysicalStock(getPhysicalStock().filter((item) => item.id !== id));
-      db.save(storageKeys.physicalStock, getPhysicalStock());
+      const nextPhysicalStock = getPhysicalStock().filter((item) => String(item.id) !== String(id));
+      try {
+        await persistPhysicalSnapshot(nextPhysicalStock);
+      } catch (error) {
+        console.error(error);
+        showToast("Nao foi possivel excluir o produto no Supabase.");
+        return;
+      }
       renderPhysical();
       renderPhysicalCategoryFilters();
       showToast("Removido.");
@@ -232,7 +289,7 @@
 
       listElement.innerHTML = filtered.map((item) => {
         const percent = item.desiredQty > 0 ? (item.currentQty / item.desiredQty) * 100 : 0;
-        const physicalIdArg = JSON.stringify(item.id);
+        const physicalIdArg = getActionIdArg(item.id);
         return `<div class="pstock-card">
           <div class="pstock-header">
             <div class="pstock-name">${item.name}${item.category?` <span class="tag" style="font-size:10px">${item.category}</span>`:''}</div>
@@ -254,7 +311,7 @@
 
     function openMove(id) {
       movingPhysicalId = id;
-      const item = getPhysicalStock().find((entry) => entry.id === id);
+      const item = getPhysicalStock().find((entry) => String(entry.id) === String(id));
       if (!item) return;
 
       setMoveType("usar");
@@ -278,8 +335,8 @@
       document.getElementById("move-confirm-btn").textContent = type === "usar" ? "Confirmar Uso" : "Confirmar Reposição";
     }
 
-    function confirmMove() {
-      const item = getPhysicalStock().find((entry) => entry.id === movingPhysicalId);
+    async function confirmMove() {
+      const item = getPhysicalStock().find((entry) => String(entry.id) === String(movingPhysicalId));
       if (!item) return;
 
       const qty = parseFloat(document.getElementById("move-qty").value);
@@ -295,7 +352,7 @@
 
       const delta = moveType === "usar" ? -qty : qty;
       const nextPhysicalStock = getPhysicalStock().map((entry) => {
-        if (entry.id !== movingPhysicalId) return entry;
+        if (String(entry.id) !== String(movingPhysicalId)) return entry;
 
         return {
           ...entry,
@@ -305,15 +362,20 @@
         };
       });
 
-      setPhysicalStock(nextPhysicalStock);
-      db.save(storageKeys.physicalStock, getPhysicalStock());
-
-      const movedItem = nextPhysicalStock.find((entry) => entry.id === movingPhysicalId);
+      const movedItem = nextPhysicalStock.find((entry) => String(entry.id) === String(movingPhysicalId));
       const normalizedName = movedItem.name.toLowerCase();
-      setStock(getStock().map((stockItem) => stockItem.name.toLowerCase() === normalizedName
+      const nextStock = getStock().map((stockItem) => stockItem.name.toLowerCase() === normalizedName
         ? {...stockItem,qty:Math.max(parseFloat((stockItem.qty+delta).toFixed(6)),0)}
-        : stockItem));
-      db.save(storageKeys.stock, getStock());
+        : stockItem);
+
+      try {
+        await persistPhysicalSnapshot(nextPhysicalStock);
+        await persistVirtualStockSnapshot(nextStock);
+      } catch (error) {
+        console.error(error);
+        showToast("Nao foi possivel atualizar o estoque no Supabase.");
+        return;
+      }
 
       showToast(moveType === "usar" ? `${formatQuantity(qty,movedItem.unit)} retirados.` : `${formatQuantity(qty,movedItem.unit)} adicionados.`);
       closeModal("modal-move");

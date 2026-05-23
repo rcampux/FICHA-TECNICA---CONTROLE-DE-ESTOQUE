@@ -192,8 +192,13 @@
 
   function mapRecipeIngredientToRemote(ingredient, recipeId, organizationId) {
     const remoteId = getRemoteId(ingredient);
-    const stockRemoteId = ingredient.stockRemoteId || (typeof ingredient.stockId === "string" && ingredient.stockId.includes("-") ? ingredient.stockId : null);
-    const physicalRemoteId = ingredient.physicalRemoteId || null;
+    const rawStockId = String(ingredient.stockId || "");
+    const rawPhysicalId = String(ingredient.physicalId || "").replace(/^pf_/, "");
+    const isPhysicalSource = rawStockId.startsWith("pf_") || Boolean(ingredient.physicalRemoteId || ingredient.physicalId);
+    const stockRemoteId = isPhysicalSource
+      ? null
+      : ingredient.stockRemoteId || (rawStockId.includes("-") ? rawStockId : null);
+    const physicalRemoteId = ingredient.physicalRemoteId || (rawPhysicalId.includes("-") ? rawPhysicalId : null);
     return {
       ...(remoteId ? {id: remoteId} : {}),
       organization_id: organizationId,

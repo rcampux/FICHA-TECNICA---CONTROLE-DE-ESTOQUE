@@ -43,9 +43,13 @@
     async function persistRecipesSnapshot(nextRecipes) {
       recipes = nextRecipes;
       setRecipes(recipes);
-      DB.save(STORAGE_KEYS.recipes, recipes);
+      if (DB.saveLocal) DB.saveLocal(STORAGE_KEYS.recipes, recipes);
+      else DB.save(STORAGE_KEYS.recipes, recipes);
 
       const organizationId = DB.activeOrganizationId?.();
+      if (DB.mode?.() === "supabase" && !organizationId) {
+        throw new Error("Workspace Supabase ativo nao encontrado.");
+      }
       if (DB.mode?.() === "supabase" && DB.saveRemote && organizationId) {
         try {
           const savedRecipes = await DB.saveRemote(STORAGE_KEYS.recipes, recipes, organizationId);
@@ -55,7 +59,7 @@
           }
         } catch (error) {
           console.error("Recipe remote sync failed", error);
-          showToast("Receita salva localmente; sincronizacao remota pendente.");
+          throw error;
         }
       }
 
@@ -72,6 +76,10 @@
         card.scrollIntoView({behavior:"smooth", block:"center"});
         window.setTimeout(() => card.classList.remove("recipe-card-focus"), 1800);
       });
+    }
+
+    function getActionIdArg(id) {
+      return JSON.stringify(id).replace(/"/g, "&quot;");
     }
 
     function findStockItem(stockId,name){
@@ -116,7 +124,9 @@
     }
     function selectIngredient(id){
       if(ingSource==='fisico'&&String(id).startsWith('pf_')){
-        const pid=parseInt(id.replace('pf_',''));
+        const rawId=String(id).replace('pf_','');
+        const numericId=Number(rawId);
+        const pid=Number.isFinite(numericId)&&String(numericId)===rawId?numericId:rawId;
         const p=physicalStock.find(x=>x.id===pid);if(!p)return;
         selectedIngredient={id:'pf_'+p.id,name:p.name,unit:p.unit,price:p.price,qty:p.currentQty,_physicalId:p.id,nutrition:getNutrition(p.name)};
       }else{selectedIngredient=stock.find(s=>s.id===parseInt(id)||s.id===id);}
@@ -261,8 +271,14 @@
       };
       if(idx>=0){if(!await confirmAction(`Receita "${nome}" ja existe. Deseja sobrescrever?`,'Sobrescrever receita','Sim, sobrescrever'))return;recipes[idx]=recipe;}
       else recipes.push(recipe);
-      await persistRecipesSnapshot(recipes);
-      showToast(`"${nome}" salva!`);
+      try {
+        await persistRecipesSnapshot(recipes);
+      } catch (error) {
+        console.error(error);
+        showToast("Nao foi possivel salvar a receita no Supabase.");
+        return;
+      }
+      showToast(DB.mode?.() === "supabase" ? `"${nome}" salva no banco!` : `"${nome}" salva!`);
       showPage('receitas','nav-receitas');
       renderRecipes('',null);
       focusRecipeCard(recipe.id);
@@ -293,7 +309,7 @@
         const {totalCost,venda}=calcCosts(r.ingredients,r.markup);
         const changed=hasPriceChanged(r.ingredients);
         const diff=totalCost-r.totalCost;
-        const recipeIdArg=JSON.stringify(r.id);
+        const recipeIdArg=getActionIdArg(r.id);
         return`<div class="recipe-card" data-recipe-id="${r.id}" onclick="viewRecipe(${recipeIdArg})">
           <div class="recipe-card-heading">
             <div class="recipe-card-title">${r.nome}${r.origem==='scan'?` <span class="scan-badge" style="font-size:10px"><span class="material-symbols-rounded" style="font-size:12px">document_scanner</span>Scan</span>`:''}</div>
@@ -379,7 +395,13 @@
     async function deleteCurrentRecipe(){
       if(!await confirmAction('Deseja excluir esta receita salva?','Excluir receita'))return;
       recipes=recipes.filter(r=>r.id!==currentRecipeId);
-      await persistRecipesSnapshot(recipes);
+      try {
+        await persistRecipesSnapshot(recipes);
+      } catch (error) {
+        console.error(error);
+        showToast("Nao foi possivel excluir a receita no Supabase.");
+        return;
+      }
       closeModal('modal-recipe');
       renderRecipes(document.getElementById('recipe-search').value,activeIngFilter);
       showToast('Receita excluída.');

@@ -22,6 +22,30 @@
     let selectedStockCategories = new Set();
     let stockViewMode = localStorage.getItem("fichatec.stock.viewMode") || "grid";
 
+    function getActionIdArg(id) {
+      return JSON.stringify(id).replace(/"/g, "&quot;");
+    }
+
+    async function persistStockSnapshot(nextStock) {
+      setStock(nextStock);
+      if (db.saveLocal) db.saveLocal(storageKeys.stock, nextStock);
+      else db.save(storageKeys.stock, nextStock);
+
+      const organizationId = db.activeOrganizationId?.();
+      if (db.mode?.() === "supabase" && !organizationId) {
+        throw new Error("Workspace Supabase ativo nao encontrado.");
+      }
+      if (db.mode?.() === "supabase" && db.saveRemote && organizationId) {
+        const savedStock = await db.saveRemote(storageKeys.stock, nextStock, organizationId);
+        if (Array.isArray(savedStock)) {
+          setStock(savedStock);
+          return savedStock;
+        }
+      }
+
+      return nextStock;
+    }
+
     function applyStockViewMode() {
       const listElement = document.getElementById("stock-list");
       listElement?.classList.toggle("view-list", stockViewMode === "list");
@@ -96,7 +120,8 @@
       editingStockId=id;
       const nf=['nut-kcal','nut-carb','nut-prot','nut-fat','nut-fiber','nut-sodium'];
       if(id!==null){
-        const s=getStock().find(x=>x.id===id);
+        const s=getStock().find(x=>String(x.id)===String(id));
+        if(!s){showToast('Produto nao encontrado.');return;}
         renderCategoryOptions?.('stock-category',s.category||'');
         document.getElementById('modal-stock-title').textContent='Editar Produto';
         document.getElementById('stock-name').value=s.name;
@@ -122,23 +147,28 @@
       link.href=name?`https://www.google.com/search?q=tabela+nutricional+${encodeURIComponent(name)}+por+100g`:'#';
     }
     function handleGoogleSearch(e){const h=document.getElementById('google-search-link').href;if(!h||h==='#'){e.preventDefault();return;}window.open(h,'_blank');e.preventDefault();}
-    function saveStock(){
+    async function saveStock(){
       const name=document.getElementById('stock-name').value.trim();
       const qty=parseFloat(document.getElementById('stock-qty').value);
       const price=parseFloat(document.getElementById('stock-price').value);
       if(!name||isNaN(qty)||qty<=0||isNaN(price)||price<0){showToast('Preencha nome, quantidade e valor.');return;}
       const nutrition={kcal:parseFloat(document.getElementById('nut-kcal').value)||null,carb:parseFloat(document.getElementById('nut-carb').value)||null,prot:parseFloat(document.getElementById('nut-prot').value)||null,fat:parseFloat(document.getElementById('nut-fat').value)||null,fiber:parseFloat(document.getElementById('nut-fiber').value)||null,sodium:parseFloat(document.getElementById('nut-sodium').value)||null};
       const category = ensureCategory ? ensureCategory(document.getElementById('stock-category').value) : document.getElementById('stock-category').value;
-      const item={id:editingStockId||Date.now(),name,qty,unit:document.getElementById('stock-unit').value,price,category,nutrition};
-      setStock(editingStockId?getStock().map(s=>s.id===editingStockId?item:s):[...getStock(),item]);
-      db.save(storageKeys.stock,getStock());
+      const existing=editingStockId!==null?getStock().find(s=>String(s.id)===String(editingStockId)):null;
+      const item={...(existing||{}),id:existing?.id||editingStockId||Date.now(),name,qty,unit:document.getElementById('stock-unit').value,price,category,nutrition,updatedAt:new Date().toISOString()};
+      const nextStock=editingStockId!==null?getStock().map(s=>String(s.id)===String(editingStockId)?item:s):[...getStock(),item];
+      try{await persistStockSnapshot(nextStock);}
+      catch(error){console.error(error);showToast('Nao foi possivel salvar o produto no Supabase.');return;}
       closeModal('modal-stock');renderStock();renderStockCategoryFilters();
       renderRecipes(document.getElementById('recipe-search').value,getActiveIngredientFilter());
       showToast(editingStockId?'Produto atualizado!':'Produto adicionado!');
     }
     async function deleteStock(id){
       if(!await confirmAction('Deseja excluir este produto do estoque virtual?','Excluir produto'))return;
-      setStock(getStock().filter(s=>s.id!==id));db.save(storageKeys.stock,getStock());renderStock();renderStockCategoryFilters();showToast('Removido.');
+      const nextStock=getStock().filter(s=>String(s.id)!==String(id));
+      try{await persistStockSnapshot(nextStock);}
+      catch(error){console.error(error);showToast('Nao foi possivel excluir o produto no Supabase.');return;}
+      renderStock();renderStockCategoryFilters();showToast('Removido.');
     }
     function renderStock(filter=''){
       currentStockFilter = filter || "";
@@ -156,7 +186,7 @@
       }
       el.innerHTML=f.map(s=>{
         const ppg=pricePerUnit(s);
-        const stockIdArg=JSON.stringify(s.id);
+        const stockIdArg=getActionIdArg(s.id);
         const ps=s.unit==='ml'?formatCurrency(ppg*1000)+'/L · '+formatCurrency(ppg*100)+'/100ml':s.unit==='un'?formatCurrency(ppg)+'/un':formatCurrency(ppg*1000)+'/kg · '+formatCurrency(ppg*100)+'/100g';
         return`<div class="item-card">
           <div style="flex:1;min-width:0">
