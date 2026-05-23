@@ -511,6 +511,29 @@ textarea:focus {
   box-shadow: 0 0 0 4px color-mix(in srgb, var(--md-sys-color-primary) 14%, transparent);
 }
 
+.category-select-row {
+  align-items: center;
+  display: grid;
+  gap: 8px;
+  grid-template-columns: minmax(0, 1fr) 42px;
+}
+
+.category-select-row select {
+  min-width: 0;
+  width: 100%;
+}
+
+.category-inline-add {
+  height: 42px;
+  min-width: 42px;
+  padding: 0;
+  width: 42px;
+}
+
+.category-inline-add .material-symbols-rounded {
+  font-size: 20px;
+}
+
 .search-bar input {
   background: var(--md-sys-color-surface-container);
   color: var(--md-sys-color-on-surface);
@@ -821,6 +844,16 @@ textarea:focus {
     right: 16px;
     width: 50px;
     height: 50px;
+  }
+
+  .category-select-row {
+    grid-template-columns: minmax(0, 1fr) 40px;
+  }
+
+  .category-inline-add {
+    height: 40px;
+    min-width: 40px;
+    width: 40px;
   }
 }
 
