@@ -23,6 +23,8 @@
     };
     let authFlipMidpointTimer = null;
     let authFlipCleanupTimer = null;
+    let authModeTabsBound = false;
+    let pendingAuthMode = null;
 
     function getElement(id) {
       return document.getElementById(id);
@@ -116,12 +118,28 @@
       renderPasswordFeedback();
     }
 
+    function syncAuthModeTabs(mode) {
+      const nextMode = mode === "signup" ? "signup" : "login";
+      getElement("auth-mode-login")?.classList.toggle("active", nextMode === "login");
+      getElement("auth-mode-signup")?.classList.toggle("active", nextMode === "signup");
+    }
+
+    function bindAuthModeTabs() {
+      if (authModeTabsBound) return;
+      const loginButton = getElement("auth-mode-login");
+      const signupButton = getElement("auth-mode-signup");
+      if (!loginButton || !signupButton) return;
+
+      loginButton.addEventListener("click", () => setAuthMode("login"));
+      signupButton.addEventListener("click", () => setAuthMode("signup"));
+      authModeTabsBound = true;
+    }
+
     function applyAuthMode(mode) {
       state.authMode = mode === "signup" ? "signup" : "login";
       state.pendingVerificationEmail = "";
       clearAuthInputs({clearEmail: true});
-      getElement("auth-mode-login")?.classList.toggle("active", state.authMode === "login");
-      getElement("auth-mode-signup")?.classList.toggle("active", state.authMode === "signup");
+      syncAuthModeTabs(state.authMode);
       renderAuthState();
       renderPasswordFeedback();
     }
@@ -144,6 +162,7 @@
       );
       content?.classList.remove("auth-content-out", "auth-content-in");
       if (card) card.style.height = "";
+      pendingAuthMode = null;
     }
 
     function animateAuthCardFlip(mode) {
@@ -152,16 +171,20 @@
       const content = getElement("auth-card-content");
       if (!modal?.classList.contains("open") || !card || !content) {
         applyAuthMode(mode);
+        pendingAuthMode = null;
         return;
       }
 
       const shouldReduceMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
       if (shouldReduceMotion) {
         applyAuthMode(mode);
+        pendingAuthMode = null;
         return;
       }
 
       resetAuthCardFlip(card, content);
+      pendingAuthMode = mode === "signup" ? "signup" : "login";
+      syncAuthModeTabs(mode);
       card.style.height = `${card.getBoundingClientRect().height}px`;
       void card.offsetWidth;
       card.classList.add(
@@ -280,6 +303,8 @@
       const authModal = getElement("modal-auth");
       const modalTitle = getElement("auth-modal-title");
       const stateIcon = getElement("auth-state-icon");
+
+      bindAuthModeTabs();
 
       if (!statusLabel || !stateTitle || !stateDescription) return;
 
@@ -417,7 +442,7 @@
 
     function setAuthMode(mode) {
       const nextMode = mode === "signup" ? "signup" : "login";
-      if (state.authMode === nextMode) return;
+      if (state.authMode === nextMode || pendingAuthMode === nextMode) return;
       animateAuthCardFlip(nextMode);
     }
 
