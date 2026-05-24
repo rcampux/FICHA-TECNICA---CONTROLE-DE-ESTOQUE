@@ -23,6 +23,7 @@
     };
     let authFlipMidpointTimer = null;
     let authFlipCleanupTimer = null;
+    let authFlipAnimation = null;
     let authModeTabsBound = false;
     let pendingAuthMode = null;
 
@@ -153,6 +154,10 @@
         window.clearTimeout(authFlipCleanupTimer);
         authFlipCleanupTimer = null;
       }
+      if (authFlipAnimation) {
+        authFlipAnimation.cancel();
+        authFlipAnimation = null;
+      }
       card?.classList.remove(
         "auth-card-flip",
         "auth-card-flip-login",
@@ -165,7 +170,17 @@
       pendingAuthMode = null;
     }
 
-    function animateAuthCardFlip(mode) {
+    function runAuthFlipStep(card, keyframes) {
+      if (typeof card.animate !== "function") return null;
+      authFlipAnimation = card.animate(keyframes, {
+        duration: 330,
+        easing: "cubic-bezier(0.4, 0, 0.2, 1)",
+        fill: "forwards",
+      });
+      return authFlipAnimation.finished.catch(() => null);
+    }
+
+    async function animateAuthCardFlip(mode) {
       const modal = getElement("modal-auth");
       const card = modal?.querySelector(".auth-modal");
       const content = getElement("auth-card-content");
@@ -185,16 +200,43 @@
       resetAuthCardFlip(card, content);
       pendingAuthMode = mode === "signup" ? "signup" : "login";
       syncAuthModeTabs(mode);
+      const flipAngle = mode === "signup" ? -92 : 92;
+      const canUseWebAnimation = typeof card.animate === "function";
       card.style.height = `${card.getBoundingClientRect().height}px`;
       void card.offsetWidth;
       card.classList.add(
         "auth-card-flip",
         mode === "signup" ? "auth-card-flip-signup" : "auth-card-flip-login",
-        "auth-card-flip-out",
       );
+      if (!canUseWebAnimation) card.classList.add("auth-card-flip-out");
       content.classList.add("auth-content-out");
 
+      const firstHalf = runAuthFlipStep(card, [
+        {opacity: 1, transform: "rotateY(0deg) translateY(0) scale(1)"},
+        {opacity: 0.96, transform: `rotateY(${flipAngle}deg) translateY(-2px) scale(0.992)`},
+      ]);
+
+      if (firstHalf) {
+        await firstHalf;
+        if (pendingAuthMode !== mode) return;
+        applyAuthMode(mode);
+        card.classList.remove("auth-card-flip-out");
+        if (!canUseWebAnimation) card.classList.add("auth-card-flip-in");
+        await new Promise((resolve) => window.requestAnimationFrame(resolve));
+        card.style.height = `${card.scrollHeight}px`;
+        content.classList.remove("auth-content-out");
+        content.classList.add("auth-content-in");
+        const secondHalf = runAuthFlipStep(card, [
+          {opacity: 0.96, transform: `rotateY(${-flipAngle}deg) translateY(-2px) scale(0.992)`},
+          {opacity: 1, transform: "rotateY(0deg) translateY(0) scale(1)"},
+        ]);
+        if (secondHalf) await secondHalf;
+        if (pendingAuthMode === mode) resetAuthCardFlip(card, content);
+        return;
+      }
+
       authFlipMidpointTimer = window.setTimeout(() => {
+        if (pendingAuthMode !== mode) return;
         applyAuthMode(mode);
         card.classList.remove("auth-card-flip-out");
         card.classList.add("auth-card-flip-in");
