@@ -27,6 +27,7 @@ O projeto esta em fase de prototipo estruturado com Supabase ja conectado em pro
 - Validacao de hardening aprovada: funcoes publicas internas removidas, helpers privados presentes e `public.set_updated_at()` sem execucao por `anon`/`authenticated`.
 - RLS pos-hardening aprovado para receitas, estoque virtual e estoque fisico entre `r.camposarch@gmail.com` e `r.camposdesign@gmail.com`.
 - Security Advisor reexecutado apos o hardening: `0 errors` e `1 warning` residual confirmado. O warning restante e `Leaked Password Protection Disabled`, que e configuracao de Supabase Auth, nao falha de RLS/schema.
+- Fase 3.1 iniciada: matriz de planos/permissoes documentada em `docs/PLAN_ACCESS.md`, catalogo de planos preparado em migration e gate inicial de scanner criado no frontend.
 
 ## Proximo Passo Recomendado
 
@@ -85,15 +86,16 @@ Ordem recomendada:
 - Funcoes internas `SECURITY DEFINER` nao ficam expostas via `/rpc`.
 - `Leaked Password Protection` fica habilitado no Supabase Auth antes de producao paga, ou registrado como pendencia do plano atual.
 
-## Se Tudo Passar
+## Proximo Passo - Fase 3.1 Planos e Permissoes
 
-Avancar para Fase 3.1 - Estrutura de planos e permissoes:
+Objetivo: preparar assinatura B2B antes de conectar gateway de pagamento real.
 
-1. Definir matriz de planos: trial, essencial, profissional e equipe.
-2. Implementar gate de recursos no frontend e preparar validacao backend.
-3. Criar base para limites de receitas, usuarios, scanner de rotulos e scanner de receitas.
-4. Preparar integracao com gateway de pagamento recorrente.
-5. Documentar webhooks e estados de assinatura antes de conectar cobranca real.
+1. Concluido no codigo: definir matriz de planos trial, essencial, profissional e equipe.
+2. Concluido no codigo: criar gate de recursos no frontend com fallback Trial.
+3. Concluido no codigo: bloquear abertura do scanner quando o plano nao tem limite de scanner.
+4. Pendente Supabase: aplicar `supabase/migrations/20260524170000_plan_catalog_and_default_subscriptions.sql`.
+5. Pendente Supabase: rodar `supabase/plan_access_validation.sql`.
+6. Proximo depois da validacao: criar Edge Function de checkout/webhook e validar plano server-side.
 
 Depois disso, seguir o fatiamento de `docs/STOCK_RECIPES_FEATURE_SPEC.md` para categorias, nutricao, validade/lote e dashboards.
 

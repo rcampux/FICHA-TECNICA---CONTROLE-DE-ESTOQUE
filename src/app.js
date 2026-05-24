@@ -170,6 +170,13 @@ Object.assign(window,{findStockItem,calcCosts,setIngSource,searchIngredient,sele
 Object.defineProperty(window,'activeIngFilter',{get:()=>recipeSheetModule.getActiveIngredientFilter()});
 Object.defineProperty(window,'currentRecipeId',{get:()=>recipeSheetModule.getCurrentRecipeId()});
 
+const planAccessModule=window.FichaTecPlanAccess.createPlanAccessModule({
+  createSupabaseClient:window.FichaTecSupabaseClientService.createClient,
+  showToast,
+});
+const {canUseFeature,describeFeatureLock,getPlanAccessState,getPlanLimit,loadPlanAccess,requireFeature}=planAccessModule;
+Object.assign(window,{canUseFeature,describeFeatureLock,getPlanAccessState,getPlanLimit,loadPlanAccess,requireFeature});
+
 const scannerRecipeModule=window.FichaTecScannerRecipe.createScannerRecipeModule({
   calcCosts,
   closeModal,
@@ -180,6 +187,7 @@ const scannerRecipeModule=window.FichaTecScannerRecipe.createScannerRecipeModule
   getStock:()=>stock,
   pricePerUnit,
   renderRecipes,
+  requireFeature,
   setRecipes:value=>{recipes=value;},
   showPage,
   showToast,
@@ -261,11 +269,12 @@ async function hydrateWorkspaceData(event){
   if(DB.mode()!=='supabase'||!organizationId)return;
 
   try{
-    const [remoteStock,remotePhysicalStock,remoteRecipes,remoteCategories]=await Promise.all([
+    const [remoteStock,remotePhysicalStock,remoteRecipes,remoteCategories,_planAccess]=await Promise.all([
       DB.loadRemote(STORAGE_KEYS.stock,organizationId),
       DB.loadRemote(STORAGE_KEYS.physicalStock,organizationId),
       DB.loadRemote(STORAGE_KEYS.recipes,organizationId),
       DB.loadRemote(STORAGE_KEYS.categories,organizationId),
+      loadPlanAccess(organizationId),
     ]);
 
     if(Array.isArray(remoteStock)){stock=remoteStock;DB.saveLocal?.(STORAGE_KEYS.stock,stock);}

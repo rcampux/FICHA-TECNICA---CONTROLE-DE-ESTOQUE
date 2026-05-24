@@ -11,6 +11,7 @@
       getStock,
       pricePerUnit,
       renderRecipes,
+      requireFeature,
       setRecipes,
       showPage,
       showToast,
@@ -31,6 +32,7 @@
     }
 
     function openScanModal() {
+      if (requireFeature && !requireFeature("scanRecipe")) return;
       resetScan();
       document.getElementById("modal-scan").classList.add("open");
     }

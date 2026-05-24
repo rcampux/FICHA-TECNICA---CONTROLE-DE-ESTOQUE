@@ -63,6 +63,17 @@ Este arquivo e um inventario vivo das funcoes utilizadas no projeto. Toda nova f
 | `backToAuthForm` | `src/modules/auth/authSession.js` | 396 | Sai do estado de verificacao de email e volta para o formulario de login. |
 | `signOutAuth` | `src/modules/auth/authSession.js` | 286 | Encerra a sessao autenticada no Supabase. |
 | `selectOrganization` | `src/modules/auth/authSession.js` | 298 | Define o workspace ativo para futuras operacoes remotas. |
+| `exposePlanAccessModule` | `src/modules/billing/planAccess.js` | 1 | Expoe a matriz e os gates de planos/permissoes para o app. |
+| `createPlanAccessModule` | `src/modules/billing/planAccess.js` | 52 | Cria o estado de plano ativo, assinatura e limites por workspace. |
+| `normalizeNumber` | `src/modules/billing/planAccess.js` | 62 | Normaliza valores numericos de planos e limites. |
+| `normalizePlan` | `src/modules/billing/planAccess.js` | 67 | Converte plano vindo do Supabase para formato de acesso usado no frontend. |
+| `isSubscriptionUsable` | `src/modules/billing/planAccess.js` | 88 | Verifica se uma assinatura `trialing` ou `active` pode liberar recursos. |
+| `getPlanAccessState` | `src/modules/billing/planAccess.js` | 93 | Retorna estado publico de plano, assinatura e workspace. |
+| `loadPlanAccess` | `src/modules/billing/planAccess.js` | 103 | Carrega `subscriptions` + `plans` do Supabase e aplica fallback Trial. |
+| `getPlanLimit` | `src/modules/billing/planAccess.js` | 141 | Resolve limite de recurso a partir do plano ativo. |
+| `canUseFeature` | `src/modules/billing/planAccess.js` | 147 | Valida se um recurso ainda pode ser usado dentro do limite do plano. |
+| `describeFeatureLock` | `src/modules/billing/planAccess.js` | 153 | Retorna mensagem de bloqueio para recursos premium. |
+| `requireFeature` | `src/modules/billing/planAccess.js` | 163 | Aplica gate de recurso e mostra feedback quando o plano nao libera. |
 | `exposeRecipeSheetModule` | `src/modules/recipes/recipeSheet.js` | 1 | (function exposeRecipeSheetModule() { |
 | `createRecipeSheetModule` | `src/modules/recipes/recipeSheet.js` | 2 | function createRecipeSheetModule(deps) { |
 | `syncState` | `src/modules/recipes/recipeSheet.js` | 30 | function syncState() { |
