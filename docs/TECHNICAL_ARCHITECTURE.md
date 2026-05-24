@@ -243,6 +243,13 @@ feature_usage
 7. Sistema atualiza `subscriptions`.
 8. Recursos premium sao liberados.
 
+Base implementada no codigo:
+
+- `create-checkout`: valida usuario, workspace e plano; registra `checkout_sessions`.
+- `billing-webhook`: recebe evento com segredo server-side e atualiza `subscriptions`.
+- `validate-feature-access`: valida plano, status e limite mensal antes de liberar recurso premium.
+- Tabelas de auditoria: `payment_customers`, `checkout_sessions`, `payment_events` e `invoices`.
+
 ### Metodos
 
 - Cartao de credito.

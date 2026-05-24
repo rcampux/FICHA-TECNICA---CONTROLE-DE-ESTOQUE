@@ -41,7 +41,7 @@ Preparar o app para vender assinaturas B2B sem liberar recursos premium apenas p
 
 ## Proxima Etapa
 
-1. Criar Edge Function de checkout/webhook.
-2. Validar plano e status da assinatura server-side antes de liberar recursos premium.
-3. Registrar eventos de pagamento em `subscriptions` e consumo em `feature_usage`.
-4. Testar bloqueio real do scanner por plano antes de ligar OCR/IA paga.
+1. Concluido no codigo: criar Edge Functions de checkout, webhook e validacao de recurso premium.
+2. Pendente Supabase: aplicar `supabase/migrations/20260524190000_billing_server_foundation.sql`.
+3. Pendente Supabase: fazer deploy das Edge Functions.
+4. Proxima decisao: escolher gateway real e validar Pix/cartao/debito/recorrencia antes de ligar cobranca em producao.

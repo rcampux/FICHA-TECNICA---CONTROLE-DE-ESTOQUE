@@ -28,6 +28,7 @@ O projeto esta em fase de prototipo estruturado com Supabase ja conectado em pro
 - RLS pos-hardening aprovado para receitas, estoque virtual e estoque fisico entre `r.camposarch@gmail.com` e `r.camposdesign@gmail.com`.
 - Security Advisor reexecutado apos o hardening: `0 errors` e `1 warning` residual confirmado. O warning restante e `Leaked Password Protection Disabled`, que e configuracao de Supabase Auth, nao falha de RLS/schema.
 - Fase 3.1 validada no Supabase: catalogo com 10 planos ativos, intervalos mensal/trimestral/anual, assinaturas Trial por workspace e limites de scanner aprovados com `PASS`.
+- Fase 3.2 iniciada no codigo: base server-side de billing criada com tabelas de pagamento, validacao SQL e Edge Functions para checkout, webhook e validacao de recurso premium.
 
 ## Proximo Passo Recomendado
 
@@ -95,7 +96,11 @@ Objetivo: preparar assinatura B2B antes de conectar gateway de pagamento real.
 3. Concluido no codigo: bloquear abertura do scanner quando o plano nao tem limite de scanner.
 4. Concluido no Supabase: aplicar `supabase/migrations/20260524170000_plan_catalog_and_default_subscriptions.sql`.
 5. Concluido no Supabase: rodar `supabase/plan_access_validation.sql` com 5 checks `PASS`.
-6. Proximo: criar Edge Function de checkout/webhook e validar plano server-side.
+6. Concluido no codigo: criar Edge Functions `create-checkout`, `billing-webhook` e `validate-feature-access`.
+7. Pendente Supabase: aplicar `supabase/migrations/20260524190000_billing_server_foundation.sql`.
+8. Pendente Supabase: rodar `supabase/billing_foundation_validation.sql`.
+9. Pendente Supabase: configurar `BILLING_WEBHOOK_SECRET` e fazer deploy das Edge Functions.
+10. Proximo depois disso: escolher gateway real e conectar API/assinatura/webhook assinado.
 
 Depois disso, seguir o fatiamento de `docs/STOCK_RECIPES_FEATURE_SPEC.md` para categorias, nutricao, validade/lote e dashboards.
 

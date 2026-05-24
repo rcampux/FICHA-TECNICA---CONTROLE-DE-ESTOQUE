@@ -12,6 +12,7 @@ Arquivo:
 
 - `supabase/migrations/20260520190000_initial_multi_tenant_schema.sql`
 - `supabase/migrations/20260524120000_product_categories.sql`
+- `supabase/migrations/20260524190000_billing_server_foundation.sql`
 
 ## Modelo B2B
 
@@ -21,6 +22,10 @@ Arquivo:
 - `plans`: catalogo interno de planos.
 - `subscriptions`: assinatura ativa da organizacao.
 - `feature_usage`: uso mensal de recursos premium, como scanner.
+- `payment_customers`: cliente do gateway por workspace.
+- `checkout_sessions`: tentativa/auditoria de checkout.
+- `payment_events`: eventos idempotentes de webhook.
+- `invoices`: faturas futuras do gateway.
 
 ## Estoque e Ficha Tecnica
 

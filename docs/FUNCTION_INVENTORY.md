@@ -74,6 +74,26 @@ Este arquivo e um inventario vivo das funcoes utilizadas no projeto. Toda nova f
 | `canUseFeature` | `src/modules/billing/planAccess.js` | 147 | Valida se um recurso ainda pode ser usado dentro do limite do plano. |
 | `describeFeatureLock` | `src/modules/billing/planAccess.js` | 153 | Retorna mensagem de bloqueio para recursos premium. |
 | `requireFeature` | `src/modules/billing/planAccess.js` | 163 | Aplica gate de recurso e mostra feedback quando o plano nao libera. |
+| `jsonResponse` | `supabase/functions/_shared/billing.ts` | 10 | Retorna resposta JSON padronizada para Edge Functions. |
+| `handleOptions` | `supabase/functions/_shared/billing.ts` | 21 | Responde preflight CORS das Edge Functions. |
+| `readJson` | `supabase/functions/_shared/billing.ts` | 28 | Le corpo JSON e falha com erro padronizado quando invalido. |
+| `httpError` | `supabase/functions/_shared/billing.ts` | 36 | Cria erro HTTP com codigo, mensagem e detalhes. |
+| `requiredString` | `supabase/functions/_shared/billing.ts` | 45 | Valida strings obrigatorias no payload server-side. |
+| `getSupabaseConfig` | `supabase/functions/_shared/billing.ts` | 52 | Carrega `SUPABASE_URL` e `SUPABASE_SERVICE_ROLE_KEY` das Edge Functions. |
+| `getBearerToken` | `supabase/functions/_shared/billing.ts` | 65 | Extrai token Bearer do usuario autenticado. |
+| `requireAuthenticatedUser` | `supabase/functions/_shared/billing.ts` | 76 | Valida sessao Supabase Auth no server-side. |
+| `supabaseRest` | `supabase/functions/_shared/billing.ts` | 96 | Executa chamadas REST ao Supabase com service role server-side. |
+| `makeQuery` | `supabase/functions/_shared/billing.ts` | 119 | Monta query string segura para PostgREST. |
+| `getPlanByCode` | `supabase/functions/_shared/billing.ts` | 130 | Busca plano ativo pelo codigo. |
+| `requireOrganizationManager` | `supabase/functions/_shared/billing.ts` | 149 | Exige papel `owner` ou `admin` para assinatura/checkout. |
+| `requireOrganizationMember` | `supabase/functions/_shared/billing.ts` | 172 | Confirma membership do usuario no workspace. |
+| `getActiveSubscription` | `supabase/functions/_shared/billing.ts` | 191 | Carrega assinatura do workspace com plano associado. |
+| `getCurrentUsagePeriod` | `supabase/functions/_shared/billing.ts` | 202 | Resolve periodo mensal de uso premium. |
+| `getFeatureUsage` | `supabase/functions/_shared/billing.ts` | 209 | Carrega uso mensal atual de um recurso premium. |
+| `getFeatureLimit` | `supabase/functions/_shared/billing.ts` | 225 | Mapeia recurso premium para limite do plano. |
+| `isSubscriptionUsable` | `supabase/functions/_shared/billing.ts` | 238 | Confirma se assinatura `trialing` ou `active` libera recurso. |
+| `handleError` | `supabase/functions/_shared/billing.ts` | 242 | Converte excecoes em resposta JSON de erro. |
+| `normalizeSubscriptionStatus` | `supabase/functions/billing-webhook/index.ts` | 13 | Valida status recebido do gateway antes de atualizar assinatura. |
 | `exposeRecipeSheetModule` | `src/modules/recipes/recipeSheet.js` | 1 | (function exposeRecipeSheetModule() { |
 | `createRecipeSheetModule` | `src/modules/recipes/recipeSheet.js` | 2 | function createRecipeSheetModule(deps) { |
 | `syncState` | `src/modules/recipes/recipeSheet.js` | 30 | function syncState() { |
