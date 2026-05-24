@@ -1,6 +1,5 @@
 (function registerFichaTecServiceWorker() {
-  const SW_BUILD = "2026-05-23-hotfix-2";
-  const SW_BUILD_KEY = "fichatec.sw.build";
+  const SW_BUILD = "2026-05-23-hotfix-3";
 
   function handleLaunchShortcut() {
     const params = new URLSearchParams(window.location.search);
@@ -27,7 +26,12 @@
       console.warn("Service worker reset failed:", error);
     }
 
-    localStorage.setItem(SW_BUILD_KEY, SW_BUILD);
+    try {
+      localStorage.removeItem("fichatec.sw.build");
+      localStorage.setItem("fichatec.sw.disabled", JSON.stringify({build:SW_BUILD, disabled:true, at:Date.now()}));
+    } catch (_error) {
+      // no-op
+    }
   }
 
   function registerServiceWorker() {

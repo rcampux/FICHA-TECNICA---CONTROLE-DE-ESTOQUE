@@ -18,6 +18,45 @@
 <script>
   (function preBootHotfix() {
     try {
+      function tryParseJson(rawValue) {
+        if (typeof rawValue !== "string") return {ok:false, value:null};
+        try {
+          return {ok:true, value:JSON.parse(rawValue)};
+        } catch (_error) {
+          return {ok:false, value:null};
+        }
+      }
+
+      // Remove itens corrompidos que quebram bootstrap.
+      Object.keys(localStorage).forEach(function (key) {
+        var value = localStorage.getItem(key);
+        if (value === "undefined" || value === "null") {
+          localStorage.removeItem(key);
+          return;
+        }
+        // Esses dois formatos antigos precisam ser mantidos como JSON válido.
+        if (key === "fichatec.stock.viewMode" || key === "fichatec.physicalStock.viewMode") {
+          if (value === "grid" || value === "list") {
+            localStorage.setItem(key, JSON.stringify(value));
+            return;
+          }
+        }
+        if (!tryParseJson(value).ok && key.startsWith("fichatec.")) {
+          localStorage.removeItem(key);
+        }
+      });
+
+      // Remove token vencido para evitar sessão travada na inicialização.
+      Object.keys(localStorage).forEach(function (key) {
+        if (!key.includes("auth-token")) return;
+        var parsed = tryParseJson(localStorage.getItem(key));
+        if (!parsed.ok || !parsed.value) return;
+        var expiresAt = parsed.value.expires_at;
+        if (typeof expiresAt === "number" && (expiresAt * 1000) < Date.now()) {
+          localStorage.removeItem(key);
+        }
+      });
+
       var viewModeKeys = [
         "fichatec.stock.viewMode",
         "fichatec.physicalStock.viewMode",
@@ -31,6 +70,29 @@
     } catch (error) {
       console.warn("ViewMode preboot hotfix failed:", error);
     }
+
+    // Failsafe absoluto: nunca manter splash travada.
+    window.setTimeout(function emergencyReleaseSplash() {
+      if (!document.body.classList.contains("app-booting")) return;
+      document.body.classList.remove("app-booting", "app-start-mode");
+      var boot = document.getElementById("app-boot");
+      var shell = document.getElementById("app-shell");
+      var start = document.getElementById("app-start");
+      var authModal = document.getElementById("modal-auth");
+      if (boot) {
+        boot.classList.remove("is-active");
+        boot.hidden = true;
+      }
+      if (start) {
+        start.classList.remove("is-active");
+        start.hidden = true;
+      }
+      if (shell) {
+        shell.hidden = false;
+        shell.setAttribute("aria-hidden", "false");
+      }
+      if (authModal) authModal.classList.add("open");
+    }, 3200);
 
     if (!("serviceWorker" in navigator)) return;
     navigator.serviceWorker.getRegistrations()
