@@ -103,7 +103,11 @@ Recursos aceitos agora:
 - `supabase/billing_foundation_validation.sql` aprovado com 5 checks `PASS`.
 - Secrets configurados: `BILLING_WEBHOOK_SECRET` e `BILLING_PROVIDER=manual`.
 - Edge Functions publicadas: `create-checkout`, `billing-webhook` e `validate-feature-access`.
-- Pendente: testar chamadas reais das Edge Functions.
+- `billing-webhook` republicada com `verify_jwt = false` e validacao por header proprio.
+- Smoke test aprovado:
+  - Segredo invalido retorna `401 invalid_webhook_secret`.
+  - Segredo correto com payload incompleto retorna `400 missing_field: provider`.
+- Pendente: testar evento completo de assinatura com `organizationId` real.
 
 ## Comandos De Deploy Supabase
 
