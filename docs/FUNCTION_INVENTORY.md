@@ -47,7 +47,7 @@ Este arquivo e um inventario vivo das funcoes utilizadas no projeto. Toda nova f
 | `isStrongPassword` | `src/modules/auth/authSession.js` | 73 | Confirma se todos os requisitos de senha forte foram atendidos. |
 | `ensureSupabaseClient` | `src/modules/auth/authSession.js` | 79 | Recria ou retorna o client Supabase para login/cadastro mesmo quando o boot de sessao demorou. |
 | `syncAuthModeTabs` | `src/modules/auth/authSession.js` | 122 | Sincroniza visualmente a aba ativa de login/cadastro antes e depois do flip. |
-| `bindAuthModeTabs` | `src/modules/auth/authSession.js` | 128 | Vincula listeners aos botoes Entrar/Criar conta para garantir troca de modo mesmo se o `onclick` inline falhar. |
+| `bindAuthModeTabs` | `src/modules/auth/authSession.js` | 128 | Vincula delegacao de clique em captura aos botoes Entrar/Criar conta para garantir troca de modo sem depender de `onclick` inline. |
 | `applyAuthMode` | `src/modules/auth/authSession.js` | 139 | Aplica o modo de autenticacao ativo sem acoplar a atualizacao de estado a animacao visual. |
 | `resetAuthCardFlip` | `src/modules/auth/authSession.js` | 148 | Limpa timers, animacoes, classes e altura travada do card para evitar travamento ou flicker entre trocas de modo. |
 | `runAuthFlipStep` | `src/modules/auth/authSession.js` | 173 | Executa uma metade do flip via Web Animations API para tornar a rotacao visivel e deterministica no desktop. |

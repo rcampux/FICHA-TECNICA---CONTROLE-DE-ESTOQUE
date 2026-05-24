@@ -131,8 +131,14 @@
       const signupButton = getElement("auth-mode-signup");
       if (!loginButton || !signupButton) return;
 
-      loginButton.addEventListener("click", () => setAuthMode("login"));
-      signupButton.addEventListener("click", () => setAuthMode("signup"));
+      document.addEventListener("click", (event) => {
+        const modeButton = event.target.closest?.("[data-auth-mode]");
+        if (!modeButton) return;
+
+        event.preventDefault();
+        event.stopPropagation();
+        setAuthMode(modeButton.dataset.authMode);
+      }, true);
       authModeTabsBound = true;
     }
 
