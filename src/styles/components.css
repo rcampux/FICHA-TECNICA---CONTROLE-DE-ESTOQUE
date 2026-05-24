@@ -1178,11 +1178,7 @@ textarea:focus {
 
   #modal-stock .modal,
   #modal-pstock .modal {
-    border-radius:
-      var(--md-sys-shape-corner-extra-large)
-      var(--md-sys-shape-corner-extra-large)
-      0
-      0;
+    border-radius: var(--md-sys-shape-corner-extra-large);
     max-height: calc(100dvh - 118px);
     padding-bottom: calc(116px + env(safe-area-inset-bottom));
   }
