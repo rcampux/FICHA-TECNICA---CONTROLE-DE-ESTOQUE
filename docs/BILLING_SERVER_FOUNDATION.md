@@ -98,7 +98,9 @@ Recursos aceitos agora:
 
 - Migration de billing aplicada.
 - `supabase/billing_foundation_validation.sql` aprovado com 5 checks `PASS`.
-- Pendente: configurar secrets e fazer deploy das Edge Functions.
+- Secrets configurados: `BILLING_WEBHOOK_SECRET` e `BILLING_PROVIDER=manual`.
+- Edge Functions publicadas: `create-checkout`, `billing-webhook` e `validate-feature-access`.
+- Pendente: testar chamadas reais das Edge Functions.
 
 ## Comandos De Deploy Supabase
 
