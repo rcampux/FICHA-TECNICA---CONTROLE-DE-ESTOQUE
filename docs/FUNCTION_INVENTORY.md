@@ -46,8 +46,9 @@ Este arquivo e um inventario vivo das funcoes utilizadas no projeto. Toda nova f
 | `getPasswordValidation` | `src/modules/auth/authSession.js` | 62 | Valida requisitos de senha forte para criacao de conta. |
 | `isStrongPassword` | `src/modules/auth/authSession.js` | 73 | Confirma se todos os requisitos de senha forte foram atendidos. |
 | `ensureSupabaseClient` | `src/modules/auth/authSession.js` | 79 | Recria ou retorna o client Supabase para login/cadastro mesmo quando o boot de sessao demorou. |
-| `applyAuthMode` | `src/modules/auth/authSession.js` | 118 | Aplica o modo de autenticacao ativo sem acoplar a atualizacao de estado a animacao visual. |
-| `animateAuthCardFlip` | `src/modules/auth/authSession.js` | 129 | Aplica flip 3D com fade sincronizado e ajuste de altura ao alternar entre login e criacao de conta. |
+| `applyAuthMode` | `src/modules/auth/authSession.js` | 119 | Aplica o modo de autenticacao ativo sem acoplar a atualizacao de estado a animacao visual. |
+| `resetAuthCardFlip` | `src/modules/auth/authSession.js` | 129 | Limpa timers, classes e altura travada do card para evitar travamento ou flicker entre trocas de modo. |
+| `animateAuthCardFlip` | `src/modules/auth/authSession.js` | 149 | Executa flip 3D em duas fases, troca o conteudo no meio da rotacao e ajusta altura sem depender de `animationend`. |
 | `showInitialUserScreen` | `src/modules/auth/authSession.js` | 77 | Fecha o modal de acesso e retorna para a tela inicial do usuario apos login. |
 | `handleAuthKeydown` | `src/modules/auth/authSession.js` | 84 | Submete login/cadastro ao pressionar Enter nos campos de acesso. |
 | `clearAuthInputs` | `src/modules/auth/authSession.js` | 90 | Limpa campos sensiveis do formulario de acesso e restaura o campo de senha. |
