@@ -79,6 +79,7 @@ Data de revisao: 2026-05-23.
 - Os warnings de funcoes `SECURITY DEFINER` executaveis via RPC foram enderecados movendo helpers internos para o schema `private`, que nao deve ficar exposto pela API REST.
 - As funcoes internas publicas antigas sao removidas ao final da migration de hardening.
 - Migration `20260523090000_harden_internal_functions.sql` aplicada no Supabase SQL Editor com sucesso em 2026-05-24.
+- Validacao `supabase/hardening_validation.sql` aprovada em 2026-05-24: todas as linhas retornaram `PASS`, confirmando schema `private`, helpers privados presentes, helpers publicos removidos e `public.set_updated_at()` sem execucao por `anon`/`authenticated`.
 - O warning `auth_leaked_password_protection` exige ajuste manual no painel do Supabase Auth: habilitar protecao contra senhas vazadas.
 
 ## Criterio Para Avancar
@@ -95,7 +96,7 @@ Somente avancar para Fase 3.1 quando:
 
 ## Proxima Acao
 
-Aplicar a migration `20260523090000_harden_internal_functions.sql`, reexecutar o teste RLS com dois usuarios e atualizar o Security Advisor.
+Reexecutar os testes RLS com dois usuarios depois do hardening, atualizar o Security Advisor e habilitar `Leaked Password Protection` no painel Supabase Auth.
 
 ## Regra Para Novos Testes
 
