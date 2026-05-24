@@ -10,7 +10,8 @@ Criar um banco multiempresa com seguranca por RLS desde o inicio. Cada chef/usua
 
 Arquivo:
 
-`supabase/migrations/20260520190000_initial_multi_tenant_schema.sql`
+- `supabase/migrations/20260520190000_initial_multi_tenant_schema.sql`
+- `supabase/migrations/20260524120000_product_categories.sql`
 
 ## Modelo B2B
 
@@ -26,6 +27,7 @@ Arquivo:
 - `nutrition_facts`: informacoes nutricionais manuais, estimadas ou lidas por rotulo.
 - `stock_items`: estoque virtual para precificacao.
 - `stock_price_history`: historico de precos por produto.
+- `product_categories`: catalogo reutilizavel de categorias por workspace, com suporte futuro a hierarquia por `parent_id`.
 - `physical_stock_items`: estoque fisico real.
 - `stock_movements`: entradas, saidas, ajustes e perdas.
 - `recipes`: ficha tecnica principal.
@@ -96,8 +98,9 @@ Ou aplicar o SQL no painel do Supabase em SQL Editor durante a fase inicial.
 4. Concluido: adicionar tela/fluxo de login e selecao de workspace.
 5. Concluido: criar repositories remotos por dominio.
 6. Concluido: preparar build/env da Vercel para ativar Supabase.
-7. Proximo: configurar projeto Supabase real e aplicar migration.
-8. Depois: testar RLS com dois usuarios em organizacoes diferentes.
+7. Concluido: configurar projeto Supabase real e aplicar migration inicial.
+8. Concluido: testar RLS com dois usuarios em organizacoes diferentes.
+9. Em andamento: aplicar migration de categorias e validar isolamento por workspace.
 
 ## Configuracao Frontend
 

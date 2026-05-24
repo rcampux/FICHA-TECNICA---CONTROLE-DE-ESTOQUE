@@ -20,6 +20,7 @@ O projeto esta em fase de prototipo estruturado com Supabase ja conectado em pro
 - Security Advisor reportou warnings de funcoes internas; a migration `20260523090000_harden_internal_functions.sql` foi preparada para hardening.
 - Especificacao de evolucao de Estoque/Receitas registrada em `docs/STOCK_RECIPES_FEATURE_SPEC.md`.
 - Categorias agora podem ser cadastradas independentemente de produtos e reutilizadas no Estoque Virtual e Fisico; a vinculacao pode acontecer depois editando o produto.
+- Migration e repository de `product_categories` foram preparados para persistir categorias no Supabase por workspace, mantendo fallback local ate a migration ser aplicada no painel.
 
 ## Proximo Passo Recomendado
 
@@ -29,11 +30,11 @@ Objetivo: levar o catalogo de categorias, hoje local e compartilhado na UI, para
 
 Ordem recomendada:
 
-1. Criar tabela `product_categories` com `organization_id`, `name`, `parent_id`, `deleted_at` e unicidade por workspace.
-2. Criar policies RLS usando as mesmas funcoes internas de organizacao.
-3. Atualizar repository Supabase para carregar/salvar categorias por workspace.
-4. Migrar categorias locais e categorias ja usadas em produtos para a nova tabela.
-5. Revalidar isolamento com os usuarios `r.camposarch@gmail.com` e `r.camposdesign@gmail.com`.
+1. Concluido no codigo: criar tabela `product_categories` com `organization_id`, `name`, `parent_id`, `deleted_at` e unicidade por workspace.
+2. Concluido no codigo: criar policies RLS por `organization_members`.
+3. Concluido no codigo: atualizar repository Supabase para carregar/salvar categorias por workspace.
+4. Proximo passo manual: aplicar `supabase/migrations/20260524120000_product_categories.sql` no Supabase SQL Editor.
+5. Depois: criar uma categoria diferente em cada usuario e revalidar isolamento.
 
 ### Fase 2.3 - Hardening Supabase
 

@@ -215,6 +215,10 @@ Este arquivo e um inventario vivo das funcoes utilizadas no projeto. Toda nova f
 | `savePhysicalStockItems` | `src/services/repositories/supabaseDomainRepository.js` | 280 | Salva estoque fisico remoto e retorna `remoteId`. |
 | `listRecipes` | `src/services/repositories/supabaseDomainRepository.js` | 298 | Lista receitas remotas com ingredientes. |
 | `saveRecipes` | `src/services/repositories/supabaseDomainRepository.js` | 310 | Salva receitas e ingredientes no Supabase. |
+| `normalizeCategoryName` | `src/services/repositories/supabaseDomainRepository.js` | 357 | Normaliza nomes de categorias antes de salvar/carregar do Supabase. |
+| `listCategories` | `src/services/repositories/supabaseDomainRepository.js` | 361 | Lista categorias remotas por organizacao, com fallback local quando a tabela ainda nao existe. |
+| `saveCategories` | `src/services/repositories/supabaseDomainRepository.js` | 382 | Salva catalogo de categorias no Supabase e remove logicamente categorias ausentes do snapshot. |
+| `isMissingProductCategoriesTableError` | `src/services/repositories/supabaseDomainRepository.js` | 53 | Detecta ambiente Supabase ainda sem a tabela `product_categories` para nao quebrar a UI. |
 | `resolveDomain` | `src/services/repositories/supabaseDomainRepository.js` | 342 | Mapeia chave local para funcoes remotas de dominio. |
 | `canSyncKey` | `src/services/repositories/supabaseDomainRepository.js` | 348 | Informa se uma chave local tem dominio remoto seguro antes de tentar sync Supabase. |
 | `loadByKey` | `src/services/repositories/supabaseDomainRepository.js` | 349 | Carrega dominio remoto a partir da chave local. |

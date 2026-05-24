@@ -50,6 +50,12 @@
     return items.every((item) => Boolean(getRemoteId(item)));
   }
 
+  function isMissingProductCategoriesTableError(error) {
+    const message = `${error?.code || ""} ${error?.message || ""} ${error?.details || ""}`;
+    return /42P01|PGRST205|product_categories/i.test(message)
+      && /does not exist|not found|schema cache/i.test(message);
+  }
+
   async function softDeleteMissingRows(client, table, organizationId, items) {
     if (!shouldReconcileDeletes(items)) return;
 
@@ -354,10 +360,79 @@
     return saved;
   }
 
+  function normalizeCategoryName(name) {
+    return String(name || "").trim().replace(/[<>]/g, "").replace(/\s+/g, " ");
+  }
+
+  async function listCategories(client, organizationId) {
+    const {data, error} = await client
+      .from("product_categories")
+      .select("id, name, parent_id")
+      .eq("organization_id", organizationId)
+      .is("deleted_at", null)
+      .order("name", {ascending: true});
+
+    if (error) {
+      if (isMissingProductCategoriesTableError(error)) {
+        console.warn("Tabela product_categories ainda nao existe no Supabase. Usando categorias locais.");
+        return null;
+      }
+      throw error;
+    }
+
+    return (data || []).map((row) => normalizeCategoryName(row.name)).filter(Boolean);
+  }
+
+  async function saveCategories(client, organizationId, categories) {
+    const normalized = [...new Set((categories || []).map(normalizeCategoryName).filter(Boolean))]
+      .sort((a, b) => a.localeCompare(b, "pt-BR"));
+    const saved = [];
+
+    for (const name of normalized) {
+      const {data, error} = await client
+        .from("product_categories")
+        .upsert({
+          organization_id: organizationId,
+          name,
+          deleted_at: null,
+        }, {onConflict: "organization_id,name"})
+        .select("id, name")
+        .single();
+
+      if (error) {
+        if (isMissingProductCategoriesTableError(error)) {
+          console.warn("Tabela product_categories ainda nao existe no Supabase. Mantendo categorias locais.");
+          return normalized;
+        }
+        throw error;
+      }
+      saved.push(data);
+    }
+
+    let query = client
+      .from("product_categories")
+      .update({deleted_at: new Date().toISOString()})
+      .eq("organization_id", organizationId)
+      .is("deleted_at", null);
+
+    if (saved.length) {
+      query = query.not("id", "in", `(${saved.map((row) => row.id).join(",")})`);
+    }
+
+    const {error} = await query;
+    if (error) {
+      if (isMissingProductCategoriesTableError(error)) return normalized;
+      throw error;
+    }
+
+    return saved.map((row) => normalizeCategoryName(row.name)).filter(Boolean);
+  }
+
   function resolveDomain(key) {
     if (key === STORAGE_KEYS.stock) return {list:listStockItems, save:saveStockItems};
     if (key === STORAGE_KEYS.physicalStock) return {list:listPhysicalStockItems, save:savePhysicalStockItems};
     if (key === STORAGE_KEYS.recipes) return {list:listRecipes, save:saveRecipes};
+    if (key === STORAGE_KEYS.categories) return {list:listCategories, save:saveCategories};
     return null;
   }
 
@@ -384,6 +459,7 @@
     listPhysicalStockItems,
     listRecipes,
     listStockItems,
+    listCategories,
     loadByKey,
     mapPhysicalFromRemote,
     mapPhysicalToRemote,
@@ -400,8 +476,11 @@
     savePhysicalStockItems,
     saveRecipes,
     saveStockItems,
+    saveCategories,
     canSyncKey,
     deleteMissingRecipeIngredients,
+    isMissingProductCategoriesTableError,
+    normalizeCategoryName,
     shouldReconcileDeletes,
     softDeleteMissingRows,
     upsertNutrition,

@@ -261,15 +261,17 @@ async function hydrateWorkspaceData(event){
   if(DB.mode()!=='supabase'||!organizationId)return;
 
   try{
-    const [remoteStock,remotePhysicalStock,remoteRecipes]=await Promise.all([
+    const [remoteStock,remotePhysicalStock,remoteRecipes,remoteCategories]=await Promise.all([
       DB.loadRemote(STORAGE_KEYS.stock,organizationId),
       DB.loadRemote(STORAGE_KEYS.physicalStock,organizationId),
       DB.loadRemote(STORAGE_KEYS.recipes,organizationId),
+      DB.loadRemote(STORAGE_KEYS.categories,organizationId),
     ]);
 
     if(Array.isArray(remoteStock)){stock=remoteStock;DB.saveLocal?.(STORAGE_KEYS.stock,stock);}
     if(Array.isArray(remotePhysicalStock)){physicalStock=remotePhysicalStock;DB.saveLocal?.(STORAGE_KEYS.physicalStock,physicalStock);}
     if(Array.isArray(remoteRecipes)){recipes=remoteRecipes;DB.saveLocal?.(STORAGE_KEYS.recipes,recipes);}
+    if(Array.isArray(remoteCategories)){categories=remoteCategories;DB.saveLocal?.(STORAGE_KEYS.categories,categories);}
 
     renderStock();renderPhysical();renderRecipes();
     showToast('Workspace sincronizado.');
