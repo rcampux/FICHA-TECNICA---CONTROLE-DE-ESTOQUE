@@ -171,6 +171,9 @@ create trigger set_stock_items_updated_at before update on public.stock_items fo
 drop trigger if exists set_physical_stock_items_updated_at on public.physical_stock_items;
 create trigger set_physical_stock_items_updated_at before update on public.physical_stock_items for each row execute function private.set_updated_at();
 
+drop trigger if exists set_product_categories_updated_at on public.product_categories;
+create trigger set_product_categories_updated_at before update on public.product_categories for each row execute function private.set_updated_at();
+
 drop trigger if exists set_recipes_updated_at on public.recipes;
 create trigger set_recipes_updated_at before update on public.recipes for each row execute function private.set_updated_at();
 
