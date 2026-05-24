@@ -49,6 +49,8 @@ A experiencia principal deve funcionar perfeitamente no celular. Desktop e table
 
 - Sempre iniciar com splash animada de 2 segundos (mobile e desktop).
 - Depois da splash, exibir tela inicial de login quando nao houver sessao ativa.
+- A tela de login/cadastro sem sessao deve usar fundo solido na cor primaria do app, sem dashboard visivel ao fundo.
+- A alternancia entre "Entrar" e "Criar conta" deve ter feedback visual claro, preferencialmente com animacao de flip do card sem quebrar acessibilidade.
 - Ao autenticar com sucesso, ocultar tela inicial e abrir direto na experiencia principal.
 - Ao encerrar sessao, voltar para uma experiencia de inicio com splash + tela de login.
 - A tecla Enter no formulario de acesso deve submeter login/cadastro.

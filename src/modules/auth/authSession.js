@@ -114,6 +114,16 @@
       renderPasswordFeedback();
     }
 
+    function animateAuthCardFlip() {
+      const modal = getElement("modal-auth");
+      const card = modal?.querySelector(".auth-modal");
+      if (!modal?.classList.contains("open") || !card) return;
+      card.classList.remove("auth-card-flip");
+      void card.offsetWidth;
+      card.classList.add("auth-card-flip");
+      window.setTimeout(() => card.classList.remove("auth-card-flip"), 520);
+    }
+
     async function initAuthSession() {
       if (state.initialized) return getAuthState();
       state.initialized = true;
@@ -206,8 +216,21 @@
       const verificationEmail = getElement("auth-verification-email");
       const tabs = getElement("auth-mode-tabs");
       const submitButton = getElement("auth-submit-btn");
+      const authModal = getElement("modal-auth");
+      const modalTitle = getElement("auth-modal-title");
 
       if (!statusLabel || !stateTitle || !stateDescription) return;
+
+      authModal?.classList.toggle("auth-gate", !state.user);
+      authModal?.classList.toggle("auth-mode-login", state.authMode === "login");
+      authModal?.classList.toggle("auth-mode-signup", state.authMode === "signup");
+      if (modalTitle) {
+        modalTitle.textContent = state.user
+          ? "Workspace"
+          : state.authMode === "signup"
+            ? "Criar nova conta"
+            : "Entrar no FichaTec";
+      }
 
       statusButton?.classList.toggle("is-authenticated", Boolean(state.user));
       statusLabel.textContent = state.user
@@ -239,12 +262,16 @@
         ? "Sessao ativa"
         : state.pendingVerificationEmail
           ? "Verifique seu e-mail"
-          : "Login Supabase";
+          : state.authMode === "signup"
+            ? "Cadastro Supabase"
+            : "Login Supabase";
       stateDescription.textContent = state.user
         ? "Escolha o workspace de trabalho antes de salvar dados remotos."
         : state.pendingVerificationEmail
           ? "Enviamos um link de confirmacao. Abra seu e-mail e confirme a conta para voltar ao app."
-          : "Entre ou crie uma conta para sincronizar dados com seguranca.";
+          : state.authMode === "signup"
+            ? "Crie uma conta com senha forte para proteger suas fichas tecnicas."
+            : "Entre para sincronizar dados com seguranca.";
 
       if (submitButton) {
         submitButton.innerHTML = state.loading
@@ -325,6 +352,7 @@
       getElement("auth-mode-signup")?.classList.toggle("active", state.authMode === "signup");
       renderAuthState();
       renderPasswordFeedback();
+      animateAuthCardFlip();
     }
 
     async function submitAuthForm() {

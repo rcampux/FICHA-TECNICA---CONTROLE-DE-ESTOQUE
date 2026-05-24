@@ -568,6 +568,13 @@ textarea:focus {
   padding: 16px;
 }
 
+#modal-auth.auth-gate {
+  background: var(--md-sys-color-primary);
+  backdrop-filter: none;
+  overflow-y: auto;
+  padding: clamp(18px, 4vw, 48px);
+}
+
 .modal {
   background: var(--md-sys-color-surface);
   border: 1px solid var(--md-sys-color-outline-variant);
@@ -582,7 +589,55 @@ textarea:focus {
 .auth-modal {
   gap: var(--s4);
   max-width: 760px;
+  transform-origin: center;
+  transform-style: preserve-3d;
   width: min(100%, 760px);
+}
+
+#modal-auth.auth-gate .auth-modal {
+  border: 1px solid color-mix(in srgb, var(--md-sys-color-primary-container) 38%, transparent);
+  box-shadow: 0 28px 80px rgba(43, 18, 10, 0.28);
+  max-width: 560px;
+  width: min(100%, 560px);
+}
+
+#modal-auth.auth-gate .auth-modal > .auth-action-stack:last-child {
+  display: none;
+}
+
+#modal-auth.auth-gate .modal-title {
+  font-size: 22px;
+  letter-spacing: 0;
+}
+
+.auth-modal.auth-card-flip {
+  animation: authCardFlip 500ms cubic-bezier(0.2, 0, 0, 1);
+  will-change: transform, opacity;
+}
+
+@keyframes authCardFlip {
+  0% {
+    opacity: 1;
+    transform: perspective(1100px) rotateY(0deg) scale(1);
+  }
+  44% {
+    opacity: 0.72;
+    transform: perspective(1100px) rotateY(82deg) scale(0.985);
+  }
+  56% {
+    opacity: 0.72;
+    transform: perspective(1100px) rotateY(-82deg) scale(0.985);
+  }
+  100% {
+    opacity: 1;
+    transform: perspective(1100px) rotateY(0deg) scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .auth-modal.auth-card-flip {
+    animation: none;
+  }
 }
 
 .auth-state-card {
@@ -639,6 +694,10 @@ textarea:focus {
 .auth-mode-tab.active {
   background: var(--md-sys-color-primary-container);
   color: var(--md-sys-color-on-primary-container);
+}
+
+#modal-auth.auth-mode-signup .auth-mode-tab.active {
+  background: color-mix(in srgb, var(--md-sys-color-tertiary-container) 72%, var(--md-sys-color-primary-container));
 }
 
 .auth-action-stack {
@@ -736,6 +795,23 @@ textarea:focus {
 
 .password-feedback .valid {
   color: var(--md-sys-color-tertiary);
+}
+
+@media (max-width: 767px) {
+  #modal-auth.auth-gate {
+    align-items: center;
+    padding: 16px;
+  }
+
+  #modal-auth.auth-gate .auth-modal {
+    border-radius: 28px;
+    max-height: min(92dvh, 760px);
+    padding: 0 18px 22px;
+  }
+
+  #modal-auth.auth-gate .modal-title {
+    font-size: 20px;
+  }
 }
 
 .workspace-option {

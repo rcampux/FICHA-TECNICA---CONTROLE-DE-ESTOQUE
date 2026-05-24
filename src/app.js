@@ -307,6 +307,7 @@ document.querySelectorAll('.modal-overlay').forEach(m=>{
   m.addEventListener('click',e=>{
     if(e.target!==m)return;
     if(m.id==='modal-confirm'){closeConfirmAction(false);return;}
+    if(m.id==='modal-auth'&&m.classList.contains('auth-gate'))return;
     m.classList.remove('open');
   });
 });
