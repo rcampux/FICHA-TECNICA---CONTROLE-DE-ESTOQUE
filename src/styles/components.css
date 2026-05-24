@@ -617,10 +617,44 @@ textarea:focus {
 }
 
 #modal-auth.auth-gate .auth-modal {
+  background:
+    linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--md-sys-color-primary-container) 14%, transparent),
+      transparent 44%
+    ),
+    var(--md-sys-color-surface);
   border: 1px solid color-mix(in srgb, var(--md-sys-color-primary-container) 38%, transparent);
   box-shadow: 0 28px 80px rgba(43, 18, 10, 0.28);
   max-width: 560px;
+  transition:
+    background-color 220ms ease,
+    border-color 220ms ease,
+    box-shadow 220ms ease;
   width: min(100%, 560px);
+}
+
+#modal-auth.auth-mode-signup .auth-modal {
+  background:
+    linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--md-sys-color-tertiary-container) 34%, transparent),
+      color-mix(in srgb, var(--md-sys-color-primary-container) 12%, transparent) 58%,
+      transparent
+    ),
+    var(--md-sys-color-surface);
+  border-color: color-mix(in srgb, var(--md-sys-color-tertiary) 34%, var(--md-sys-color-outline-variant));
+  box-shadow: 0 30px 84px rgba(81, 52, 9, 0.28);
+}
+
+#modal-auth.auth-mode-signup .auth-state-card {
+  background: color-mix(in srgb, var(--md-sys-color-tertiary-container) 42%, var(--md-sys-color-surface));
+  border-color: color-mix(in srgb, var(--md-sys-color-tertiary) 24%, var(--md-sys-color-outline-variant));
+}
+
+#modal-auth.auth-mode-signup .auth-state-card .material-symbols-rounded,
+#modal-auth.auth-mode-signup .modal-title {
+  color: var(--md-sys-color-tertiary);
 }
 
 #modal-auth.auth-gate .auth-modal > .auth-action-stack:last-child {
