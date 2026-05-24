@@ -23,6 +23,7 @@ O projeto esta em fase de prototipo estruturado com Supabase ja conectado em pro
 - Migration e repository de `product_categories` foram preparados para persistir categorias no Supabase por workspace.
 - Migration de categorias foi aplicada no Supabase e a persistencia apos `F5` foi validada em producao.
 - RLS de categorias foi validado em producao: leituras cruzadas entre `r.camposarch@gmail.com` e `r.camposdesign@gmail.com` retornaram `0` e `PASS`.
+- Migration de hardening `20260523090000_harden_internal_functions.sql` foi aplicada no Supabase com sucesso.
 
 ## Proximo Passo Recomendado
 
@@ -45,11 +46,12 @@ Objetivo: remover warnings de seguranca do Supabase antes de avancar para pagame
 
 Ordem recomendada:
 
-1. Aplicar `supabase/migrations/20260523090000_harden_internal_functions.sql` no Supabase.
-2. Reexecutar o teste de isolamento com os dois usuarios reais.
-3. Atualizar o Security Advisor e confirmar que os warnings de funcoes internas sairam.
-4. Habilitar `Leaked Password Protection` no painel Supabase Auth.
-5. Registrar qualquer warning residual antes de iniciar novas features.
+1. Concluido: aplicar `supabase/migrations/20260523090000_harden_internal_functions.sql` no Supabase.
+2. Em andamento: rodar `supabase/hardening_validation.sql` e confirmar que funcoes publicas antigas sumiram e helpers privados existem.
+3. Reexecutar o teste de isolamento com os dois usuarios reais.
+4. Atualizar o Security Advisor e confirmar que os warnings de funcoes internas sairam.
+5. Habilitar `Leaked Password Protection` no painel Supabase Auth.
+6. Registrar qualquer warning residual antes de iniciar novas features.
 
 ### Fase 2.4 - UX Estoque/Receitas Sem Alterar Logica
 

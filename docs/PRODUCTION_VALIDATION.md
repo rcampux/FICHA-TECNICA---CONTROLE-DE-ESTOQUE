@@ -46,6 +46,7 @@ Data da validacao: 2026-05-23.
 - Use `supabase/production_validation_by_email.sql` para validar usuarios, workspaces, papeis e receitas a partir dos e-mails confirmados.
 - Use `supabase/rls_smoke_test_by_email.sql` para validar isolamento RLS sem copiar UUIDs manualmente.
 - Use `supabase/category_rls_smoke_test_by_email.sql` para validar isolamento RLS das categorias por workspace.
+- Use `supabase/hardening_validation.sql` para validar se as funcoes internas foram movidas para `private` e se helpers publicos nao ficaram expostos.
 - Alternativa manual: depois de obter `user_id` e `organization_id`, use `supabase/rls_smoke_test.sql`.
 
 ## Resultado Manual Recebido
@@ -77,6 +78,7 @@ Data de revisao: 2026-05-23.
 - O warning `function_search_path_mutable` para `public.set_updated_at` foi enderecado na migration `20260523090000_harden_internal_functions.sql`.
 - Os warnings de funcoes `SECURITY DEFINER` executaveis via RPC foram enderecados movendo helpers internos para o schema `private`, que nao deve ficar exposto pela API REST.
 - As funcoes internas publicas antigas sao removidas ao final da migration de hardening.
+- Migration `20260523090000_harden_internal_functions.sql` aplicada no Supabase SQL Editor com sucesso em 2026-05-24.
 - O warning `auth_leaked_password_protection` exige ajuste manual no painel do Supabase Auth: habilitar protecao contra senhas vazadas.
 
 ## Criterio Para Avancar
