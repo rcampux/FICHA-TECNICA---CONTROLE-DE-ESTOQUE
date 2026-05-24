@@ -30,6 +30,7 @@ O projeto esta em fase de prototipo estruturado com Supabase ja conectado em pro
 - Fase 3.1 validada no Supabase: catalogo com 10 planos ativos, intervalos mensal/trimestral/anual, assinaturas Trial por workspace e limites de scanner aprovados com `PASS`.
 - Fase 3.2 validada no Supabase: tabelas de billing, RLS, policies, idempotencia de webhook e colunas de gateway aprovadas com 5 checks `PASS`.
 - Edge Functions de billing publicadas no Supabase: `create-checkout`, `billing-webhook` e `validate-feature-access`; secrets `BILLING_WEBHOOK_SECRET` e `BILLING_PROVIDER=manual` configurados.
+- `supabase/config.toml` versiona a regra de seguranca das Edge Functions: `billing-webhook` aceita chamada externa sem JWT e valida o segredo proprio; `create-checkout` e `validate-feature-access` continuam exigindo JWT de usuario logado.
 
 ## Proximo Passo Recomendado
 

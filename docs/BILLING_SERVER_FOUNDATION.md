@@ -14,6 +14,7 @@ Preparar pagamentos recorrentes sem expor chaves secretas no frontend e sem conf
 - `supabase/functions/billing-webhook/index.ts`
 - `supabase/functions/validate-feature-access/index.ts`
 - `supabase/functions/_shared/billing.ts`
+- `supabase/config.toml`
 
 ## Tabelas
 
@@ -50,7 +51,9 @@ Entrada esperada:
 
 Recebe eventos de pagamento e atualiza `subscriptions`.
 
-Seguranca: exige header `x-fichatec-webhook-secret` igual ao segredo `BILLING_WEBHOOK_SECRET` configurado no Supabase.
+Seguranca: essa Edge Function fica com `verify_jwt = false` em `supabase/config.toml`, porque gateways externos nao enviam JWT de usuario Supabase. A protecao obrigatoria passa a ser o header `x-fichatec-webhook-secret` igual ao segredo `BILLING_WEBHOOK_SECRET` configurado no Supabase.
+
+As funcoes `create-checkout` e `validate-feature-access` permanecem com `verify_jwt = true` e exigem usuario autenticado.
 
 Entrada esperada para teste manual:
 
@@ -118,19 +121,19 @@ Validar migration:
 Get-Content .\supabase\billing_foundation_validation.sql -Raw | Set-Clipboard
 ```
 
-Deploy das Edge Functions, quando Supabase CLI estiver logado:
+Deploy das Edge Functions, quando Supabase CLI estiver logado. Neste projeto, use `npx supabase@latest` porque o CLI nao esta instalado globalmente no Windows:
 
 ```powershell
-supabase functions deploy create-checkout
-supabase functions deploy billing-webhook
-supabase functions deploy validate-feature-access
+npx supabase@latest functions deploy create-checkout --project-ref gzyecgwpaooyaqmzxvwv
+npx supabase@latest functions deploy billing-webhook --project-ref gzyecgwpaooyaqmzxvwv
+npx supabase@latest functions deploy validate-feature-access --project-ref gzyecgwpaooyaqmzxvwv
 ```
 
 Configurar secrets:
 
 ```powershell
-supabase secrets set BILLING_WEBHOOK_SECRET="troque-por-um-segredo-forte"
-supabase secrets set BILLING_PROVIDER="manual"
+npx supabase@latest secrets set BILLING_WEBHOOK_SECRET="troque-por-um-segredo-forte" --project-ref gzyecgwpaooyaqmzxvwv
+npx supabase@latest secrets set BILLING_PROVIDER="manual" --project-ref gzyecgwpaooyaqmzxvwv
 ```
 
 ## Proxima Decisao De Produto

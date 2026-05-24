@@ -1,0 +1,10 @@
+project_id = "gzyecgwpaooyaqmzxvwv"
+
+[functions.create-checkout]
+verify_jwt = true
+
+[functions.validate-feature-access]
+verify_jwt = true
+
+[functions.billing-webhook]
+verify_jwt = false
