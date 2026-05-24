@@ -25,6 +25,7 @@ O projeto esta em fase de prototipo estruturado com Supabase ja conectado em pro
 - RLS de categorias foi validado em producao: leituras cruzadas entre `r.camposarch@gmail.com` e `r.camposdesign@gmail.com` retornaram `0` e `PASS`.
 - Migration de hardening `20260523090000_harden_internal_functions.sql` foi aplicada no Supabase com sucesso.
 - Validacao de hardening aprovada: funcoes publicas internas removidas, helpers privados presentes e `public.set_updated_at()` sem execucao por `anon`/`authenticated`.
+- RLS pos-hardening aprovado para receitas, estoque virtual e estoque fisico entre `r.camposarch@gmail.com` e `r.camposdesign@gmail.com`.
 
 ## Proximo Passo Recomendado
 
@@ -49,8 +50,8 @@ Ordem recomendada:
 
 1. Concluido: aplicar `supabase/migrations/20260523090000_harden_internal_functions.sql` no Supabase.
 2. Concluido: rodar `supabase/hardening_validation.sql` e confirmar que funcoes publicas antigas sumiram e helpers privados existem.
-3. Em andamento: reexecutar o teste de isolamento com os dois usuarios reais.
-4. Atualizar o Security Advisor e confirmar que os warnings de funcoes internas sairam.
+3. Concluido: reexecutar o teste de isolamento com os dois usuarios reais.
+4. Em andamento: atualizar o Security Advisor e confirmar que os warnings de funcoes internas sairam.
 5. Habilitar `Leaked Password Protection` no painel Supabase Auth.
 6. Registrar qualquer warning residual antes de iniciar novas features.
 

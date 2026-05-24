@@ -55,6 +55,15 @@ Data da validacao: 2026-05-23.
 - `r.camposdesign@gmail.com`: usuario confirmado, profile criado, workspace proprio, papel `owner`, 1 receita ativa.
 - Os dois usuarios estao em `organization_id` diferentes, como esperado para isolamento multi-tenant.
 - Validacao RLS autenticada comprovou que cada usuario acessa apenas a propria receita.
+- Validacao RLS pos-hardening aprovada em 2026-05-24:
+  - `users_and_orgs_loaded`: `PASS`.
+  - `arch_reads_design_recipes`: `visible_rows = 0`, `PASS`.
+  - `arch_reads_design_virtual_stock`: `visible_rows = 0`, `PASS`.
+  - `arch_reads_design_physical_stock`: `visible_rows = 0`, `PASS`.
+  - `design_reads_own_recipes`: `visible_rows = 2`, receitas `Carne`, `Leitada`.
+  - `design_reads_arch_recipes`: `visible_rows = 0`, `PASS`.
+  - `design_reads_arch_virtual_stock`: `visible_rows = 0`, `PASS`.
+  - `design_reads_arch_physical_stock`: `visible_rows = 0`, `PASS`.
 
 ## Validacao De Categorias Supabase
 
@@ -89,14 +98,14 @@ Somente avancar para Fase 3.1 quando:
 - CRUD autenticado passar em producao.
 - Persistencia apos reload estiver comprovada.
 - Exclusao do ultimo item estiver comprovada.
-- RLS estiver comprovado com dois usuarios diferentes. Concluido em 2026-05-23.
+- RLS estiver comprovado com dois usuarios diferentes antes e depois do hardening. Concluido em 2026-05-24.
 - RLS de categorias estiver comprovado com dois usuarios diferentes. Concluido em 2026-05-24.
 - Nenhum dado privado aparecer sem login.
 - Security Advisor estiver sem warnings criticos relacionados a funcoes internas.
 
 ## Proxima Acao
 
-Reexecutar os testes RLS com dois usuarios depois do hardening, atualizar o Security Advisor e habilitar `Leaked Password Protection` no painel Supabase Auth.
+Atualizar o Security Advisor e habilitar `Leaked Password Protection` no painel Supabase Auth.
 
 ## Regra Para Novos Testes
 
