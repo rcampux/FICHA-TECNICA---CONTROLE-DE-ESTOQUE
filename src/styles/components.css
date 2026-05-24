@@ -586,6 +586,28 @@ textarea:focus {
   width: min(100%, 640px);
 }
 
+#modal-stock,
+#modal-pstock {
+  align-items: center;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding:
+    max(16px, env(safe-area-inset-top))
+    16px
+    max(24px, env(safe-area-inset-bottom));
+}
+
+#modal-stock .modal,
+#modal-pstock .modal {
+  border-radius: var(--md-sys-shape-corner-extra-large);
+  max-height: calc(100vh - max(32px, env(safe-area-inset-top)) - max(48px, env(safe-area-inset-bottom)));
+  max-height: calc(100dvh - max(32px, env(safe-area-inset-top)) - max(48px, env(safe-area-inset-bottom)));
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding-bottom: calc(32px + env(safe-area-inset-bottom));
+  -webkit-overflow-scrolling: touch;
+}
+
 .auth-modal {
   gap: var(--s4);
   max-width: 760px;
