@@ -21,6 +21,7 @@
       session: null,
       user: null,
     };
+    let authFlipMidpointTimer = null;
 
     function getElement(id) {
       return document.getElementById(id);
@@ -114,18 +115,53 @@
       renderPasswordFeedback();
     }
 
-    function animateAuthCardFlip(mode) {
+    function applyAuthMode(mode) {
+      state.authMode = mode === "signup" ? "signup" : "login";
+      state.pendingVerificationEmail = "";
+      clearAuthInputs({clearEmail: true});
+      getElement("auth-mode-login")?.classList.toggle("active", state.authMode === "login");
+      getElement("auth-mode-signup")?.classList.toggle("active", state.authMode === "signup");
+      renderAuthState();
+      renderPasswordFeedback();
+    }
+
+    function animateAuthCardFlip(mode, applyMode) {
       const modal = getElement("modal-auth");
       const card = modal?.querySelector(".auth-modal");
-      if (!modal?.classList.contains("open") || !card) return;
+      const content = getElement("auth-card-content");
+      if (!modal?.classList.contains("open") || !card || !content) {
+        applyMode();
+        return;
+      }
+
+      if (authFlipMidpointTimer) window.clearTimeout(authFlipMidpointTimer);
       card.classList.remove("auth-card-flip", "auth-card-flip-login", "auth-card-flip-signup");
+      content.classList.remove("auth-content-out", "auth-content-in");
+      card.style.height = `${card.getBoundingClientRect().height}px`;
       void card.offsetWidth;
       card.classList.add(
         "auth-card-flip",
         mode === "signup" ? "auth-card-flip-signup" : "auth-card-flip-login",
       );
+      content.classList.add("auth-content-out");
+
+      authFlipMidpointTimer = window.setTimeout(() => {
+        applyMode();
+        window.requestAnimationFrame(() => {
+          card.style.height = `${card.scrollHeight}px`;
+          content.classList.remove("auth-content-out");
+          content.classList.add("auth-content-in");
+        });
+      }, 330);
+
       const finalize = () => {
+        if (authFlipMidpointTimer) {
+          window.clearTimeout(authFlipMidpointTimer);
+          authFlipMidpointTimer = null;
+        }
+        card.style.height = "";
         card.classList.remove("auth-card-flip", "auth-card-flip-login", "auth-card-flip-signup");
+        content.classList.remove("auth-content-out", "auth-content-in");
       };
       card.addEventListener("animationend", finalize, {once: true});
     }
@@ -361,14 +397,9 @@
     }
 
     function setAuthMode(mode) {
-      state.authMode = mode === "signup" ? "signup" : "login";
-      state.pendingVerificationEmail = "";
-      clearAuthInputs({clearEmail: true});
-      getElement("auth-mode-login")?.classList.toggle("active", state.authMode === "login");
-      getElement("auth-mode-signup")?.classList.toggle("active", state.authMode === "signup");
-      renderAuthState();
-      renderPasswordFeedback();
-      animateAuthCardFlip(state.authMode);
+      const nextMode = mode === "signup" ? "signup" : "login";
+      if (state.authMode === nextMode) return;
+      animateAuthCardFlip(nextMode, () => applyAuthMode(nextMode));
     }
 
     async function submitAuthForm() {
