@@ -124,9 +124,10 @@
         "auth-card-flip",
         mode === "signup" ? "auth-card-flip-signup" : "auth-card-flip-login",
       );
-      window.setTimeout(() => {
+      const finalize = () => {
         card.classList.remove("auth-card-flip", "auth-card-flip-login", "auth-card-flip-signup");
-      }, 720);
+      };
+      card.addEventListener("animationend", finalize, {once: true});
     }
 
     async function initAuthSession() {
