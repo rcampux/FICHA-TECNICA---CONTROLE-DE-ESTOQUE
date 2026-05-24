@@ -61,6 +61,7 @@ Data da validacao funcional: 2026-05-24.
 
 - Migration `20260524120000_product_categories.sql` aplicada no Supabase SQL Editor com sucesso.
 - Categoria criada no app persistiu apos `F5`, confirmando escrita/leitura remota de `product_categories`.
+- Script `supabase/category_rls_smoke_test_by_email.sql` ajustado para resolver usuarios/organizacoes antes de simular `authenticated`; nunca conceder `SELECT` em `auth.users` para rodar teste de RLS.
 - Proximo teste cirurgico: rodar `supabase/category_rls_smoke_test_by_email.sql` para validar que categorias tambem ficam isoladas entre `r.camposarch@gmail.com` e `r.camposdesign@gmail.com`.
 
 ## Warnings Do Security Advisor
