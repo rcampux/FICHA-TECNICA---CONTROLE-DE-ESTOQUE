@@ -45,6 +45,7 @@ Data da validacao: 2026-05-23.
 
 - Use `supabase/production_validation_by_email.sql` para validar usuarios, workspaces, papeis e receitas a partir dos e-mails confirmados.
 - Use `supabase/rls_smoke_test_by_email.sql` para validar isolamento RLS sem copiar UUIDs manualmente.
+- Use `supabase/category_rls_smoke_test_by_email.sql` para validar isolamento RLS das categorias por workspace.
 - Alternativa manual: depois de obter `user_id` e `organization_id`, use `supabase/rls_smoke_test.sql`.
 
 ## Resultado Manual Recebido
@@ -53,6 +54,14 @@ Data da validacao: 2026-05-23.
 - `r.camposdesign@gmail.com`: usuario confirmado, profile criado, workspace proprio, papel `owner`, 1 receita ativa.
 - Os dois usuarios estao em `organization_id` diferentes, como esperado para isolamento multi-tenant.
 - Validacao RLS autenticada comprovou que cada usuario acessa apenas a propria receita.
+
+## Validacao De Categorias Supabase
+
+Data da validacao funcional: 2026-05-24.
+
+- Migration `20260524120000_product_categories.sql` aplicada no Supabase SQL Editor com sucesso.
+- Categoria criada no app persistiu apos `F5`, confirmando escrita/leitura remota de `product_categories`.
+- Proximo teste cirurgico: rodar `supabase/category_rls_smoke_test_by_email.sql` para validar que categorias tambem ficam isoladas entre `r.camposarch@gmail.com` e `r.camposdesign@gmail.com`.
 
 ## Warnings Do Security Advisor
 

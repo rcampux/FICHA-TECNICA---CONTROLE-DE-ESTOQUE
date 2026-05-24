@@ -20,7 +20,8 @@ O projeto esta em fase de prototipo estruturado com Supabase ja conectado em pro
 - Security Advisor reportou warnings de funcoes internas; a migration `20260523090000_harden_internal_functions.sql` foi preparada para hardening.
 - Especificacao de evolucao de Estoque/Receitas registrada em `docs/STOCK_RECIPES_FEATURE_SPEC.md`.
 - Categorias agora podem ser cadastradas independentemente de produtos e reutilizadas no Estoque Virtual e Fisico; a vinculacao pode acontecer depois editando o produto.
-- Migration e repository de `product_categories` foram preparados para persistir categorias no Supabase por workspace, mantendo fallback local ate a migration ser aplicada no painel.
+- Migration e repository de `product_categories` foram preparados para persistir categorias no Supabase por workspace.
+- Migration de categorias foi aplicada no Supabase e a persistencia apos `F5` foi validada em producao.
 
 ## Proximo Passo Recomendado
 
@@ -33,8 +34,8 @@ Ordem recomendada:
 1. Concluido no codigo: criar tabela `product_categories` com `organization_id`, `name`, `parent_id`, `deleted_at` e unicidade por workspace.
 2. Concluido no codigo: criar policies RLS por `organization_members`.
 3. Concluido no codigo: atualizar repository Supabase para carregar/salvar categorias por workspace.
-4. Proximo passo manual: aplicar `supabase/migrations/20260524120000_product_categories.sql` no Supabase SQL Editor.
-5. Depois: criar uma categoria diferente em cada usuario e revalidar isolamento.
+4. Concluido: aplicar `supabase/migrations/20260524120000_product_categories.sql` no Supabase SQL Editor.
+5. Em andamento: criar uma categoria diferente em cada usuario e revalidar isolamento com `supabase/category_rls_smoke_test_by_email.sql`.
 
 ### Fase 2.3 - Hardening Supabase
 
