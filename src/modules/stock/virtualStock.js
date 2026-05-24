@@ -20,7 +20,23 @@
     let editingStockId = null;
     let currentStockFilter = "";
     let selectedStockCategories = new Set();
-    let stockViewMode = localStorage.getItem("fichatec.stock.viewMode") || "grid";
+    const stockViewModeKey = "fichatec.stock.viewMode";
+    let stockViewMode = readViewMode(stockViewModeKey);
+
+    function readViewMode(key) {
+      const rawValue = localStorage.getItem(key);
+      if (!rawValue) return "grid";
+      try {
+        const parsedValue = JSON.parse(rawValue);
+        return parsedValue === "list" ? "list" : "grid";
+      } catch (_error) {
+        return rawValue === "list" ? "list" : "grid";
+      }
+    }
+
+    function writeViewMode(key, mode) {
+      localStorage.setItem(key, JSON.stringify(mode === "list" ? "list" : "grid"));
+    }
 
     function escapeAttribute(value) {
       return String(value ?? "")
@@ -91,7 +107,7 @@
 
     function setStockViewMode(mode) {
       stockViewMode = mode === "list" ? "list" : "grid";
-      localStorage.setItem("fichatec.stock.viewMode", stockViewMode);
+      writeViewMode(stockViewModeKey, stockViewMode);
       applyStockViewMode();
       renderStock(currentStockFilter);
     }

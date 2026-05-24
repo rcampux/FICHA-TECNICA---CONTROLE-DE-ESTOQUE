@@ -76,6 +76,14 @@
       return Object.values(getPasswordValidation(password)).every(Boolean);
     }
 
+    async function ensureSupabaseClient() {
+      if (!state.isSupabaseEnabled) return null;
+      if (!state.client) {
+        state.client = await createSupabaseClient();
+      }
+      return state.client;
+    }
+
     function showInitialUserScreen() {
       closeModal("modal-auth");
       if (typeof enterAppView === "function") {
@@ -116,7 +124,7 @@
       }
 
       try {
-        state.client = await createSupabaseClient();
+        state.client = await ensureSupabaseClient();
         const {data, error} = await state.client.auth.getSession();
         if (error) throw error;
         syncSupabaseSession(data.session);
@@ -129,8 +137,8 @@
         await loadOrganizations();
       } catch (error) {
         console.error(error);
-        state.isSupabaseEnabled = false;
-        showToast("Supabase indisponivel. Mantendo modo local.");
+        syncSupabaseSession(null);
+        showToast("Nao foi possivel validar a sessao. Entre novamente.");
       }
 
       renderAuthState();
@@ -320,7 +328,14 @@
     }
 
     async function submitAuthForm() {
-      if (!state.isSupabaseEnabled || !state.client) {
+      let client = null;
+      try {
+        client = await ensureSupabaseClient();
+      } catch (error) {
+        console.error(error);
+      }
+
+      if (!state.isSupabaseEnabled || !client) {
         showToast("Configure o Supabase antes de entrar.");
         return;
       }
@@ -343,8 +358,8 @@
       renderAuthState();
 
       const action = state.authMode === "login"
-        ? state.client.auth.signInWithPassword({email, password})
-        : state.client.auth.signUp({
+        ? client.auth.signInWithPassword({email, password})
+        : client.auth.signUp({
           email,
           password,
           options: {emailRedirectTo: getAuthRedirectUrl()},
@@ -377,7 +392,14 @@
     }
 
     async function resendConfirmationEmail() {
-      if (!state.isSupabaseEnabled || !state.client) {
+      let client = null;
+      try {
+        client = await ensureSupabaseClient();
+      } catch (error) {
+        console.error(error);
+      }
+
+      if (!state.isSupabaseEnabled || !client) {
         showToast("Configure o Supabase antes de reenviar.");
         return;
       }
@@ -392,7 +414,7 @@
       state.loading = true;
       renderAuthState();
 
-      const {error} = await state.client.auth.resend({
+      const {error} = await client.auth.resend({
         type: "signup",
         email,
         options: {emailRedirectTo: getAuthRedirectUrl()},

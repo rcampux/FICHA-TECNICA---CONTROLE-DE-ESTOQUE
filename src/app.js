@@ -36,6 +36,7 @@ function showPage(page,navId){
 function closeModal(id){document.getElementById(id).classList.remove('open');}
 
 const BOOT_DURATION_MS=2000;
+const AUTH_INIT_TIMEOUT_MS=2800;
 let bootTimerId=null;
 
 function setAppShellVisible(isVisible){
@@ -57,6 +58,7 @@ function hideBootScreen(){
   boot.classList.remove('is-active');
   boot.hidden=true;
   document.body.classList.remove('app-booting');
+  setAppShellVisible(true);
 }
 
 function showBootSplash(duration=BOOT_DURATION_MS){
@@ -65,7 +67,7 @@ function showBootSplash(duration=BOOT_DURATION_MS){
   document.body.classList.add('app-booting');
   document.body.classList.remove('app-start-mode');
   if(start){start.hidden=true;start.classList.remove('is-active');}
-  setAppShellVisible(false);
+  setAppShellVisible(true);
 
   if(!boot){
     document.body.classList.remove('app-booting');
@@ -128,6 +130,21 @@ function failSafeReleaseBoot(openAuth=true){
   const start=document.getElementById('app-start');
   if(start){start.hidden=true;start.classList.remove('is-active');}
   if(openAuth)openStartLogin();
+}
+
+function wait(ms){
+  return new Promise(resolve=>window.setTimeout(resolve,ms));
+}
+
+async function resolveWithTimeout(promise,timeoutMs,label){
+  let timedOut=false;
+  const timeout=wait(timeoutMs).then(()=>{
+    timedOut=true;
+    return {timedOut:true,label};
+  });
+  const result=await Promise.race([promise,timeout]);
+  if(timedOut)console.warn(`${label} demorou mais que ${timeoutMs}ms. Liberando interface.`);
+  return result;
 }
 
 const recipeSheetModule=window.FichaTecRecipeSheet.createRecipeSheetModule({
@@ -338,16 +355,35 @@ renderPhysical();
 bootstrapAppExperience();
 
 async function bootstrapAppExperience(){
+  const splashDone=showBootSplash(BOOT_DURATION_MS);
+  const authPromise=initAuthSession();
+
+  authPromise
+    .then(authState=>{
+      if(!authState?.isAuthenticated)return;
+      enterAppExperience();
+    })
+    .catch(error=>console.error('Late auth init failed:',error));
+
   try{
-    const authState=await initAuthSession();
-    await showBootSplash(BOOT_DURATION_MS);
-    if(authState?.isAuthenticated){
+    const authState=await resolveWithTimeout(authPromise,AUTH_INIT_TIMEOUT_MS,'Auth init');
+    await splashDone;
+    const latestAuthState=typeof getAuthState==='function'?getAuthState():authState;
+    if(latestAuthState?.isAuthenticated){
       enterAppExperience();
       return;
     }
     showStartScreen();
   }catch(error){
     console.error('Bootstrap failed:',error);
+    await splashDone.catch(()=>undefined);
     failSafeReleaseBoot(true);
   }
 }
+
+window.addEventListener('error',()=>{
+  if(document.body.classList.contains('app-booting'))failSafeReleaseBoot(true);
+});
+window.addEventListener('unhandledrejection',()=>{
+  if(document.body.classList.contains('app-booting'))failSafeReleaseBoot(true);
+});

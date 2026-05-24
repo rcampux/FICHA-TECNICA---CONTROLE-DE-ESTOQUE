@@ -144,14 +144,13 @@
   }
 }
 
-body.app-booting,
 body.app-start-mode {
   overflow: hidden;
 }
 
 body.app-booting .app-shell {
-  pointer-events: none;
-  visibility: hidden;
+  pointer-events: auto;
+  visibility: visible;
 }
 
 .app-shell[hidden] {
@@ -160,12 +159,20 @@ body.app-booting .app-shell {
 
 .boot-screen {
   align-items: center;
+  animation: bootAutoRelease 240ms ease 3.4s forwards;
   background: linear-gradient(145deg, #fff7ef 0%, #fde7d7 52%, #f8d9c3 100%);
   display: flex;
   inset: 0;
   justify-content: center;
+  opacity: 1;
+  pointer-events: auto;
   position: fixed;
+  visibility: visible;
   z-index: 260;
+}
+
+.boot-screen[hidden] {
+  display: none;
 }
 
 .boot-screen-content {
@@ -247,6 +254,14 @@ body.app-booting .app-shell {
 @keyframes bootPulse {
   0%,100% { opacity: 0.35; transform: translateY(0); }
   50% { opacity: 1; transform: translateY(-5px); }
+}
+
+@keyframes bootAutoRelease {
+  to {
+    opacity: 0;
+    pointer-events: none;
+    visibility: hidden;
+  }
 }
 
 .start-screen {

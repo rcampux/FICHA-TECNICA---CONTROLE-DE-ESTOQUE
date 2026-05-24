@@ -19,6 +19,7 @@ Atue como dev full-stack senior especialista em aplicativos SaaS/PWA B2B, com fo
 - Ao concluir uma etapa relevante, deixar o prototipo renderizavel disponivel por link local ou instrucao clara de execucao.
 - Antes de encerrar um ciclo de trabalho, definir o proximo passo sequencial recomendado.
 - Toda funcao criada, movida, renomeada ou removida deve ser registrada no inventario vivo `docs/FUNCTION_INVENTORY.md` na mesma etapa de trabalho.
+- Splash, service worker, cache ou inicializacao de autenticacao nunca podem bloquear a interface principal indefinidamente; todo fluxo de boot precisa ter timeout/failsafe e manter o app recuperavel apos F5, hard refresh e token expirado.
 
 ## Direcao de produto
 

@@ -23,6 +23,10 @@ Este arquivo e um inventario vivo das funcoes utilizadas no projeto. Toda nova f
 | `closeConfirmAction` | `src/app.js` | 21 | Fecha o modal de confirmacao e resolve a decisao pendente. |
 | `showPage` | `src/app.js` | 25 | function showPage(page,navId){ |
 | `closeModal` | `src/app.js` | 34 | function closeModal(id){document.getElementById(id).classList.remove('open');} |
+| `showBootSplash` | `src/app.js` | 64 | Exibe a splash visual sem esconder permanentemente a interface principal. |
+| `wait` | `src/app.js` | 135 | Cria espera controlada para timeouts de boot e autenticacao. |
+| `resolveWithTimeout` | `src/app.js` | 139 | Libera o bootstrap quando a autenticacao demora demais, evitando splash travada. |
+| `bootstrapAppExperience` | `src/app.js` | 357 | Inicializa splash e Auth em paralelo, abre login sem sessao e entra no app quando houver usuario autenticado. |
 | `hydrateWorkspaceData` | `src/app.js` | 105 | Carrega estoque, estoque fisico e receitas do Supabase quando um workspace e selecionado. |
 | `applyRemoteSave` | `src/app.js` | 130 | Atualiza o estado em memoria depois que uma escrita remota retorna `remoteId`. |
 | `clearSessionData` | `src/app.js` | 143 | Limpa cache local, estado em memoria e telas quando nao ha sessao Supabase ativa. |
@@ -41,6 +45,7 @@ Este arquivo e um inventario vivo das funcoes utilizadas no projeto. Toda nova f
 | `getAuthRedirectUrl` | `src/modules/auth/authSession.js` | 58 | Monta URL atual do app para redirecionamento de confirmacao de e-mail. |
 | `getPasswordValidation` | `src/modules/auth/authSession.js` | 62 | Valida requisitos de senha forte para criacao de conta. |
 | `isStrongPassword` | `src/modules/auth/authSession.js` | 73 | Confirma se todos os requisitos de senha forte foram atendidos. |
+| `ensureSupabaseClient` | `src/modules/auth/authSession.js` | 79 | Recria ou retorna o client Supabase para login/cadastro mesmo quando o boot de sessao demorou. |
 | `showInitialUserScreen` | `src/modules/auth/authSession.js` | 77 | Fecha o modal de acesso e retorna para a tela inicial do usuario apos login. |
 | `handleAuthKeydown` | `src/modules/auth/authSession.js` | 84 | Submete login/cadastro ao pressionar Enter nos campos de acesso. |
 | `clearAuthInputs` | `src/modules/auth/authSession.js` | 90 | Limpa campos sensiveis do formulario de acesso e restaura o campo de senha. |
@@ -106,6 +111,8 @@ Este arquivo e um inventario vivo das funcoes utilizadas no projeto. Toda nova f
 | `confirmScanSave` | `src/modules/scanner/scannerRecipe.js` | 161 | Salva receita digitalizada e confirma sobrescrita quando houver nome duplicado. |
 | `exposePhysicalStockModule` | `src/modules/stock/physicalStock.js` | 1 | (function exposePhysicalStockModule() { |
 | `createPhysicalStockModule` | `src/modules/stock/physicalStock.js` | 2 | function createPhysicalStockModule(deps) { |
+| `readViewMode` | `src/modules/stock/physicalStock.js` | 31 | Le preferencia grid/lista em JSON ou formato legado sem quebrar o render. |
+| `writeViewMode` | `src/modules/stock/physicalStock.js` | 42 | Salva preferencia grid/lista do estoque fisico em JSON valido. |
 | `escapeAttribute` | `src/modules/stock/physicalStock.js` | 30 | Escapa IDs remotos antes de inserir nos atributos dos cards de estoque fisico. |
 | `bindPhysicalCardActions` | `src/modules/stock/physicalStock.js` | 38 | Centraliza acoes de editar, deletar, usar e repor estoque fisico via eventos `data-*`. |
 | `persistPhysicalSnapshot` | `src/modules/stock/physicalStock.js` | 34 | Persiste estoque fisico localmente e aguarda sincronizacao Supabase quando houver workspace ativo. |
@@ -143,6 +150,8 @@ Este arquivo e um inventario vivo das funcoes utilizadas no projeto. Toda nova f
 | `handleCategoryKeydown` | `src/modules/stock/categoryCatalog.js` | 115 | Permite salvar categoria pressionando Enter no modal. |
 | `exposeVirtualStockModule` | `src/modules/stock/virtualStock.js` | 1 | (function exposeVirtualStockModule() { |
 | `createVirtualStockModule` | `src/modules/stock/virtualStock.js` | 2 | function createVirtualStockModule(deps) { |
+| `readViewMode` | `src/modules/stock/virtualStock.js` | 26 | Le preferencia grid/lista em JSON ou formato legado sem quebrar o render. |
+| `writeViewMode` | `src/modules/stock/virtualStock.js` | 37 | Salva preferencia grid/lista do estoque virtual em JSON valido. |
 | `escapeAttribute` | `src/modules/stock/virtualStock.js` | 25 | Escapa IDs remotos antes de inserir nos atributos dos cards de estoque virtual. |
 | `bindStockCardActions` | `src/modules/stock/virtualStock.js` | 33 | Centraliza cliques de editar/deletar estoque virtual via eventos `data-*`, sem JavaScript inline. |
 | `persistStockSnapshot` | `src/modules/stock/virtualStock.js` | 29 | Persiste estoque virtual localmente e aguarda sincronizacao Supabase quando houver workspace ativo. |

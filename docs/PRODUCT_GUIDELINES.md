@@ -52,6 +52,7 @@ A experiencia principal deve funcionar perfeitamente no celular. Desktop e table
 - Ao autenticar com sucesso, ocultar tela inicial e abrir direto na experiencia principal.
 - Ao encerrar sessao, voltar para uma experiencia de inicio com splash + tela de login.
 - A tecla Enter no formulario de acesso deve submeter login/cadastro.
+- A splash e apenas uma camada visual: autenticacao, cache, service worker ou token expirado nunca podem deixar o usuario preso nela. O app deve liberar a interface com timeout/failsafe e abrir login quando a sessao nao estiver pronta.
 
 ### Poucos passos por tarefa
 

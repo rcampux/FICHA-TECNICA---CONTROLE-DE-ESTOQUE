@@ -25,7 +25,23 @@
     let movingPhysicalId = null;
     let currentPhysicalFilter = "";
     let selectedPhysicalCategories = new Set();
-    let physicalViewMode = localStorage.getItem("fichatec.physicalStock.viewMode") || "grid";
+    const physicalViewModeKey = "fichatec.physicalStock.viewMode";
+    let physicalViewMode = readViewMode(physicalViewModeKey);
+
+    function readViewMode(key) {
+      const rawValue = localStorage.getItem(key);
+      if (!rawValue) return "grid";
+      try {
+        const parsedValue = JSON.parse(rawValue);
+        return parsedValue === "list" ? "list" : "grid";
+      } catch (_error) {
+        return rawValue === "list" ? "list" : "grid";
+      }
+    }
+
+    function writeViewMode(key, mode) {
+      localStorage.setItem(key, JSON.stringify(mode === "list" ? "list" : "grid"));
+    }
 
     function escapeAttribute(value) {
       return String(value ?? "")
@@ -125,7 +141,7 @@
 
     function setPhysicalViewMode(mode) {
       physicalViewMode = mode === "list" ? "list" : "grid";
-      localStorage.setItem("fichatec.physicalStock.viewMode", physicalViewMode);
+      writeViewMode(physicalViewModeKey, physicalViewMode);
       applyPhysicalViewMode();
       renderPhysical(currentPhysicalFilter);
     }
