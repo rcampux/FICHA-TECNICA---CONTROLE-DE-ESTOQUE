@@ -267,9 +267,9 @@ async function hydrateWorkspaceData(event){
       DB.loadRemote(STORAGE_KEYS.recipes,organizationId),
     ]);
 
-    if(Array.isArray(remoteStock)){stock=remoteStock;DB.save(STORAGE_KEYS.stock,stock);}
-    if(Array.isArray(remotePhysicalStock)){physicalStock=remotePhysicalStock;DB.save(STORAGE_KEYS.physicalStock,physicalStock);}
-    if(Array.isArray(remoteRecipes)){recipes=remoteRecipes;DB.save(STORAGE_KEYS.recipes,recipes);}
+    if(Array.isArray(remoteStock)){stock=remoteStock;DB.saveLocal?.(STORAGE_KEYS.stock,stock);}
+    if(Array.isArray(remotePhysicalStock)){physicalStock=remotePhysicalStock;DB.saveLocal?.(STORAGE_KEYS.physicalStock,physicalStock);}
+    if(Array.isArray(remoteRecipes)){recipes=remoteRecipes;DB.saveLocal?.(STORAGE_KEYS.recipes,recipes);}
 
     renderStock();renderPhysical();renderRecipes();
     showToast('Workspace sincronizado.');
