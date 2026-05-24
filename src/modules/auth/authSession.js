@@ -114,14 +114,19 @@
       renderPasswordFeedback();
     }
 
-    function animateAuthCardFlip() {
+    function animateAuthCardFlip(mode) {
       const modal = getElement("modal-auth");
       const card = modal?.querySelector(".auth-modal");
       if (!modal?.classList.contains("open") || !card) return;
-      card.classList.remove("auth-card-flip");
+      card.classList.remove("auth-card-flip", "auth-card-flip-login", "auth-card-flip-signup");
       void card.offsetWidth;
-      card.classList.add("auth-card-flip");
-      window.setTimeout(() => card.classList.remove("auth-card-flip"), 520);
+      card.classList.add(
+        "auth-card-flip",
+        mode === "signup" ? "auth-card-flip-signup" : "auth-card-flip-login",
+      );
+      window.setTimeout(() => {
+        card.classList.remove("auth-card-flip", "auth-card-flip-login", "auth-card-flip-signup");
+      }, 720);
     }
 
     async function initAuthSession() {
@@ -218,6 +223,7 @@
       const submitButton = getElement("auth-submit-btn");
       const authModal = getElement("modal-auth");
       const modalTitle = getElement("auth-modal-title");
+      const stateIcon = getElement("auth-state-icon");
 
       if (!statusLabel || !stateTitle || !stateDescription) return;
 
@@ -230,6 +236,15 @@
           : state.authMode === "signup"
             ? "Criar nova conta"
             : "Entrar no FichaTec";
+      }
+      if (stateIcon) {
+        stateIcon.textContent = state.user
+          ? "verified_user"
+          : state.pendingVerificationEmail
+            ? "mark_email_read"
+            : state.authMode === "signup"
+              ? "person_add"
+              : "lock_open";
       }
 
       statusButton?.classList.toggle("is-authenticated", Boolean(state.user));
@@ -352,7 +367,7 @@
       getElement("auth-mode-signup")?.classList.toggle("active", state.authMode === "signup");
       renderAuthState();
       renderPasswordFeedback();
-      animateAuthCardFlip();
+      animateAuthCardFlip(state.authMode);
     }
 
     async function submitAuthForm() {
