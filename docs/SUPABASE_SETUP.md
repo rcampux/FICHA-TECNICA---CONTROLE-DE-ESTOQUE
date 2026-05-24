@@ -62,3 +62,4 @@ A migration cria automaticamente uma organizacao padrao quando um usuario nasce 
 - Aplicar `supabase/migrations/20260523090000_harden_internal_functions.sql` depois da migration inicial e depois de `product_categories`; a migration tambem move o trigger de categorias para `private.set_updated_at`.
 - Reexecutar o teste RLS de dois usuarios depois do hardening.
 - No painel Supabase Auth, habilitar `Leaked Password Protection` antes de considerar o ambiente pronto para producao paga.
+- Se o Security Advisor mostrar `0 errors` e apenas `1 warning` depois do hardening, abrir a aba `Warnings`. Se o item for `auth_leaked_password_protection`, nao rodar SQL: resolver no painel Auth ou registrar como pendencia do plano atual.

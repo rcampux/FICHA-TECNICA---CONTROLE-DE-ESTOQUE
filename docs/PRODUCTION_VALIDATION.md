@@ -89,7 +89,8 @@ Data de revisao: 2026-05-23.
 - As funcoes internas publicas antigas sao removidas ao final da migration de hardening.
 - Migration `20260523090000_harden_internal_functions.sql` aplicada no Supabase SQL Editor com sucesso em 2026-05-24.
 - Validacao `supabase/hardening_validation.sql` aprovada em 2026-05-24: todas as linhas retornaram `PASS`, confirmando schema `private`, helpers privados presentes, helpers publicos removidos e `public.set_updated_at()` sem execucao por `anon`/`authenticated`.
-- O warning `auth_leaked_password_protection` exige ajuste manual no painel do Supabase Auth: habilitar protecao contra senhas vazadas.
+- Security Advisor reexecutado em 2026-05-24: `0 errors` e `1 warning` residual confirmado.
+- Warning residual confirmado: `Leaked Password Protection Disabled` em Auth. Ele nao e corrigido por SQL; exige ajuste manual no painel Supabase Auth e, segundo a documentacao oficial Supabase, `Leaked Password Protection` esta disponivel no plano Pro ou superior.
 
 ## Criterio Para Avancar
 
@@ -105,7 +106,7 @@ Somente avancar para Fase 3.1 quando:
 
 ## Proxima Acao
 
-Atualizar o Security Advisor e habilitar `Leaked Password Protection` no painel Supabase Auth.
+Decidir entre manter `Leaked Password Protection Disabled` registrado como pendencia do plano atual ou subir para Supabase Pro e habilitar `Leaked Password Protection` no painel Auth.
 
 ## Regra Para Novos Testes
 

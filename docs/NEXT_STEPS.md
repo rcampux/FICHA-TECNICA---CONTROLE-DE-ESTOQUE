@@ -26,6 +26,7 @@ O projeto esta em fase de prototipo estruturado com Supabase ja conectado em pro
 - Migration de hardening `20260523090000_harden_internal_functions.sql` foi aplicada no Supabase com sucesso.
 - Validacao de hardening aprovada: funcoes publicas internas removidas, helpers privados presentes e `public.set_updated_at()` sem execucao por `anon`/`authenticated`.
 - RLS pos-hardening aprovado para receitas, estoque virtual e estoque fisico entre `r.camposarch@gmail.com` e `r.camposdesign@gmail.com`.
+- Security Advisor reexecutado apos o hardening: `0 errors` e `1 warning` residual confirmado. O warning restante e `Leaked Password Protection Disabled`, que e configuracao de Supabase Auth, nao falha de RLS/schema.
 
 ## Proximo Passo Recomendado
 
@@ -51,9 +52,9 @@ Ordem recomendada:
 1. Concluido: aplicar `supabase/migrations/20260523090000_harden_internal_functions.sql` no Supabase.
 2. Concluido: rodar `supabase/hardening_validation.sql` e confirmar que funcoes publicas antigas sumiram e helpers privados existem.
 3. Concluido: reexecutar o teste de isolamento com os dois usuarios reais.
-4. Em andamento: atualizar o Security Advisor e confirmar que os warnings de funcoes internas sairam.
-5. Habilitar `Leaked Password Protection` no painel Supabase Auth.
-6. Registrar qualquer warning residual antes de iniciar novas features.
+4. Concluido: atualizar o Security Advisor e confirmar que os warnings de funcoes internas sairam.
+5. Pendente operacional: habilitar `Leaked Password Protection` no painel Supabase Auth quando o plano do Supabase permitir.
+6. Concluido: registrar warning residual antes de iniciar novas features.
 
 ### Fase 2.4 - UX Estoque/Receitas Sem Alterar Logica
 
@@ -82,7 +83,7 @@ Ordem recomendada:
 - Usuario fora do workspace nao acessa dados de outro workspace.
 - Service worker nao mostra erro de `addAll` nem cancela assets essenciais.
 - Funcoes internas `SECURITY DEFINER` nao ficam expostas via `/rpc`.
-- `Leaked Password Protection` fica habilitado no Supabase Auth.
+- `Leaked Password Protection` fica habilitado no Supabase Auth antes de producao paga, ou registrado como pendencia do plano atual.
 
 ## Se Tudo Passar
 
