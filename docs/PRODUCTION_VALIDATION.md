@@ -44,7 +44,7 @@ Data da validacao: 2026-05-23.
 ## Query de Apoio
 
 - Use `supabase/production_validation_by_email.sql` para validar usuarios, workspaces, papeis e receitas a partir dos e-mails confirmados.
-- Use `supabase/rls_smoke_test_by_email.sql` para validar isolamento RLS sem copiar UUIDs manualmente.
+- Use `supabase/rls_smoke_test_by_email.sql` para validar isolamento RLS sem copiar UUIDs manualmente; o script retorna uma tabela final consolidada e diagnostica usuario/organizacao ausente sem quebrar por UUID vazio.
 - Use `supabase/category_rls_smoke_test_by_email.sql` para validar isolamento RLS das categorias por workspace.
 - Use `supabase/hardening_validation.sql` para validar se as funcoes internas foram movidas para `private` e se helpers publicos nao ficaram expostos.
 - Alternativa manual: depois de obter `user_id` e `organization_id`, use `supabase/rls_smoke_test.sql`.
