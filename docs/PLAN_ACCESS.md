@@ -30,6 +30,7 @@ Preparar o app para vender assinaturas B2B sem liberar recursos premium apenas p
 - `src/modules/billing/planAccess.js` carrega `subscriptions` + `plans`, aplica fallback Trial e expoe gates de recurso.
 - O scanner de receita ja chama `requireFeature("scanRecipe")` antes de abrir o modal.
 - `supabase/plan_access_validation.sql` valida catalogo, intervalos, assinatura por workspace e limites de scanner.
+- Validacao em producao aprovada: 5 checks `PASS` no Supabase SQL Editor.
 
 ## Regras De Seguranca
 
@@ -40,7 +41,7 @@ Preparar o app para vender assinaturas B2B sem liberar recursos premium apenas p
 
 ## Proxima Etapa
 
-1. Aplicar a migration de planos no Supabase.
-2. Rodar `supabase/plan_access_validation.sql`.
-3. Testar que o scanner abre no Trial/Profissional/Equipe e bloqueia no Essencial.
-4. Criar Edge Function de checkout somente depois que a matriz de planos estiver validada.
+1. Criar Edge Function de checkout/webhook.
+2. Validar plano e status da assinatura server-side antes de liberar recursos premium.
+3. Registrar eventos de pagamento em `subscriptions` e consumo em `feature_usage`.
+4. Testar bloqueio real do scanner por plano antes de ligar OCR/IA paga.
