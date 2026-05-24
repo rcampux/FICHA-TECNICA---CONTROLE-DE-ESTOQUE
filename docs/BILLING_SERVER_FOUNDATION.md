@@ -107,7 +107,11 @@ Recursos aceitos agora:
 - Smoke test aprovado:
   - Segredo invalido retorna `401 invalid_webhook_secret`.
   - Segredo correto com payload incompleto retorna `400 missing_field: provider`.
-- Pendente: testar evento completo de assinatura com `organizationId` real.
+- Evento completo manual aprovado em producao:
+  - Workspace `r.camposdesign` (`5ea1bb39-950d-41cf-a7e8-a002df4f6168`) recebeu evento `subscription.updated`.
+  - Plano aplicado: `professional_monthly`.
+  - Status retornado pela Edge Function: `200 OK`, `active`.
+- Pendente: validar `create-checkout` e `validate-feature-access` com token de usuario logado.
 
 ## Comandos De Deploy Supabase
 
