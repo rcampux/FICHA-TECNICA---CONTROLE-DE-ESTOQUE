@@ -15,6 +15,35 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+<script>
+  (function preBootHotfix() {
+    try {
+      var viewModeKeys = [
+        "fichatec.stock.viewMode",
+        "fichatec.physicalStock.viewMode",
+      ];
+      viewModeKeys.forEach(function (key) {
+        var value = localStorage.getItem(key);
+        if (value === "grid" || value === "list") {
+          localStorage.setItem(key, JSON.stringify(value));
+        }
+      });
+    } catch (error) {
+      console.warn("ViewMode preboot hotfix failed:", error);
+    }
+
+    if (!("serviceWorker" in navigator)) return;
+    navigator.serviceWorker.getRegistrations()
+      .then(function (registrations) {
+        return Promise.all(registrations.map(function (registration) {
+          return registration.unregister();
+        }));
+      })
+      .catch(function (error) {
+        console.warn("SW unregister preboot failed:", error);
+      });
+  })();
+</script>
 <link rel="stylesheet" href="../src/styles/app.css">
 </head>
 <body class="app-booting">
