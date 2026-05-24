@@ -24,6 +24,8 @@ Preparar pagamentos recorrentes sem expor chaves secretas no frontend e sem conf
 
 Todas usam RLS. Leitura segue membership do workspace; gestao exige `owner` ou `admin`. Webhook e atualizacoes reais devem usar Edge Function com service role no ambiente server-side.
 
+Validacao em producao aprovada: 5 checks `PASS` no Supabase SQL Editor.
+
 ## Edge Functions
 
 ### `create-checkout`
@@ -91,6 +93,12 @@ Recursos aceitos agora:
 - `SUPABASE_SERVICE_ROLE_KEY`: secret server-side, nunca vai para frontend.
 - `BILLING_WEBHOOK_SECRET`: segredo proprio do FichaTec para validar webhook.
 - `BILLING_PROVIDER`: opcional; padrao atual `manual`.
+
+## Status Supabase
+
+- Migration de billing aplicada.
+- `supabase/billing_foundation_validation.sql` aprovado com 5 checks `PASS`.
+- Pendente: configurar secrets e fazer deploy das Edge Functions.
 
 ## Comandos De Deploy Supabase
 
