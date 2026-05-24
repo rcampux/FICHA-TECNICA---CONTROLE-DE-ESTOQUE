@@ -22,6 +22,7 @@ O projeto esta em fase de prototipo estruturado com Supabase ja conectado em pro
 - Categorias agora podem ser cadastradas independentemente de produtos e reutilizadas no Estoque Virtual e Fisico; a vinculacao pode acontecer depois editando o produto.
 - Migration e repository de `product_categories` foram preparados para persistir categorias no Supabase por workspace.
 - Migration de categorias foi aplicada no Supabase e a persistencia apos `F5` foi validada em producao.
+- RLS de categorias foi validado em producao: leituras cruzadas entre `r.camposarch@gmail.com` e `r.camposdesign@gmail.com` retornaram `0` e `PASS`.
 
 ## Proximo Passo Recomendado
 
@@ -35,9 +36,10 @@ Ordem recomendada:
 2. Concluido no codigo: criar policies RLS por `organization_members`.
 3. Concluido no codigo: atualizar repository Supabase para carregar/salvar categorias por workspace.
 4. Concluido: aplicar `supabase/migrations/20260524120000_product_categories.sql` no Supabase SQL Editor.
-5. Em andamento: criar uma categoria diferente em cada usuario e revalidar isolamento com `supabase/category_rls_smoke_test_by_email.sql`.
+5. Concluido: criar categoria de teste e revalidar isolamento com `supabase/category_rls_smoke_test_by_email.sql`.
+6. Resultado: Fase 2.5 aprovada.
 
-### Fase 2.3 - Hardening Supabase
+### Proximo Passo - Fase 2.3 Hardening Supabase
 
 Objetivo: remover warnings de seguranca do Supabase antes de avancar para pagamento, IA e recursos premium.
 
