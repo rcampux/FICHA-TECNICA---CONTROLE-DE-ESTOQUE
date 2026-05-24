@@ -39,13 +39,13 @@
 
   async function loadRemote(key, organizationId) {
     const client = await getSupabaseClient();
-    if (!client || !domainRepository || !organizationId) return load(key);
+    if (!client || !domainRepository?.canSyncKey?.(key) || !organizationId) return load(key);
     return domainRepository.loadByKey(client, key, organizationId);
   }
 
   async function saveRemote(key, value, organizationId) {
     const client = await getSupabaseClient();
-    if (!client || !domainRepository || !organizationId) return value;
+    if (!client || !domainRepository?.canSyncKey?.(key) || !organizationId) return value;
     const saved = await domainRepository.saveByKey(client, key, organizationId, value);
     localRepository.save(key, saved);
     return saved;
@@ -53,6 +53,7 @@
 
   function queueRemoteSave(key, value) {
     if (getMode() !== "supabase") return;
+    if (!domainRepository?.canSyncKey?.(key)) return;
     const organizationId = getActiveOrganizationId();
     if (!organizationId) return;
 

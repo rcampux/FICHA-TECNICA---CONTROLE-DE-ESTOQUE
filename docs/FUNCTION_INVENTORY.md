@@ -216,6 +216,7 @@ Este arquivo e um inventario vivo das funcoes utilizadas no projeto. Toda nova f
 | `listRecipes` | `src/services/repositories/supabaseDomainRepository.js` | 298 | Lista receitas remotas com ingredientes. |
 | `saveRecipes` | `src/services/repositories/supabaseDomainRepository.js` | 310 | Salva receitas e ingredientes no Supabase. |
 | `resolveDomain` | `src/services/repositories/supabaseDomainRepository.js` | 342 | Mapeia chave local para funcoes remotas de dominio. |
+| `canSyncKey` | `src/services/repositories/supabaseDomainRepository.js` | 348 | Informa se uma chave local tem dominio remoto seguro antes de tentar sync Supabase. |
 | `loadByKey` | `src/services/repositories/supabaseDomainRepository.js` | 349 | Carrega dominio remoto a partir da chave local. |
 | `saveByKey` | `src/services/repositories/supabaseDomainRepository.js` | 355 | Salva dominio remoto a partir da chave local. |
 | `exposeLocalStorageRepository` | `src/services/repositories/localStorageRepository.js` | 1 | (function exposeLocalStorageRepository() { |

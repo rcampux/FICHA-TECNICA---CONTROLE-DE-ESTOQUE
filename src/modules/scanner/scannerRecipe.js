@@ -205,8 +205,11 @@
       const {totalCost, venda} = calcCosts(mapped, 0);
       const modoPreparo = document.getElementById("scan-modo-preparo").value.trim() || null;
       const observacoes = document.getElementById("scan-obs").value.trim() || null;
+      const index = recipes.findIndex((item) => item.nome.toLowerCase() === nome.toLowerCase());
+      const existingRecipe = index >= 0 ? recipes[index] : null;
       const recipe = {
-        id: Date.now(),
+        id: existingRecipe?.id || Date.now(),
+        remoteId: existingRecipe?.remoteId,
         nome,
         ingredients: mapped,
         rendimento,
@@ -215,13 +218,13 @@
         totalCost,
         venda,
         porcaoSize: 100,
-        createdAt: new Date().toISOString(),
+        createdAt: existingRecipe?.createdAt || new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
         origem: "scan",
         modoPreparo,
         observacoes,
       };
 
-      const index = recipes.findIndex((item) => item.nome.toLowerCase() === nome.toLowerCase());
       if (index >= 0) {
         if (!await confirmAction(`Receita "${nome}" ja existe. Deseja sobrescrever?`, "Sobrescrever receita", "Sim, sobrescrever")) return;
         recipes[index] = recipe;
@@ -229,7 +232,25 @@
         recipes.push(recipe);
       }
 
-      DB.save(STORAGE_KEYS.recipes, recipes);
+      if (DB.saveLocal) DB.saveLocal(STORAGE_KEYS.recipes, recipes);
+      else DB.save(STORAGE_KEYS.recipes, recipes);
+
+      const organizationId = DB.activeOrganizationId?.();
+      if (DB.mode?.() === "supabase" && !organizationId) {
+        showToast("Workspace Supabase ativo nao encontrado.");
+        return;
+      }
+      if (DB.mode?.() === "supabase" && DB.saveRemote && organizationId) {
+        try {
+          const savedRecipes = await DB.saveRemote(STORAGE_KEYS.recipes, recipes, organizationId);
+          if (Array.isArray(savedRecipes)) recipes = savedRecipes;
+        } catch (error) {
+          console.error(error);
+          showToast("Nao foi possivel salvar a receita digitalizada no Supabase.");
+          return;
+        }
+      }
+
       commitState();
       closeModal("modal-scan");
       resetScan();

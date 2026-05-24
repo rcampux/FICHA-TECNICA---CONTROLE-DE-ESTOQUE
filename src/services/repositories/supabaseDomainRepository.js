@@ -361,6 +361,10 @@
     return null;
   }
 
+  function canSyncKey(key) {
+    return Boolean(resolveDomain(key));
+  }
+
   async function loadByKey(client, key, organizationId) {
     const domain = resolveDomain(key);
     if (!domain || !organizationId) return [];
@@ -396,6 +400,7 @@
     savePhysicalStockItems,
     saveRecipes,
     saveStockItems,
+    canSyncKey,
     deleteMissingRecipeIngredients,
     shouldReconcileDeletes,
     softDeleteMissingRows,
