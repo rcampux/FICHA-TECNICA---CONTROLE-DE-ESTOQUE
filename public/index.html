@@ -687,81 +687,79 @@
 <!-- MODAL: ACESSO -->
 <div class="modal-overlay auth-gate auth-mode-login" id="modal-auth">
   <div class="modal auth-modal">
-    <div class="auth-card-content" id="auth-card-content">
-      <div class="modal-handle"></div>
-      <div class="modal-title" id="auth-modal-title">Entrar no FichaTec</div>
-      <div class="auth-state-card" id="auth-state-card">
-        <span class="material-symbols-rounded" id="auth-state-icon">lock_open</span>
-        <div>
-          <strong id="auth-state-title">Prototipo local</strong>
-          <p id="auth-state-description">Seus dados ficam salvos neste navegador enquanto o Supabase nao estiver ligado.</p>
-        </div>
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="auth-modal-title">Entrar no FichaTec</div>
+    <div class="auth-state-card" id="auth-state-card">
+      <span class="material-symbols-rounded">lock_open</span>
+      <div>
+        <strong id="auth-state-title">Prototipo local</strong>
+        <p id="auth-state-description">Seus dados ficam salvos neste navegador enquanto o Supabase nao estiver ligado.</p>
       </div>
+    </div>
 
-      <div class="auth-mode-tabs" id="auth-mode-tabs">
-        <button class="auth-mode-tab active" id="auth-mode-login" data-auth-mode="login" type="button">Entrar</button>
-        <button class="auth-mode-tab" id="auth-mode-signup" data-auth-mode="signup" type="button">Criar conta</button>
+    <div class="auth-mode-tabs" id="auth-mode-tabs">
+      <button class="auth-mode-tab active" id="auth-mode-login" onclick="setAuthMode('login')" type="button">Entrar</button>
+      <button class="auth-mode-tab" id="auth-mode-signup" onclick="setAuthMode('signup')" type="button">Criar conta</button>
+    </div>
+
+    <div id="auth-form-wrap">
+      <div class="input-group">
+        <label class="input-label">E-mail</label>
+        <input type="email" id="auth-email" placeholder="chef@cozinha.com.br" autocomplete="off" autocapitalize="none" spellcheck="false" onkeydown="handleAuthKeydown(event)">
       </div>
-
-      <div id="auth-form-wrap">
-        <div class="input-group">
-          <label class="input-label">E-mail</label>
-          <input type="email" id="auth-email" placeholder="chef@cozinha.com.br" autocomplete="off" autocapitalize="none" spellcheck="false" onkeydown="handleAuthKeydown(event)">
-        </div>
-        <div class="input-group">
-          <label class="input-label">Senha</label>
-          <div class="password-field">
-            <input type="password" id="auth-password" placeholder="Senha forte" autocomplete="new-password" oninput="renderPasswordFeedback()" onkeydown="handleAuthKeydown(event)">
-            <button class="password-toggle" onclick="togglePasswordVisibility()" type="button" aria-label="Mostrar ou ocultar senha">
-              <span class="material-symbols-rounded" id="auth-password-toggle-icon">visibility</span>
-            </button>
-          </div>
-          <div class="password-feedback" id="auth-password-feedback"></div>
-        </div>
-        <div class="auth-action-stack">
-          <button class="btn btn-primary btn-full" id="auth-submit-btn" onclick="submitAuthForm()" type="button">
-            <span class="material-symbols-rounded">login</span> Entrar
-          </button>
-          <button class="btn btn-secondary btn-full" onclick="resendConfirmationEmail()" type="button">
-            <span class="material-symbols-rounded">forward_to_inbox</span> Reenviar confirmacao
+      <div class="input-group">
+        <label class="input-label">Senha</label>
+        <div class="password-field">
+          <input type="password" id="auth-password" placeholder="Senha forte" autocomplete="new-password" oninput="renderPasswordFeedback()" onkeydown="handleAuthKeydown(event)">
+          <button class="password-toggle" onclick="togglePasswordVisibility()" type="button" aria-label="Mostrar ou ocultar senha">
+            <span class="material-symbols-rounded" id="auth-password-toggle-icon">visibility</span>
           </button>
         </div>
+        <div class="password-feedback" id="auth-password-feedback"></div>
       </div>
-
-      <div class="auth-verification-card" id="auth-verification-wrap" style="display:none">
-        <span class="material-symbols-rounded">mark_email_read</span>
-        <strong>Confirme seu e-mail</strong>
-        <p>Enviamos um link para <span id="auth-verification-email"></span>. Abra sua caixa de entrada, confirme a conta e volte para o FichaTec.</p>
-        <div class="auth-action-stack">
-          <button class="btn btn-primary btn-full" onclick="resendConfirmationEmail()" type="button">
-            <span class="material-symbols-rounded">forward_to_inbox</span> Reenviar confirmacao
-          </button>
-          <button class="btn btn-secondary btn-full" onclick="backToAuthForm()" type="button">
-            Voltar para login
-          </button>
-        </div>
-      </div>
-
-      <div id="auth-workspace-wrap" style="display:none">
-        <div class="section-label" style="margin-top:0">Workspace ativo</div>
-        <div id="auth-workspace-list"></div>
-        <div class="auth-action-stack">
-          <button class="btn btn-secondary btn-full" onclick="signOutAuth()" type="button">
-            <span class="material-symbols-rounded">logout</span> Sair
-          </button>
-        </div>
-      </div>
-
-      <div id="auth-local-wrap">
-        <div class="info-banner" style="margin-bottom:var(--s4)">
-          <span class="material-symbols-rounded">database</span>
-          <span>Para ativar login real, configure `window.FICHATEC_ENV.dataMode = "supabase"` com URL e anon key.</span>
-        </div>
-      </div>
-
       <div class="auth-action-stack">
-        <button class="btn btn-secondary btn-full" onclick="closeModal('modal-auth')" type="button">Fechar</button>
+        <button class="btn btn-primary btn-full" id="auth-submit-btn" onclick="submitAuthForm()" type="button">
+          <span class="material-symbols-rounded">login</span> Entrar
+        </button>
+        <button class="btn btn-secondary btn-full" onclick="resendConfirmationEmail()" type="button">
+          <span class="material-symbols-rounded">forward_to_inbox</span> Reenviar confirmacao
+        </button>
       </div>
+    </div>
+
+    <div class="auth-verification-card" id="auth-verification-wrap" style="display:none">
+      <span class="material-symbols-rounded">mark_email_read</span>
+      <strong>Confirme seu e-mail</strong>
+      <p>Enviamos um link para <span id="auth-verification-email"></span>. Abra sua caixa de entrada, confirme a conta e volte para o FichaTec.</p>
+      <div class="auth-action-stack">
+        <button class="btn btn-primary btn-full" onclick="resendConfirmationEmail()" type="button">
+          <span class="material-symbols-rounded">forward_to_inbox</span> Reenviar confirmacao
+        </button>
+        <button class="btn btn-secondary btn-full" onclick="backToAuthForm()" type="button">
+          Voltar para login
+        </button>
+      </div>
+    </div>
+
+    <div id="auth-workspace-wrap" style="display:none">
+      <div class="section-label" style="margin-top:0">Workspace ativo</div>
+      <div id="auth-workspace-list"></div>
+      <div class="auth-action-stack">
+        <button class="btn btn-secondary btn-full" onclick="signOutAuth()" type="button">
+          <span class="material-symbols-rounded">logout</span> Sair
+        </button>
+      </div>
+    </div>
+
+    <div id="auth-local-wrap">
+      <div class="info-banner" style="margin-bottom:var(--s4)">
+        <span class="material-symbols-rounded">database</span>
+        <span>Para ativar login real, configure `window.FICHATEC_ENV.dataMode = "supabase"` com URL e anon key.</span>
+      </div>
+    </div>
+
+    <div class="auth-action-stack">
+      <button class="btn btn-secondary btn-full" onclick="closeModal('modal-auth')" type="button">Fechar</button>
     </div>
   </div>
 </div>

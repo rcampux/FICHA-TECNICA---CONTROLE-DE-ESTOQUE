@@ -46,12 +46,7 @@ Este arquivo e um inventario vivo das funcoes utilizadas no projeto. Toda nova f
 | `getPasswordValidation` | `src/modules/auth/authSession.js` | 62 | Valida requisitos de senha forte para criacao de conta. |
 | `isStrongPassword` | `src/modules/auth/authSession.js` | 73 | Confirma se todos os requisitos de senha forte foram atendidos. |
 | `ensureSupabaseClient` | `src/modules/auth/authSession.js` | 79 | Recria ou retorna o client Supabase para login/cadastro mesmo quando o boot de sessao demorou. |
-| `syncAuthModeTabs` | `src/modules/auth/authSession.js` | 122 | Sincroniza visualmente a aba ativa de login/cadastro antes e depois do flip. |
-| `bindAuthModeTabs` | `src/modules/auth/authSession.js` | 128 | Vincula delegacao de clique em captura aos botoes Entrar/Criar conta para garantir troca de modo sem depender de `onclick` inline. |
-| `applyAuthMode` | `src/modules/auth/authSession.js` | 139 | Aplica o modo de autenticacao ativo sem acoplar a atualizacao de estado a animacao visual. |
-| `resetAuthCardFlip` | `src/modules/auth/authSession.js` | 148 | Limpa timers, animacoes, classes e altura travada do card para evitar travamento ou flicker entre trocas de modo. |
-| `runAuthFlipStep` | `src/modules/auth/authSession.js` | 173 | Executa uma metade do flip via Web Animations API para tornar a rotacao visivel e deterministica no desktop. |
-| `animateAuthCardFlip` | `src/modules/auth/authSession.js` | 183 | Executa flip 3D em duas fases, troca o conteudo no meio da rotacao e ajusta altura com fallback por CSS/timer. |
+| `animateAuthCardFlip` | `src/modules/auth/authSession.js` | 117 | Aplica feedback visual de flip no card ao alternar entre login e criacao de conta. |
 | `showInitialUserScreen` | `src/modules/auth/authSession.js` | 77 | Fecha o modal de acesso e retorna para a tela inicial do usuario apos login. |
 | `handleAuthKeydown` | `src/modules/auth/authSession.js` | 84 | Submete login/cadastro ao pressionar Enter nos campos de acesso. |
 | `clearAuthInputs` | `src/modules/auth/authSession.js` | 90 | Limpa campos sensiveis do formulario de acesso e restaura o campo de senha. |

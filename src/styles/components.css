@@ -573,8 +573,6 @@ textarea:focus {
   backdrop-filter: none;
   overflow-y: auto;
   padding: clamp(18px, 4vw, 48px);
-  perspective: 1200px;
-  perspective-origin: center;
 }
 
 .modal {
@@ -588,33 +586,9 @@ textarea:focus {
   width: min(100%, 640px);
 }
 
-#modal-stock,
-#modal-pstock {
-  align-items: center;
-  overflow-y: auto;
-  overscroll-behavior: contain;
-  padding:
-    max(16px, env(safe-area-inset-top))
-    16px
-    max(16px, env(safe-area-inset-bottom));
-}
-
-#modal-stock .modal,
-#modal-pstock .modal {
-  max-height: calc(100dvh - max(32px, env(safe-area-inset-top)) - max(32px, env(safe-area-inset-bottom)));
-  overflow-y: auto;
-  padding-bottom: calc(28px + env(safe-area-inset-bottom));
-  overscroll-behavior: contain;
-  -webkit-overflow-scrolling: touch;
-}
-
 .auth-modal {
-  --auth-flip-angle: 86deg;
   gap: var(--s4);
   max-width: 760px;
-  backface-visibility: hidden;
-  overflow: visible;
-  position: relative;
   transform-origin: center;
   transform-style: preserve-3d;
   width: min(100%, 760px);
@@ -624,170 +598,45 @@ textarea:focus {
   border: 1px solid color-mix(in srgb, var(--md-sys-color-primary-container) 38%, transparent);
   box-shadow: 0 28px 80px rgba(43, 18, 10, 0.28);
   max-width: 560px;
-  transition:
-    background-color 240ms ease,
-    border-color 240ms ease,
-    box-shadow 240ms ease,
-    height 300ms cubic-bezier(0.4, 0, 0.2, 1),
-    min-height 300ms cubic-bezier(0.4, 0, 0.2, 1);
   width: min(100%, 560px);
 }
 
-.auth-modal::after {
-  backface-visibility: hidden;
-  background: inherit;
-  border-radius: inherit;
-  content: "";
-  inset: 0;
-  pointer-events: none;
-  position: absolute;
-  transform: rotateY(180deg) translateZ(1px);
-}
-
-.auth-card-content {
-  backface-visibility: hidden;
-  display: grid;
-  gap: var(--s4);
-  position: relative;
-  transform: translateZ(1px);
-  transform-style: preserve-3d;
-  transition:
-    opacity 230ms cubic-bezier(0.4, 0, 0.2, 1),
-    transform 230ms cubic-bezier(0.4, 0, 0.2, 1);
-  z-index: 1;
-}
-
-.auth-card-content.auth-content-out {
-  opacity: 0;
-  transform: translateZ(1px) scale(0.985);
-}
-
-.auth-card-content.auth-content-in {
-  animation: authContentIn 330ms cubic-bezier(0.4, 0, 0.2, 1) both;
-}
-
-#modal-auth.auth-mode-signup .auth-modal {
-  background:
-    linear-gradient(
-      135deg,
-      color-mix(in srgb, var(--md-sys-color-tertiary-container) 18%, transparent),
-      transparent 42%
-    ),
-    var(--md-sys-color-surface);
-  border-color: color-mix(in srgb, var(--md-sys-color-tertiary) 24%, var(--md-sys-color-outline-variant));
-}
-
-#modal-auth.auth-mode-login .auth-modal {
-  background:
-    linear-gradient(
-      135deg,
-      color-mix(in srgb, var(--md-sys-color-primary-container) 14%, transparent),
-      transparent 44%
-    ),
-    var(--md-sys-color-surface);
-}
-
-#modal-auth.auth-mode-signup .auth-modal::before,
-#modal-auth.auth-mode-login .auth-modal::before {
-  border-radius: 0 0 10px 0;
-  content: "";
-  height: 4px;
-  left: 0;
-  opacity: 0.92;
-  pointer-events: none;
-  position: absolute;
-  top: 0;
-  transition: background-color 220ms ease;
-  width: 100%;
-  z-index: 2;
-}
-
-#modal-auth.auth-mode-login .auth-modal::before {
-  background: color-mix(in srgb, var(--md-sys-color-primary) 82%, #fff 18%);
-}
-
-#modal-auth.auth-mode-signup .auth-modal::before {
-  background: color-mix(in srgb, var(--md-sys-color-tertiary) 82%, #fff 18%);
-}
-
-#modal-auth.auth-gate .auth-card-content > .auth-action-stack:last-child {
+#modal-auth.auth-gate .auth-modal > .auth-action-stack:last-child {
   display: none;
 }
 
 #modal-auth.auth-gate .modal-title {
   font-size: 22px;
   letter-spacing: 0;
-  transition: opacity 180ms ease, transform 180ms ease;
-}
-
-#modal-auth.auth-mode-signup .modal-title {
-  color: var(--md-sys-color-on-tertiary-container);
 }
 
 .auth-modal.auth-card-flip {
+  animation: authCardFlip 500ms cubic-bezier(0.2, 0, 0, 1);
   will-change: transform, opacity;
 }
 
-.auth-modal.auth-card-flip-login {
-  --auth-flip-angle: 90deg;
-}
-
-.auth-modal.auth-card-flip-signup {
-  --auth-flip-angle: -90deg;
-}
-
-.auth-modal.auth-card-flip-out {
-  animation: authCardFlipOut 330ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
-}
-
-.auth-modal.auth-card-flip-in {
-  animation: authCardFlipIn 330ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
-}
-
-@keyframes authCardFlipOut {
+@keyframes authCardFlip {
   0% {
     opacity: 1;
-    transform: rotateY(0deg) translateY(0) scale(1);
+    transform: perspective(1100px) rotateY(0deg) scale(1);
   }
-  100% {
-    opacity: 0.98;
-    transform: rotateY(var(--auth-flip-angle)) translateY(-1px) scale(0.992);
+  44% {
+    opacity: 0.72;
+    transform: perspective(1100px) rotateY(82deg) scale(0.985);
   }
-}
-
-@keyframes authCardFlipIn {
-  0% {
-    opacity: 0.98;
-    transform: rotateY(calc(var(--auth-flip-angle) * -1)) translateY(-1px) scale(0.992);
+  56% {
+    opacity: 0.72;
+    transform: perspective(1100px) rotateY(-82deg) scale(0.985);
   }
   100% {
     opacity: 1;
-    transform: rotateY(0deg) translateY(0) scale(1);
-  }
-}
-
-@keyframes authContentIn {
-  0% {
-    opacity: 0;
-    transform: translateZ(1px) scale(0.985);
-  }
-  100% {
-    opacity: 1;
-    transform: translateZ(1px) scale(1);
+    transform: perspective(1100px) rotateY(0deg) scale(1);
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .auth-modal.auth-card-flip,
-  .auth-modal.auth-card-flip-out,
-  .auth-modal.auth-card-flip-in,
-  .auth-card-content.auth-content-in {
+  .auth-modal.auth-card-flip {
     animation: none;
-  }
-
-  .auth-card-content,
-  #modal-auth.auth-gate .auth-modal {
-    transition: none;
   }
 }
 
@@ -800,25 +649,10 @@ textarea:focus {
   gap: 12px;
   margin-bottom: var(--s4);
   padding: 14px;
-  transition:
-    background-color 220ms ease,
-    border-color 220ms ease,
-    transform 220ms ease;
-}
-
-#modal-auth.auth-mode-signup .auth-state-card {
-  background: color-mix(in srgb, var(--md-sys-color-tertiary-container) 46%, var(--md-sys-color-surface));
-  border-color: color-mix(in srgb, var(--md-sys-color-tertiary) 28%, transparent);
 }
 
 .auth-state-card .material-symbols-rounded {
   color: var(--md-sys-color-primary);
-  transition: color 220ms ease, transform 220ms ease;
-}
-
-#modal-auth.auth-mode-signup .auth-state-card .material-symbols-rounded {
-  color: var(--md-sys-color-tertiary);
-  transform: rotate(-5deg) scale(1.08);
 }
 
 .auth-state-card strong {
@@ -844,7 +678,6 @@ textarea:focus {
   grid-template-columns: 1fr 1fr;
   margin-bottom: var(--s4);
   padding: 4px;
-  position: relative;
 }
 
 .auth-mode-tab {
@@ -856,16 +689,6 @@ textarea:focus {
   font-size: 13px;
   font-weight: 800;
   min-height: 38px;
-  position: relative;
-  transition:
-    background-color 220ms ease,
-    color 220ms ease,
-    transform 220ms ease;
-  z-index: 1;
-}
-
-.auth-mode-tab:active {
-  transform: scale(0.98);
 }
 
 .auth-mode-tab.active {
@@ -1163,24 +986,6 @@ textarea:focus {
 
   .page-hero {
     padding-top: 8px;
-  }
-}
-
-@media (max-width: 767px) {
-  #modal-stock,
-  #modal-pstock {
-    align-items: flex-end;
-    padding:
-      12px
-      12px
-      calc(92px + env(safe-area-inset-bottom));
-  }
-
-  #modal-stock .modal,
-  #modal-pstock .modal {
-    border-radius: var(--md-sys-shape-corner-extra-large);
-    max-height: calc(100dvh - 118px);
-    padding-bottom: calc(116px + env(safe-area-inset-bottom));
   }
 }
 
