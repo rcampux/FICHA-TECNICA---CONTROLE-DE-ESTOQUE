@@ -111,7 +111,17 @@ Recursos aceitos agora:
   - Workspace `r.camposdesign` (`5ea1bb39-950d-41cf-a7e8-a002df4f6168`) recebeu evento `subscription.updated`.
   - Plano aplicado: `professional_monthly`.
   - Status retornado pela Edge Function: `200 OK`, `active`.
-- Pendente: validar `create-checkout` e `validate-feature-access` com token de usuario logado.
+- `validate-feature-access` aprovado em producao com token do usuario `r.camposdesign@gmail.com`:
+  - `scanRecipe` retornou `allowed: true`.
+  - Plano retornado: `professional_monthly`.
+  - Assinatura retornada: `active`.
+  - Limite retornado: `100`.
+- `create-checkout` aprovado em producao com token do usuario `r.camposdesign@gmail.com`:
+  - Plano solicitado: `team_monthly`.
+  - Resposta: `200 OK`.
+  - Modo: `gateway_pending`.
+  - Sessao criada em `checkout_sessions`.
+- Pendente: escolher gateway real e substituir o modo `gateway_pending` pela criacao real de checkout/assinatura.
 
 ## Comandos De Deploy Supabase
 

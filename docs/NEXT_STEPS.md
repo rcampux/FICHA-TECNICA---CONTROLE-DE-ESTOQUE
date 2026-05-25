@@ -33,6 +33,8 @@ O projeto esta em fase de prototipo estruturado com Supabase ja conectado em pro
 - `supabase/config.toml` versiona a regra de seguranca das Edge Functions: `billing-webhook` aceita chamada externa sem JWT e valida o segredo proprio; `create-checkout` e `validate-feature-access` continuam exigindo JWT de usuario logado.
 - Smoke test da `billing-webhook` aprovado em producao: segredo invalido retorna `invalid_webhook_secret`; segredo correto entra na funcao e valida campos obrigatorios.
 - Evento completo manual da `billing-webhook` aprovado em producao para `r.camposdesign@gmail.com`, aplicando `professional_monthly` com status `active`.
+- `validate-feature-access` aprovado em producao para `scanRecipe`: plano `professional_monthly`, assinatura `active`, limite `100`, `allowed: true`.
+- `create-checkout` aprovado em producao para `team_monthly`: sessao criada com `mode=gateway_pending`.
 
 ## Proximo Passo Recomendado
 
@@ -104,7 +106,7 @@ Objetivo: preparar assinatura B2B antes de conectar gateway de pagamento real.
 7. Concluido no Supabase: aplicar `supabase/migrations/20260524190000_billing_server_foundation.sql`.
 8. Concluido no Supabase: rodar `supabase/billing_foundation_validation.sql` com 5 checks `PASS`.
 9. Concluido no Supabase: configurar `BILLING_WEBHOOK_SECRET`, `BILLING_PROVIDER=manual` e fazer deploy das Edge Functions.
-10. Proximo: validar `create-checkout`/`validate-feature-access` com usuario logado e depois escolher gateway real para conectar API/assinatura/webhook assinado.
+10. Proximo: escolher gateway real para conectar API de checkout, assinatura recorrente e webhook assinado.
 
 Depois disso, seguir o fatiamento de `docs/STOCK_RECIPES_FEATURE_SPEC.md` para categorias, nutricao, validade/lote e dashboards.
 
