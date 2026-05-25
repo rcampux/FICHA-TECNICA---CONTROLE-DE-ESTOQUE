@@ -561,11 +561,21 @@
       const now=new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
       const criado=new Date(r.createdAt).toLocaleDateString('pt-BR');
       const changed=hasPriceChanged(r.ingredients);
+      const nutritionSummary=getRecipeNutritionSummary(r);
       const rows=ingredients.map(i=>`<tr>
         <td style="padding:10px 12px;border-bottom:1px solid #F0F0F0;font-size:13px;font-weight:500">${i.name}</td>
         <td style="padding:10px 12px;border-bottom:1px solid #F0F0F0;font-size:12px;color:#717171;font-family:monospace">${i.qtyBruta.toFixed(0)}${i.unit==='ml'?'ml':'g'}</td>
         <td style="padding:10px 12px;border-bottom:1px solid #F0F0F0;font-size:12px;color:#27AE60;font-family:monospace;font-weight:700;text-align:right">${fmtBRL(i.cost)}</td>
       </tr>`).join('');
+      const nutritionRows=nutritionFields.map(([key,label,unit,dailyValue])=>{
+        const value=readNumericValue(nutritionSummary.nutrition[key],0);
+        const pct=dailyValue?`${Math.round((value/dailyValue)*100)}%`:'-';
+        return`<tr>
+          <td>${label}</td>
+          <td>${formatNutritionValue(value,unit)}</td>
+          <td>${pct}</td>
+        </tr>`;
+      }).join('');
       const html=`<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><title>Ficha — ${r.nome}</title>
       <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
       <style>
@@ -586,6 +596,12 @@
         thead tr{background:#F7F7F7}
         th{padding:10px 12px;text-align:left;font-size:11px;font-weight:700;color:#717171;text-transform:uppercase;letter-spacing:0.5px}
         th:last-child{text-align:right}
+        .section-title{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:0.7px;color:#717171;margin:22px 0 8px}
+        .nutrition-report{margin-bottom:18px;page-break-inside:avoid}
+        .nutrition-report td{padding:9px 12px;border-bottom:1px solid #F0F0F0;font-size:12px;color:#3E3E3E}
+        .nutrition-report td:nth-child(2){font-family:'Roboto Mono',monospace;font-weight:700;text-align:right}
+        .nutrition-report td:last-child{font-family:'Roboto Mono',monospace;text-align:right;color:#4A7745}
+        .nutrition-report tr:last-child td{border-bottom:none}
         tfoot td{padding:10px 12px;font-size:13px;font-weight:800;border-top:2px solid #E0E0E0;background:#F7F7F7}
         tfoot td:last-child{text-align:right;color:#27AE60;font-family:'Roboto Mono',monospace}
         footer{margin-top:28px;padding-top:12px;border-top:1px solid #E0E0E0;display:flex;justify-content:space-between;font-size:11px;color:#BDBDBD}
@@ -615,6 +631,12 @@
         <div class="si"><div class="sl">Por Porcao</div><div class="sv">${fmtBRL(totalCost/porcoes)}</div></div>
         <div class="si"><div class="sl">Markup</div><div class="sv">${r.markup||0}%</div></div>
       </div>
+      <div class="section-title">Nutricao por ${nutritionSummary.portion}g</div>
+      <table class="nutrition-report">
+        <thead><tr><th>Nutriente</th><th style="text-align:right">Valor</th><th style="text-align:right">%VD</th></tr></thead>
+        <tbody>${nutritionRows}</tbody>
+      </table>
+      <div class="section-title">Ingredientes</div>
       <table><thead><tr><th>Ingrediente</th><th>Quantidade</th><th style="text-align:right">Custo</th></tr></thead>
       <tbody>${rows}</tbody>
       <tfoot><tr><td colspan="2">Total</td><td>${fmtBRL(totalCost)}</td></tr></tfoot></table>

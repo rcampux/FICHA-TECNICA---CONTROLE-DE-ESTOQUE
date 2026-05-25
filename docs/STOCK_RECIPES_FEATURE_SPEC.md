@@ -177,7 +177,8 @@ Adicionar no cadastro do produto fisico:
 - Concluido no codigo: consolidar tabela nutricional por 100g no estoque virtual.
 - Concluido no codigo: adicionar porcao customizavel e recalculo proporcional no modal de produto virtual.
 - Concluido no codigo: refinar calculo da ficha tecnica usando valores nutricionais, rendimento e porcao.
-- Proximo: validar com receitas reais e ajustar UX de exibicao nutricional nos PDFs/relatorios.
+- Concluido no codigo: incluir tabela nutricional por porcao no PDF da ficha tecnica.
+- Proximo: validar com receitas reais e ajustar UX de relatorios avancados.
 
 ### Fase D - Analytics
 

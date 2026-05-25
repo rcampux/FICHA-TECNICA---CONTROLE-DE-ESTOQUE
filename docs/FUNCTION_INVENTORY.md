@@ -133,7 +133,7 @@ Este arquivo e um inventario vivo das funcoes utilizadas no projeto. Toda nova f
 | `editRecipe` | `src/modules/recipes/recipeSheet.js` | 343 | Define a receita atual e carrega seus dados na ficha tecnica para edicao. |
 | `deleteRecipe` | `src/modules/recipes/recipeSheet.js` | 347 | Define a receita atual e reaproveita o fluxo existente de exclusao. |
 | `loadRecipeToFicha` | `src/modules/recipes/recipeSheet.js` | 337 | function loadRecipeToFicha(){ |
-| `exportRecipePDF` | `src/modules/recipes/recipeSheet.js` | 350 | function exportRecipePDF(id){ |
+| `exportRecipePDF` | `src/modules/recipes/recipeSheet.js` | 557 | Exporta a ficha tecnica em HTML imprimivel/PDF com resumo financeiro, tabela nutricional por porcao e ingredientes. |
 | `runWithState` | `src/modules/recipes/recipeSheet.js` | 425 | function runWithState(fn, options = {}) { |
 | `wrappedRecipeFunction` | `src/modules/recipes/recipeSheet.js` | 427 | return function wrappedRecipeFunction(...args) { |
 | `getActiveIngredientFilter` | `src/modules/recipes/recipeSheet.js` | 435 | function getActiveIngredientFilter() { return activeIngFilter; } |
