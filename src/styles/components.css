@@ -534,6 +534,58 @@ textarea:focus {
   font-size: 20px;
 }
 
+.nutrition-preview {
+  background: color-mix(in srgb, var(--md-sys-color-tertiary-container) 30%, var(--md-sys-color-surface-container-lowest));
+  border: 1px solid color-mix(in srgb, var(--md-sys-color-tertiary) 18%, var(--md-sys-color-outline-variant));
+  border-radius: var(--md-sys-shape-corner-large);
+  display: grid;
+  gap: 10px;
+  margin-top: 8px;
+  padding: 12px;
+}
+
+.nutrition-preview:empty {
+  display: none;
+}
+
+.nutrition-preview-head {
+  color: var(--md-sys-color-on-surface);
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1.25;
+}
+
+.nutrition-preview-grid {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.nutrition-preview-grid span {
+  background: var(--md-sys-color-surface-container-lowest);
+  border: 1px solid color-mix(in srgb, var(--md-sys-color-outline-variant) 74%, transparent);
+  border-radius: var(--md-sys-shape-corner-medium);
+  color: var(--md-sys-color-on-surface-variant);
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1.25;
+  padding: 8px;
+}
+
+.nutrition-preview-grid strong,
+.nutrition-preview-grid small {
+  display: block;
+}
+
+.nutrition-preview-grid strong {
+  color: var(--md-sys-color-on-surface);
+  font-size: 12px;
+}
+
+.nutrition-preview-grid small {
+  margin-top: 2px;
+}
+
 .search-bar input {
   background: var(--md-sys-color-surface-container);
   color: var(--md-sys-color-on-surface);
@@ -986,6 +1038,10 @@ textarea:focus {
     height: 40px;
     min-width: 40px;
     width: 40px;
+  }
+
+  .nutrition-preview-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 

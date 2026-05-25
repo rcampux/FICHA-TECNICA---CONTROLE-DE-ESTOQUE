@@ -18,6 +18,11 @@
     return item?.remoteId || (typeof item?.id === "string" && item.id.includes("-") ? item.id : null);
   }
 
+  function getNutritionRawPayload(row) {
+    const payload = row?.raw_payload;
+    return payload && typeof payload === "object" && !Array.isArray(payload) ? payload : {};
+  }
+
   function mapNutritionToRemote(nutrition = {}, organizationId, productName) {
     return {
       organization_id: organizationId,
@@ -30,19 +35,28 @@
       fat_g: normalizeNumber(nutrition.fat),
       fiber_g: normalizeNumber(nutrition.fiber),
       sodium_mg: normalizeNumber(nutrition.sodium),
-      raw_payload: nutrition || {},
+      raw_payload: {
+        ...(nutrition || {}),
+        portionSize: normalizeNumber(nutrition.portionSize, 100),
+        satFat: normalizeNumber(nutrition.satFat, 0),
+        transFat: normalizeNumber(nutrition.transFat, 0),
+      },
     };
   }
 
   function mapNutritionFromRemote(row) {
     if (!row) return null;
+    const rawPayload = getNutritionRawPayload(row);
     return {
       kcal: normalizeNumber(row.kcal),
       carb: normalizeNumber(row.carb_g),
       prot: normalizeNumber(row.protein_g),
       fat: normalizeNumber(row.fat_g),
+      satFat: normalizeNumber(rawPayload.satFat, null),
+      transFat: normalizeNumber(rawPayload.transFat, null),
       fiber: normalizeNumber(row.fiber_g),
       sodium: normalizeNumber(row.sodium_mg),
+      portionSize: normalizeNumber(rawPayload.portionSize, 100),
     };
   }
 
@@ -456,6 +470,7 @@
     centsFromCurrency,
     currencyFromCents,
     getRemoteId,
+    getNutritionRawPayload,
     listPhysicalStockItems,
     listRecipes,
     listStockItems,

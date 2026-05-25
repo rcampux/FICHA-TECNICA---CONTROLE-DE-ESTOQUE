@@ -456,23 +456,32 @@
       </div>
     </div>
     <div class="divider"></div>
-    <div style="font-size:14px;font-weight:700;margin-bottom:4px;color:var(--n900)">Tabela Nutricional <span style="font-weight:400;color:var(--n600);font-size:12px">(por 100g)</span></div>
-    <div style="font-size:12px;color:var(--n600);margin-bottom:var(--s3);line-height:1.5">Preencha os valores do rótulo. Se vazio, o app usa estimativas.</div>
+    <div style="font-size:14px;font-weight:700;margin-bottom:4px;color:var(--n900)">Tabela Nutricional <span style="font-weight:400;color:var(--n600);font-size:12px">(base por 100g)</span></div>
+    <div style="font-size:12px;color:var(--n600);margin-bottom:var(--s3);line-height:1.5">Preencha os valores do rotulo. A porcao abaixo recalcula a exibicao sem alterar a base por 100g.</div>
     <a id="google-search-link" href="#" target="_blank" class="google-search-btn" onclick="handleGoogleSearch(event)">
       <span class="material-symbols-rounded">open_in_new</span> Pesquisar no Google
     </a>
     <div class="input-row cols-2" style="margin-top:var(--s4)">
-      <div class="input-group"><label class="input-label">Calorias (kcal)</label><input type="number" id="nut-kcal" placeholder="Ex: 364"></div>
-      <div class="input-group"><label class="input-label">Carboidratos (g)</label><input type="number" id="nut-carb" placeholder="Ex: 76"></div>
+      <div class="input-group"><label class="input-label">Porcao para exibicao (g/ml)</label><input type="number" id="nut-portion-size" placeholder="Ex: 30" value="100" oninput="updateNutritionPreview()"></div>
+      <div class="input-group"><label class="input-label">Base nutricional</label><input type="text" value="Valores informados por 100g" disabled></div>
     </div>
     <div class="input-row cols-2">
-      <div class="input-group"><label class="input-label">Proteínas (g)</label><input type="number" id="nut-prot" placeholder="Ex: 10"></div>
-      <div class="input-group"><label class="input-label">Gorduras (g)</label><input type="number" id="nut-fat" placeholder="Ex: 1.2"></div>
+      <div class="input-group"><label class="input-label">Calorias (kcal)</label><input type="number" id="nut-kcal" placeholder="Ex: 364" oninput="updateNutritionPreview()"></div>
+      <div class="input-group"><label class="input-label">Carboidratos (g)</label><input type="number" id="nut-carb" placeholder="Ex: 76" oninput="updateNutritionPreview()"></div>
     </div>
     <div class="input-row cols-2">
-      <div class="input-group"><label class="input-label">Fibras (g)</label><input type="number" id="nut-fiber" placeholder="Ex: 2.7"></div>
-      <div class="input-group"><label class="input-label">Sódio (mg)</label><input type="number" id="nut-sodium" placeholder="Ex: 2"></div>
+      <div class="input-group"><label class="input-label">Proteinas (g)</label><input type="number" id="nut-prot" placeholder="Ex: 10" oninput="updateNutritionPreview()"></div>
+      <div class="input-group"><label class="input-label">Gorduras totais (g)</label><input type="number" id="nut-fat" placeholder="Ex: 1.2" oninput="updateNutritionPreview()"></div>
     </div>
+    <div class="input-row cols-2">
+      <div class="input-group"><label class="input-label">Gordura saturada (g)</label><input type="number" id="nut-sat-fat" placeholder="Ex: 0.3" oninput="updateNutritionPreview()"></div>
+      <div class="input-group"><label class="input-label">Gordura trans (g)</label><input type="number" id="nut-trans-fat" placeholder="Ex: 0" oninput="updateNutritionPreview()"></div>
+    </div>
+    <div class="input-row cols-2">
+      <div class="input-group"><label class="input-label">Fibras (g)</label><input type="number" id="nut-fiber" placeholder="Ex: 2.7" oninput="updateNutritionPreview()"></div>
+      <div class="input-group"><label class="input-label">Sodio (mg)</label><input type="number" id="nut-sodium" placeholder="Ex: 2" oninput="updateNutritionPreview()"></div>
+    </div>
+    <div class="nutrition-preview" id="nutrition-portion-preview"></div>
     <div style="display:flex;gap:var(--s2);margin-top:var(--s5)">
       <button class="btn btn-secondary" style="flex:1" onclick="closeModal('modal-stock')" type="button">Cancelar</button>
       <button class="btn btn-primary" style="flex:1" onclick="saveStock()" type="button">

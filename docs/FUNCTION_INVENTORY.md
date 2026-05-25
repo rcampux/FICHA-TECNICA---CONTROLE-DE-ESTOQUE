@@ -194,6 +194,14 @@ Este arquivo e um inventario vivo das funcoes utilizadas no projeto. Toda nova f
 | `toggleStockCategoryPanel` | `src/modules/stock/virtualStock.js` | 67 | Abre ou fecha o painel de categorias do estoque virtual. |
 | `toggleStockCategoryFilter` | `src/modules/stock/virtualStock.js` | 75 | Alterna uma categoria no filtro multi-selecao do estoque virtual. |
 | `clearStockCategoryFilters` | `src/modules/stock/virtualStock.js` | 85 | Limpa filtros de categoria aplicados ao estoque virtual. |
+| `readNumberInput` | `src/modules/stock/virtualStock.js` | 49 | Le campos numericos do modal de estoque virtual com fallback seguro. |
+| `writeNumberInput` | `src/modules/stock/virtualStock.js` | 57 | Preenche campos numericos do modal sem gravar valores invalidos. |
+| `getNutritionPortionSize` | `src/modules/stock/virtualStock.js` | 63 | Resolve a porcao customizada usada para exibicao proporcional da tabela nutricional. |
+| `scaleNutritionForPortion` | `src/modules/stock/virtualStock.js` | 68 | Recalcula valores nutricionais da base por 100g para a porcao escolhida. |
+| `formatNutritionMetric` | `src/modules/stock/virtualStock.js` | 82 | Formata numeros nutricionais com unidade curta para o preview. |
+| `readNutritionFromForm` | `src/modules/stock/virtualStock.js` | 88 | Coleta tabela nutricional completa do modal, incluindo porcao, gordura saturada e trans. |
+| `writeNutritionToForm` | `src/modules/stock/virtualStock.js` | 102 | Restaura tabela nutricional no modal ao editar produto virtual. |
+| `updateNutritionPreview` | `src/modules/stock/virtualStock.js` | 114 | Renderiza preview proporcional da nutricao conforme a porcao informada. |
 | `openStockModal` | `src/modules/stock/virtualStock.js` | 94 | function openStockModal(id=null){ |
 | `updateGoogleLink` | `src/modules/stock/virtualStock.js` | 116 | function updateGoogleLink(){ |
 | `handleGoogleSearch` | `src/modules/stock/virtualStock.js` | 121 | function handleGoogleSearch(e){const h=document.getElementById('google-search-link').href;if(!h\|\|h==='#'){e.preventDefault();return;}window.open(h,'_blank');e |
@@ -226,8 +234,9 @@ Este arquivo e um inventario vivo das funcoes utilizadas no projeto. Toda nova f
 | `centsFromCurrency` | `src/services/repositories/supabaseDomainRepository.js` | 9 | Converte valores em reais para centavos inteiros. |
 | `currencyFromCents` | `src/services/repositories/supabaseDomainRepository.js` | 13 | Converte centavos do banco para reais no app. |
 | `getRemoteId` | `src/services/repositories/supabaseDomainRepository.js` | 17 | Resolve o identificador remoto sem quebrar IDs locais do prototipo. |
-| `mapNutritionToRemote` | `src/services/repositories/supabaseDomainRepository.js` | 21 | Converte nutricao do app para `nutrition_facts`. |
-| `mapNutritionFromRemote` | `src/services/repositories/supabaseDomainRepository.js` | 37 | Converte `nutrition_facts` para o formato usado no app. |
+| `getNutritionRawPayload` | `src/services/repositories/supabaseDomainRepository.js` | 21 | Recupera campos nutricionais extras salvos em `nutrition_facts.raw_payload`. |
+| `mapNutritionToRemote` | `src/services/repositories/supabaseDomainRepository.js` | 26 | Converte nutricao do app para `nutrition_facts`, preservando porcao e gorduras extras em `raw_payload`. |
+| `mapNutritionFromRemote` | `src/services/repositories/supabaseDomainRepository.js` | 47 | Converte `nutrition_facts` para o formato usado no app, incluindo extras de `raw_payload`. |
 | `shouldReconcileDeletes` | `src/services/repositories/supabaseDomainRepository.js` | 49 | Define quando e seguro reconciliar exclusoes remotas, incluindo snapshot vazio ja hidratado. |
 | `softDeleteMissingRows` | `src/services/repositories/supabaseDomainRepository.js` | 53 | Marca como deletadas linhas remotas ausentes do snapshot local seguro, inclusive quando todos os itens foram removidos. |
 | `deleteMissingRecipeIngredients` | `src/services/repositories/supabaseDomainRepository.js` | 73 | Remove ingredientes remotos ausentes da receita sincronizada, inclusive quando a lista fica vazia. |

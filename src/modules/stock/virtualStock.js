@@ -46,6 +46,91 @@
         .replace(/>/g, "&gt;");
     }
 
+    function readNumberInput(id, fallback = null) {
+      const element = document.getElementById(id);
+      const rawValue = element?.value?.trim();
+      if (rawValue === "" || rawValue === undefined) return fallback;
+      const number = Number(rawValue);
+      return Number.isFinite(number) ? number : fallback;
+    }
+
+    function writeNumberInput(id, value) {
+      const element = document.getElementById(id);
+      if (!element) return;
+      element.value = value === null || value === undefined ? "" : value;
+    }
+
+    function getNutritionPortionSize(nutrition = {}) {
+      const portionSize = Number(nutrition.portionSize);
+      return Number.isFinite(portionSize) && portionSize > 0 ? portionSize : 100;
+    }
+
+    function scaleNutritionForPortion(nutrition = {}, portionSize = getNutritionPortionSize(nutrition)) {
+      const factor = portionSize / 100;
+      return {
+        kcal: nutrition.kcal == null ? null : nutrition.kcal * factor,
+        carb: nutrition.carb == null ? null : nutrition.carb * factor,
+        prot: nutrition.prot == null ? null : nutrition.prot * factor,
+        fat: nutrition.fat == null ? null : nutrition.fat * factor,
+        satFat: nutrition.satFat == null ? null : nutrition.satFat * factor,
+        transFat: nutrition.transFat == null ? null : nutrition.transFat * factor,
+        fiber: nutrition.fiber == null ? null : nutrition.fiber * factor,
+        sodium: nutrition.sodium == null ? null : nutrition.sodium * factor,
+      };
+    }
+
+    function formatNutritionMetric(value, unit) {
+      if (value === null || value === undefined || !Number.isFinite(Number(value))) return "-";
+      const digits = Math.abs(value) >= 10 || unit === "mg" || unit === "kcal" ? 0 : 1;
+      return `${Number(value).toLocaleString("pt-BR", {maximumFractionDigits: digits})}${unit ? ` ${unit}` : ""}`;
+    }
+
+    function readNutritionFromForm() {
+      return {
+        kcal: readNumberInput("nut-kcal"),
+        carb: readNumberInput("nut-carb"),
+        prot: readNumberInput("nut-prot"),
+        fat: readNumberInput("nut-fat"),
+        satFat: readNumberInput("nut-sat-fat"),
+        transFat: readNumberInput("nut-trans-fat"),
+        fiber: readNumberInput("nut-fiber"),
+        sodium: readNumberInput("nut-sodium"),
+        portionSize: readNumberInput("nut-portion-size", 100),
+      };
+    }
+
+    function writeNutritionToForm(nutrition = {}) {
+      writeNumberInput("nut-kcal", nutrition.kcal);
+      writeNumberInput("nut-carb", nutrition.carb);
+      writeNumberInput("nut-prot", nutrition.prot);
+      writeNumberInput("nut-fat", nutrition.fat);
+      writeNumberInput("nut-sat-fat", nutrition.satFat);
+      writeNumberInput("nut-trans-fat", nutrition.transFat);
+      writeNumberInput("nut-fiber", nutrition.fiber);
+      writeNumberInput("nut-sodium", nutrition.sodium);
+      writeNumberInput("nut-portion-size", getNutritionPortionSize(nutrition));
+    }
+
+    function updateNutritionPreview() {
+      const preview = document.getElementById("nutrition-portion-preview");
+      if (!preview) return;
+      const nutrition = readNutritionFromForm();
+      const portionSize = getNutritionPortionSize(nutrition);
+      const scaled = scaleNutritionForPortion(nutrition, portionSize);
+      preview.innerHTML = `
+        <div class="nutrition-preview-head">Estimativa por porcao de ${formatNutritionMetric(portionSize, "g")}</div>
+        <div class="nutrition-preview-grid">
+          <span><strong>${formatNutritionMetric(scaled.kcal, "kcal")}</strong><small>Calorias</small></span>
+          <span><strong>${formatNutritionMetric(scaled.carb, "g")}</strong><small>Carboidratos</small></span>
+          <span><strong>${formatNutritionMetric(scaled.prot, "g")}</strong><small>Proteinas</small></span>
+          <span><strong>${formatNutritionMetric(scaled.fat, "g")}</strong><small>Gorduras</small></span>
+          <span><strong>${formatNutritionMetric(scaled.satFat, "g")}</strong><small>Saturada</small></span>
+          <span><strong>${formatNutritionMetric(scaled.transFat, "g")}</strong><small>Trans</small></span>
+          <span><strong>${formatNutritionMetric(scaled.fiber, "g")}</strong><small>Fibras</small></span>
+          <span><strong>${formatNutritionMetric(scaled.sodium, "mg")}</strong><small>Sodio</small></span>
+        </div>`;
+    }
+
     function bindStockCardActions(listElement) {
       listElement.onclick = async (event) => {
         const button = event.target.closest("[data-stock-action]");
@@ -170,7 +255,6 @@
     
     function openStockModal(id=null){
       editingStockId=id;
-      const nf=['nut-kcal','nut-carb','nut-prot','nut-fat','nut-fiber','nut-sodium'];
       if(id!==null){
         const s=getStock().find(x=>String(x.id)===String(id));
         if(!s){showToast('Produto nao encontrado.');return;}
@@ -181,16 +265,17 @@
         document.getElementById('stock-unit').value=s.unit;
         document.getElementById('stock-price').value=s.price;
         document.getElementById('stock-category').value=s.category||'';
-        const n=s.nutrition||{};
-        nf.forEach(f=>document.getElementById(f).value=n[f.replace('nut-','')]||'');
+        writeNutritionToForm(s.nutrition||{});
       }else{
         renderCategoryOptions?.('stock-category','');
         document.getElementById('modal-stock-title').textContent='Novo Produto';
-        ['stock-name','stock-qty','stock-price',...nf].forEach(f=>document.getElementById(f).value='');
+        ['stock-name','stock-qty','stock-price'].forEach(f=>document.getElementById(f).value='');
+        writeNutritionToForm({portionSize: 100});
         document.getElementById('stock-unit').value='kg';
         document.getElementById('stock-category').value='';
       }
       updateGoogleLink();
+      updateNutritionPreview();
       document.getElementById('modal-stock').classList.add('open');
     }
     function updateGoogleLink(){
@@ -204,7 +289,7 @@
       const qty=parseFloat(document.getElementById('stock-qty').value);
       const price=parseFloat(document.getElementById('stock-price').value);
       if(!name||isNaN(qty)||qty<=0||isNaN(price)||price<0){showToast('Preencha nome, quantidade e valor.');return;}
-      const nutrition={kcal:parseFloat(document.getElementById('nut-kcal').value)||null,carb:parseFloat(document.getElementById('nut-carb').value)||null,prot:parseFloat(document.getElementById('nut-prot').value)||null,fat:parseFloat(document.getElementById('nut-fat').value)||null,fiber:parseFloat(document.getElementById('nut-fiber').value)||null,sodium:parseFloat(document.getElementById('nut-sodium').value)||null};
+      const nutrition=readNutritionFromForm();
       const category = ensureCategory ? ensureCategory(document.getElementById('stock-category').value) : document.getElementById('stock-category').value;
       const existing=editingStockId!==null?getStock().find(s=>String(s.id)===String(editingStockId)):null;
       const item={...(existing||{}),id:existing?.id||editingStockId||Date.now(),name,qty,unit:document.getElementById('stock-unit').value,price,category,nutrition,updatedAt:new Date().toISOString()};
@@ -268,6 +353,10 @@
       clearStockCategoryFilters,
       updateGoogleLink,
       handleGoogleSearch,
+      updateNutritionPreview,
+      getNutritionPortionSize,
+      scaleNutritionForPortion,
+      formatNutritionMetric,
       saveStock,
       deleteStock,
       renderStock,

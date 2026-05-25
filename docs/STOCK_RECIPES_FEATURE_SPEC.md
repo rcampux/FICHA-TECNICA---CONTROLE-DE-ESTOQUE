@@ -56,6 +56,7 @@ Regras:
 - O usuario define a porcao desejada, por exemplo 30g ou 50g.
 - Valores nutricionais exibidos devem recalcular proporcionalmente com base na porcao.
 - Os valores base por 100g devem continuar armazenados para calculo correto.
+- Implementado: o Estoque Virtual salva a base nutricional por 100g, inclui gordura saturada/trans e porcao customizavel, e exibe preview proporcional sem criar migration adicional. Os campos extras ficam preservados em `nutrition_facts.raw_payload`.
 
 ## 3. Aba Ficha - UX De Montagem De Receita
 
@@ -172,8 +173,8 @@ Adicionar no cadastro do produto fisico:
 
 ### Fase C - Nutricao E Receita
 
-- Consolidar tabela nutricional por 100g no estoque virtual.
-- Adicionar porcao customizavel e recalculo proporcional.
+- Concluido no codigo: consolidar tabela nutricional por 100g no estoque virtual.
+- Concluido no codigo: adicionar porcao customizavel e recalculo proporcional no modal de produto virtual.
 - Refinar calculo da ficha tecnica usando valores nutricionais e custo.
 
 ### Fase D - Analytics

@@ -35,21 +35,27 @@ O projeto esta em fase de prototipo estruturado com Supabase ja conectado em pro
 - Evento completo manual da `billing-webhook` aprovado em producao para `r.camposdesign@gmail.com`, aplicando `professional_monthly` com status `active`.
 - `validate-feature-access` aprovado em producao para `scanRecipe`: plano `professional_monthly`, assinatura `active`, limite `100`, `allowed: true`.
 - `create-checkout` aprovado em producao para `team_monthly`: sessao criada com `mode=gateway_pending`.
+- Fase C iniciada no codigo: Estoque Virtual agora registra base nutricional por 100g, campos de gordura saturada/trans e porcao customizavel com preview proporcional, preservando os dados extras em `nutrition_facts.raw_payload`.
 
 ## Proximo Passo Recomendado
+
+### Fase C - Nutricao E Receita
+
+Objetivo: transformar a tabela nutricional do Estoque Virtual em insumo real para ficha tecnica, custo e futura inteligencia de receitas.
+
+Ordem recomendada:
+
+1. Concluido no codigo: salvar base nutricional por 100g no Estoque Virtual.
+2. Concluido no codigo: adicionar porcao customizavel e preview proporcional.
+3. Proximo: usar os dados nutricionais dos ingredientes no resumo da receita/ficha tecnica.
+4. Proximo: exibir totais nutricionais por receita e por porcao.
+5. Proximo: validar calculo com ingredientes virtuais reais antes de abrir features premium de scanner/IA.
 
 ### Fase 2.5 - Persistencia Supabase Para Categorias
 
 Objetivo: levar o catalogo de categorias, hoje local e compartilhado na UI, para uma tabela multi-tenant com RLS.
 
-Ordem recomendada:
-
-1. Concluido no codigo: criar tabela `product_categories` com `organization_id`, `name`, `parent_id`, `deleted_at` e unicidade por workspace.
-2. Concluido no codigo: criar policies RLS por `organization_members`.
-3. Concluido no codigo: atualizar repository Supabase para carregar/salvar categorias por workspace.
-4. Concluido: aplicar `supabase/migrations/20260524120000_product_categories.sql` no Supabase SQL Editor.
-5. Concluido: criar categoria de teste e revalidar isolamento com `supabase/category_rls_smoke_test_by_email.sql`.
-6. Resultado: Fase 2.5 aprovada.
+Resultado: Fase 2.5 aprovada.
 
 ### Proximo Passo - Fase 2.3 Hardening Supabase
 
