@@ -493,10 +493,10 @@
 
 <!-- MODAL: VER RECEITA -->
 <div class="modal-overlay" id="modal-recipe">
-  <div class="modal">
+  <div class="modal recipe-detail-modal">
     <div class="modal-handle"></div>
-    <div id="recipe-detail-content"></div>
-    <div style="display:flex;gap:var(--s2);margin-top:var(--s5);flex-wrap:wrap">
+    <div class="recipe-detail-scroll" id="recipe-detail-content"></div>
+    <div class="recipe-detail-actions">
       <button class="btn btn-secondary btn-sm" style="flex:1;min-width:70px" onclick="closeModal('modal-recipe')">Fechar</button>
       <button class="btn btn-danger btn-sm" style="flex:1;min-width:70px" onclick="deleteCurrentRecipe()">
         <span class="material-symbols-rounded">delete</span> Excluir

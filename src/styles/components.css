@@ -639,7 +639,8 @@ textarea:focus {
 }
 
 #modal-stock,
-#modal-pstock {
+#modal-pstock,
+#modal-recipe {
   align-items: center;
   overflow-y: auto;
   overscroll-behavior: contain;
@@ -658,6 +659,37 @@ textarea:focus {
   overscroll-behavior: contain;
   padding-bottom: calc(32px + env(safe-area-inset-bottom));
   -webkit-overflow-scrolling: touch;
+}
+
+#modal-recipe .recipe-detail-modal {
+  border-radius: var(--md-sys-shape-corner-extra-large);
+  display: flex;
+  flex-direction: column;
+  max-height: calc(100vh - max(32px, env(safe-area-inset-top)) - max(72px, env(safe-area-inset-bottom)));
+  max-height: calc(100dvh - max(32px, env(safe-area-inset-top)) - max(72px, env(safe-area-inset-bottom)));
+  overflow: hidden;
+  padding: 0;
+}
+
+#modal-recipe .modal-handle {
+  flex: 0 0 auto;
+}
+
+.recipe-detail-scroll {
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 0 24px var(--s4);
+  -webkit-overflow-scrolling: touch;
+}
+
+.recipe-detail-actions {
+  background: var(--md-sys-color-surface);
+  border-top: 1px solid var(--md-sys-color-outline-variant);
+  display: flex;
+  flex: 0 0 auto;
+  flex-wrap: wrap;
+  gap: var(--s2);
+  padding: var(--s3) 24px calc(24px + env(safe-area-inset-bottom));
 }
 
 .auth-modal {
