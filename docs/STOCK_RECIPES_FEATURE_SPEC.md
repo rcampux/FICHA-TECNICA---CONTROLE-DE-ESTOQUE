@@ -57,6 +57,7 @@ Regras:
 - Valores nutricionais exibidos devem recalcular proporcionalmente com base na porcao.
 - Os valores base por 100g devem continuar armazenados para calculo correto.
 - Implementado: o Estoque Virtual salva a base nutricional por 100g, inclui gordura saturada/trans e porcao customizavel, e exibe preview proporcional sem criar migration adicional. Os campos extras ficam preservados em `nutrition_facts.raw_payload`.
+- Implementado: a aba Ficha consome a nutricao do ingrediente virtual, soma os nutrientes pela quantidade usada e exibe tabela estimada por porcao da receita. Quando um produto nao tem nutricao manual, o app usa fallback nutricional por nome.
 
 ## 3. Aba Ficha - UX De Montagem De Receita
 
@@ -175,7 +176,8 @@ Adicionar no cadastro do produto fisico:
 
 - Concluido no codigo: consolidar tabela nutricional por 100g no estoque virtual.
 - Concluido no codigo: adicionar porcao customizavel e recalculo proporcional no modal de produto virtual.
-- Refinar calculo da ficha tecnica usando valores nutricionais e custo.
+- Concluido no codigo: refinar calculo da ficha tecnica usando valores nutricionais, rendimento e porcao.
+- Proximo: validar com receitas reais e ajustar UX de exibicao nutricional nos PDFs/relatorios.
 
 ### Fase D - Analytics
 

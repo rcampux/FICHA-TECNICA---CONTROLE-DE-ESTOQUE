@@ -102,6 +102,16 @@ Este arquivo e um inventario vivo das funcoes utilizadas no projeto. Toda nova f
 | `focusRecipeCard` | `src/modules/recipes/recipeSheet.js` | 65 | Localiza a ultima receita salva, destaca o card e rola a aba Receitas ate ela. |
 | `escapeAttribute` | `src/modules/recipes/recipeSheet.js` | 78 | Escapa IDs e valores renderizados em atributos `data-*` dos cards de receitas. |
 | `bindRecipeCardActions` | `src/modules/recipes/recipeSheet.js` | 86 | Centraliza cliques de visualizar, editar, deletar e exportar PDF sem handlers inline. |
+| `readNumericValue` | `src/modules/recipes/recipeSheet.js` | 124 | Normaliza valores numericos de formularios e objetos nutricionais com fallback seguro. |
+| `hasNutritionData` | `src/modules/recipes/recipeSheet.js` | 129 | Verifica se um ingrediente/produto possui dados nutricionais manuais aproveitaveis. |
+| `getIngredientNutrition` | `src/modules/recipes/recipeSheet.js` | 134 | Combina nutricao manual do estoque virtual com fallback por nome do ingrediente. |
+| `scaleNutritionByAmount` | `src/modules/recipes/recipeSheet.js` | 143 | Escala nutricao base de 100g para a quantidade real usada na ficha. |
+| `calculateRecipeNutritionTotals` | `src/modules/recipes/recipeSheet.js` | 151 | Soma os nutrientes totais da receita a partir dos ingredientes adicionados. |
+| `getRecipeYieldG` | `src/modules/recipes/recipeSheet.js` | 168 | Le o rendimento atual da ficha para calcular nutricao por porcao. |
+| `calculateRecipeNutritionPortion` | `src/modules/recipes/recipeSheet.js` | 172 | Converte totais nutricionais da receita para a porcao selecionada, usando rendimento ou peso dos ingredientes. |
+| `formatNutritionValue` | `src/modules/recipes/recipeSheet.js` | 188 | Formata valores nutricionais com unidade curta e casas decimais adequadas. |
+| `renderNutritionRows` | `src/modules/recipes/recipeSheet.js` | 194 | Renderiza linhas da tabela nutricional com valor por porcao e percentual diario. |
+| `getRecipeNutritionSummary` | `src/modules/recipes/recipeSheet.js` | 208 | Gera resumo curto de calorias/proteinas por porcao para cards e detalhe da receita. |
 | `findStockItem` | `src/modules/recipes/recipeSheet.js` | 42 | function findStockItem(stockId,name){ |
 | `calcCosts` | `src/modules/recipes/recipeSheet.js` | 46 | function calcCosts(ingredients,markup=0){ |
 | `setIngSource` | `src/modules/recipes/recipeSheet.js` | 52 | function setIngSource(src){ |
@@ -112,13 +122,13 @@ Este arquivo e um inventario vivo das funcoes utilizadas no projeto. Toda nova f
 | `removeIngredient` | `src/modules/recipes/recipeSheet.js` | 139 | Remove ingrediente da ficha apos confirmacao visual. |
 | `renderIngredients` | `src/modules/recipes/recipeSheet.js` | 140 | function renderIngredients(){ |
 | `calcFicha` | `src/modules/recipes/recipeSheet.js` | 155 | function calcFicha(){ |
-| `calcNutrition` | `src/modules/recipes/recipeSheet.js` | 168 | function calcNutrition(){ |
+| `calcNutrition` | `src/modules/recipes/recipeSheet.js` | 349 | Atualiza a tabela nutricional da ficha com base nos ingredientes e na porcao selecionada. |
 | `clearFicha` | `src/modules/recipes/recipeSheet.js` | 196 | Limpa a ficha atual apos confirmacao, com modo forcado/silencioso para logout seguro. |
-| `saveRecipe` | `src/modules/recipes/recipeSheet.js` | 247 | Salva ou sobrescreve receita preservando `id/remoteId`, exige confirmacao do Supabase quando ativo, redireciona para Receitas, foca a ultima ficha salva e limpa a montagem. |
+| `saveRecipe` | `src/modules/recipes/recipeSheet.js` | 390 | Salva ou sobrescreve receita preservando `id/remoteId`, inclui snapshot nutricional, redireciona para Receitas, foca a ultima ficha salva e limpa a montagem. |
 | `hasPriceChanged` | `src/modules/recipes/recipeSheet.js` | 228 | function hasPriceChanged(refs){ |
-| `renderRecipes` | `src/modules/recipes/recipeSheet.js` | 280 | Renderiza cards de receitas com `data-recipe-id` e delegacao de eventos para evitar SyntaxError apos refresh. |
+| `renderRecipes` | `src/modules/recipes/recipeSheet.js` | 437 | Renderiza cards de receitas com resumo de custo, nutricao por porcao e delegacao de eventos. |
 | `setIngFilter` | `src/modules/recipes/recipeSheet.js` | 274 | function setIngFilter(val){activeIngFilter=val;renderRecipes(document.getElementById('recipe-search').value,val);} |
-| `viewRecipe` | `src/modules/recipes/recipeSheet.js` | 275 | function viewRecipe(id){ |
+| `viewRecipe` | `src/modules/recipes/recipeSheet.js` | 486 | Abre detalhe da receita com custo, ingredientes e tabela nutricional por porcao. |
 | `deleteCurrentRecipe` | `src/modules/recipes/recipeSheet.js` | 379 | Exclui a receita atual apos confirmacao visual e sincroniza o snapshot com Supabase quando ativo. |
 | `editRecipe` | `src/modules/recipes/recipeSheet.js` | 343 | Define a receita atual e carrega seus dados na ficha tecnica para edicao. |
 | `deleteRecipe` | `src/modules/recipes/recipeSheet.js` | 347 | Define a receita atual e reaproveita o fluxo existente de exclusao. |

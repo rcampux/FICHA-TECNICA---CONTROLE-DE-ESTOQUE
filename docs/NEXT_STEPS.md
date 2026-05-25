@@ -36,6 +36,7 @@ O projeto esta em fase de prototipo estruturado com Supabase ja conectado em pro
 - `validate-feature-access` aprovado em producao para `scanRecipe`: plano `professional_monthly`, assinatura `active`, limite `100`, `allowed: true`.
 - `create-checkout` aprovado em producao para `team_monthly`: sessao criada com `mode=gateway_pending`.
 - Fase C iniciada no codigo: Estoque Virtual agora registra base nutricional por 100g, campos de gordura saturada/trans e porcao customizavel com preview proporcional, preservando os dados extras em `nutrition_facts.raw_payload`.
+- Fase C avancada no codigo: a aba Ficha agora calcula nutricao real da receita usando os ingredientes adicionados, valores do estoque virtual e fallback nutricional por nome; os cards/detalhes de receitas mostram resumo por porcao.
 
 ## Proximo Passo Recomendado
 
@@ -47,8 +48,8 @@ Ordem recomendada:
 
 1. Concluido no codigo: salvar base nutricional por 100g no Estoque Virtual.
 2. Concluido no codigo: adicionar porcao customizavel e preview proporcional.
-3. Proximo: usar os dados nutricionais dos ingredientes no resumo da receita/ficha tecnica.
-4. Proximo: exibir totais nutricionais por receita e por porcao.
+3. Concluido no codigo: usar os dados nutricionais dos ingredientes no resumo da receita/ficha tecnica.
+4. Concluido no codigo: exibir totais nutricionais por receita e por porcao.
 5. Proximo: validar calculo com ingredientes virtuais reais antes de abrir features premium de scanner/IA.
 
 ### Fase 2.5 - Persistencia Supabase Para Categorias

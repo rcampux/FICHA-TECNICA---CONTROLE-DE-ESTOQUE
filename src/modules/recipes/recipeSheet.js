@@ -110,6 +110,111 @@
       };
     }
 
+    const nutritionFields = [
+      ["kcal", "Valor Energetico", "kcal", 2500],
+      ["carb", "Carboidratos", "g", 375],
+      ["prot", "Proteinas", "g", 75],
+      ["fat", "Gorduras Totais", "g", 83],
+      ["satFat", "Gordura Saturada", "g", 20],
+      ["transFat", "Gordura Trans", "g", null],
+      ["fiber", "Fibra Alimentar", "g", 25],
+      ["sodium", "Sodio", "mg", 2400],
+    ];
+
+    function readNumericValue(value, fallback = 0) {
+      const number = Number(value);
+      return Number.isFinite(number) ? number : fallback;
+    }
+
+    function hasNutritionData(nutrition) {
+      if (!nutrition || typeof nutrition !== "object") return false;
+      return nutritionFields.some(([key]) => Number.isFinite(Number(nutrition[key])));
+    }
+
+    function getIngredientNutrition(ingredient) {
+      const fallback = getNutrition(ingredient.name) || {};
+      const source = hasNutritionData(ingredient.nutrition) ? ingredient.nutrition : {};
+      return nutritionFields.reduce((result, [key]) => {
+        result[key] = readNumericValue(source[key], readNumericValue(fallback[key], 0));
+        return result;
+      }, {});
+    }
+
+    function scaleNutritionByAmount(nutrition, grams) {
+      const factor = readNumericValue(grams, 0) / 100;
+      return nutritionFields.reduce((result, [key]) => {
+        result[key] = readNumericValue(nutrition[key], 0) * factor;
+        return result;
+      }, {});
+    }
+
+    function calculateRecipeNutritionTotals(ingredients) {
+      const totals = nutritionFields.reduce((result, [key]) => {
+        result[key] = 0;
+        return result;
+      }, {});
+
+      ingredients.forEach((ingredient) => {
+        const nutrition = getIngredientNutrition(ingredient);
+        const scaled = scaleNutritionByAmount(nutrition, ingredient.qtyG || ingredient.qtyBruta || 0);
+        nutritionFields.forEach(([key]) => {
+          totals[key] += scaled[key];
+        });
+      });
+
+      return totals;
+    }
+
+    function getRecipeYieldG() {
+      return readNumericValue(document.getElementById("ficha-rendimento")?.value, 0);
+    }
+
+    function calculateRecipeNutritionPortion(ingredients, portionSize = 100, recipeYieldG = getRecipeYieldG()) {
+      const totals = calculateRecipeNutritionTotals(ingredients);
+      const yieldG = readNumericValue(recipeYieldG, 0);
+      const ingredientWeightG = ingredients.reduce((sum, ingredient) => {
+        return sum + readNumericValue(ingredient.qtyG || ingredient.qtyBruta, 0);
+      }, 0);
+      const portion = readNumericValue(portionSize, 100);
+      const baseWeightG = yieldG > 0 ? yieldG : ingredientWeightG;
+      const factor = baseWeightG > 0 ? portion / baseWeightG : 1;
+
+      return nutritionFields.reduce((result, [key]) => {
+        result[key] = totals[key] * factor;
+        return result;
+      }, {});
+    }
+
+    function formatNutritionValue(value, unit) {
+      const numericValue = readNumericValue(value, 0);
+      const digits = Math.abs(numericValue) >= 10 || unit === "mg" || unit === "kcal" ? 0 : 1;
+      return `${numericValue.toLocaleString("pt-BR", {maximumFractionDigits: digits})} ${unit}`;
+    }
+
+    function renderNutritionRows(portionNutrition) {
+      return nutritionFields.map(([key, label, unit, dailyValue]) => {
+        const value = readNumericValue(portionNutrition[key], 0);
+        const pct = dailyValue ? value / dailyValue : null;
+        return `<tr>
+          <td>${label}</td><td class="val">${formatNutritionValue(value, unit)}</td>
+          <td style="text-align:right;min-width:88px">
+            <div class="nut-pct">${pct === null ? "-" : `${Math.round(pct * 100)}%`}</div>
+            ${pct === null ? "" : `<div class="progress-bar" style="width:76px;margin-left:auto"><div class="progress-fill" style="width:${Math.min(pct * 100,100).toFixed(1)}%"></div></div>`}
+          </td>
+        </tr>`;
+      }).join("");
+    }
+
+    function getRecipeNutritionSummary(recipe) {
+      const portion = readNumericValue(recipe.porcaoSize, 100);
+      const nutrition = calculateRecipeNutritionPortion(recipe.ingredients || [], portion, recipe.rendimento || 0);
+      return {
+        portion,
+        nutrition,
+        label: `${formatNutritionValue(nutrition.kcal, "kcal")} - ${formatNutritionValue(nutrition.prot, "g")} prot / ${portion}g`,
+      };
+    }
+
     function findStockItem(stockId,name){
       if(stockId&&!String(stockId).startsWith('pf_')){const s=stock.find(x=>x.id===stockId||x.id===parseInt(stockId));if(s)return s;}
       return stock.find(x=>x.name.toLowerCase()===name.toLowerCase())||null;
@@ -244,30 +349,9 @@
     function calcNutrition(){
       const portion=parseFloat(document.getElementById('portion-size').value)||100;
       document.getElementById('nut-portion-label').textContent=`${portion}g`;
-      const totalQtyG=currentIngredients.reduce((s,i)=>s+i.qtyBruta,0)||1;
-      const tot={kcal:0,carb:0,prot:0,fat:0,fiber:0,sodium:0};
-      currentIngredients.forEach(i=>{
-        const ratio=i.qtyBruta/totalQtyG;
-        const n=(i.nutrition&&i.nutrition.kcal)?i.nutrition:getNutrition(i.name);
-        Object.keys(tot).forEach(k=>tot[k]+=(n[k]||0)*ratio);
-      });
-      const sc=portion/100;
-      const vd={kcal:2500,carb:375,prot:75,fat:83,fiber:25,sodium:2400};
-      const rows=[
-        ['Valor Energético',`${(tot.kcal*sc).toFixed(0)} kcal`,tot.kcal*sc/vd.kcal],
-        ['Carboidratos',`${(tot.carb*sc).toFixed(1)} g`,tot.carb*sc/vd.carb],
-        ['Proteínas',`${(tot.prot*sc).toFixed(1)} g`,tot.prot*sc/vd.prot],
-        ['Gorduras Totais',`${(tot.fat*sc).toFixed(1)} g`,tot.fat*sc/vd.fat],
-        ['Fibra Alimentar',`${(tot.fiber*sc).toFixed(1)} g`,tot.fiber*sc/vd.fiber],
-        ['Sódio',`${(tot.sodium*sc).toFixed(0)} mg`,tot.sodium*sc/vd.sodium],
-      ];
-      document.getElementById('nutrition-body').innerHTML=rows.map(([n,v,pct])=>`<tr>
-        <td>${n}</td><td class="val">${v}</td>
-        <td style="text-align:right;min-width:88px">
-          <div class="nut-pct">${Math.round(pct*100)}%</div>
-          <div class="progress-bar" style="width:76px;margin-left:auto"><div class="progress-fill" style="width:${Math.min(pct*100,100).toFixed(1)}%"></div></div>
-        </td>
-      </tr>`).join('');
+      document.getElementById('nutrition-body').innerHTML=renderNutritionRows(
+        calculateRecipeNutritionPortion(currentIngredients, portion)
+      );
     }
     async function clearFicha(options = {}){
       if(currentIngredients.length&&!options.force&&!await confirmAction('Deseja limpar todos os dados desta ficha tecnica?','Limpar ficha','Sim, limpar'))return;
@@ -288,12 +372,16 @@
       const idx=recipes.findIndex(r=>r.nome.toLowerCase()===nome.toLowerCase());
       const existingRecipe=idx>=0?recipes[idx]:null;
       const now=new Date().toISOString();
+      const recipeYield=parseFloat(document.getElementById('ficha-rendimento').value)||0;
+      const recipePortionSize=parseFloat(document.getElementById('portion-size').value)||100;
       const recipe={
         id:existingRecipe?.id||Date.now(),remoteId:existingRecipe?.remoteId,nome,ingredients:ingredientRefs,
-        rendimento:parseFloat(document.getElementById('ficha-rendimento').value)||0,
+        rendimento:recipeYield,
         porcoes:parseFloat(document.getElementById('ficha-porcoes').value)||1,
         markup,totalCost,venda,
-        porcaoSize:parseFloat(document.getElementById('portion-size').value)||100,
+        porcaoSize:recipePortionSize,
+        nutritionTotals:calculateRecipeNutritionTotals(ingredientRefs),
+        nutritionPortion:calculateRecipeNutritionPortion(ingredientRefs,recipePortionSize,recipeYield),
         createdAt:existingRecipe?.createdAt||now,
         updatedAt:now
       };
@@ -339,6 +427,7 @@
         const changed=hasPriceChanged(r.ingredients);
         const diff=totalCost-r.totalCost;
         const recipeId=escapeAttribute(r.id);
+        const nutritionSummary=getRecipeNutritionSummary(r);
         return`<div class="recipe-card" data-recipe-id="${recipeId}">
           <div class="recipe-card-heading">
             <div class="recipe-card-title">${r.nome}${r.origem==='scan'?` <span class="scan-badge" style="font-size:10px"><span class="material-symbols-rounded" style="font-size:12px">document_scanner</span>Scan</span>`:''}</div>
@@ -353,6 +442,7 @@
           </div>
           <div class="recipe-card-meta"><span class="material-symbols-rounded">fork_spoon</span>${r.ingredients.length} ingrediente(s) · ${r.porcoes} porção(ões)${r.rendimento?' · '+r.rendimento+'g':''} · Markup ${r.markup}%</div>
           <div class="recipe-card-meta" style="color:var(--g600);font-weight:700"><span class="material-symbols-rounded" style="color:var(--g500)">payments</span> Venda: ${fmtBRL(venda)}</div>
+          <div class="recipe-card-meta" style="font-size:11px;color:var(--n500)"><span class="material-symbols-rounded" style="font-size:13px">nutrition</span> ${nutritionSummary.label}</div>
           ${changed?`<div class="recipe-card-meta" style="font-size:11px;color:var(--n400)"><span class="material-symbols-rounded" style="font-size:13px">sync</span> Preços atualizados</div>`:''}
           <div style="display:flex;justify-content:space-between;align-items:center;margin-top:var(--s3)">
             <div style="display:flex;gap:4px;flex-wrap:wrap">
@@ -375,6 +465,7 @@
       const porcoes=Math.max(r.porcoes||1,1);
       const changed=hasPriceChanged(r.ingredients);
       const diff=totalCost-r.totalCost;
+      const nutritionSummary=getRecipeNutritionSummary(r);
       document.getElementById('recipe-detail-content').innerHTML=`
         <div style="font-size:20px;font-weight:800;margin-bottom:4px;letter-spacing:-0.4px">${r.nome}${r.origem==='scan'?` <span class="scan-badge" style="font-size:10px"><span class="material-symbols-rounded" style="font-size:12px">document_scanner</span>Scan</span>`:''}</div>
         <div style="font-size:12px;color:var(--n600);margin-bottom:${changed?'12px':'20px'};font-weight:500;display:flex;align-items:center;gap:4px">
@@ -397,6 +488,12 @@
               <div style="font-size:16px;font-weight:800;font-family:'Roboto Mono',monospace;color:${c}">${v}</div>
             </div>`).join('')}
         </div>
+        <div style="font-size:11px;font-weight:700;color:var(--n600);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:var(--s2);display:flex;align-items:center;gap:4px">
+          <span class="material-symbols-rounded" style="font-size:14px">nutrition</span> Nutricao por ${nutritionSummary.portion}g
+        </div>
+        <table class="nutrition-table" style="margin-bottom:var(--s4)">
+          <tbody>${renderNutritionRows(nutritionSummary.nutrition)}</tbody>
+        </table>
         <div style="font-size:11px;font-weight:700;color:var(--n600);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:var(--s2);display:flex;align-items:center;gap:4px">
           <span class="material-symbols-rounded" style="font-size:14px">format_list_bulleted</span> Ingredientes
         </div>
