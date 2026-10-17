@@ -86,9 +86,11 @@ Os tokens canônicos ficam em `src/styles/tokens.css`. Aliases legados existem a
 
 ## Responsividade
 
-- Até 767 px: navegação inferior, formulários em uma coluna e autenticação em tela cheia.
-- 768–1199 px: rail lateral e grids de duas colunas.
-- 1200 px ou mais: drawer lateral, maior densidade e até três cards por linha.
+- Até 767 px: experiência operacional curta, navegação inferior, formulários em uma coluna, cards de toque e autenticação em tela cheia.
+- 768–1199 px: rail lateral, cabeçalho de contexto, editor de ficha em duas áreas e grids de duas colunas.
+- 1200 px ou mais: workspace SaaS com drawer escuro permanente, barra de ações, cabeçalhos editoriais com fotografia, largura fluida e painéis lado a lado.
+- 1680 px ou mais: catálogos e biblioteca chegam a quatro cards por linha para aproveitar monitores amplos sem esticar o conteúdo interno dos cards.
+- Mobile e desktop compartilham funções e identidade, mas não a mesma composição: no mobile a prioridade é alcance e velocidade; no desktop, visão simultânea e densidade informacional.
 
 ## Acessibilidade
 
@@ -105,3 +107,4 @@ Os tokens canônicos ficam em `src/styles/tokens.css`. Aliases legados existem a
 - `src/styles/components.css`: componentes reutilizáveis.
 - `src/styles/layout.css`: breakpoints e navegação adaptativa.
 - `src/styles/pages.css`: composição das páginas.
+- `src/styles/saas-workspace.css`: adaptação estrutural mobile/desktop, drawer SaaS e grids fluidos.

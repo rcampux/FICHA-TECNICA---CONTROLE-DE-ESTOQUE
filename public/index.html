@@ -126,6 +126,20 @@
     <div class="app-title">FichaTec</div>
     <div class="app-subtitle">Fichas técnicas & controle de estoque</div>
   </div>
+  <div class="desktop-header-context" aria-hidden="true">
+    <span class="desktop-header-kicker">Workspace operacional</span>
+    <strong>Gestão de cozinha</strong>
+  </div>
+  <div class="desktop-header-actions">
+    <button class="header-quick-action" onclick="showPage('receitas','nav-receitas')" type="button">
+      <span class="material-symbols-rounded" aria-hidden="true">menu_book</span>
+      Ver receitas
+    </button>
+    <button class="header-quick-action header-quick-action--primary" onclick="showPage('ficha','nav-ficha')" type="button">
+      <span class="material-symbols-rounded" aria-hidden="true">add</span>
+      Nova ficha
+    </button>
+  </div>
   <button class="auth-status-btn" id="auth-status-btn" onclick="openAuthModal()" type="button">
     <span class="material-symbols-rounded" aria-hidden="true">account_circle</span>
     <span id="auth-status-label">Modo local</span>
@@ -135,8 +149,15 @@
 <!-- PAGE: FICHA -->
 <div class="page active" id="page-ficha">
   <div class="page-hero">
-    <div class="page-hero-label">Bem-vindo 👋</div>
-    <div class="page-hero-title">Monte sua ficha técnica</div>
+    <div class="page-hero-content">
+      <div class="page-hero-label">Produção inteligente</div>
+      <div class="page-hero-title">Monte sua ficha técnica</div>
+      <p class="page-hero-copy">Transforme ingredientes em custo, rendimento e preço de venda com clareza.</p>
+    </div>
+    <div class="page-hero-art" aria-hidden="true">
+      <span><i class="material-symbols-rounded">calculate</i> Custos precisos</span>
+      <span><i class="material-symbols-rounded">inventory_2</i> Estoque conectado</span>
+    </div>
   </div>
   <div class="card">
     <div class="input-group">
@@ -297,6 +318,16 @@
 
 <!-- PAGE: ESTOQUE VIRTUAL -->
 <div class="page" id="page-estoque">
+  <div class="workspace-page-heading">
+    <div>
+      <span class="workspace-page-eyebrow">Catálogo e precificação</span>
+      <h1>Estoque virtual</h1>
+      <p>Organize insumos, preços e informações nutricionais usados nas fichas.</p>
+    </div>
+    <button class="btn btn-primary workspace-page-action" onclick="openStockModal()" type="button">
+      <span class="material-symbols-rounded" aria-hidden="true">add</span> Novo produto
+    </button>
+  </div>
   <div class="stock-category-card">
     <div class="stock-category-title">Categorias</div>
     <div class="stock-category-search">
@@ -334,8 +365,16 @@
 
 <!-- PAGE: RECEITAS -->
 <div class="page" id="page-receitas">
-  <div class="page-header">
-    <div><div class="page-title">Receitas</div><div class="page-sub">Suas fichas técnicas salvas</div></div>
+  <div class="page-header page-header--recipes">
+    <div class="page-header-copy">
+      <span class="workspace-page-eyebrow">Biblioteca da cozinha</span>
+      <div class="page-title">Receitas</div>
+      <div class="page-sub">Encontre fichas por nome, ingrediente ou imagem.</div>
+      <button class="btn btn-primary page-header-cta" onclick="showPage('ficha','nav-ficha')" type="button">
+        <span class="material-symbols-rounded" aria-hidden="true">add</span> Criar receita
+      </button>
+    </div>
+    <div class="page-header-image" role="img" aria-label="Bancada de cozinha com ingredientes frescos"></div>
   </div>
   <div class="search-bar">
     <span class="material-symbols-rounded search-icon">search</span>
@@ -348,6 +387,16 @@
 
 <!-- PAGE: ESTOQUE FÍSICO -->
 <div class="page" id="page-fisico">
+  <div class="workspace-page-heading">
+    <div>
+      <span class="workspace-page-eyebrow">Operação diária</span>
+      <h1>Estoque físico</h1>
+      <p>Acompanhe quantidades reais, entradas, saídas e itens em atenção.</p>
+    </div>
+    <button class="btn btn-primary workspace-page-action" onclick="openPhysicalModal()" type="button">
+      <span class="material-symbols-rounded" aria-hidden="true">add</span> Novo produto
+    </button>
+  </div>
   <div class="stock-category-card">
     <div class="stock-category-title">Categorias</div>
     <div class="stock-category-search">
@@ -385,7 +434,12 @@
 </div>
 
 <!-- NAV -->
-<nav class="nav">
+<nav class="nav" aria-label="Navegação principal">
+  <div class="desktop-nav-brand" aria-hidden="true">
+    <span class="desktop-nav-mark">FT</span>
+    <span><strong>FichaTec</strong><small>Gestão de cozinha</small></span>
+  </div>
+  <div class="desktop-nav-label">Operação</div>
   <button class="nav-btn active" id="nav-ficha" onclick="showPage('ficha','nav-ficha')">
     <span class="material-symbols-rounded">description</span><span>Ficha</span>
   </button>
@@ -401,6 +455,15 @@
   <button class="nav-btn" id="nav-receitas" onclick="showPage('receitas','nav-receitas')">
     <span class="material-symbols-rounded">menu_book</span><span>Receitas</span>
   </button>
+  <div class="desktop-nav-spacer"></div>
+  <button class="desktop-scan-action" onclick="openScanModal()" type="button">
+    <span class="material-symbols-rounded" aria-hidden="true">document_scanner</span>
+    <span><strong>Digitalizar receita</strong><small>Use a câmera ou uma imagem</small></span>
+  </button>
+  <div class="desktop-nav-note">
+    <span class="material-symbols-rounded" aria-hidden="true">verified</span>
+    <span><strong>Dados organizados</strong><small>Prontos para sua operação.</small></span>
+  </div>
 </nav>
 
 <!-- FAB: Scanner -->

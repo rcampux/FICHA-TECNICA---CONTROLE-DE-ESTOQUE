@@ -1,0 +1,695 @@
+/* FichaTec — workspace SaaS responsivo. Mantém mobile direto e usa o desktop por inteiro. */
+
+:root {
+  --ft-nav-drawer-width: 272px;
+  --app-content-max-width-desktop: 1600px;
+  --ft-workspace-gutter: clamp(24px, 3vw, 48px);
+}
+
+.desktop-header-context,
+.desktop-header-actions,
+.desktop-nav-brand,
+.desktop-nav-label,
+.desktop-nav-spacer,
+.desktop-scan-action,
+.desktop-nav-note,
+.workspace-page-heading,
+.page-header-image,
+.page-hero-copy,
+.page-hero-art {
+  display: none;
+}
+
+@media (max-width: 767px) {
+  .page {
+    padding: 18px 16px 24px;
+  }
+
+  .page-hero {
+    background: linear-gradient(135deg, #fff 0%, #fff1ef 100%);
+    border: 1px solid color-mix(in srgb, var(--md-sys-color-outline-variant) 64%, #fff);
+    border-radius: 22px;
+    margin-bottom: 16px;
+    padding: 18px;
+  }
+
+  .page-hero-label {
+    color: var(--md-sys-color-primary);
+    font-size: 10px;
+    font-weight: 850;
+  }
+
+  .page-hero-title {
+    font-size: 25px;
+    line-height: 1.12;
+    margin-top: 5px;
+  }
+
+  .card,
+  .recipe-card,
+  .item-card,
+  .pstock-card {
+    border-radius: 20px;
+  }
+
+  #page-receitas .page-header {
+    background: linear-gradient(135deg, #4b0912 0%, #8f1724 58%, #b4232f 100%);
+    border: 0;
+    border-radius: 24px;
+    color: #fff;
+    margin: 0 0 16px;
+    overflow: hidden;
+    padding: 22px 20px;
+    position: relative;
+  }
+
+  #page-receitas .page-header::after {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    content: "";
+    height: 148px;
+    position: absolute;
+    right: -58px;
+    top: -72px;
+    width: 148px;
+  }
+
+  #page-receitas .workspace-page-eyebrow,
+  #page-receitas .page-title,
+  #page-receitas .page-sub {
+    color: #fff;
+    position: relative;
+    z-index: 1;
+  }
+
+  #page-receitas .page-title {
+    font-size: 27px;
+    margin-top: 4px;
+  }
+
+  #page-receitas .page-sub {
+    color: rgba(255, 255, 255, 0.78);
+    max-width: 265px;
+  }
+
+  .page-header-cta {
+    background: #fff;
+    box-shadow: none;
+    color: var(--md-sys-color-primary);
+    margin-top: 18px;
+    min-height: 44px;
+    position: relative;
+    z-index: 1;
+  }
+}
+
+@media (min-width: 768px) {
+  body {
+    background: #f8f5f4;
+  }
+
+  .app-header {
+    align-items: center;
+    background: rgba(255, 255, 255, 0.88);
+    border-bottom-color: rgba(88, 65, 62, 0.12);
+    display: flex;
+    gap: 20px;
+    height: 76px;
+    padding-inline: 28px;
+  }
+
+  .app-header .app-logo,
+  .app-header .app-title-group {
+    display: none;
+  }
+
+  .desktop-header-context {
+    display: grid;
+    gap: 2px;
+    line-height: 1.1;
+  }
+
+  .desktop-header-kicker {
+    color: var(--md-sys-color-on-surface-variant);
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+  }
+
+  .desktop-header-context strong {
+    color: var(--md-sys-color-on-surface);
+    font-size: 17px;
+  }
+
+  .desktop-header-actions {
+    display: flex;
+    gap: 8px;
+    margin-left: auto;
+  }
+
+  .header-quick-action {
+    align-items: center;
+    background: #fff;
+    border: 1px solid rgba(88, 65, 62, 0.16);
+    border-radius: 12px;
+    color: var(--md-sys-color-on-surface);
+    cursor: pointer;
+    display: inline-flex;
+    font: 750 12px/1 Inter, sans-serif;
+    gap: 7px;
+    min-height: 40px;
+    padding: 0 14px;
+    transition: background 160ms ease, border-color 160ms ease, transform 160ms ease;
+  }
+
+  .header-quick-action:hover {
+    background: var(--md-sys-color-surface-container-low);
+    border-color: var(--md-sys-color-primary);
+    transform: translateY(-1px);
+  }
+
+  .header-quick-action .material-symbols-rounded {
+    font-size: 18px;
+  }
+
+  .header-quick-action--primary {
+    background: var(--md-sys-color-primary);
+    border-color: var(--md-sys-color-primary);
+    color: #fff;
+  }
+
+  .header-quick-action--primary:hover {
+    background: #8f1724;
+  }
+
+  .auth-status-btn {
+    margin-left: 0;
+    max-width: 220px;
+  }
+
+  .page {
+    margin: 0;
+    max-width: none;
+    padding: 32px var(--ft-workspace-gutter) 56px;
+    width: 100%;
+  }
+
+  .page.active {
+    animation: workspacePageIn 260ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  @keyframes workspacePageIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .page-hero {
+    background:
+      linear-gradient(90deg, rgba(48, 6, 12, 0.96) 0%, rgba(99, 13, 25, 0.90) 48%, rgba(99, 13, 25, 0.30) 100%),
+      url("../../assets/images/fichatec-kitchen-hero.jpg") center 44% / cover;
+    border: 0;
+    border-radius: 28px;
+    box-shadow: 0 18px 44px rgba(65, 0, 8, 0.13);
+    color: #fff;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    margin: 0;
+    min-height: 188px;
+    overflow: hidden;
+    padding: 28px 30px;
+    position: relative;
+  }
+
+  .page-hero-content {
+    align-self: end;
+    max-width: 620px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .page-hero-label {
+    color: #ffd9da;
+    font-size: 10px;
+    font-weight: 850;
+  }
+
+  .page-hero-title {
+    color: #fff;
+    font-size: clamp(30px, 3vw, 42px);
+    letter-spacing: -0.035em;
+    margin-top: 5px;
+  }
+
+  .page-hero-copy {
+    color: rgba(255, 255, 255, 0.77);
+    display: block;
+    font-size: 13px;
+    line-height: 1.55;
+    margin: 9px 0 0;
+    max-width: 480px;
+  }
+
+  .page-hero-art {
+    align-content: end;
+    align-self: stretch;
+    display: grid;
+    gap: 8px;
+    justify-items: end;
+    position: relative;
+    z-index: 1;
+  }
+
+  .page-hero-art span {
+    align-items: center;
+    backdrop-filter: blur(12px);
+    background: rgba(255, 255, 255, 0.13);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 999px;
+    color: #fff;
+    display: inline-flex;
+    font-size: 11px;
+    font-weight: 750;
+    gap: 7px;
+    padding: 8px 12px;
+  }
+
+  .page-hero-art i {
+    font-size: 17px;
+  }
+
+  #page-ficha.page.active {
+    grid-template-areas:
+      "hero hero"
+      "identity ingredients"
+      "label ingredients"
+      "builder ingredients"
+      "builder totals";
+    grid-template-columns: minmax(0, 1.35fr) minmax(330px, 0.85fr);
+    gap: 20px 24px;
+  }
+
+  #page-ficha > .page-hero { grid-area: hero; }
+  #page-ficha > .card:first-of-type { grid-area: identity; }
+  #page-ficha > .section-label { grid-area: label; margin: 2px 0 -10px; }
+  #page-ficha > .ingredient-builder-card { grid-area: builder; }
+  #page-ficha > #ingredients-list { grid-area: ingredients; }
+  #page-ficha > #ficha-totals { grid-area: totals; }
+
+  #page-ficha > .card:first-of-type,
+  #page-ficha > .ingredient-builder-card {
+    border-radius: 24px;
+    padding: 22px;
+  }
+
+  #page-ficha .ingredient-builder-card {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  #page-ficha .builder-step-final {
+    grid-column: 1 / -1;
+  }
+
+  #ingredients-list:empty::before {
+    align-items: center;
+    background: #fff;
+    border: 1px dashed color-mix(in srgb, var(--md-sys-color-outline) 42%, transparent);
+    border-radius: 24px;
+    color: var(--md-sys-color-on-surface-variant);
+    content: "Os ingredientes adicionados aparecem aqui, com custo e origem.";
+    display: flex;
+    font-size: 13px;
+    line-height: 1.55;
+    min-height: 150px;
+    padding: 28px;
+    text-align: center;
+  }
+
+  #ficha-totals {
+    position: static;
+  }
+
+  .workspace-page-heading {
+    align-items: end;
+    display: flex;
+    gap: 24px;
+    grid-column: 1 / -1;
+    justify-content: space-between;
+    padding: 4px 0 8px;
+  }
+
+  .workspace-page-heading h1 {
+    color: var(--md-sys-color-on-surface);
+    font-size: clamp(30px, 3vw, 40px);
+    letter-spacing: -0.035em;
+    line-height: 1.08;
+    margin: 5px 0 8px;
+  }
+
+  .workspace-page-heading p {
+    color: var(--md-sys-color-on-surface-variant);
+    font-size: 14px;
+    line-height: 1.55;
+    margin: 0;
+    max-width: 620px;
+  }
+
+  .workspace-page-eyebrow {
+    color: var(--md-sys-color-primary);
+    font-size: 10px;
+    font-weight: 850;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .workspace-page-action {
+    flex: 0 0 auto;
+    min-height: 46px;
+  }
+
+  #page-estoque,
+  #page-fisico {
+    max-width: none;
+    padding: 32px var(--ft-workspace-gutter) 56px;
+  }
+
+  #page-estoque.page.active,
+  #page-fisico.page.active {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 18px 22px;
+  }
+
+  #page-estoque .stock-category-card,
+  #page-fisico .stock-category-card {
+    grid-column: 1 / -1;
+    margin: 0;
+    width: 100%;
+  }
+
+  #page-estoque .stock-add-card,
+  #page-fisico .stock-add-card {
+    display: none;
+  }
+
+  #page-estoque > .search-bar,
+  #page-fisico > .search-bar {
+    grid-column: 1;
+  }
+
+  #page-estoque .stock-view-row,
+  #page-fisico .stock-view-row {
+    grid-column: 2;
+    justify-content: flex-end;
+    margin: 0;
+  }
+
+  #page-fisico #pstock-summary {
+    grid-column: 1 / -1;
+  }
+
+  #page-estoque #stock-list,
+  #page-fisico #pstock-list {
+    grid-column: 1 / -1;
+  }
+
+  #page-receitas.page.active {
+    gap: 18px;
+  }
+
+  #page-receitas .page-header--recipes {
+    background: #4b0912;
+    border: 0;
+    border-radius: 28px;
+    display: grid;
+    grid-template-columns: minmax(0, 0.9fr) minmax(300px, 1.1fr);
+    min-height: 230px;
+    overflow: hidden;
+    padding: 0;
+  }
+
+  .page-header-copy {
+    align-self: center;
+    padding: 30px 34px;
+  }
+
+  #page-receitas .page-title,
+  #page-receitas .page-sub,
+  #page-receitas .workspace-page-eyebrow {
+    color: #fff;
+  }
+
+  #page-receitas .page-title {
+    font-size: clamp(32px, 3vw, 42px);
+    letter-spacing: -0.04em;
+    margin: 6px 0 8px;
+  }
+
+  #page-receitas .page-sub {
+    color: rgba(255, 255, 255, 0.72);
+    font-size: 13px;
+  }
+
+  .page-header-cta {
+    background: #fff;
+    box-shadow: none;
+    color: var(--md-sys-color-primary);
+    margin-top: 22px;
+  }
+
+  .page-header-image {
+    background:
+      linear-gradient(90deg, #4b0912 0%, transparent 35%),
+      url("../../assets/images/fichatec-kitchen-hero.jpg") center 42% / cover;
+    display: block;
+    min-height: 230px;
+  }
+
+  #page-receitas > .search-bar {
+    margin: 2px 0 0;
+    max-width: 720px;
+  }
+
+  #recipes-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+  }
+
+  .recipe-card {
+    border-radius: 22px;
+    padding: 14px;
+  }
+
+  .recipe-card .recipe-cover {
+    border-radius: 16px;
+    height: 184px !important;
+  }
+}
+
+@media (min-width: 1200px) {
+  body {
+    padding-left: var(--ft-nav-drawer-width);
+  }
+
+  .app-header {
+    left: var(--ft-nav-drawer-width);
+    padding-inline: var(--ft-workspace-gutter);
+  }
+
+  .nav {
+    align-items: stretch;
+    background:
+      radial-gradient(circle at 20% 0%, rgba(213, 61, 75, 0.22), transparent 20rem),
+      linear-gradient(180deg, #241819 0%, #1a1213 100%);
+    border: 0;
+    box-shadow: 12px 0 36px rgba(34, 25, 24, 0.08);
+    gap: 6px;
+    padding: 22px 16px 18px;
+    width: var(--ft-nav-drawer-width);
+  }
+
+  .desktop-nav-brand {
+    align-items: center;
+    color: #fff;
+    display: flex;
+    gap: 12px;
+    margin: 0 6px 26px;
+  }
+
+  .desktop-nav-mark {
+    align-items: center;
+    background: linear-gradient(135deg, #df4652, #a91e2b);
+    border-radius: 14px;
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.22);
+    display: inline-flex;
+    font-size: 14px;
+    font-weight: 900;
+    height: 42px;
+    justify-content: center;
+    width: 42px;
+  }
+
+  .desktop-nav-brand span:last-child {
+    display: grid;
+    gap: 2px;
+  }
+
+  .desktop-nav-brand strong {
+    font-size: 17px;
+    letter-spacing: -0.02em;
+  }
+
+  .desktop-nav-brand small {
+    color: rgba(255, 255, 255, 0.54);
+    font-size: 10px;
+  }
+
+  .desktop-nav-label {
+    color: rgba(255, 255, 255, 0.38);
+    display: block;
+    font-size: 9px;
+    font-weight: 850;
+    letter-spacing: 0.13em;
+    margin: 0 14px 7px;
+    text-transform: uppercase;
+  }
+
+  .nav .nav-fab {
+    display: none;
+  }
+
+  .nav-btn {
+    border-radius: 13px;
+    color: rgba(255, 255, 255, 0.64);
+    font-size: 13px;
+    height: 48px;
+    padding: 0 14px;
+  }
+
+  .nav-btn:hover {
+    background: rgba(255, 255, 255, 0.07);
+    color: #fff;
+  }
+
+  .nav-btn.active {
+    background: #fff;
+    box-shadow: 0 9px 22px rgba(0, 0, 0, 0.18);
+    color: var(--md-sys-color-primary);
+  }
+
+  .nav-btn .material-symbols-rounded,
+  .nav-btn.active .material-symbols-rounded {
+    color: currentColor;
+    font-size: 21px;
+  }
+
+  .desktop-nav-spacer {
+    display: block;
+    flex: 1 1 auto;
+  }
+
+  .desktop-scan-action {
+    align-items: center;
+    background: linear-gradient(135deg, #c52b38, #9f1b28);
+    border: 0;
+    border-radius: 16px;
+    box-shadow: 0 12px 26px rgba(0, 0, 0, 0.18);
+    color: #fff;
+    cursor: pointer;
+    display: flex;
+    gap: 10px;
+    margin: 12px 0;
+    min-height: 66px;
+    padding: 12px 14px;
+    text-align: left;
+    width: 100%;
+  }
+
+  .desktop-scan-action > .material-symbols-rounded {
+    font-size: 25px;
+  }
+
+  .desktop-scan-action span:last-child,
+  .desktop-nav-note span:last-child {
+    display: grid;
+    gap: 3px;
+  }
+
+  .desktop-scan-action strong,
+  .desktop-nav-note strong {
+    font-size: 11px;
+  }
+
+  .desktop-scan-action small,
+  .desktop-nav-note small {
+    font-size: 9px;
+    line-height: 1.35;
+    opacity: 0.7;
+  }
+
+  .desktop-nav-note {
+    align-items: center;
+    border: 1px solid rgba(255, 255, 255, 0.09);
+    border-radius: 14px;
+    color: rgba(255, 255, 255, 0.65);
+    display: flex;
+    gap: 9px;
+    padding: 11px 12px;
+  }
+
+  .desktop-nav-note > .material-symbols-rounded {
+    color: #79c49d;
+    font-size: 20px;
+  }
+
+  .scan-fab {
+    display: none;
+  }
+
+  #recipes-list {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  #page-estoque #stock-list {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  #page-fisico #pstock-list {
+    grid-template-columns: repeat(3, minmax(280px, 1fr));
+  }
+}
+
+@media (min-width: 1680px) {
+  #recipes-list,
+  #page-estoque #stock-list {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  #page-fisico #pstock-list {
+    grid-template-columns: repeat(4, minmax(270px, 1fr));
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1199px) {
+  .page-hero-art,
+  .desktop-header-actions {
+    display: none;
+  }
+
+  #page-ficha.page.active {
+    grid-template-columns: minmax(0, 1fr) minmax(300px, 0.8fr);
+  }
+
+  #page-ficha .ingredient-builder-card {
+    grid-template-columns: 1fr;
+  }
+
+  #page-ficha .builder-step-final {
+    grid-column: auto;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .page.active {
+    animation: none;
+  }
+}
