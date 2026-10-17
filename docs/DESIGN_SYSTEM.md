@@ -34,7 +34,7 @@ Os tokens canônicos ficam em `src/styles/tokens.css`. Aliases legados existem a
 
 ## Tipografia e hierarquia
 
-- `Inter`: interface, títulos e textos.
+- `Roboto`: interface, títulos, textos, formulários e ações.
 - `Roboto Mono`: preços, custos, pesos e outras medidas que precisam alinhar visualmente.
 - `Material Symbols Rounded`: ícones servidos localmente para preservar a interface offline.
 - Títulos usam peso 700–850, espaçamento levemente negativo e frases curtas.

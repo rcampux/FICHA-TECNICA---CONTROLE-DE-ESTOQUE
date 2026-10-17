@@ -156,7 +156,7 @@
     color: var(--md-sys-color-on-surface);
     cursor: pointer;
     display: inline-flex;
-    font: 750 12px/1 Inter, sans-serif;
+    font: 750 12px/1 Roboto, sans-serif;
     gap: 7px;
     min-height: 40px;
     padding: 0 14px;
