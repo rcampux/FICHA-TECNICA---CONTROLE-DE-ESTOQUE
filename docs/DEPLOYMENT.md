@@ -58,6 +58,15 @@ Vercel produção:
 https://ficha-tecnica-controle-de-estoque.vercel.app
 ```
 
+Este e o unico endereco que deve ser compartilhado ou salvo nos navegadores dos usuarios. URLs no formato
+`ficha-tecnica-controle-de-estoque-<hash>-rcampuxs-projects.vercel.app` identificam um deployment especifico e
+continuam apontando para aquela versao congelada. As novas versoes do app redirecionam essas URLs para o dominio
+oficial; para inspecionar deliberadamente um preview, acrescente `?preview=1`.
+
+Cada build da Vercel gera `public/release.json` com um identificador unico. O navegador consulta esse arquivo sem
+cache, registra o Service Worker com o identificador da release, remove caches de interface antigos e recarrega uma
+unica vez quando uma nova versao assume o controle. Sessao, dados locais e credenciais nao sao apagados.
+
 GitHub Pages:
 
 ```text

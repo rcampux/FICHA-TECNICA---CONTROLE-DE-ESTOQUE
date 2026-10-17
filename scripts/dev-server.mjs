@@ -22,7 +22,11 @@ const mimeTypes = {
 
 function resolveRequestPath(url) {
   const requestedPath = decodeURIComponent(new URL(url, `http://localhost:${port}`).pathname);
-  const pathname = requestedPath === "/" ? "/public/index.html" : requestedPath;
+  const pathname = requestedPath === "/"
+    ? "/public/index.html"
+    : requestedPath === "/release.json"
+      ? "/public/release.json"
+      : requestedPath;
   const filePath = normalize(join(root, pathname));
 
   if (!filePath.startsWith(root)) {

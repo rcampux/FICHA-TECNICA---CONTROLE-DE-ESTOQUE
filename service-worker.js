@@ -1,9 +1,24 @@
-const CACHE_VERSION = "fichatec-pwa-v15-production-yield";
-const NETWORK_FIRST_EXTENSIONS = new Set([".css", ".html", ".js", ".webmanifest"]);
+function normalizeReleaseId(value) {
+  return String(value || "source")
+    .trim()
+    .replace(/[^a-zA-Z0-9._-]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 96) || "source";
+}
+
+function getReleaseId() {
+  const workerUrl = new URL(self.location.href);
+  return normalizeReleaseId(workerUrl.searchParams.get("release"));
+}
+
+const RELEASE_ID = getReleaseId();
+const CACHE_VERSION = `fichatec-pwa-${RELEASE_ID}`;
+const NETWORK_FIRST_EXTENSIONS = new Set([".css", ".html", ".js", ".json", ".webmanifest"]);
 const APP_SHELL = [
   "/",
   "/index.html",
   "/manifest.webmanifest",
+  "/release.json",
   "/icons/icon-192.png",
   "/icons/icon-512.png",
   "/icons/icon.svg",
@@ -49,7 +64,7 @@ async function cacheAppShell() {
 
   await Promise.allSettled(
     APP_SHELL.map(async (url) => {
-      const response = await fetch(url, {cache:"reload"});
+      const response = await fetch(url, {cache:"no-store"});
       if (shouldCacheResponse(response)) {
         await cache.put(url, response);
       }
@@ -59,12 +74,16 @@ async function cacheAppShell() {
 
 async function deleteOldCaches() {
   const keys = await caches.keys();
-  await Promise.all(keys.filter((key) => key !== CACHE_VERSION).map((key) => caches.delete(key)));
+  await Promise.all(
+    keys
+      .filter((key) => key.startsWith("fichatec-pwa-") && key !== CACHE_VERSION)
+      .map((key) => caches.delete(key))
+  );
 }
 
 async function networkFirstNavigation(request) {
   try {
-    const response = await fetch(request);
+    const response = await fetch(new Request(request, {cache:"no-store"}));
     if (shouldCacheResponse(response)) {
       const cache = await caches.open(CACHE_VERSION);
       await cache.put(request, response.clone());
@@ -97,7 +116,7 @@ function shouldUseNetworkFirstAsset(url) {
 
 async function networkFirstAsset(request) {
   try {
-    const response = await fetch(new Request(request, {cache:"reload"}));
+    const response = await fetch(new Request(request, {cache:"no-store"}));
     if (shouldCacheResponse(response)) {
       const cache = await caches.open(CACHE_VERSION);
       await cache.put(request, response.clone());

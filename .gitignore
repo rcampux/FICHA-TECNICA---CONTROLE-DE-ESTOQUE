@@ -2,6 +2,7 @@ node_modules/
 .vercel/
 public/src/
 public/assets/
+public/release.json
 *.log
 dev-server.*.log
 .DS_Store

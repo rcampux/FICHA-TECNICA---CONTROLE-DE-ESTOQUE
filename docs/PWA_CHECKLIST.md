@@ -5,11 +5,12 @@ Este documento acompanha a evolucao do app como PWA instalavel.
 ## Implementado
 
 - `manifest.webmanifest` na raiz do projeto.
-- `service-worker.js` v14 com invalidação das versões anteriores, app shell visual completo e atualização imediata das abas controladas.
+- `service-worker.js` recebe automaticamente o identificador único do deployment e invalida as versões anteriores antes de assumir as abas abertas.
 - Copia dos assets PWA em `public/` para publicacao correta na Vercel.
-- Build `npm run build` sincroniza `src`, assets e o Service Worker canônico para `public/`, garantindo CSS, JS e estratégia de atualização coerentes na Vercel.
-- Registro não bloqueante de `/service-worker.js` em `src/pwa/registerServiceWorker.js`, com limpeza única dos caches da interface por release sem apagar sessão ou dados do usuário.
-- Atualizacao resiliente na inicializacao, no retorno da rede e ao retomar a pagina, com ativacao da nova versao e uma unica recarga controlada.
+- Build `npm run build` sincroniza `src`, assets e o Service Worker canônico para `public/` e gera `release.json` a partir do deployment/commit atual.
+- Registro não bloqueante de `/service-worker.js?release=<deployment>` em `src/pwa/registerServiceWorker.js`, com limpeza dos caches de interface anteriores sem apagar sessão ou dados do usuário.
+- Atualizacao resiliente na inicializacao, a cada cinco minutos enquanto visivel, no retorno da rede e ao retomar a pagina, com ativacao da nova versao e uma unica recarga controlada.
+- URLs geradas e congeladas da Vercel redirecionam para o dominio oficial; `?preview=1` mantem uma URL de preview acessivel para QA.
 - Icone SVG temporario em `icons/icon.svg`.
 - Icones PNG temporarios em `icons/icon-192.png` e `icons/icon-512.png`.
 - Metatags mobile e `theme-color` no HTML principal.
@@ -17,7 +18,7 @@ Este documento acompanha a evolucao do app como PWA instalavel.
 
 ## Estrategia Atual
 
-- Cache-first somente para arquivos estáticos não críticos; imagens e ícones publicados exigem revalidação HTTP em vez de permanecer imutáveis.
+- Cache-first somente para arquivos estáticos não críticos dentro do cache isolado do deployment; a troca de release elimina o cache anterior inteiro.
 - Network-first para navegacao, com fallback para app shell.
 - Sem cache para rotas `/api/`, porque scanner/IA e futuras chamadas autenticadas devem buscar dados atuais.
 - O app shell inclui o controle de acesso por plano e a imagem principal da experiencia inicial.
@@ -32,8 +33,10 @@ Este documento acompanha a evolucao do app como PWA instalavel.
 4. Abrir instalado e navegar entre Ficha, Virtual, Fisico e Receitas.
 5. Ativar modo aviao e validar se a interface base ainda abre.
 6. Voltar online e confirmar que o app verifica atualizacoes sem travar a interface.
-7. Abrir `/?action=scanner`, autenticar se necessario e confirmar que o scanner abre uma unica vez.
-8. Testar scanner quando a API estiver configurada.
+7. Abrir uma URL gerada `*-rcampuxs-projects.vercel.app` e confirmar o redirecionamento para `https://ficha-tecnica-controle-de-estoque.vercel.app/`.
+8. Abrir uma URL gerada com `?preview=1` e confirmar que ela permanece disponivel para QA.
+9. Abrir `/?action=scanner`, autenticar se necessario e confirmar que o scanner abre uma unica vez.
+10. Testar scanner quando a API estiver configurada.
 
 ## Pendencias Futuras
 

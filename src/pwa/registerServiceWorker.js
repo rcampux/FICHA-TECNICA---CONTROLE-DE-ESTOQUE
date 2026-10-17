@@ -1,27 +1,55 @@
 (function registerFichaTecServiceWorker() {
   const SCANNER_ACTION = "scanner";
   const SHORTCUT_TIMEOUT_MS = 5 * 60 * 1000;
-  const RELEASE_ID = "2026.10.17-production-yield";
+  const UPDATE_INTERVAL_MS = 5 * 60 * 1000;
   const RELEASE_CACHE_KEY = "fichatec.ui.release";
-  const ACTIVE_CACHE_NAME = "fichatec-pwa-v15-production-yield";
   let isReloadingForUpdate = false;
   let shouldReloadForUpdate = Boolean(navigator.serviceWorker?.controller);
+  let activeReleaseId = "source";
+  let releaseCheckPromise = null;
 
-  async function clearOutdatedBrowserCaches() {
+  function normalizeReleaseId(value) {
+    return String(value || "source")
+      .trim()
+      .replace(/[^a-zA-Z0-9._-]+/g, "-")
+      .replace(/^-+|-+$/g, "")
+      .slice(0, 96) || "source";
+  }
+
+  async function fetchReleaseId() {
+    const releaseUrl = new URL("/release.json", window.location.origin);
+    releaseUrl.searchParams.set("t", String(Date.now()));
+
+    const response = await window.fetch(releaseUrl, {
+      cache: "no-store",
+      headers: {"Cache-Control":"no-cache"},
+    });
+    if (!response.ok) throw new Error(`Release indisponivel (${response.status})`);
+
+    const release = await response.json();
+    return normalizeReleaseId(release?.releaseId);
+  }
+
+  async function clearOutdatedBrowserCaches(releaseId) {
     if (!("caches" in window)) return;
 
     try {
-      if (window.localStorage.getItem(RELEASE_CACHE_KEY) === RELEASE_ID) return;
+      if (window.localStorage.getItem(RELEASE_CACHE_KEY) === releaseId) return;
 
       const cacheNames = await window.caches.keys();
       const outdatedCacheNames = cacheNames.filter(
-        (cacheName) => cacheName.startsWith("fichatec-") && cacheName !== ACTIVE_CACHE_NAME
+        (cacheName) => cacheName.startsWith("fichatec-pwa-")
+          && cacheName !== `fichatec-pwa-${releaseId}`
       );
       await Promise.all(outdatedCacheNames.map((cacheName) => window.caches.delete(cacheName)));
-      window.localStorage.setItem(RELEASE_CACHE_KEY, RELEASE_ID);
+      window.localStorage.setItem(RELEASE_CACHE_KEY, releaseId);
     } catch (error) {
       console.warn("Nao foi possivel limpar caches antigos da interface:", error);
     }
+  }
+
+  function buildServiceWorkerUrl(releaseId) {
+    return `/service-worker.js?release=${encodeURIComponent(normalizeReleaseId(releaseId))}`;
   }
 
   function handleLaunchShortcut() {
@@ -80,6 +108,35 @@
     });
   }
 
+  function synchronizePublishedRelease(registration) {
+    if (releaseCheckPromise) return releaseCheckPromise;
+
+    releaseCheckPromise = (async () => {
+      const latestReleaseId = await fetchReleaseId();
+      if (latestReleaseId === activeReleaseId) {
+        requestServiceWorkerUpdate(registration);
+        return;
+      }
+
+      activeReleaseId = latestReleaseId;
+      await clearOutdatedBrowserCaches(latestReleaseId);
+      const updatedRegistration = await navigator.serviceWorker.register(
+        buildServiceWorkerUrl(latestReleaseId),
+        {scope:"/", updateViaCache:"none"}
+      );
+      updatedRegistration.waiting?.postMessage({type:"SKIP_WAITING"});
+      requestServiceWorkerUpdate(updatedRegistration);
+    })()
+      .catch((error) => {
+        console.warn("Nao foi possivel sincronizar a versao publicada:", error);
+      })
+      .finally(() => {
+        releaseCheckPromise = null;
+      });
+
+    return releaseCheckPromise;
+  }
+
   function monitorServiceWorkerUpdates(registration) {
     function activateWaitingWorker() {
       registration.waiting?.postMessage({type:"SKIP_WAITING"});
@@ -98,17 +155,23 @@
       });
     });
 
-    window.addEventListener("online", () => requestServiceWorkerUpdate(registration));
+    window.addEventListener("online", () => synchronizePublishedRelease(registration));
     document.addEventListener("visibilitychange", () => {
       if (document.visibilityState === "visible") {
-        requestServiceWorkerUpdate(registration);
+        synchronizePublishedRelease(registration);
       }
     });
 
-    requestServiceWorkerUpdate(registration);
+    window.setInterval(() => {
+      if (document.visibilityState === "visible" && navigator.onLine) {
+        synchronizePublishedRelease(registration);
+      }
+    }, UPDATE_INTERVAL_MS);
+
+    synchronizePublishedRelease(registration);
   }
 
-  function registerServiceWorker() {
+  async function registerServiceWorker() {
     if (!("serviceWorker" in navigator)) return;
 
     navigator.serviceWorker.addEventListener("controllerchange", () => {
@@ -122,10 +185,20 @@
       window.location.reload();
     });
 
+    let releaseId = "source";
+    try {
+      releaseId = await fetchReleaseId();
+    } catch (error) {
+      console.warn("Nao foi possivel consultar a versao publicada:", error);
+    }
+
+    activeReleaseId = releaseId;
+    const serviceWorkerUrl = buildServiceWorkerUrl(releaseId);
+
     navigator.serviceWorker
-      .register("/service-worker.js", {scope:"/", updateViaCache:"none"})
+      .register(serviceWorkerUrl, {scope:"/", updateViaCache:"none"})
       .then(async (registration) => {
-        await clearOutdatedBrowserCaches();
+        await clearOutdatedBrowserCaches(releaseId);
         monitorServiceWorkerUpdates(registration);
       })
       .catch((error) => {

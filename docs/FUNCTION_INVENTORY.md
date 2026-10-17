@@ -14,10 +14,14 @@ Este arquivo e um inventario vivo das funcoes utilizadas no projeto. Toda nova f
 
 | Funcao | Arquivo | Linha | Responsabilidade inicial |
 | --- | --- | ---: | --- |
-| `resolveRequestPath` | `scripts/dev-server.mjs` | 19 | function resolveRequestPath(url) { |
+| `resolveRequestPath` | `scripts/dev-server.mjs` | 19 | Resolve a pagina inicial e o manifesto dinamico de release no servidor local, bloqueando caminhos fora do projeto. |
 | `toQuotedString` | `scripts/sync-public-assets.mjs` | 9 | Serializa valores de ambiente para gerar JS publico seguro. |
+| `normalizeReleaseId` | `scripts/sync-public-assets.mjs` | 18 | Normaliza o identificador do deployment/commit para uso seguro no manifesto publico de release. |
+| `resolveReleaseId` | `scripts/sync-public-assets.mjs` | 26 | Seleciona deployment, URL ou commit da Vercel/GitHub como versao automatica do build. |
 | `buildPublicEnvConfig` | `scripts/sync-public-assets.mjs` | 13 | Gera `public/src/config/env.js` com modo local ou Supabase no build. |
+| `buildPublicReleaseManifest` | `scripts/sync-public-assets.mjs` | 55 | Gera `public/release.json` sem cache para que os navegadores descubram cada novo deployment. |
 | `syncPublicAssets` | `scripts/sync-public-assets.mjs` | 36 | Sincroniza código, assets e o Service Worker canônico para `public/` e injeta a configuração pública. |
+| `redirectGeneratedVercelDeployment` | `public/index.html` | 14 | Redireciona URLs congeladas de deployment para o dominio oficial, preservando `?preview=1` para QA. |
 | `showToast` | `src/app.js` | 11 | function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);} |
 | `confirmAction` | `src/app.js` | 13 | Abre modal de confirmacao visual com opcoes de sim/nao para acoes destrutivas. |
 | `closeConfirmAction` | `src/app.js` | 21 | Fecha o modal de confirmacao e resolve a decisao pendente. |
@@ -268,6 +272,11 @@ Este arquivo e um inventario vivo das funcoes utilizadas no projeto. Toda nova f
 | `deleteStock` | `src/modules/stock/virtualStock.js` | 163 | Exclui produto virtual apos confirmacao visual e sincroniza o snapshot remoto. |
 | `renderStock` | `src/modules/stock/virtualStock.js` | 143 | Renderiza estoque virtual com `data-stock-id` e delegacao de eventos para CRUD estavel apos refresh. |
 | `registerFichaTecServiceWorker` | `src/pwa/registerServiceWorker.js` | 1 | Inicializa, sem bloquear o boot, o atalho do scanner e o ciclo de registro/atualizacao da PWA. |
+| `normalizeReleaseId` | `src/pwa/registerServiceWorker.js` | 11 | Normaliza a release publicada antes de compor URL e nome de cache do Service Worker. |
+| `fetchReleaseId` | `src/pwa/registerServiceWorker.js` | 19 | Consulta `release.json` com `no-store` e parametro unico para descobrir atualizacoes sem cache intermediario. |
+| `buildServiceWorkerUrl` | `src/pwa/registerServiceWorker.js` | 51 | Monta a URL versionada do Service Worker para cada deployment. |
+| `synchronizePublishedRelease` | `src/pwa/registerServiceWorker.js` | 111 | Detecta uma release diferente, limpa caches antigos e registra/ativa o novo Service Worker. |
+| `monitorServiceWorkerUpdates` | `src/pwa/registerServiceWorker.js` | 140 | Verifica release ao iniciar, retomar, reconectar e periodicamente enquanto o app esta visivel. |
 | `handleLaunchShortcut` | `src/pwa/registerServiceWorker.js` | 7 | Preserva `?action=scanner` durante splash/login e abre o scanner assim que a interface autenticada estiver disponivel. |
 | `stopWatching` | `src/pwa/registerServiceWorker.js` | 14 | Encerra o observer e o timeout usados pelo atalho do scanner. |
 | `tryOpenScanner` | `src/pwa/registerServiceWorker.js` | 19 | Tenta abrir o scanner apenas fora do boot e do modal de autenticacao, consumindo a acao da URL apos sucesso. |
@@ -276,7 +285,9 @@ Este arquivo e um inventario vivo das funcoes utilizadas no projeto. Toda nova f
 | `monitorServiceWorkerUpdates` | `src/pwa/registerServiceWorker.js` | 63 | Ativa workers em espera e verifica novas versoes ao registrar, voltar online ou retomar a pagina. |
 | `activateWaitingWorker` | `src/pwa/registerServiceWorker.js` | 64 | Solicita ativacao imediata de uma versao do worker que ja esteja aguardando. |
 | `registerServiceWorker` | `src/pwa/registerServiceWorker.js` | 91 | Registra `/service-worker.js` com escopo raiz, atualizacao fora do cache HTTP e recarga unica ao trocar o controlador. |
-| `clearOutdatedBrowserCaches` | `src/pwa/registerServiceWorker.js` | 10 | Remove uma unica vez os caches de interface de releases anteriores, preservando sessao e dados locais do usuario. |
+| `clearOutdatedBrowserCaches` | `src/pwa/registerServiceWorker.js` | 33 | Remove os caches de interface de releases anteriores, preservando sessao e dados locais do usuario. |
+| `normalizeReleaseId` | `service-worker.js` / `public/service-worker.js` | 1 | Sanitiza a release recebida na propria URL do worker para isolar o cache do deployment. |
+| `getReleaseId` | `service-worker.js` / `public/service-worker.js` | 9 | Le a release do parametro do Service Worker e define a versao ativa do app shell. |
 | `shouldCacheResponse` | `service-worker.js` / `public/service-worker.js` | 39 | Valida respostas antes de inserir no cache PWA, evitando cache de 404/HTML inesperado. |
 | `cacheAppShell` | `service-worker.js` / `public/service-worker.js` | 43 | Pre-carrega assets principais, incluindo controle de planos e imagem principal, com tolerancia a falhas individuais. |
 | `deleteOldCaches` | `service-worker.js` / `public/service-worker.js` | 58 | Remove versoes antigas do cache PWA na ativacao antes de assumir todas as abas abertas. |

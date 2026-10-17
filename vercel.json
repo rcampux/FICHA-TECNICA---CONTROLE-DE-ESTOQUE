@@ -9,6 +9,10 @@
       "destination": "/public/service-worker.js"
     },
     {
+      "source": "/release.json",
+      "destination": "/public/release.json"
+    },
+    {
       "source": "/icons/(.*)",
       "destination": "/public/icons/$1"
     },
@@ -23,7 +27,15 @@
       "headers": [
         {
           "key": "Cache-Control",
-          "value": "no-store"
+          "value": "no-store, max-age=0, must-revalidate"
+        },
+        {
+          "key": "Pragma",
+          "value": "no-cache"
+        },
+        {
+          "key": "Expires",
+          "value": "0"
         }
       ]
     },
@@ -47,6 +59,15 @@
     },
     {
       "source": "/service-worker.js",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-store, max-age=0, must-revalidate"
+        }
+      ]
+    },
+    {
+      "source": "/release.json",
       "headers": [
         {
           "key": "Cache-Control",
