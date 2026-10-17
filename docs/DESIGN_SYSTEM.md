@@ -1,200 +1,107 @@
-# FichaTec - Design System
+# FichaTec — Design System
 
-## 1. Direcao Visual
+## Direção
 
-O FichaTec usara Material Design 3 como fundacao de UX/UI:
+O FichaTec é uma ferramenta de produção para cozinhas: precisa transmitir precisão, ritmo e confiança sem ficar frio. A linguagem combina a objetividade de produtos de delivery com uma identidade própria de cozinha profissional.
 
-- Tokens semanticos de cor, tipografia, espacamento e elevacao.
-- Componentes consistentes e acessiveis.
-- Estados claros: hover, focus, pressed, disabled, loading e error.
-- Layout mobile first com adaptacao real para tablet e desktop.
-- Interface operacional, densa na medida certa e otimizada para rotina de cozinha.
+Princípios:
 
-Referencia principal:
+- Direto ao ponto: uma ação principal clara por contexto.
+- Comida em primeiro plano: fotografia somente quando ajuda a reconhecer uma receita ou situar a experiência.
+- Operação legível: custos, estoque e rendimento têm hierarquia forte.
+- Calor com precisão: superfícies claras e quentes, vermelho culinário para ação e verde manjericão para estoque, lucro e sucesso.
+- Mobile first: alvos de toque de pelo menos 44 px e campos de 16 px no celular.
 
-- https://m3.material.io/get-started
-- https://tech.ifood.com.br/en/front-end/ifds-por-dentro-dos-padroes-de-engenharia-e-arquitetura-de-componentes-do-ifood-design-system/
+## Paleta semântica
 
-## 1.1. Aprendizados do iFood Design System
+| Papel | Cor | Uso |
+| --- | --- | --- |
+| Primária | `#B4232F` | Marca, CTA principal, seleção e foco |
+| Primária pressionada | `#8F1724` | Hover/pressed de CTA |
+| Container primário | `#FFDAD9` | Seleção suave e destaques |
+| Manjericão | `#2F6B4F` | Estoque, margem, sucesso |
+| Container verde | `#B4F1CC` | Feedback positivo |
+| Superfície | `#FFF8F7` | Fundo geral |
+| Superfície baixa | `#FFF1EF` | Agrupamentos e campos auxiliares |
+| Superfície elevada | `#FFFFFF` | Cards, modais e formulários |
+| Texto principal | `#221918` | Títulos e conteúdo prioritário |
+| Texto secundário | `#58413E` | Apoio e metadados |
+| Contorno | `#8C716D` | Bordas e divisores |
+| Erro | `#BA1A1A` | Erro destrutivo, sempre com texto/ícone |
+| Alerta | `#8A4F00` | Atenção sem caráter destrutivo |
 
-A inspiracao no iFood deve ser principalmente estrutural:
+Os tokens canônicos ficam em `src/styles/tokens.css`. Aliases legados existem apenas para compatibilidade durante a migração.
 
-- Separar linguagem visual de implementacao.
-- Usar tokens como fonte de verdade.
-- Evitar valores soltos e duplicados no CSS.
-- Dividir componentes em camadas: fundamentos reutilizaveis, padroes globais e componentes especificos de produto.
-- Manter consistencia entre mobile, tablet e desktop sem duplicar logica visual.
+## Tipografia e hierarquia
 
-O FichaTec nao deve copiar a marca iFood. A referencia e a maturidade do sistema: clareza, agilidade, componentes consistentes, hierarquia forte e experiencia familiar para comida/operacao.
+- `Inter`: interface, títulos e textos.
+- `Roboto Mono`: preços, custos, pesos e outras medidas que precisam alinhar visualmente.
+- `Material Symbols Rounded`: ícones servidos localmente para preservar a interface offline.
+- Títulos usam peso 700–850, espaçamento levemente negativo e frases curtas.
+- Texto de apoio não deve depender apenas de cor para comunicar estado.
 
-## 2. Interpretacao Para o Produto
+## Componentes
 
-Material 3 sera a base, mas o FichaTec precisa ter identidade propria.
+### Splash
 
-O app deve parecer:
+- Estado único `boot → auth → app`, controlado pelo JavaScript.
+- Marca central, órbita curta e barra de progresso.
+- Saída animada antes de ocultar o elemento.
+- Em movimento reduzido, a animação termina quase imediatamente.
 
-- Profissional.
-- Rapido.
-- Confiavel.
-- Moderno.
-- Familiar para usuarios brasileiros.
-- Inspirado na fluidez de apps como iFood, sem copiar marca, cores proprietarias ou componentes identicos.
+### Autenticação
 
-## 3. Mobile First
+- Desktop: composição dividida entre imagem editorial e formulário.
+- Mobile: imagem vira cabeçalho compacto; formulário ocupa a área útil.
+- Estados: entrar, criar conta, recuperar acesso, definir nova senha, verificar e-mail e workspace.
+- Mensagens de recuperação são neutras para não revelar se um e-mail possui conta.
 
-### Mobile
+### Cards
 
-- Navegacao principal inferior.
-- Acoes primarias sempre ao alcance do polegar.
-- Formularios em etapas curtas.
-- Cards com informacao essencial.
-- Modais devem virar bottom sheets quando fizer sentido.
-- Scanner e criacao de ficha devem ser fluxos muito rapidos.
+- Fundo branco, borda fina e sombra discreta.
+- Imagem tem função de reconhecimento; sem imagem, o sistema usa ícone e paleta determinísticos pelo ID da receita, sem mudar ao renomeá-la.
+- Ações secundárias não disputam atenção com preço, nome ou estado.
 
-### Tablet
+### Formulários e ações
 
-- Aproveitar largura com duas colunas.
-- Lista de receitas/estoque de um lado e detalhe do outro.
-- Menos modais, mais paineis laterais.
-- Melhor uso para edicao de ficha tecnica completa.
+- Botão preenchido: ação principal.
+- Botão tonal/quiet: ação secundária.
+- Botão de perigo: exclusão e ações irreversíveis.
+- Campos têm foco visível e altura mínima de 48 px.
+- Upload de capa aceita JPG, PNG e WebP, otimiza para JPEG e remove metadados no navegador.
 
-### Desktop
+## Movimento
 
-- Layout com navegacao lateral.
-- Tabelas mais completas.
-- Painel de detalhes persistente.
-- Mais densidade para gestao de estoque, historico e relatorios.
-- Evitar cara de landing page; desktop e ferramenta de trabalho.
+- Curto e funcional: 160–420 ms.
+- Curva de entrada: `cubic-bezier(0.16, 1, 0.3, 1)`.
+- Evitar rotação 3D, parallax longo ou animação que atrase a tarefa.
+- `prefers-reduced-motion` reduz animações, transições e rolagem suave.
 
-## 4. Componentes Base
+## Imagens
 
-Priorizar componentes Material 3 equivalentes:
+- A imagem editorial aparece somente no acesso, onde cria contexto e identidade.
+- Fotos de receita são adicionadas pelo usuário e sempre possuem alternativa visual.
+- O asset editorial local é `assets/images/fichatec-kitchen-hero.jpg`.
+- Créditos e origem ficam em `docs/ASSET_LICENSES.md`.
 
-- Navigation bar no mobile.
-- Navigation rail/tablet.
-- Navigation drawer/desktop.
-- Top app bar.
-- Filled button para acao primaria.
-- Outlined/text buttons para acoes secundarias.
-- Floating action button apenas para a acao dominante da tela.
-- Cards para receitas, ingredientes e produtos.
-- Chips para filtros, tags e categorias.
-- Dialogs e bottom sheets.
-- Text fields.
-- Search bar.
-- Segmented buttons.
-- Tabs quando houver secoes irmas.
-- Snackbars/toasts.
-- Progress indicators.
-- Badges para status, plano e premium.
+## Responsividade
 
-## 5. Tokens Iniciais
+- Até 767 px: navegação inferior, formulários em uma coluna e autenticação em tela cheia.
+- 768–1199 px: rail lateral e grids de duas colunas.
+- 1200 px ou mais: drawer lateral, maior densidade e até três cards por linha.
 
-Os tokens finais devem ser ajustados durante a implementacao visual, mas a estrutura deve nascer assim:
+## Acessibilidade
 
-```css
-:root {
-  --md-sys-color-primary: #BA1A1A;
-  --md-sys-color-on-primary: #FFFFFF;
-  --md-sys-color-primary-container: #FFDAD6;
-  --md-sys-color-on-primary-container: #410002;
+- Contraste AA para textos e controles essenciais.
+- Navegação por teclado e foco visível.
+- Labels associados aos campos e mensagens com `role=status` ou `role=alert`.
+- Ícones de ação possuem texto ou nome acessível.
+- Cor nunca é a única forma de indicar erro, sucesso ou alteração de preço.
 
-  --md-sys-color-secondary: #775653;
-  --md-sys-color-on-secondary: #FFFFFF;
-  --md-sys-color-secondary-container: #FFDAD6;
-  --md-sys-color-on-secondary-container: #2C1513;
+## Arquivos de referência
 
-  --md-sys-color-surface: #FFFBFF;
-  --md-sys-color-on-surface: #201A19;
-  --md-sys-color-surface-container-low: #FFF8F7;
-  --md-sys-color-surface-container: #F5EEEC;
-  --md-sys-color-surface-container-high: #EFE9E7;
-
-  --md-sys-color-outline: #857371;
-  --md-sys-color-error: #BA1A1A;
-  --md-sys-color-success: #1E7D42;
-  --md-sys-color-warning: #8A5700;
-
-  --md-sys-shape-corner-small: 8px;
-  --md-sys-shape-corner-medium: 12px;
-  --md-sys-shape-corner-large: 16px;
-  --md-sys-shape-corner-extra-large: 24px;
-}
-```
-
-Observacao: vermelho pode ser usado como acento inspirado no mercado food delivery, mas a paleta final deve equilibrar vermelho com neutros quentes, verdes de sucesso/estoque e tons funcionais. O app nao deve virar uma tela monocromatica vermelha.
-
-## 6. Tipografia
-
-Usar escala baseada em Material 3:
-
-- Display: evitar no app operacional, usar apenas em onboarding/marketing.
-- Headline: titulos de paginas principais.
-- Title: cards, secoes e modais.
-- Body: conteudo e formularios.
-- Label: botoes, chips, metadados e campos.
-
-Regras:
-
-- Nada de textos gigantes dentro de cards operacionais.
-- Numeros financeiros devem ter excelente legibilidade.
-- Custos, unidades e valores podem usar fonte monoespacada em contextos de calculo.
-- Mobile precisa de hierarquia clara sem desperdiçar altura.
-
-## 7. Padroes de Tela
-
-### Home logada
-
-- Resumo de receitas.
-- Alertas de estoque.
-- Atalhos: Nova ficha, Novo produto, Digitalizar receita, Digitalizar rotulo.
-- Indicador de plano e uso de IA se aplicavel.
-
-### Ficha tecnica
-
-- Fluxo guiado.
-- Total sempre visivel em area sticky ou resumo fixo.
-- Ingredientes editaveis rapidamente.
-- Custo por porcao, custo por kg/unidade, preco sugerido e margem.
-
-### Estoque
-
-- Busca forte.
-- Filtros por categoria, fornecedor e status.
-- Indicadores de baixo estoque.
-- Historico de movimentacao acessivel.
-
-### Scanner IA
-
-- Captura.
-- Processamento.
-- Rascunho revisavel.
-- Match com ingredientes existentes.
-- Salvamento explicito.
-
-### Planos
-
-- Comparacao clara.
-- Destaque honesto para plano recomendado.
-- Recursos premium explicados com exemplos concretos.
-
-## 8. Acessibilidade
-
-- Contraste adequado.
-- Estados de foco visiveis.
-- Labels reais nos campos.
-- Botoes com area de toque confortavel.
-- Icones acompanhados de texto quando a acao nao for obvia.
-- Feedback claro de erros de formulario.
-
-## 9. Proximo Uso na Implementacao
-
-Na fase de refatoracao, criar:
-
-- `src/styles/tokens.css`
-- `src/styles/base.css`
-- `src/styles/components.css`
-- `src/styles/layout.css`
-- `src/styles/pages.css`
-
-A primeira entrega visual deve converter a interface atual para tokens Material 3 sem quebrar regra de negocio.
+- `src/styles/tokens.css`: tokens semânticos.
+- `src/styles/experience.css`: splash, acesso, capas e acabamentos de marca.
+- `src/styles/components.css`: componentes reutilizáveis.
+- `src/styles/layout.css`: breakpoints e navegação adaptativa.
+- `src/styles/pages.css`: composição das páginas.

@@ -4,6 +4,8 @@ import { resolve } from "node:path";
 const root = resolve(process.cwd());
 const srcDir = resolve(root, "src");
 const publicSrcDir = resolve(root, "public", "src");
+const assetsDir = resolve(root, "assets");
+const publicAssetsDir = resolve(root, "public", "assets");
 const publicEnvFile = resolve(publicSrcDir, "config", "env.js");
 
 function toQuotedString(value) {
@@ -31,8 +33,10 @@ async function buildPublicEnvConfig() {
 
 async function syncPublicAssets() {
   await rm(publicSrcDir, {recursive:true, force:true});
+  await rm(publicAssetsDir, {recursive:true, force:true});
   await mkdir(publicSrcDir, {recursive:true});
   await cp(srcDir, publicSrcDir, {recursive:true});
+  await cp(assetsDir, publicAssetsDir, {recursive:true});
   await buildPublicEnvConfig();
 }
 

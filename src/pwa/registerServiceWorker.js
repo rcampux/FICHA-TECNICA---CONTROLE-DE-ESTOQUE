@@ -1,46 +1,120 @@
 (function registerFichaTecServiceWorker() {
-  const SW_BUILD = "2026-05-23-hotfix-3";
+  const SCANNER_ACTION = "scanner";
+  const SHORTCUT_TIMEOUT_MS = 5 * 60 * 1000;
+  let isReloadingForUpdate = false;
+  let shouldReloadForUpdate = Boolean(navigator.serviceWorker?.controller);
 
   function handleLaunchShortcut() {
-    const params = new URLSearchParams(window.location.search);
-    if (params.get("action") !== "scanner") return;
+    const currentUrl = new URL(window.location.href);
+    if (currentUrl.searchParams.get("action") !== SCANNER_ACTION) return;
 
-    window.addEventListener("load", () => {
-      if (typeof window.openScanModal === "function") {
-        window.openScanModal();
+    let observer;
+    let timeoutId;
+
+    function stopWatching() {
+      observer?.disconnect();
+      window.clearTimeout(timeoutId);
+    }
+
+    function tryOpenScanner() {
+      const authModal = document.getElementById("modal-auth");
+      const isBooting = document.body.classList.contains("app-booting");
+      const isAuthOpen = authModal?.classList.contains("open");
+
+      if (isBooting || isAuthOpen || typeof window.openScanModal !== "function") {
+        return false;
       }
+
+      window.openScanModal();
+      currentUrl.searchParams.delete("action");
+      window.history.replaceState(window.history.state, "", currentUrl);
+      stopWatching();
+      return true;
+    }
+
+    function watchUntilScannerIsAvailable() {
+      if (tryOpenScanner()) return;
+
+      observer = new MutationObserver(tryOpenScanner);
+      observer.observe(document.body, {attributes:true, attributeFilter:["class"]});
+
+      const authModal = document.getElementById("modal-auth");
+      if (authModal) {
+        observer.observe(authModal, {attributes:true, attributeFilter:["class"]});
+      }
+
+      timeoutId = window.setTimeout(stopWatching, SHORTCUT_TIMEOUT_MS);
+    }
+
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", watchUntilScannerIsAvailable, {once:true});
+      return;
+    }
+
+    watchUntilScannerIsAvailable();
+  }
+
+  function requestServiceWorkerUpdate(registration) {
+    registration.update().catch((error) => {
+      console.warn("Nao foi possivel verificar uma atualizacao da PWA:", error);
     });
   }
 
-  async function clearServiceWorkerStateIfNeeded() {
-    if (!("serviceWorker" in navigator)) return;
+  function monitorServiceWorkerUpdates(registration) {
+    function activateWaitingWorker() {
+      registration.waiting?.postMessage({type:"SKIP_WAITING"});
+    }
 
-    try {
-      const registrations = await navigator.serviceWorker.getRegistrations();
-      await Promise.all(registrations.map((registration) => registration.unregister()));
-      if ("caches" in window) {
-        const keys = await caches.keys();
-        await Promise.all(keys.map((key) => caches.delete(key)));
+    activateWaitingWorker();
+
+    registration.addEventListener("updatefound", () => {
+      const installingWorker = registration.installing;
+      if (!installingWorker) return;
+
+      installingWorker.addEventListener("statechange", () => {
+        if (installingWorker.state === "installed" && navigator.serviceWorker.controller) {
+          installingWorker.postMessage({type:"SKIP_WAITING"});
+        }
+      });
+    });
+
+    window.addEventListener("online", () => requestServiceWorkerUpdate(registration));
+    document.addEventListener("visibilitychange", () => {
+      if (document.visibilityState === "visible") {
+        requestServiceWorkerUpdate(registration);
       }
-    } catch (error) {
-      console.warn("Service worker reset failed:", error);
-    }
+    });
 
-    try {
-      localStorage.removeItem("fichatec.sw.build");
-      localStorage.setItem("fichatec.sw.disabled", JSON.stringify({build:SW_BUILD, disabled:true, at:Date.now()}));
-    } catch (_error) {
-      // no-op
-    }
+    requestServiceWorkerUpdate(registration);
   }
 
   function registerServiceWorker() {
     if (!("serviceWorker" in navigator)) return;
-    window.addEventListener("load", async () => {
-      await clearServiceWorkerStateIfNeeded();
+
+    navigator.serviceWorker.addEventListener("controllerchange", () => {
+      if (!shouldReloadForUpdate) {
+        shouldReloadForUpdate = true;
+        return;
+      }
+
+      if (isReloadingForUpdate) return;
+      isReloadingForUpdate = true;
+      window.location.reload();
     });
+
+    navigator.serviceWorker
+      .register("/service-worker.js", {scope:"/", updateViaCache:"none"})
+      .then(monitorServiceWorkerUpdates)
+      .catch((error) => {
+        console.warn("Nao foi possivel ativar os recursos offline da PWA:", error);
+      });
   }
 
   handleLaunchShortcut();
-  registerServiceWorker();
+
+  if (document.readyState === "complete") {
+    window.setTimeout(registerServiceWorker, 0);
+  } else {
+    window.addEventListener("load", () => window.setTimeout(registerServiceWorker, 0), {once:true});
+  }
 })();

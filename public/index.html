@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#2F6F4E">
+<meta name="theme-color" content="#B4232F">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="FichaTec">
@@ -14,7 +14,6 @@
 <link rel="apple-touch-icon" href="../icons/icon-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
 <script>
   (function preBootHotfix() {
     try {
@@ -87,23 +86,14 @@
         start.classList.remove("is-active");
         start.hidden = true;
       }
+      var requiresAuth = Boolean(window.FichaTecSupabaseConfig && window.FichaTecSupabaseConfig.enabled);
       if (shell) {
-        shell.hidden = false;
-        shell.setAttribute("aria-hidden", "false");
+        shell.hidden = requiresAuth;
+        shell.setAttribute("aria-hidden", String(requiresAuth));
+        if ("inert" in shell) shell.inert = requiresAuth;
       }
-      if (authModal) authModal.classList.add("open");
-    }, 3200);
-
-    if (!("serviceWorker" in navigator)) return;
-    navigator.serviceWorker.getRegistrations()
-      .then(function (registrations) {
-        return Promise.all(registrations.map(function (registration) {
-          return registration.unregister();
-        }));
-      })
-      .catch(function (error) {
-        console.warn("SW unregister preboot failed:", error);
-      });
+      if (authModal) authModal.classList.toggle("open", requiresAuth);
+    }, 8000);
   })();
 </script>
 <link rel="stylesheet" href="../src/styles/app.css">
@@ -111,30 +101,19 @@
 <body class="app-booting">
 
 <div class="boot-screen" id="app-boot" aria-live="polite" role="status">
+  <div class="boot-ambient boot-ambient-one" aria-hidden="true"></div>
+  <div class="boot-ambient boot-ambient-two" aria-hidden="true"></div>
   <div class="boot-screen-content">
-    <div class="boot-logo-wrap">
+    <div class="splash-mark" aria-hidden="true">
+      <span class="splash-orbit"><i></i><i></i><i></i></span>
       <span class="boot-logo-mark">FT</span>
     </div>
+    <div class="boot-kicker">Cozinha sob controle</div>
     <div class="boot-brand">FichaTec</div>
-    <div class="boot-tagline">Fichas técnicas e controle de estoque</div>
-    <div class="boot-loader" aria-hidden="true">
-      <span></span><span></span><span></span>
-    </div>
+    <div class="boot-tagline">Receitas precisas. Estoque inteligente.</div>
+    <div class="boot-progress" aria-hidden="true"><span></span></div>
   </div>
 </div>
-
-<section class="start-screen" id="app-start" hidden>
-  <div class="start-card">
-    <div class="start-logo-wrap">
-      <span class="start-logo-mark">FT</span>
-    </div>
-    <h1>Bem-vindo ao FichaTec</h1>
-    <p>Entre para acessar seu workspace e sincronizar receitas e estoques com segurança.</p>
-    <button class="btn btn-primary btn-full" onclick="openStartLogin()" type="button">
-      <span class="material-symbols-rounded">login</span> Entrar
-    </button>
-  </div>
-</section>
 
 <div class="app-shell" id="app-shell" aria-hidden="true">
 
@@ -143,12 +122,12 @@
   <div class="app-logo" aria-label="FichaTec">
     <span class="ft-logo-mark">FT</span>
   </div>
-  <div>
+  <div class="app-title-group">
     <div class="app-title">FichaTec</div>
     <div class="app-subtitle">Fichas técnicas & controle de estoque</div>
   </div>
   <button class="auth-status-btn" id="auth-status-btn" onclick="openAuthModal()" type="button">
-    <span class="material-symbols-rounded">account_circle</span>
+    <span class="material-symbols-rounded" aria-hidden="true">account_circle</span>
     <span id="auth-status-label">Modo local</span>
   </button>
 </div>
@@ -163,6 +142,28 @@
     <div class="input-group">
       <label class="input-label">Nome da Receita *</label>
       <input type="text" id="ficha-nome" placeholder="Ex: Bolo de banana, Esfiha de carne...">
+    </div>
+    <div class="recipe-cover-picker">
+      <div class="recipe-image-preview" id="recipe-image-preview" aria-live="polite">
+        <span class="recipe-image-placeholder" aria-hidden="true">
+          <span class="material-symbols-rounded">add_photo_alternate</span>
+        </span>
+      </div>
+      <div class="recipe-cover-picker-copy">
+        <strong>Imagem da receita</strong>
+        <span>Ajuda sua equipe a reconhecer cada preparo rapidamente.</span>
+        <div class="recipe-cover-actions">
+          <button class="btn btn-secondary btn-sm" id="recipe-image-select" onclick="document.getElementById('recipe-image-input').click()" type="button">
+            <span class="material-symbols-rounded" aria-hidden="true">photo_camera</span>
+            Escolher imagem
+          </button>
+          <button class="btn btn-quiet btn-sm" id="recipe-image-remove" type="button" hidden>
+            Remover
+          </button>
+        </div>
+        <input id="recipe-image-input" type="file" accept="image/jpeg,image/png,image/webp" hidden>
+        <small id="recipe-image-message" role="status" aria-live="polite">JPG, PNG ou WebP. A imagem será otimizada antes de salvar.</small>
+      </div>
     </div>
     <div class="input-row cols-2">
       <div class="input-group" style="margin-bottom:0">
@@ -287,7 +288,7 @@
       <button class="btn btn-warn btn-sm" style="flex:0 0 auto" onclick="clearFicha()">
         <span class="material-symbols-rounded">delete_sweep</span> Limpar
       </button>
-      <button class="btn btn-primary btn-full" onclick="saveRecipe()">
+      <button class="btn btn-primary btn-full" id="recipe-save-button" onclick="saveRecipe()" type="button">
         <span class="material-symbols-rounded">save</span> Salvar Receita
       </button>
     </div>
@@ -411,7 +412,7 @@
 
 <!-- MODAL: CATEGORIA -->
 <div class="modal-overlay" id="modal-category">
-  <div class="modal category-modal">
+  <div class="modal category-modal" role="dialog" aria-modal="true" aria-labelledby="modal-category-title">
     <div class="modal-handle"></div>
     <div class="modal-title" id="modal-category-title">Nova Categoria</div>
     <div class="info-banner">
@@ -434,7 +435,7 @@
 
 <!-- MODAL: ESTOQUE VIRTUAL -->
 <div class="modal-overlay" id="modal-stock">
-  <div class="modal">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-stock-title">
     <div class="modal-handle"></div>
     <div class="modal-title" id="modal-stock-title">Novo Produto</div>
     <div class="input-group"><label class="input-label">Nome do Produto *</label><input type="text" id="stock-name" placeholder="Ex: Farinha de trigo..." oninput="updateGoogleLink()"></div>
@@ -493,8 +494,9 @@
 
 <!-- MODAL: VER RECEITA -->
 <div class="modal-overlay" id="modal-recipe">
-  <div class="modal recipe-detail-modal">
+  <div class="modal recipe-detail-modal" role="dialog" aria-modal="true" aria-labelledby="modal-recipe-title">
     <div class="modal-handle"></div>
+    <h2 class="visually-hidden" id="modal-recipe-title">Detalhes da receita</h2>
     <div class="recipe-detail-scroll" id="recipe-detail-content"></div>
     <div class="recipe-detail-actions">
       <button class="btn btn-secondary btn-sm" style="flex:1;min-width:70px" onclick="closeModal('modal-recipe')">Fechar</button>
@@ -513,7 +515,7 @@
 
 <!-- MODAL: ESTOQUE FÍSICO -->
 <div class="modal-overlay" id="modal-pstock">
-  <div class="modal">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-pstock-title">
     <div class="modal-handle"></div>
     <div class="modal-title" id="modal-pstock-title">Novo Produto Físico</div>
     <div class="input-group"><label class="input-label">Nome do Produto *</label><input type="text" id="pstock-name" placeholder="Ex: Farinha de trigo..."></div>
@@ -550,7 +552,7 @@
 
 <!-- MODAL: MOVIMENTAÇÃO -->
 <div class="modal-overlay" id="modal-move">
-  <div class="modal">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-move-title">
     <div class="modal-handle"></div>
     <div class="modal-title" id="modal-move-title">Movimentar Estoque</div>
     <div id="modal-move-info" style="background:var(--n50);border-radius:var(--r-md);padding:var(--s3) var(--s4);margin-bottom:var(--s4);font-size:12px;color:var(--n600);font-weight:500"></div>
@@ -581,9 +583,9 @@
 
 <!-- MODAL: SCANNER DE RECEITA -->
 <div class="modal-overlay" id="modal-scan">
-  <div class="modal" style="max-height:95vh">
+  <div class="modal" style="max-height:95vh" role="dialog" aria-modal="true" aria-labelledby="modal-scan-title">
     <div class="modal-handle"></div>
-    <div class="modal-title" style="display:flex;align-items:center;gap:var(--s2);margin-bottom:var(--s3)">
+    <div class="modal-title" id="modal-scan-title" style="display:flex;align-items:center;gap:var(--s2);margin-bottom:var(--s3)">
       <span class="material-symbols-rounded" style="color:var(--g500);font-size:24px">document_scanner</span>
       Digitalizar Receita
     </div>
@@ -677,10 +679,10 @@
         </div>
 
         <div style="display:flex;gap:var(--s2)">
-          <button class="btn btn-secondary btn-sm" style="flex:1" onclick="resetScan()">
+          <button class="btn btn-secondary btn-sm" id="scan-new-photo-button" style="flex:1" onclick="resetScan()" type="button">
             <span class="material-symbols-rounded">refresh</span> Nova foto
           </button>
-          <button class="btn btn-primary" style="flex:2" onclick="confirmScanSave()">
+          <button class="btn btn-primary" id="scan-save-button" style="flex:2" onclick="confirmScanSave()" type="button">
             <span class="material-symbols-rounded">save</span> Salvar Receita
           </button>
         </div>
@@ -695,88 +697,128 @@
 
 <!-- MODAL: ACESSO -->
 <div class="modal-overlay auth-gate auth-mode-login" id="modal-auth">
-  <div class="modal auth-modal">
-    <div class="modal-handle"></div>
-    <div class="modal-title" id="auth-modal-title">Entrar no FichaTec</div>
-    <div class="auth-state-card" id="auth-state-card">
-      <span class="material-symbols-rounded">lock_open</span>
-      <div>
-        <strong id="auth-state-title">Prototipo local</strong>
-        <p id="auth-state-description">Seus dados ficam salvos neste navegador enquanto o Supabase nao estiver ligado.</p>
+  <main class="modal auth-modal" role="dialog" aria-modal="true" aria-labelledby="auth-modal-title">
+    <aside class="auth-visual" aria-label="Cozinha profissional organizada">
+      <div class="auth-visual-shade"></div>
+      <div class="auth-brand-lockup">
+        <span class="auth-brand-mark">FT</span>
+        <span>FichaTec</span>
       </div>
-    </div>
-
-    <div class="auth-mode-tabs" id="auth-mode-tabs">
-      <button class="auth-mode-tab active" id="auth-mode-login" onclick="setAuthMode('login')" type="button">Entrar</button>
-      <button class="auth-mode-tab" id="auth-mode-signup" onclick="setAuthMode('signup')" type="button">Criar conta</button>
-    </div>
-
-    <div id="auth-form-wrap">
-      <div class="input-group">
-        <label class="input-label">E-mail</label>
-        <input type="email" id="auth-email" placeholder="chef@cozinha.com.br" autocomplete="off" autocapitalize="none" spellcheck="false" onkeydown="handleAuthKeydown(event)">
+      <div class="auth-visual-copy">
+        <span class="auth-eyebrow">Feito para quem produz</span>
+        <h2>Da receita ao estoque, tudo no ponto.</h2>
+        <p>Custos claros, fichas consistentes e uma operação que flui.</p>
+        <div class="auth-benefits" aria-label="Benefícios">
+          <span><i class="material-symbols-rounded">calculate</i> Custo preciso</span>
+          <span><i class="material-symbols-rounded">inventory_2</i> Estoque visível</span>
+          <span><i class="material-symbols-rounded">menu_book</i> Receitas organizadas</span>
+        </div>
       </div>
-      <div class="input-group">
-        <label class="input-label">Senha</label>
-        <div class="password-field">
-          <input type="password" id="auth-password" placeholder="Senha forte" autocomplete="new-password" oninput="renderPasswordFeedback()" onkeydown="handleAuthKeydown(event)">
-          <button class="password-toggle" onclick="togglePasswordVisibility()" type="button" aria-label="Mostrar ou ocultar senha">
-            <span class="material-symbols-rounded" id="auth-password-toggle-icon">visibility</span>
-          </button>
+    </aside>
+
+    <section class="auth-form-panel">
+      <button class="auth-panel-close" onclick="closeModal('modal-auth')" type="button" aria-label="Fechar acesso">
+        <span class="material-symbols-rounded">close</span>
+      </button>
+      <div class="auth-mobile-brand" aria-hidden="true">
+        <span class="auth-brand-mark">FT</span>
+        <span>FichaTec</span>
+      </div>
+      <div class="auth-panel-heading">
+        <span class="auth-kicker">Seu centro de produção</span>
+        <h1 class="modal-title" id="auth-modal-title">Entrar no FichaTec</h1>
+      </div>
+
+      <div class="auth-state-card" id="auth-state-card">
+        <span class="material-symbols-rounded" aria-hidden="true">lock_open</span>
+        <div>
+          <strong id="auth-state-title">Bem-vindo de volta</strong>
+          <p id="auth-state-description">Acesse suas fichas, receitas e estoques.</p>
+        </div>
+      </div>
+
+      <div class="auth-mode-tabs" id="auth-mode-tabs" aria-label="Forma de acesso">
+        <button class="auth-mode-tab active" id="auth-mode-login" onclick="setAuthMode('login')" type="button" aria-pressed="true">Entrar</button>
+        <button class="auth-mode-tab" id="auth-mode-signup" onclick="setAuthMode('signup')" type="button" aria-pressed="false">Criar conta</button>
+      </div>
+
+      <form id="auth-form-wrap" onsubmit="event.preventDefault();submitAuthForm()" novalidate>
+        <div class="input-group" id="auth-email-group">
+          <label class="input-label" for="auth-email">E-mail</label>
+          <input type="email" id="auth-email" placeholder="voce@cozinha.com.br" autocomplete="email" inputmode="email" autocapitalize="none" spellcheck="false" onkeydown="handleAuthKeydown(event)">
+        </div>
+        <div class="input-group" id="auth-password-group">
+          <div class="auth-label-row">
+            <label class="input-label" for="auth-password">Senha</label>
+            <button class="auth-text-action" id="auth-forgot-btn" onclick="setAuthMode('forgot')" type="button">Esqueci minha senha</button>
+          </div>
+          <div class="password-field">
+            <input type="password" id="auth-password" placeholder="Sua senha" autocomplete="current-password" oninput="renderPasswordFeedback()" onkeydown="handleAuthKeydown(event)">
+            <button class="password-toggle" onclick="togglePasswordVisibility()" type="button" aria-label="Mostrar ou ocultar senha">
+              <span class="material-symbols-rounded" id="auth-password-toggle-icon">visibility</span>
+            </button>
+          </div>
+        </div>
+        <div class="input-group" id="auth-password-confirm-group" style="display:none">
+          <label class="input-label" for="auth-password-confirm">Confirme a nova senha</label>
+          <div class="password-field">
+            <input type="password" id="auth-password-confirm" placeholder="Digite novamente" autocomplete="new-password" oninput="renderPasswordFeedback()" onkeydown="handleAuthKeydown(event)">
+            <button class="password-toggle" onclick="togglePasswordConfirmationVisibility()" type="button" aria-label="Mostrar ou ocultar confirmação da senha">
+              <span class="material-symbols-rounded" id="auth-password-confirm-toggle-icon">visibility</span>
+            </button>
+          </div>
         </div>
         <div class="password-feedback" id="auth-password-feedback"></div>
-      </div>
-      <div class="auth-action-stack">
-        <button class="btn btn-primary btn-full" id="auth-submit-btn" onclick="submitAuthForm()" type="button">
-          <span class="material-symbols-rounded">login</span> Entrar
-        </button>
-        <button class="btn btn-secondary btn-full" onclick="resendConfirmationEmail()" type="button">
-          <span class="material-symbols-rounded">forward_to_inbox</span> Reenviar confirmacao
-        </button>
-      </div>
-    </div>
+        <div class="auth-inline-message" id="auth-inline-message" role="status" aria-live="polite"></div>
+        <div class="auth-action-stack">
+          <button class="btn btn-primary btn-full" id="auth-submit-btn" type="submit">
+            <span class="material-symbols-rounded">login</span> Entrar
+          </button>
+          <button class="btn btn-quiet btn-full" id="auth-resend-confirm-btn" onclick="resendConfirmationEmail()" type="button" style="display:none">
+            <span class="material-symbols-rounded">forward_to_inbox</span> Reenviar confirmação
+          </button>
+          <button class="auth-back-link" id="auth-back-login-btn" onclick="handleAuthBack()" type="button" style="display:none">
+            <span class="material-symbols-rounded">arrow_back</span> Voltar para entrar
+          </button>
+        </div>
+      </form>
 
-    <div class="auth-verification-card" id="auth-verification-wrap" style="display:none">
-      <span class="material-symbols-rounded">mark_email_read</span>
-      <strong>Confirme seu e-mail</strong>
-      <p>Enviamos um link para <span id="auth-verification-email"></span>. Abra sua caixa de entrada, confirme a conta e volte para o FichaTec.</p>
-      <div class="auth-action-stack">
-        <button class="btn btn-primary btn-full" onclick="resendConfirmationEmail()" type="button">
-          <span class="material-symbols-rounded">forward_to_inbox</span> Reenviar confirmacao
-        </button>
-        <button class="btn btn-secondary btn-full" onclick="backToAuthForm()" type="button">
-          Voltar para login
-        </button>
+      <div class="auth-verification-card" id="auth-verification-wrap" style="display:none">
+        <span class="material-symbols-rounded">mark_email_read</span>
+        <strong>Confirme seu e-mail</strong>
+        <p>Enviamos um link para <span id="auth-verification-email"></span>. Depois da confirmação, volte para continuar.</p>
+        <div class="auth-action-stack">
+          <button class="btn btn-primary btn-full" onclick="resendConfirmationEmail()" type="button">
+            <span class="material-symbols-rounded">forward_to_inbox</span> Reenviar confirmação
+          </button>
+          <button class="btn btn-secondary btn-full" onclick="backToAuthForm()" type="button">Voltar para entrar</button>
+        </div>
       </div>
-    </div>
 
-    <div id="auth-workspace-wrap" style="display:none">
-      <div class="section-label" style="margin-top:0">Workspace ativo</div>
-      <div id="auth-workspace-list"></div>
-      <div class="auth-action-stack">
-        <button class="btn btn-secondary btn-full" onclick="signOutAuth()" type="button">
-          <span class="material-symbols-rounded">logout</span> Sair
-        </button>
+      <div id="auth-workspace-wrap" style="display:none">
+        <div class="section-label" style="margin-top:0">Workspace ativo</div>
+        <div id="auth-workspace-list"></div>
+        <div class="auth-action-stack">
+          <button class="btn btn-secondary btn-full" onclick="signOutAuth()" type="button">
+            <span class="material-symbols-rounded">logout</span> Sair
+          </button>
+        </div>
       </div>
-    </div>
 
-    <div id="auth-local-wrap">
-      <div class="info-banner" style="margin-bottom:var(--s4)">
-        <span class="material-symbols-rounded">database</span>
-        <span>Para ativar login real, configure `window.FICHATEC_ENV.dataMode = "supabase"` com URL e anon key.</span>
+      <div id="auth-local-wrap" style="display:none">
+        <div class="auth-local-card">
+          <span class="material-symbols-rounded">offline_bolt</span>
+          <div><strong>Modo local ativo</strong><p>Seus dados ficam neste navegador. Você pode continuar usando o app normalmente.</p></div>
+        </div>
       </div>
-    </div>
-
-    <div class="auth-action-stack">
-      <button class="btn btn-secondary btn-full" onclick="closeModal('modal-auth')" type="button">Fechar</button>
-    </div>
-  </div>
+    </section>
+  </main>
 </div>
 
 <div class="toast" id="toast"></div>
 
 <div class="modal-overlay" id="modal-confirm">
-  <div class="modal confirm-modal">
+  <div class="modal confirm-modal" role="alertdialog" aria-modal="true" aria-labelledby="confirm-title" aria-describedby="confirm-message">
     <div class="modal-handle"></div>
     <div class="modal-title" id="confirm-title">Confirmar acao</div>
     <p class="confirm-message" id="confirm-message">Tem certeza?</p>
@@ -808,30 +850,5 @@
 <script src="../src/modules/stock/physicalStock.js" defer></script>
 <script src="../src/pwa/registerServiceWorker.js" defer></script>
 <script src="../src/app.js" defer></script>
-<script>
-  window.setTimeout(function releaseBootFailSafe() {
-    if (!document.body.classList.contains("app-booting")) return;
-
-    document.body.classList.remove("app-booting", "app-start-mode");
-    var boot = document.getElementById("app-boot");
-    var shell = document.getElementById("app-shell");
-    var start = document.getElementById("app-start");
-    var authModal = document.getElementById("modal-auth");
-
-    if (boot) {
-      boot.classList.remove("is-active");
-      boot.hidden = true;
-    }
-    if (start) {
-      start.classList.remove("is-active");
-      start.hidden = true;
-    }
-    if (shell) {
-      shell.hidden = false;
-      shell.setAttribute("aria-hidden", "false");
-    }
-    if (authModal) authModal.classList.add("open");
-  }, 5500);
-</script>
 </body>
 </html>

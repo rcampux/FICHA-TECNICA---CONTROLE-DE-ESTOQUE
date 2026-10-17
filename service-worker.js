@@ -1,4 +1,4 @@
-const CACHE_VERSION = "fichatec-pwa-v9-hotfix-1";
+const CACHE_VERSION = "fichatec-pwa-v12-local-icons";
 const NETWORK_FIRST_EXTENSIONS = new Set([".css", ".html", ".js", ".webmanifest"]);
 const APP_SHELL = [
   "/",
@@ -16,6 +16,7 @@ const APP_SHELL = [
   "/src/services/repositories/supabaseDomainRepository.js",
   "/src/services/repositories/hybridRepository.js",
   "/src/modules/auth/authSession.js",
+  "/src/modules/billing/planAccess.js",
   "/src/modules/nutrition/nutritionDefaults.js",
   "/src/modules/recipes/recipeSheet.js",
   "/src/modules/scanner/scannerRecipe.js",
@@ -24,9 +25,12 @@ const APP_SHELL = [
   "/src/modules/stock/virtualStock.js",
   "/src/modules/stock/physicalStock.js",
   "/src/pwa/registerServiceWorker.js",
+  "/assets/images/fichatec-kitchen-hero.jpg",
+  "/assets/fonts/material-symbols-rounded.ttf",
   "/src/styles/app.css",
   "/src/styles/base.css",
   "/src/styles/components.css",
+  "/src/styles/experience.css",
   "/src/styles/layout.css",
   "/src/styles/legacy.css",
   "/src/styles/pages.css",

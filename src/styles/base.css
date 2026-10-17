@@ -1,9 +1,42 @@
+@font-face {
+  font-display: block;
+  font-family: "Material Symbols Rounded";
+  font-style: normal;
+  font-weight: 400;
+  src: url("../../assets/fonts/material-symbols-rounded.ttf") format("truetype");
+}
+
+.material-symbols-rounded {
+  direction: ltr;
+  display: inline-block;
+  font-family: "Material Symbols Rounded";
+  font-style: normal;
+  font-weight: 400;
+  letter-spacing: normal;
+  text-transform: none;
+  white-space: nowrap;
+  word-wrap: normal;
+}
+
+.visually-hidden {
+  border: 0 !important;
+  clip: rect(0 0 0 0) !important;
+  clip-path: inset(50%) !important;
+  height: 1px !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  padding: 0 !important;
+  position: absolute !important;
+  white-space: nowrap !important;
+  width: 1px !important;
+}
+
 html {
   scroll-behavior: smooth;
 }
 
 body {
-  background: linear-gradient(180deg, #fff8f1 0%, var(--md-sys-color-surface) 34%, #fffaf4 100%);
+  background: linear-gradient(180deg, #fff4f2 0%, var(--md-sys-color-surface) 34%, #fffafa 100%);
   color: var(--md-sys-color-on-surface);
   text-rendering: optimizeLegibility;
 }
@@ -16,7 +49,7 @@ textarea {
 }
 
 :focus-visible {
-  outline: 3px solid color-mix(in srgb, var(--md-sys-color-primary) 40%, transparent);
+  outline: 3px solid color-mix(in srgb, var(--md-sys-color-primary) 72%, transparent);
   outline-offset: 2px;
 }
 

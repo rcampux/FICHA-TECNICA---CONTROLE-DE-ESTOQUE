@@ -1,0 +1,921 @@
+/* FichaTec 2026 — camada de experiência e componentes de marca. */
+
+body {
+  background:
+    radial-gradient(circle at 8% -8%, rgba(255, 218, 217, 0.74), transparent 30rem),
+    linear-gradient(180deg, #fff8f7 0%, #fffdfc 44%, #fff6f4 100%);
+}
+
+body.app-booting {
+  overflow: hidden;
+}
+
+body.app-booting .app-shell,
+body.app-start-mode .app-shell {
+  pointer-events: none;
+  visibility: hidden;
+}
+
+.app-header {
+  box-shadow: 0 1px 0 rgba(88, 65, 62, 0.06);
+}
+
+.app-logo,
+.nav-fab,
+.scan-fab {
+  background: linear-gradient(135deg, #c52b38, var(--md-sys-color-primary));
+}
+
+.nav-btn.active {
+  color: var(--md-sys-color-primary);
+}
+
+.btn-primary {
+  background: var(--md-sys-color-primary);
+  box-shadow: 0 7px 18px rgba(180, 35, 47, 0.18);
+  color: var(--md-sys-color-on-primary);
+}
+
+.btn-primary:hover {
+  background: #8f1724;
+  box-shadow: 0 9px 22px rgba(180, 35, 47, 0.24);
+}
+
+.btn-outlined {
+  background: var(--md-sys-color-surface-container-lowest);
+  border-color: var(--md-sys-color-primary);
+  color: var(--md-sys-color-primary);
+}
+
+.btn-outlined:hover {
+  background: var(--md-sys-color-primary-container);
+}
+
+.btn-quiet {
+  background: transparent;
+  color: var(--md-sys-color-primary);
+}
+
+.btn-quiet:hover {
+  background: color-mix(in srgb, var(--md-sys-color-primary-container) 62%, transparent);
+}
+
+.card,
+.card-outlined,
+.item-card,
+.pstock-card,
+.summary-box,
+.recipe-card {
+  background: var(--md-sys-color-surface-container-lowest);
+  border-color: color-mix(in srgb, var(--md-sys-color-outline-variant) 72%, #fff);
+  box-shadow: 0 3px 16px rgba(76, 42, 39, 0.055);
+}
+
+.card:hover,
+.item-card:hover,
+.pstock-card:hover,
+.recipe-card:hover {
+  box-shadow: 0 10px 28px rgba(76, 42, 39, 0.09);
+}
+
+input,
+select,
+textarea {
+  min-height: 48px;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: var(--md-sys-color-primary);
+  box-shadow: 0 0 0 4px rgba(180, 35, 47, 0.11);
+}
+
+.search-bar input:focus {
+  box-shadow: 0 0 0 3px rgba(180, 35, 47, 0.12);
+}
+
+.search-icon {
+  color: var(--md-sys-color-primary);
+}
+
+.chip.active {
+  background: var(--md-sys-color-primary);
+  border-color: var(--md-sys-color-primary);
+}
+
+.chip:hover {
+  border-color: var(--md-sys-color-primary);
+  color: var(--md-sys-color-primary);
+}
+
+/* Splash: um único estado controlado pelo bootstrap em app.js. */
+.boot-screen {
+  background:
+    radial-gradient(circle at 18% 18%, rgba(212, 71, 79, 0.42), transparent 23rem),
+    radial-gradient(circle at 86% 82%, rgba(47, 107, 79, 0.30), transparent 24rem),
+    linear-gradient(145deg, #31070d 0%, #170607 62%, #071b12 100%);
+  color: #fff;
+  isolation: isolate;
+  overflow: hidden;
+  padding: 24px;
+}
+
+.boot-screen.is-leaving {
+  animation: splashExit 420ms cubic-bezier(0.4, 0, 1, 1) forwards;
+  pointer-events: none;
+}
+
+.boot-ambient {
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 999px;
+  filter: blur(1px);
+  opacity: 0.65;
+  position: absolute;
+}
+
+.boot-ambient-one {
+  height: min(68vw, 720px);
+  left: -22vw;
+  top: -34vw;
+  width: min(68vw, 720px);
+}
+
+.boot-ambient-two {
+  bottom: -40vw;
+  height: min(76vw, 780px);
+  right: -30vw;
+  width: min(76vw, 780px);
+}
+
+.boot-screen.is-active .boot-ambient-one {
+  animation: ambientDrift 6s ease-in-out infinite alternate;
+}
+
+.boot-screen.is-active .boot-ambient-two {
+  animation: ambientDrift 7s ease-in-out -1.5s infinite alternate-reverse;
+}
+
+.boot-screen-content {
+  position: relative;
+  z-index: 1;
+}
+
+.splash-mark {
+  align-items: center;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 30px;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.34);
+  display: inline-flex;
+  height: 96px;
+  justify-content: center;
+  margin-bottom: 24px;
+  position: relative;
+  width: 96px;
+}
+
+.splash-mark::before {
+  background: linear-gradient(135deg, #dc4350, #a51625);
+  border-radius: 23px;
+  box-shadow: inset 0 1px rgba(255, 255, 255, 0.26);
+  content: "";
+  inset: 9px;
+  position: absolute;
+}
+
+.splash-mark .boot-logo-mark {
+  font-size: 26px;
+  letter-spacing: -0.07em;
+}
+
+.splash-orbit {
+  animation: splashOrbit 4.8s linear infinite;
+  border: 1px solid rgba(255, 255, 255, 0.34);
+  border-radius: 999px;
+  inset: -13px;
+  position: absolute;
+}
+
+.splash-orbit i {
+  background: #b4f1cc;
+  border-radius: 999px;
+  box-shadow: 0 0 18px rgba(180, 241, 204, 0.75);
+  height: 7px;
+  left: 50%;
+  position: absolute;
+  top: -4px;
+  width: 7px;
+}
+
+.splash-orbit i:nth-child(2) {
+  background: #ffd5ad;
+  left: auto;
+  right: 4px;
+  top: 76%;
+}
+
+.splash-orbit i:nth-child(3) {
+  background: #ffdadd;
+  left: 4px;
+  top: 76%;
+}
+
+.boot-screen.is-active .splash-mark {
+  animation: splashMarkIn 660ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.boot-kicker {
+  color: #f7babf;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  margin-bottom: 7px;
+  text-transform: uppercase;
+}
+
+.boot-brand {
+  color: #fff;
+  font-size: clamp(32px, 7vw, 42px);
+  font-weight: 850;
+  letter-spacing: -0.055em;
+}
+
+.boot-tagline {
+  color: rgba(255, 255, 255, 0.70);
+  font-size: 13px;
+  letter-spacing: 0;
+  margin-top: 8px;
+}
+
+.boot-progress {
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 999px;
+  height: 3px;
+  margin-top: 28px;
+  overflow: hidden;
+  width: 176px;
+}
+
+.boot-progress span {
+  background: linear-gradient(90deg, #f7babf, #b4f1cc);
+  border-radius: inherit;
+  display: block;
+  height: 100%;
+  transform-origin: left;
+  transform: scaleX(0.04);
+}
+
+.boot-screen.is-active .boot-progress span {
+  animation: splashProgress var(--boot-progress-duration, 1500ms) cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes splashMarkIn {
+  from { opacity: 0; transform: translateY(16px) scale(0.84) rotate(-5deg); }
+  to { opacity: 1; transform: translateY(0) scale(1) rotate(0); }
+}
+
+@keyframes splashOrbit {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes splashProgress {
+  from { transform: scaleX(0.04); }
+  to { transform: scaleX(1); }
+}
+
+@keyframes ambientDrift {
+  from { transform: translate3d(-2%, -1%, 0) scale(0.96); }
+  to { transform: translate3d(5%, 4%, 0) scale(1.05); }
+}
+
+@keyframes splashExit {
+  from { opacity: 1; transform: scale(1); }
+  to { opacity: 0; transform: scale(1.025); visibility: hidden; }
+}
+
+/* Autenticação */
+#modal-auth {
+  background: rgba(34, 25, 24, 0.58);
+  padding: clamp(16px, 4vw, 48px);
+}
+
+#modal-auth.auth-gate {
+  background:
+    radial-gradient(circle at 8% 12%, rgba(255, 218, 217, 0.92), transparent 35rem),
+    linear-gradient(145deg, #fff8f7, #fff 48%, #eff9f3);
+}
+
+#modal-auth .auth-modal {
+  display: grid;
+  grid-template-columns: minmax(0, 1.06fr) minmax(390px, 0.94fr);
+  gap: 0;
+  height: min(670px, calc(100dvh - clamp(32px, 8vw, 96px)));
+  max-height: min(760px, calc(100dvh - clamp(32px, 8vw, 96px)));
+  max-width: 1040px;
+  overflow: hidden;
+  padding: 0;
+  transform-style: flat;
+  width: min(100%, 1040px);
+}
+
+#modal-auth.auth-gate .auth-modal {
+  border: 1px solid rgba(140, 113, 109, 0.22);
+  box-shadow: 0 34px 100px rgba(65, 0, 8, 0.18);
+  max-width: 1040px;
+  padding: 0;
+  width: min(100%, 1040px);
+}
+
+.auth-visual {
+  background-image: url("../../assets/images/fichatec-kitchen-hero.jpg");
+  background-position: center;
+  background-size: cover;
+  color: #fff;
+  min-height: min(670px, calc(100dvh - clamp(32px, 8vw, 96px)));
+  min-width: 0;
+  overflow: hidden;
+  padding: 34px;
+  position: relative;
+}
+
+.auth-visual-shade {
+  background:
+    linear-gradient(180deg, rgba(27, 5, 8, 0.32), rgba(27, 5, 8, 0.10) 38%, rgba(20, 5, 7, 0.90)),
+    linear-gradient(90deg, rgba(180, 35, 47, 0.24), transparent 56%);
+  inset: 0;
+  position: absolute;
+}
+
+.auth-brand-lockup,
+.auth-mobile-brand {
+  align-items: center;
+  display: flex;
+  font-size: 18px;
+  font-weight: 850;
+  gap: 10px;
+  letter-spacing: -0.035em;
+  position: relative;
+  z-index: 1;
+}
+
+.auth-brand-mark {
+  align-items: center;
+  background: var(--md-sys-color-primary);
+  border-radius: 12px;
+  color: #fff;
+  display: inline-flex;
+  font-size: 13px;
+  font-weight: 900;
+  height: 38px;
+  justify-content: center;
+  letter-spacing: -0.06em;
+  width: 38px;
+}
+
+.auth-visual-copy {
+  bottom: 38px;
+  left: 34px;
+  max-width: 440px;
+  position: absolute;
+  right: 34px;
+  z-index: 1;
+}
+
+.auth-eyebrow,
+.auth-kicker {
+  color: var(--md-sys-color-primary);
+  display: block;
+  font-size: 11px;
+  font-weight: 850;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.auth-eyebrow {
+  color: #ffd5d8;
+}
+
+.auth-visual-copy h2 {
+  font-size: clamp(32px, 4vw, 46px);
+  letter-spacing: -0.055em;
+  line-height: 1.02;
+  margin: 10px 0 14px;
+}
+
+.auth-visual-copy p {
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 14px;
+  line-height: 1.55;
+  max-width: 380px;
+}
+
+.auth-benefits {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 22px;
+}
+
+.auth-benefits span {
+  align-items: center;
+  backdrop-filter: blur(12px);
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 999px;
+  display: inline-flex;
+  font-size: 11px;
+  font-weight: 750;
+  gap: 6px;
+  padding: 8px 11px;
+}
+
+.auth-benefits i {
+  font-size: 15px;
+  font-style: normal;
+}
+
+.auth-form-panel {
+  background: var(--md-sys-color-surface-container-lowest);
+  min-height: 0;
+  min-width: 0;
+  overflow-y: auto;
+  padding: 44px clamp(28px, 4.2vw, 54px);
+  position: relative;
+}
+
+.auth-mobile-brand {
+  display: none;
+  pointer-events: none;
+}
+
+.auth-panel-close {
+  align-items: center;
+  background: var(--md-sys-color-surface-container);
+  border: 0;
+  border-radius: 999px;
+  color: var(--md-sys-color-on-surface-variant);
+  cursor: pointer;
+  display: inline-flex;
+  height: 44px;
+  justify-content: center;
+  position: absolute;
+  right: 18px;
+  top: 18px;
+  width: 44px;
+  z-index: 3;
+}
+
+#modal-auth.auth-gate .auth-panel-close {
+  display: none;
+}
+
+.auth-panel-heading {
+  margin-bottom: 18px;
+  padding-right: 36px;
+}
+
+.auth-panel-heading .modal-title {
+  font-size: clamp(25px, 3vw, 32px);
+  letter-spacing: -0.045em;
+  margin: 6px 0 0;
+}
+
+#modal-auth.auth-gate .auth-panel-heading .modal-title {
+  font-size: clamp(25px, 3vw, 32px);
+  letter-spacing: -0.045em;
+}
+
+.auth-state-card {
+  background: color-mix(in srgb, var(--md-sys-color-primary-container) 48%, #fff);
+  border-color: color-mix(in srgb, var(--md-sys-color-primary) 14%, transparent);
+  margin-bottom: 16px;
+  padding: 13px 14px;
+}
+
+.auth-state-card p {
+  font-size: 12px;
+}
+
+.auth-mode-tabs {
+  margin-bottom: 18px;
+}
+
+.auth-mode-tab {
+  min-height: 44px;
+}
+
+.auth-label-row {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+
+.auth-label-row .input-label {
+  margin-bottom: 0;
+}
+
+.auth-text-action,
+.auth-back-link {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  color: var(--md-sys-color-primary);
+  cursor: pointer;
+  display: inline-flex;
+  font-size: 12px;
+  font-weight: 800;
+  gap: 5px;
+  min-height: 44px;
+}
+
+.auth-back-link {
+  justify-content: center;
+  width: 100%;
+}
+
+.auth-back-link .material-symbols-rounded {
+  font-size: 17px;
+}
+
+.auth-inline-message {
+  align-items: flex-start;
+  background: var(--md-sys-color-surface-container-low);
+  border-radius: 12px;
+  color: var(--md-sys-color-on-surface-variant);
+  display: none;
+  font-size: 12px;
+  line-height: 1.45;
+  margin: 4px 0 12px;
+  padding: 10px 12px;
+}
+
+.auth-inline-message[data-tone="success"] {
+  background: var(--md-sys-color-tertiary-container);
+  color: var(--md-sys-color-on-tertiary-container);
+}
+
+.auth-inline-message[data-tone="error"] {
+  background: #ffdad6;
+  color: #410002;
+}
+
+.password-toggle {
+  height: 44px;
+  width: 44px;
+}
+
+.auth-spinner {
+  animation: authSpin 800ms linear infinite;
+}
+
+@keyframes authSpin {
+  to { transform: rotate(1turn); }
+}
+
+.btn:disabled,
+.auth-mode-tab:disabled,
+.password-toggle:disabled,
+.auth-text-action:disabled,
+.auth-back-link:disabled {
+  box-shadow: none;
+  cursor: not-allowed;
+  opacity: 0.58;
+  transform: none;
+}
+
+#recipe-save-button[aria-busy="true"],
+#scan-save-button[aria-busy="true"] {
+  color: transparent;
+  opacity: 0.82;
+  position: relative;
+}
+
+#recipe-save-button[aria-busy="true"] > *,
+#scan-save-button[aria-busy="true"] > * {
+  visibility: hidden;
+}
+
+#recipe-save-button[aria-busy="true"]::after,
+#scan-save-button[aria-busy="true"]::after {
+  animation: authSpin 800ms linear infinite;
+  border: 2px solid rgba(255, 255, 255, 0.44);
+  border-radius: 50%;
+  border-top-color: #fff;
+  content: "";
+  height: 18px;
+  inset: 50% auto auto 50%;
+  margin: -9px 0 0 -9px;
+  position: absolute;
+  width: 18px;
+}
+
+.auth-modal.auth-view-change {
+  animation: authViewChange 300ms cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+
+@keyframes authViewChange {
+  from { opacity: 0.72; transform: translateY(8px) scale(0.992); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.auth-local-card {
+  align-items: flex-start;
+  background: var(--md-sys-color-tertiary-container);
+  border-radius: 16px;
+  color: var(--md-sys-color-on-tertiary-container);
+  display: flex;
+  gap: 12px;
+  padding: 16px;
+}
+
+.auth-local-card strong,
+.auth-local-card p {
+  display: block;
+  margin: 0;
+}
+
+.auth-local-card p {
+  font-size: 12px;
+  line-height: 1.5;
+  margin-top: 3px;
+}
+
+/* Imagem de capa da ficha */
+.recipe-cover-picker {
+  align-items: center;
+  background: var(--md-sys-color-surface-container-low);
+  border: 1px solid color-mix(in srgb, var(--md-sys-color-outline-variant) 72%, transparent);
+  border-radius: 18px;
+  display: grid;
+  gap: 14px;
+  grid-template-columns: 118px 1fr;
+  margin: 4px 0 16px;
+  padding: 10px;
+}
+
+.recipe-image-preview {
+  align-items: center;
+  aspect-ratio: 1 / 1;
+  background:
+    radial-gradient(circle at 70% 25%, rgba(180, 241, 204, 0.9), transparent 34%),
+    linear-gradient(145deg, #ffdad9, #fff0ed);
+  border: 1px dashed rgba(180, 35, 47, 0.34);
+  border-radius: 14px;
+  display: flex;
+  justify-content: center;
+  overflow: hidden;
+  position: relative;
+}
+
+.recipe-image-placeholder {
+  align-items: center;
+  color: var(--md-sys-color-primary);
+  display: flex;
+  justify-content: center;
+  transition: opacity 160ms ease;
+}
+
+.recipe-image-placeholder .material-symbols-rounded {
+  font-size: 34px;
+}
+
+.recipe-image-preview img {
+  height: 100%;
+  inset: 0;
+  object-fit: cover;
+  position: absolute;
+  width: 100%;
+}
+
+.recipe-image-preview.has-image .recipe-image-placeholder {
+  opacity: 0;
+}
+
+.recipe-cover-picker-copy {
+  min-width: 0;
+}
+
+.recipe-cover-picker-copy > strong,
+.recipe-cover-picker-copy > span,
+.recipe-cover-picker-copy > small {
+  display: block;
+}
+
+.recipe-cover-picker-copy > strong {
+  color: var(--md-sys-color-on-surface);
+  font-size: 13px;
+}
+
+.recipe-cover-picker-copy > span,
+.recipe-cover-picker-copy > small {
+  color: var(--md-sys-color-on-surface-variant);
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+.recipe-cover-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 10px 0 6px;
+}
+
+.recipe-cover-actions [hidden] {
+  display: none !important;
+}
+
+.recipe-cover-actions label {
+  cursor: pointer;
+}
+
+.recipe-card {
+  overflow: hidden;
+  position: relative;
+}
+
+.recipe-card:focus-visible {
+  border-color: var(--md-sys-color-primary);
+}
+
+.recipe-card .recipe-cover {
+  border: 1px solid color-mix(in srgb, currentColor 10%, transparent);
+  height: 154px !important;
+}
+
+.recipe-card .recipe-cover-image,
+.recipe-cover--modal .recipe-cover-image {
+  transition: transform 280ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.recipe-card:hover .recipe-cover-image {
+  transform: scale(1.025);
+}
+
+.recipe-card-title {
+  color: var(--md-sys-color-on-surface);
+  font-size: 16px;
+}
+
+.recipe-card-focus {
+  animation: recipeFocus 900ms ease 2 alternate;
+}
+
+@keyframes recipeFocus {
+  to { box-shadow: 0 0 0 4px rgba(180, 35, 47, 0.18), 0 14px 34px rgba(65, 0, 8, 0.12); }
+}
+
+@media (min-width: 768px) {
+  #recipes-list {
+    align-items: start;
+  }
+
+  .recipe-card .recipe-cover {
+    height: 172px !important;
+  }
+}
+
+@media (max-width: 767px) {
+  input,
+  select,
+  textarea {
+    font-size: 16px;
+  }
+
+  #modal-auth,
+  #modal-auth.auth-gate {
+    align-items: stretch;
+    padding: 0;
+  }
+
+  #modal-auth .auth-modal,
+  #modal-auth.auth-gate .auth-modal {
+    border: 0;
+    border-radius: 0;
+    grid-template-columns: 1fr;
+    grid-template-rows: 118px minmax(0, 1fr);
+    height: 100dvh;
+    max-height: 100dvh;
+    max-width: none;
+    width: 100%;
+  }
+
+  .auth-visual {
+    background-position: center 48%;
+    min-height: 118px;
+    padding: 20px;
+  }
+
+  .auth-brand-lockup,
+  .auth-visual-copy {
+    display: none;
+  }
+
+  .auth-form-panel {
+    border-radius: 24px 24px 0 0;
+    margin-top: -20px;
+    padding: 26px 20px calc(28px + env(safe-area-inset-bottom));
+    z-index: 2;
+  }
+
+  .auth-mobile-brand {
+    display: flex;
+    margin-bottom: 22px;
+  }
+
+  .auth-mobile-brand .auth-brand-mark {
+    height: 34px;
+    width: 34px;
+  }
+
+  .auth-panel-heading .modal-title {
+    font-size: 26px;
+  }
+
+  #modal-auth.auth-gate .auth-panel-heading .modal-title {
+    font-size: 26px;
+  }
+
+  .auth-state-card {
+    margin-bottom: 14px;
+  }
+
+  .recipe-card .recipe-cover {
+    height: 142px !important;
+  }
+
+  .btn-sm,
+  .btn-xs,
+  .btn-icon,
+  .password-toggle,
+  .auth-panel-close,
+  .auth-text-action,
+  .auth-back-link,
+  .auth-status-btn,
+  .ing-del,
+  .scan-ing-del {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
+@media (max-width: 420px) {
+  .app-title-group {
+    min-width: 0;
+  }
+
+  .app-subtitle {
+    display: none;
+  }
+
+  .auth-status-btn {
+    flex: 0 0 44px;
+    justify-content: center;
+    min-height: 44px;
+    padding: 0;
+    width: 44px;
+  }
+
+  #auth-status-label {
+    border: 0;
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    height: 1px;
+    overflow: hidden;
+    position: absolute;
+    white-space: nowrap;
+    width: 1px;
+  }
+}
+
+@media (max-width: 390px) {
+  .recipe-cover-picker {
+    align-items: stretch;
+    grid-template-columns: 92px 1fr;
+  }
+
+  .recipe-cover-actions .btn {
+    padding-inline: 12px;
+  }
+
+  .auth-form-panel {
+    padding-inline: 16px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 1ms !important;
+  }
+}

@@ -1,5 +1,7 @@
 (function exposeSupabaseDomainRepository() {
   const STORAGE_KEYS = window.FichaTecStorageKeys;
+  const RECIPE_IMAGE_BUCKET = "recipe-images";
+  const RECIPE_IMAGE_SIGNED_URL_TTL_SECONDS = 60 * 60 * 24 * 7;
 
   function normalizeNumber(value, fallback = 0) {
     const number = Number(value);
@@ -16,6 +18,110 @@
 
   function getRemoteId(item) {
     return item?.remoteId || (typeof item?.id === "string" && item.id.includes("-") ? item.id : null);
+  }
+
+  function normalizeRecipeImageMetadata(image) {
+    if (image === null || image?.removed === true) return null;
+    const src = typeof image === "string"
+      ? image.trim()
+      : String(image?.src || image?.url || image?.dataUrl || "").trim();
+    const path = typeof image?.path === "string" ? image.path.trim().replace(/^\/+/, "") : "";
+    if (!src && !path) return null;
+
+    return {
+      ...(src ? {src} : {}),
+      ...(path ? {path} : {}),
+      name: String(image?.name || "cover.jpg").slice(0, 180),
+      type: String(image?.type || "image/jpeg").slice(0, 80),
+      size: Math.max(0, normalizeNumber(image?.size, 0)),
+      ...(normalizeNumber(image?.width, 0) > 0 ? {width:normalizeNumber(image.width)} : {}),
+      ...(normalizeNumber(image?.height, 0) > 0 ? {height:normalizeNumber(image.height)} : {}),
+      updatedAt: image?.updatedAt || null,
+    };
+  }
+
+  function isRecipeImageDataUrl(value) {
+    return /^data:image\/(?:jpeg|jpg|png|webp);base64,/i.test(String(value || ""));
+  }
+
+  function dataUrlToBlob(dataUrl) {
+    const match = String(dataUrl || "").match(/^data:(image\/(?:jpeg|jpg|png|webp));base64,([a-z0-9+/=\s]+)$/i);
+    if (!match) throw new Error("Formato da imagem da receita invalido.");
+
+    const binary = window.atob(match[2].replace(/\s/g, ""));
+    const bytes = new Uint8Array(binary.length);
+    for (let index = 0; index < binary.length; index += 1) bytes[index] = binary.charCodeAt(index);
+    return new Blob([bytes], {type:match[1].toLowerCase().replace("image/jpg", "image/jpeg")});
+  }
+
+  function getRecipeImagePath(organizationId, recipeId) {
+    return `${organizationId}/${recipeId}/cover.jpg`;
+  }
+
+  async function createRecipeImageSignedUrl(client, path) {
+    if (!path) return "";
+    const {data, error} = await client.storage
+      .from(RECIPE_IMAGE_BUCKET)
+      .createSignedUrl(path, RECIPE_IMAGE_SIGNED_URL_TTL_SECONDS);
+    if (error) {
+      console.warn("Nao foi possivel assinar a imagem privada da receita.", error);
+      return "";
+    }
+    return data?.signedUrl || data?.signedURL || "";
+  }
+
+  async function uploadRecipeImage(client, organizationId, recipeId, image) {
+    const normalized = normalizeRecipeImageMetadata(image);
+    if (!normalized || !isRecipeImageDataUrl(normalized.src)) {
+      throw new Error("A capa da receita precisa ser uma imagem preparada pelo aplicativo.");
+    }
+
+    const path = getRecipeImagePath(organizationId, recipeId);
+    const blob = dataUrlToBlob(normalized.src);
+    if (blob.size > 5 * 1024 * 1024) {
+      throw new Error("A imagem da receita excede o limite de 5 MB.");
+    }
+    const {error} = await client.storage
+      .from(RECIPE_IMAGE_BUCKET)
+      .upload(path, blob, {
+        cacheControl: "3600",
+        contentType: blob.type || normalized.type || "image/jpeg",
+        upsert: true,
+      });
+    if (error) throw error;
+    return path;
+  }
+
+  async function removeRecipeImage(client, paths) {
+    const uniquePaths = [...new Set((paths || []).filter(Boolean))];
+    if (!uniquePaths.length) return;
+    const {error} = await client.storage.from(RECIPE_IMAGE_BUCKET).remove(uniquePaths);
+    if (error) throw error;
+  }
+
+  async function updateRecipeImagePath(client, organizationId, recipeId, imagePath) {
+    const {data, error} = await client
+      .from("recipes")
+      .update({image_path: imagePath || null})
+      .eq("id", recipeId)
+      .eq("organization_id", organizationId)
+      .select("*")
+      .single();
+    if (error) throw error;
+    return data;
+  }
+
+  async function hydrateRecipeImage(client, recipe) {
+    const image = normalizeRecipeImageMetadata(recipe?.image);
+    if (!image?.path) return recipe;
+    const signedUrl = await createRecipeImageSignedUrl(client, image.path);
+    return {
+      ...recipe,
+      image: {
+        ...image,
+        ...(signedUrl ? {src:signedUrl} : {}),
+      },
+    };
   }
 
   function getNutritionRawPayload(row) {
@@ -173,8 +279,13 @@
 
   function mapRecipeToRemote(recipe, organizationId) {
     const remoteId = getRemoteId(recipe);
+    const image = normalizeRecipeImageMetadata(recipe?.image);
+    const canonicalImagePath = remoteId ? getRecipeImagePath(organizationId, remoteId) : "";
     return {
       ...(remoteId ? {id: remoteId} : {}),
+      ...(Object.prototype.hasOwnProperty.call(recipe || {}, "image") && image?.path === canonicalImagePath
+        ? {image_path:canonicalImagePath}
+        : {}),
       organization_id: organizationId,
       name: recipe.nome,
       yield_g: normalizeNumber(recipe.rendimento),
@@ -191,6 +302,7 @@
   }
 
   function mapRecipeFromRemote(row) {
+    const imagePath = String(row.image_path || "").trim().replace(/^\/+/, "");
     return {
       id: row.localId || row.id,
       remoteId: row.id,
@@ -205,6 +317,14 @@
       modoPreparo: row.preparation_method || "",
       observacoes: row.notes || "",
       origem: row.origin || "manual",
+      imagePath:imagePath || null,
+      ...(imagePath ? {image:{
+          path:imagePath,
+          name:"cover.jpg",
+          type:"image/jpeg",
+          size:0,
+          updatedAt:row.updated_at || null,
+        }} : {}),
       createdAt: row.created_at,
       updatedAt: row.updated_at,
     };
@@ -339,38 +459,278 @@
       .order("created_at", {ascending: false});
 
     if (error) throw error;
-    return (data || []).map(mapRecipeFromRemote);
+    return Promise.all((data || []).map((row) => hydrateRecipeImage(client, mapRecipeFromRemote(row))));
+  }
+
+  async function readRecipeImagePath(client, organizationId, recipe) {
+    const remoteId = getRemoteId(recipe);
+    if (!remoteId) return "";
+    const {data, error} = await client
+      .from("recipes")
+      .select("image_path")
+      .eq("id", remoteId)
+      .eq("organization_id", organizationId)
+      .maybeSingle();
+    if (error) throw error;
+    const storedPath = String(data?.image_path || "").trim().replace(/^\/+/, "");
+    const canonicalPath = getRecipeImagePath(organizationId, remoteId);
+    if (storedPath && storedPath !== canonicalPath) {
+      console.warn("Caminho de capa nao canonico ignorado.", {recipeId:remoteId});
+      return "";
+    }
+    return storedPath;
+  }
+
+  async function persistRecipeImage(client, organizationId, recipe, savedRecipe, knownPreviousPath = "") {
+    const hasImageIntent = Object.prototype.hasOwnProperty.call(recipe || {}, "image");
+    const requestedImage = normalizeRecipeImageMetadata(recipe?.image);
+    const canonicalPath = getRecipeImagePath(organizationId, savedRecipe.id);
+    const previousCandidate = String(knownPreviousPath || savedRecipe?.image_path || "").trim().replace(/^\/+/, "");
+    const previousPath = previousCandidate === canonicalPath ? canonicalPath : "";
+
+    if (!hasImageIntent) {
+      if (!previousPath) return null;
+      const signedUrl = await createRecipeImageSignedUrl(client, previousPath);
+      return normalizeRecipeImageMetadata({
+        src:signedUrl,
+        path:previousPath,
+        name:"cover.jpg",
+        type:"image/jpeg",
+        updatedAt:savedRecipe.updated_at,
+      });
+    }
+
+    if (!requestedImage) {
+      if (!previousPath) return null;
+      await updateRecipeImagePath(client, organizationId, savedRecipe.id, null);
+      try {
+        await removeRecipeImage(client, [canonicalPath]);
+      } catch (error) {
+        console.warn("A referencia da capa foi limpa, mas o arquivo antigo nao pode ser removido.", error);
+      }
+      return null;
+    }
+
+    if (isRecipeImageDataUrl(requestedImage.src)) {
+      const uploadedPath = await uploadRecipeImage(client, organizationId, savedRecipe.id, requestedImage);
+      // An existing cover already points at this canonical object. Skipping a
+      // redundant row update leaves no fallible step after replacing the binary.
+      const updatedRecipe = previousPath === uploadedPath
+        ? savedRecipe
+        : await updateRecipeImagePath(client, organizationId, savedRecipe.id, uploadedPath);
+      if (previousPath && previousPath !== uploadedPath) {
+        try {
+          await removeRecipeImage(client, [previousPath]);
+        } catch (error) {
+          console.warn("Nao foi possivel remover a capa antiga da receita.", error);
+        }
+      }
+      const signedUrl = await createRecipeImageSignedUrl(client, uploadedPath);
+      return normalizeRecipeImageMetadata({
+        ...requestedImage,
+        src:signedUrl || requestedImage.src,
+        path:uploadedPath,
+        updatedAt:updatedRecipe.updated_at || requestedImage.updatedAt,
+      });
+    }
+
+    const requestedPath = requestedImage.path === canonicalPath ? canonicalPath : "";
+    const finalPath = previousPath || requestedPath;
+    if (!finalPath) return null;
+    if (finalPath !== previousPath) {
+      await updateRecipeImagePath(client, organizationId, savedRecipe.id, finalPath);
+    }
+    const signedUrl = requestedImage.src || await createRecipeImageSignedUrl(client, finalPath);
+    return normalizeRecipeImageMetadata({
+      ...requestedImage,
+      ...(signedUrl ? {src:signedUrl} : {}),
+      path:finalPath,
+    });
+  }
+
+  async function readRecipeSaveSnapshot(client, organizationId, recipe) {
+    const remoteId = getRemoteId(recipe);
+    if (!remoteId) return null;
+    const {data, error} = await client
+      .from("recipes")
+      .select("*, recipe_ingredients(*)")
+      .eq("id", remoteId)
+      .eq("organization_id", organizationId)
+      .maybeSingle();
+    if (error) throw error;
+    return data || null;
+  }
+
+  async function rollbackRecipeSave(client, organizationId, recipeId, snapshot) {
+    const canonicalPath = getRecipeImagePath(organizationId, recipeId);
+    if (!snapshot) {
+      const {error:ingredientsError} = await client
+        .from("recipe_ingredients")
+        .delete()
+        .eq("recipe_id", recipeId)
+        .eq("organization_id", organizationId);
+      if (ingredientsError) throw ingredientsError;
+
+      const {error:recipeError} = await client
+        .from("recipes")
+        .update({deleted_at:new Date().toISOString(), image_path:null})
+        .eq("id", recipeId)
+        .eq("organization_id", organizationId);
+      if (recipeError) throw recipeError;
+      try {
+        await removeRecipeImage(client, [canonicalPath]);
+      } catch (error) {
+        console.warn("A receita foi revertida, mas a capa parcial nao pode ser removida.", error);
+      }
+      return;
+    }
+
+    const {error:recipeError} = await client
+      .from("recipes")
+      .update({
+        name:snapshot.name,
+        yield_g:snapshot.yield_g,
+        portions:snapshot.portions,
+        markup_percent:snapshot.markup_percent,
+        portion_size_g:snapshot.portion_size_g,
+        total_cost_cents:snapshot.total_cost_cents,
+        sale_price_cents:snapshot.sale_price_cents,
+        preparation_method:snapshot.preparation_method,
+        notes:snapshot.notes,
+        origin:snapshot.origin,
+        image_path:snapshot.image_path || null,
+        deleted_at:snapshot.deleted_at || null,
+      })
+      .eq("id", recipeId)
+      .eq("organization_id", organizationId);
+    if (recipeError) throw recipeError;
+
+    if (!snapshot.image_path) {
+      try {
+        await removeRecipeImage(client, [canonicalPath]);
+      } catch (error) {
+        console.warn("A receita foi restaurada sem capa, mas o upload parcial nao pode ser removido.", error);
+      }
+    }
+
+    const previousIngredients = Array.isArray(snapshot.recipe_ingredients)
+      ? snapshot.recipe_ingredients
+      : [];
+    if (previousIngredients.length) {
+      const rows = previousIngredients.map((ingredient) => ({
+        id:ingredient.id,
+        organization_id:ingredient.organization_id,
+        recipe_id:ingredient.recipe_id,
+        stock_item_id:ingredient.stock_item_id,
+        physical_stock_item_id:ingredient.physical_stock_item_id,
+        name:ingredient.name,
+        unit:ingredient.unit,
+        used_quantity:ingredient.used_quantity,
+        gross_quantity:ingredient.gross_quantity,
+        yield_percent:ingredient.yield_percent,
+        cost_cents:ingredient.cost_cents,
+        saved_unit_price_cents:ingredient.saved_unit_price_cents,
+        nutrition_snapshot:ingredient.nutrition_snapshot || {},
+      }));
+      const {error:restoreError} = await client.from("recipe_ingredients").upsert(rows);
+      if (restoreError) throw restoreError;
+    }
+
+    const previousIds = previousIngredients.map((ingredient) => ingredient.id).filter(Boolean);
+    let cleanupQuery = client
+      .from("recipe_ingredients")
+      .delete()
+      .eq("recipe_id", recipeId)
+      .eq("organization_id", organizationId);
+    if (previousIds.length) cleanupQuery = cleanupQuery.not("id", "in", `(${previousIds.join(",")})`);
+    const {error:cleanupError} = await cleanupQuery;
+    if (cleanupError) throw cleanupError;
   }
 
   async function saveRecipes(client, organizationId, recipes) {
     const saved = [];
 
     for (const recipe of recipes) {
-      const {data: savedRecipe, error: recipeError} = await client
-        .from("recipes")
-        .upsert(mapRecipeToRemote(recipe, organizationId))
-        .select("*")
-        .single();
-
-      if (recipeError) throw recipeError;
-
-      const ingredientRows = (recipe.ingredients || []).map((ingredient) =>
-        mapRecipeIngredientToRemote(ingredient, savedRecipe.id, organizationId)
-      );
-
-      if (ingredientRows.length) {
-        const {error: ingredientError} = await client
-          .from("recipe_ingredients")
-          .upsert(ingredientRows);
-
-        if (ingredientError) throw ingredientError;
+      const previousSnapshot = await readRecipeSaveSnapshot(client, organizationId, recipe);
+      const previousImagePath = await readRecipeImagePath(client, organizationId, recipe);
+      const recipePayload = mapRecipeToRemote(recipe, organizationId);
+      if (!Object.prototype.hasOwnProperty.call(recipe || {}, "image") && previousImagePath) {
+        recipePayload.image_path = previousImagePath;
       }
+      let savedRecipe = null;
+      try {
+        const {data, error:recipeError} = await client
+          .from("recipes")
+          .upsert(recipePayload, {defaultToNull:false})
+          .select("*")
+          .single();
 
-      await deleteMissingRecipeIngredients(client, savedRecipe.id, recipe.ingredients || []);
-      saved.push({...recipe, remoteId: savedRecipe.id});
+        if (recipeError) throw recipeError;
+        savedRecipe = data;
+
+        const ingredientRows = (recipe.ingredients || []).map((ingredient) =>
+          mapRecipeIngredientToRemote(ingredient, savedRecipe.id, organizationId)
+        );
+
+        if (ingredientRows.length) {
+          const {error: ingredientError} = await client
+            .from("recipe_ingredients")
+            .upsert(ingredientRows);
+
+          if (ingredientError) throw ingredientError;
+        }
+
+        await deleteMissingRecipeIngredients(client, savedRecipe.id, recipe.ingredients || []);
+        const image = await persistRecipeImage(client, organizationId, recipe, savedRecipe, previousImagePath);
+        const savedItem = {
+          ...recipe,
+          remoteId:savedRecipe.id,
+          imagePath:image?.path || null,
+        };
+        if (image) savedItem.image = image;
+        else delete savedItem.image;
+        saved.push(savedItem);
+      } catch (error) {
+        if (savedRecipe?.id) {
+          try {
+            await rollbackRecipeSave(client, organizationId, savedRecipe.id, previousSnapshot);
+          } catch (rollbackError) {
+            console.error("Nao foi possivel reverter completamente a receita remota.", rollbackError);
+          }
+        }
+        throw error;
+      }
+    }
+
+    let deletedRecipeImagePaths = [];
+    if (shouldReconcileDeletes(saved)) {
+      const remoteIds = saved.map(getRemoteId);
+      let deletedRecipesQuery = client
+        .from("recipes")
+        .select("id, image_path")
+        .eq("organization_id", organizationId)
+        .is("deleted_at", null);
+      if (remoteIds.length) {
+        deletedRecipesQuery = deletedRecipesQuery.not("id", "in", `(${remoteIds.join(",")})`);
+      }
+      const {data:deletedRecipes, error:deletedRecipesError} = await deletedRecipesQuery;
+      if (deletedRecipesError) throw deletedRecipesError;
+      deletedRecipeImagePaths = (deletedRecipes || [])
+        .map((row) => {
+          const path = String(row.image_path || "").trim().replace(/^\/+/, "");
+          return path === getRecipeImagePath(organizationId, row.id) ? path : "";
+        })
+        .filter(Boolean);
     }
 
     await softDeleteMissingRows(client, "recipes", organizationId, saved);
+    if (deletedRecipeImagePaths.length) {
+      try {
+        await removeRecipeImage(client, deletedRecipeImagePaths);
+      } catch (error) {
+        console.warn("Receitas removidas, mas algumas capas antigas ficaram para limpeza posterior.", error);
+      }
+    }
     return saved;
   }
 
@@ -471,6 +831,11 @@
     currencyFromCents,
     getRemoteId,
     getNutritionRawPayload,
+    getRecipeImagePath,
+    createRecipeImageSignedUrl,
+    dataUrlToBlob,
+    hydrateRecipeImage,
+    isRecipeImageDataUrl,
     listPhysicalStockItems,
     listRecipes,
     listStockItems,
@@ -486,12 +851,18 @@
     mapStockToRemote,
     mapNutritionFromRemote,
     mapNutritionToRemote,
+    normalizeRecipeImageMetadata,
     normalizeNumber,
     saveByKey,
     savePhysicalStockItems,
     saveRecipes,
     saveStockItems,
     saveCategories,
+    uploadRecipeImage,
+    removeRecipeImage,
+    readRecipeImagePath,
+    updateRecipeImagePath,
+    persistRecipeImage,
     canSyncKey,
     deleteMissingRecipeIngredients,
     isMissingProductCategoriesTableError,

@@ -5,21 +5,24 @@ Este documento acompanha a evolucao do app como PWA instalavel.
 ## Implementado
 
 - `manifest.webmanifest` na raiz do projeto.
-- `service-worker.js` com cache resiliente do app shell, ignorando assets ausentes sem cancelar a instalacao.
+- `service-worker.js` v12 com cache resiliente do app shell, incluindo a nova camada visual e a fonte local de icones, e ignorando assets ausentes sem cancelar a instalacao.
 - Copia dos assets PWA em `public/` para publicacao correta na Vercel.
 - Build `npm run build` sincroniza `src` para `public/src`, garantindo CSS e JS em producao na Vercel.
-- Registro do service worker em `src/pwa/registerServiceWorker.js`.
+- Registro nao bloqueante de `/service-worker.js` em `src/pwa/registerServiceWorker.js`, sem desregistrar o worker ou apagar caches no cliente.
+- Atualizacao resiliente na inicializacao, no retorno da rede e ao retomar a pagina, com ativacao da nova versao e uma unica recarga controlada.
 - Icone SVG temporario em `icons/icon.svg`.
 - Icones PNG temporarios em `icons/icon-192.png` e `icons/icon-512.png`.
 - Metatags mobile e `theme-color` no HTML principal.
-- Atalho PWA para abrir o scanner via `?action=scanner`.
+- Atalho PWA para abrir o scanner via `?action=scanner`, aguardando splash e autenticacao sem bloquear a interface.
 
 ## Estrategia Atual
 
 - Cache-first para arquivos estaticos validos do app, salvando apenas respostas `ok` da mesma origem.
 - Network-first para navegacao, com fallback para app shell.
 - Sem cache para rotas `/api/`, porque scanner/IA e futuras chamadas autenticadas devem buscar dados atuais.
+- O app shell inclui o controle de acesso por plano e a imagem principal da experiencia inicial.
 - Cache inicial usa `Promise.allSettled` para que um asset 404 nao derrube o service worker nem cancele CRUD/Auth/Supabase.
+- Falhas de registro ou atualizacao sao isoladas e nunca seguram o splash, o login ou o restante do app.
 
 ## Validacao Manual
 
@@ -28,7 +31,9 @@ Este documento acompanha a evolucao do app como PWA instalavel.
 3. Instalar o app.
 4. Abrir instalado e navegar entre Ficha, Virtual, Fisico e Receitas.
 5. Ativar modo aviao e validar se a interface base ainda abre.
-6. Voltar online e testar scanner quando a API estiver configurada.
+6. Voltar online e confirmar que o app verifica atualizacoes sem travar a interface.
+7. Abrir `/?action=scanner`, autenticar se necessario e confirmar que o scanner abre uma unica vez.
+8. Testar scanner quando a API estiver configurada.
 
 ## Pendencias Futuras
 

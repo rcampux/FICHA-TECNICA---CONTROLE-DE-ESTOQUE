@@ -1,23 +1,23 @@
 :root {
   --g50: var(--md-sys-color-tertiary-container);
-  --g100: #c6e7b6;
-  --g200: #9dcc87;
-  --g400: #6fae5a;
+  --g100: #d4f6e1;
+  --g200: #a9e4c0;
+  --g400: #438463;
   --g500: var(--md-sys-color-tertiary);
-  --g600: #3f5f33;
-  --g700: #273e1d;
+  --g600: #22543f;
+  --g700: #173b2c;
   --r400: var(--md-sys-color-primary);
   --r100: var(--md-sys-color-primary-container);
   --n0: var(--md-sys-color-surface-container-lowest);
   --n50: var(--md-sys-color-surface-container-low);
   --n100: var(--md-sys-color-surface-container);
   --n200: var(--md-sys-color-outline-variant);
-  --n400: #94847b;
+  --n400: #7b625e;
   --n600: var(--md-sys-color-on-surface-variant);
   --n800: var(--md-sys-color-on-surface);
-  --n900: #1b120d;
+  --n900: #221918;
   --warn: var(--md-sys-color-warning);
-  --warn-bg: #ffefce;
+  --warn-bg: #ffeed0;
   --r-sm: var(--md-sys-shape-corner-small);
   --r-md: var(--md-sys-shape-corner-medium);
   --r-lg: var(--md-sys-shape-corner-large);
@@ -25,7 +25,7 @@
   --r-pill: var(--md-sys-shape-corner-full);
   --shadow-card: var(--md-sys-elevation-level-1);
   --shadow-md: var(--md-sys-elevation-level-2);
-  --shadow-float: 0 8px 22px rgba(164, 61, 38, 0.28);
+  --shadow-float: 0 10px 28px rgba(180, 35, 47, 0.28);
 }
 
 .app-header {
@@ -38,9 +38,9 @@
 
 .app-logo {
   background:
-    linear-gradient(135deg, var(--md-sys-color-primary), #c66d2f 58%, var(--ft-color-premium));
+    linear-gradient(135deg, var(--md-sys-color-primary), #d4474f 58%, #8f1724);
   border-radius: 14px;
-  box-shadow: 0 8px 18px rgba(164, 61, 38, 0.24);
+  box-shadow: 0 8px 18px rgba(180, 35, 47, 0.24);
   position: relative;
   overflow: hidden;
 }
@@ -138,7 +138,7 @@
 .nav-fab,
 .scan-fab {
   background:
-    linear-gradient(135deg, var(--md-sys-color-primary), #c76d2d);
+    linear-gradient(135deg, var(--md-sys-color-primary), #d4474f);
   box-shadow: var(--shadow-float);
 }
 
@@ -748,36 +748,6 @@ textarea:focus {
 #modal-auth.auth-gate .modal-title {
   font-size: 22px;
   letter-spacing: 0;
-}
-
-.auth-modal.auth-card-flip {
-  animation: authCardFlip 500ms cubic-bezier(0.2, 0, 0, 1);
-  will-change: transform, opacity;
-}
-
-@keyframes authCardFlip {
-  0% {
-    opacity: 1;
-    transform: perspective(1100px) rotateY(0deg) scale(1);
-  }
-  44% {
-    opacity: 0.72;
-    transform: perspective(1100px) rotateY(82deg) scale(0.985);
-  }
-  56% {
-    opacity: 0.72;
-    transform: perspective(1100px) rotateY(-82deg) scale(0.985);
-  }
-  100% {
-    opacity: 1;
-    transform: perspective(1100px) rotateY(0deg) scale(1);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .auth-modal.auth-card-flip {
-    animation: none;
-  }
 }
 
 .auth-state-card {
