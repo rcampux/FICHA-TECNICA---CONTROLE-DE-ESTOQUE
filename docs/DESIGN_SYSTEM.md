@@ -58,9 +58,16 @@ Os tokens canônicos ficam em `src/styles/tokens.css`. Aliases legados existem a
 
 ### Cards
 
-- Fundo branco, borda fina e sombra discreta.
+- Fundo branco sem moldura aparente, separado do plano por espaço e sombra ampla de baixa opacidade.
 - Imagem tem função de reconhecimento; sem imagem, o sistema usa ícone e paleta determinísticos pelo ID da receita, sem mudar ao renomeá-la.
 - Ações secundárias não disputam atenção com preço, nome ou estado.
+
+### Superfícies e contornos
+
+- Bordas contrastantes não são usadas como decoração ou para delimitar todos os elementos.
+- Cards, modais e painéis criam hierarquia por diferença sutil de superfície, espaçamento e elevação difusa.
+- Campos usam preenchimento cinza quente sem contorno no repouso; o anel de foco aparece somente durante a interação.
+- Contornos ficam reservados para foco, erro, seleção necessária ou áreas de upload.
 
 ### Formulários e ações
 

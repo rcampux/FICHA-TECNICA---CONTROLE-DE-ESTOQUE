@@ -1,0 +1,258 @@
+/* FichaTec — acabamento visual leve: hierarquia por superfície, espaço e sombra. */
+
+:root {
+  --md-sys-color-surface: #fbf9f8;
+  --md-sys-color-surface-container-low: #f7f3f2;
+  --md-sys-color-surface-container: #f2eeed;
+  --md-sys-color-surface-container-high: #ece7e5;
+  --md-sys-color-surface-container-highest: #e6dfdd;
+  --md-sys-color-outline-variant: #eee5e3;
+  --md-sys-elevation-level-1: 0 8px 28px rgba(53, 34, 31, 0.045);
+  --md-sys-elevation-level-2: 0 16px 42px rgba(53, 34, 31, 0.075);
+  --shadow-card: var(--md-sys-elevation-level-1);
+  --shadow-md: var(--md-sys-elevation-level-2);
+}
+
+body {
+  background: #f8f6f5;
+}
+
+.app-header {
+  border-bottom: 0;
+  box-shadow: 0 10px 34px rgba(49, 30, 28, 0.035);
+}
+
+.card,
+.card-outlined,
+.item-card,
+.pstock-card,
+.summary-box,
+.recipe-card,
+.page-header,
+.stock-category-card,
+.stock-add-card,
+.builder-step,
+.auth-state-card,
+.workspace-option,
+.empty-state {
+  border-color: transparent;
+}
+
+.card,
+.card-outlined,
+.item-card,
+.pstock-card,
+.summary-box,
+.recipe-card {
+  box-shadow: 0 10px 34px rgba(53, 34, 31, 0.05);
+}
+
+.card:hover,
+.item-card:hover,
+.pstock-card:hover,
+.recipe-card:hover {
+  box-shadow: 0 18px 48px rgba(53, 34, 31, 0.08);
+}
+
+input,
+select,
+textarea,
+.search-bar input,
+#page-estoque .stock-category-search,
+#page-fisico .stock-category-search {
+  background: #f5f2f1;
+  border-color: transparent;
+  box-shadow: none;
+}
+
+input:hover,
+select:hover,
+textarea:hover {
+  background: #f1edec;
+}
+
+input:focus,
+select:focus,
+textarea:focus,
+.search-bar input:focus {
+  background: #fff;
+  border-color: transparent;
+  box-shadow: 0 0 0 3px rgba(180, 35, 47, 0.10), 0 8px 24px rgba(53, 34, 31, 0.055);
+}
+
+.btn-secondary,
+.btn-outlined,
+.google-search-btn,
+.category-inline-add,
+.header-quick-action {
+  background: #f3efee;
+  border-color: transparent;
+  box-shadow: none;
+}
+
+.btn-secondary:hover,
+.btn-outlined:hover,
+.google-search-btn:hover,
+.category-inline-add:hover,
+.header-quick-action:hover {
+  background: #ebe5e3;
+  border-color: transparent;
+}
+
+.header-quick-action--primary,
+.header-quick-action--primary:hover {
+  background: var(--md-sys-color-primary);
+  color: #fff;
+}
+
+.btn-primary {
+  box-shadow: 0 10px 26px rgba(180, 35, 47, 0.16);
+}
+
+.btn-primary:hover {
+  box-shadow: 0 14px 32px rgba(180, 35, 47, 0.21);
+}
+
+.chip {
+  background: #f3efee;
+  border-color: transparent;
+}
+
+.chip:hover {
+  background: #ece5e3;
+  border-color: transparent;
+}
+
+.chip.active {
+  border-color: transparent;
+  box-shadow: 0 7px 18px rgba(180, 35, 47, 0.14);
+}
+
+.auth-status-btn {
+  background: #f3efee;
+  border-color: transparent;
+}
+
+.source-toggle,
+.auth-mode-tabs {
+  background: #f2eeed;
+}
+
+.source-btn.active,
+.auth-mode-tab.active {
+  box-shadow: 0 6px 18px rgba(53, 34, 31, 0.055);
+}
+
+.builder-step {
+  background: #faf8f7;
+  box-shadow: none;
+}
+
+.recipe-cover-picker {
+  background: #f7f3f2;
+  border-color: transparent;
+}
+
+.recipe-image-preview {
+  border: 0;
+  box-shadow: inset 0 0 0 1px rgba(180, 35, 47, 0.05);
+}
+
+.recipe-card .recipe-cover {
+  border-color: transparent;
+}
+
+#ingredients-list:empty::before {
+  background: rgba(255, 255, 255, 0.64);
+  border-color: rgba(88, 65, 62, 0.12);
+}
+
+#page-estoque .stock-category-card,
+#page-fisico .stock-category-card,
+#page-estoque .stock-add-card,
+#page-fisico .stock-add-card,
+#page-fisico .summary-box,
+#page-estoque .item-card,
+#page-fisico .pstock-card {
+  border-color: transparent;
+  box-shadow: 0 10px 34px rgba(53, 34, 31, 0.05);
+}
+
+#page-estoque .stock-filter-btn,
+#page-fisico .stock-filter-btn {
+  background: #e9e4e2;
+  color: #5f5553;
+}
+
+.category-filter-panel,
+.autocomplete-dropdown {
+  border-color: transparent;
+  box-shadow: 0 20px 56px rgba(53, 34, 31, 0.13);
+}
+
+.markup-row {
+  background: #fff6e7;
+  border-color: transparent;
+}
+
+.info-banner,
+#ing-selected-info {
+  border-color: transparent;
+}
+
+.modal {
+  border-color: transparent;
+  box-shadow: 0 28px 80px rgba(43, 24, 22, 0.16);
+}
+
+#modal-auth.auth-gate .auth-modal {
+  border: 0;
+  box-shadow: 0 36px 110px rgba(65, 0, 8, 0.14);
+}
+
+.auth-state-card {
+  border: 0;
+}
+
+.auth-benefits span {
+  border-color: rgba(255, 255, 255, 0.10);
+}
+
+.desktop-nav-note {
+  background: rgba(255, 255, 255, 0.045);
+  border: 0;
+}
+
+.page-hero-art span {
+  border-color: rgba(255, 255, 255, 0.10);
+}
+
+@media (max-width: 767px) {
+  .page-hero {
+    border: 0;
+    box-shadow: 0 12px 36px rgba(53, 34, 31, 0.055);
+  }
+
+  .card,
+  .item-card,
+  .pstock-card,
+  .recipe-card,
+  #page-estoque .stock-category-card,
+  #page-fisico .stock-category-card,
+  #page-estoque .stock-add-card,
+  #page-fisico .stock-add-card {
+    box-shadow: 0 8px 26px rgba(53, 34, 31, 0.045);
+  }
+}
+
+@media (min-width: 768px) {
+  .page-hero,
+  #page-receitas .page-header--recipes {
+    box-shadow: 0 22px 56px rgba(65, 0, 8, 0.10);
+  }
+
+  #page-ficha > .card:first-of-type,
+  #page-ficha > .ingredient-builder-card {
+    border: 0;
+  }
+}
