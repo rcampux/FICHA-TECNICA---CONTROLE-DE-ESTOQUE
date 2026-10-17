@@ -876,7 +876,7 @@
               <div style="font-size:11px;color:var(--n600);font-weight:600;margin-bottom:3px;display:flex;align-items:center;gap:4px">
                 <span class="material-symbols-rounded" style="font-size:13px">${ico}</span>${l}
               </div>
-              <div style="font-size:16px;font-weight:800;font-family:'Roboto Mono',monospace;color:${c}">${v}</div>
+              <div style="font-size:16px;font-weight:800;font-family:'Roboto',sans-serif;color:${c}">${v}</div>
             </div>`).join('')}
         </div>
         <div style="font-size:11px;font-weight:700;color:var(--n600);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:var(--s2);display:flex;align-items:center;gap:4px">
@@ -978,10 +978,10 @@
         </tr>`;
       }).join('');
       const html=`<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><title>Ficha — ${safeRecipeName}</title>
-      <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+      <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
       <style>
         *{box-sizing:border-box;margin:0;padding:0}
-        body{font-family:'Inter',sans-serif;color:#3E3E3E;padding:36px 40px;max-width:720px;margin:0 auto;line-height:1.5;-webkit-font-smoothing:antialiased}
+        body{font-family:'Roboto',sans-serif;color:#3E3E3E;padding:36px 40px;max-width:720px;margin:0 auto;line-height:1.5;-webkit-font-smoothing:antialiased}
         @media print{body{padding:20px 24px}.no-print{display:none!important}@page{margin:15mm 18mm;size:A4}}
         .header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:24px;padding-bottom:16px;border-bottom:3px solid #27AE60}
         .logo{display:flex;align-items:center;gap:12px}
@@ -991,7 +991,7 @@
         .si.hl{background:#27AE60}
         .sl{font-size:10px;color:#717171;text-transform:uppercase;letter-spacing:0.6px;margin-bottom:4px;font-weight:700}
         .sl.hl{color:rgba(255,255,255,0.8)}
-        .sv{font-size:16px;font-weight:800;font-family:'Roboto Mono',monospace;color:#3E3E3E}
+        .sv{font-size:16px;font-weight:800;font-family:'Roboto',sans-serif;color:#3E3E3E}
         .sv.hl{color:#fff}
         table{width:100%;border-collapse:collapse;border:1px solid #E0E0E0;border-radius:12px;overflow:hidden}
         thead tr{background:#F7F7F7}
@@ -1000,13 +1000,13 @@
         .section-title{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:0.7px;color:#717171;margin:22px 0 8px}
         .nutrition-report{margin-bottom:18px;page-break-inside:avoid}
         .nutrition-report td{padding:9px 12px;border-bottom:1px solid #F0F0F0;font-size:12px;color:#3E3E3E}
-        .nutrition-report td:nth-child(2){font-family:'Roboto Mono',monospace;font-weight:700;text-align:right}
-        .nutrition-report td:last-child{font-family:'Roboto Mono',monospace;text-align:right;color:#4A7745}
+        .nutrition-report td:nth-child(2){font-family:'Roboto',sans-serif;font-weight:700;text-align:right}
+        .nutrition-report td:last-child{font-family:'Roboto',sans-serif;text-align:right;color:#4A7745}
         .nutrition-report tr:last-child td{border-bottom:none}
         tfoot td{padding:10px 12px;font-size:13px;font-weight:800;border-top:2px solid #E0E0E0;background:#F7F7F7}
-        tfoot td:last-child{text-align:right;color:#27AE60;font-family:'Roboto Mono',monospace}
+        tfoot td:last-child{text-align:right;color:#27AE60;font-family:'Roboto',sans-serif}
         footer{margin-top:28px;padding-top:12px;border-top:1px solid #E0E0E0;display:flex;justify-content:space-between;font-size:11px;color:#BDBDBD}
-        .btn-print{display:inline-flex;align-items:center;gap:8px;background:#27AE60;color:#fff;border:none;padding:12px 24px;border-radius:999px;font-size:14px;font-family:'Inter',sans-serif;font-weight:700;cursor:pointer;margin-bottom:20px}
+        .btn-print{display:inline-flex;align-items:center;gap:8px;background:#27AE60;color:#fff;border:none;padding:12px 24px;border-radius:999px;font-size:14px;font-family:'Roboto',sans-serif;font-weight:700;cursor:pointer;margin-bottom:20px}
         .prep{background:#F7F7F7;border-radius:10px;padding:14px 16px;margin-top:20px;font-size:13px;line-height:1.8;color:#3E3E3E}
         .prep-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.6px;color:#717171;margin-bottom:8px}
         .recipe-cover{width:100%;height:220px;object-fit:cover;border-radius:16px;margin:0 0 20px;display:block;page-break-inside:avoid}

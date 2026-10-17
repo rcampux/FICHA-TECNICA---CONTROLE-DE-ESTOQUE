@@ -384,8 +384,8 @@
 
       const percent = item.desiredQty > 0 ? (item.currentQty / item.desiredQty) * 100 : 0;
       document.getElementById("modal-move-info").innerHTML =
-        `<div style="display:flex;justify-content:space-between;margin-bottom:6px"><span>Em estoque</span><strong style="font-family:'Roboto Mono',monospace">${formatQuantity(item.currentQty,item.unit)}</strong></div>
-         <div style="display:flex;justify-content:space-between;margin-bottom:8px"><span>Desejado</span><strong style="font-family:'Roboto Mono',monospace">${formatQuantity(item.desiredQty,item.unit)}</strong></div>
+        `<div style="display:flex;justify-content:space-between;margin-bottom:6px"><span>Em estoque</span><strong style="font-family:'Roboto',sans-serif">${formatQuantity(item.currentQty,item.unit)}</strong></div>
+         <div style="display:flex;justify-content:space-between;margin-bottom:8px"><span>Desejado</span><strong style="font-family:'Roboto',sans-serif">${formatQuantity(item.desiredQty,item.unit)}</strong></div>
          ${stockBar(percent)}${stockFlag(percent)}`;
       document.getElementById("modal-move").classList.add("open");
     }

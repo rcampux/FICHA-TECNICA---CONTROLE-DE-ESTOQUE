@@ -7,6 +7,8 @@ const publicSrcDir = resolve(root, "public", "src");
 const assetsDir = resolve(root, "assets");
 const publicAssetsDir = resolve(root, "public", "assets");
 const publicEnvFile = resolve(publicSrcDir, "config", "env.js");
+const serviceWorkerFile = resolve(root, "service-worker.js");
+const publicServiceWorkerFile = resolve(root, "public", "service-worker.js");
 
 function toQuotedString(value) {
   return JSON.stringify(value || "");
@@ -37,6 +39,7 @@ async function syncPublicAssets() {
   await mkdir(publicSrcDir, {recursive:true});
   await cp(srcDir, publicSrcDir, {recursive:true});
   await cp(assetsDir, publicAssetsDir, {recursive:true});
+  await cp(serviceWorkerFile, publicServiceWorkerFile);
   await buildPublicEnvConfig();
 }
 

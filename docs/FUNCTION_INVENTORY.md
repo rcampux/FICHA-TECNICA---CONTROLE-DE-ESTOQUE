@@ -17,7 +17,7 @@ Este arquivo e um inventario vivo das funcoes utilizadas no projeto. Toda nova f
 | `resolveRequestPath` | `scripts/dev-server.mjs` | 19 | function resolveRequestPath(url) { |
 | `toQuotedString` | `scripts/sync-public-assets.mjs` | 9 | Serializa valores de ambiente para gerar JS publico seguro. |
 | `buildPublicEnvConfig` | `scripts/sync-public-assets.mjs` | 13 | Gera `public/src/config/env.js` com modo local ou Supabase no build. |
-| `syncPublicAssets` | `scripts/sync-public-assets.mjs` | 34 | Sincroniza codigo e assets locais para `public/` e injeta a configuracao publica. |
+| `syncPublicAssets` | `scripts/sync-public-assets.mjs` | 36 | Sincroniza código, assets e o Service Worker canônico para `public/` e injeta a configuração pública. |
 | `showToast` | `src/app.js` | 11 | function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);} |
 | `confirmAction` | `src/app.js` | 13 | Abre modal de confirmacao visual com opcoes de sim/nao para acoes destrutivas. |
 | `closeConfirmAction` | `src/app.js` | 21 | Fecha o modal de confirmacao e resolve a decisao pendente. |
@@ -272,9 +272,10 @@ Este arquivo e um inventario vivo das funcoes utilizadas no projeto. Toda nova f
 | `monitorServiceWorkerUpdates` | `src/pwa/registerServiceWorker.js` | 63 | Ativa workers em espera e verifica novas versoes ao registrar, voltar online ou retomar a pagina. |
 | `activateWaitingWorker` | `src/pwa/registerServiceWorker.js` | 64 | Solicita ativacao imediata de uma versao do worker que ja esteja aguardando. |
 | `registerServiceWorker` | `src/pwa/registerServiceWorker.js` | 91 | Registra `/service-worker.js` com escopo raiz, atualizacao fora do cache HTTP e recarga unica ao trocar o controlador. |
+| `clearOutdatedBrowserCaches` | `src/pwa/registerServiceWorker.js` | 10 | Remove uma unica vez os caches de interface de releases anteriores, preservando sessao e dados locais do usuario. |
 | `shouldCacheResponse` | `service-worker.js` / `public/service-worker.js` | 39 | Valida respostas antes de inserir no cache PWA, evitando cache de 404/HTML inesperado. |
 | `cacheAppShell` | `service-worker.js` / `public/service-worker.js` | 43 | Pre-carrega assets principais, incluindo controle de planos e imagem principal, com tolerancia a falhas individuais. |
-| `deleteOldCaches` | `service-worker.js` / `public/service-worker.js` | 56 | Remove versoes antigas do cache PWA na ativacao. |
+| `deleteOldCaches` | `service-worker.js` / `public/service-worker.js` | 58 | Remove versoes antigas do cache PWA na ativacao antes de assumir todas as abas abertas. |
 | `networkFirstNavigation` | `service-worker.js` / `public/service-worker.js` | 61 | Tenta navegacao online primeiro e usa app shell cacheado como fallback offline. |
 | `cacheFirstAsset` | `service-worker.js` / `public/service-worker.js` | 76 | Entrega imagens/icones pelo cache quando possivel e grava apenas respostas validas. |
 | `shouldUseNetworkFirstAsset` | `service-worker.js` / `public/service-worker.js` | 88 | Identifica HTML, JS, CSS e manifest como assets criticos que devem buscar rede antes do cache. |

@@ -13,7 +13,7 @@ Data da validacao: 2026-05-22.
 - Producao esta servindo `src/config/env.js`.
 - Build publicado esta em modo Supabase.
 - URL do projeto Supabase publicado corresponde ao projeto esperado.
-- `service-worker.js` esta publicado em `fichatec-pwa-v4`.
+- `service-worker.js` foi atualizado para `fichatec-pwa-v14-force-refresh`, com invalidação dos caches anteriores e adoção imediata pelas abas abertas.
 - Service worker nao usa mais `cache.addAll`.
 - App abriu em producao sem erros de console no estado deslogado.
 - Modal de autenticacao abre em producao.

@@ -1,8 +1,28 @@
 (function registerFichaTecServiceWorker() {
   const SCANNER_ACTION = "scanner";
   const SHORTCUT_TIMEOUT_MS = 5 * 60 * 1000;
+  const RELEASE_ID = "2026.10.17-roboto-mobile-images";
+  const RELEASE_CACHE_KEY = "fichatec.ui.release";
+  const ACTIVE_CACHE_NAME = "fichatec-pwa-v14-force-refresh";
   let isReloadingForUpdate = false;
   let shouldReloadForUpdate = Boolean(navigator.serviceWorker?.controller);
+
+  async function clearOutdatedBrowserCaches() {
+    if (!("caches" in window)) return;
+
+    try {
+      if (window.localStorage.getItem(RELEASE_CACHE_KEY) === RELEASE_ID) return;
+
+      const cacheNames = await window.caches.keys();
+      const outdatedCacheNames = cacheNames.filter(
+        (cacheName) => cacheName.startsWith("fichatec-") && cacheName !== ACTIVE_CACHE_NAME
+      );
+      await Promise.all(outdatedCacheNames.map((cacheName) => window.caches.delete(cacheName)));
+      window.localStorage.setItem(RELEASE_CACHE_KEY, RELEASE_ID);
+    } catch (error) {
+      console.warn("Nao foi possivel limpar caches antigos da interface:", error);
+    }
+  }
 
   function handleLaunchShortcut() {
     const currentUrl = new URL(window.location.href);
@@ -104,7 +124,10 @@
 
     navigator.serviceWorker
       .register("/service-worker.js", {scope:"/", updateViaCache:"none"})
-      .then(monitorServiceWorkerUpdates)
+      .then(async (registration) => {
+        await clearOutdatedBrowserCaches();
+        monitorServiceWorkerUpdates(registration);
+      })
       .catch((error) => {
         console.warn("Nao foi possivel ativar os recursos offline da PWA:", error);
       });

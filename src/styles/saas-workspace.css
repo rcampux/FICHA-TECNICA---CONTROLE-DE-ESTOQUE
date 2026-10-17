@@ -26,23 +26,39 @@
   }
 
   .page-hero {
-    background: linear-gradient(135deg, #fff 0%, #fff1ef 100%);
+    align-items: flex-end;
+    background:
+      linear-gradient(180deg, rgba(45, 8, 13, 0.16) 0%, rgba(45, 8, 13, 0.86) 100%),
+      url("../../assets/images/fichatec-kitchen-hero.jpg") center 46% / cover;
     border: 1px solid color-mix(in srgb, var(--md-sys-color-outline-variant) 64%, #fff);
     border-radius: 22px;
+    display: flex;
     margin-bottom: 16px;
-    padding: 18px;
+    min-height: 196px;
+    overflow: hidden;
+    padding: 20px;
   }
 
   .page-hero-label {
-    color: var(--md-sys-color-primary);
+    color: #ffd8db;
     font-size: 10px;
     font-weight: 850;
   }
 
   .page-hero-title {
+    color: #fff;
     font-size: 25px;
     line-height: 1.12;
     margin-top: 5px;
+  }
+
+  .page-hero-copy {
+    color: rgba(255, 255, 255, 0.76);
+    display: block;
+    font-size: 12px;
+    line-height: 1.45;
+    margin: 8px 0 0;
+    max-width: 330px;
   }
 
   .card,
@@ -53,13 +69,17 @@
   }
 
   #page-receitas .page-header {
-    background: linear-gradient(135deg, #4b0912 0%, #8f1724 58%, #b4232f 100%);
+    align-items: flex-end;
+    background:
+      linear-gradient(180deg, rgba(50, 7, 13, 0.12) 0%, rgba(50, 7, 13, 0.92) 100%),
+      url("../../assets/images/fichatec-kitchen-hero.jpg") center 43% / cover;
     border: 0;
     border-radius: 24px;
     color: #fff;
     margin: 0 0 16px;
     overflow: hidden;
-    padding: 22px 20px;
+    min-height: 252px;
+    padding: 24px 20px;
     position: relative;
   }
 

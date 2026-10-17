@@ -1,4 +1,4 @@
-const CACHE_VERSION = "fichatec-pwa-v12-local-icons";
+const CACHE_VERSION = "fichatec-pwa-v14-force-refresh";
 const NETWORK_FIRST_EXTENSIONS = new Set([".css", ".html", ".js", ".webmanifest"]);
 const APP_SHELL = [
   "/",
@@ -30,10 +30,12 @@ const APP_SHELL = [
   "/src/styles/app.css",
   "/src/styles/base.css",
   "/src/styles/components.css",
+  "/src/styles/elegant-refinement.css",
   "/src/styles/experience.css",
   "/src/styles/layout.css",
   "/src/styles/legacy.css",
   "/src/styles/pages.css",
+  "/src/styles/saas-workspace.css",
   "/src/styles/stock-dashboard.css",
   "/src/styles/tokens.css"
 ];
@@ -112,8 +114,7 @@ self.addEventListener("install", (event) => {
 });
 
 self.addEventListener("activate", (event) => {
-  event.waitUntil(deleteOldCaches());
-  self.clients.claim();
+  event.waitUntil(Promise.all([deleteOldCaches(), self.clients.claim()]));
 });
 
 self.addEventListener("message", (event) => {
