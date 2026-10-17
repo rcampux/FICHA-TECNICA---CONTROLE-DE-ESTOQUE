@@ -17,6 +17,11 @@ body {
   background: #f8f6f5;
 }
 
+:focus-visible {
+  outline: 2px solid rgba(180, 35, 47, 0.30);
+  outline-offset: 2px;
+}
+
 .app-header {
   border-bottom: 0;
   box-shadow: 0 10px 34px rgba(49, 30, 28, 0.035);
@@ -77,7 +82,7 @@ textarea:focus,
 .search-bar input:focus {
   background: #fff;
   border-color: transparent;
-  box-shadow: 0 0 0 3px rgba(180, 35, 47, 0.10), 0 8px 24px rgba(53, 34, 31, 0.055);
+  box-shadow: 0 0 0 2px rgba(180, 35, 47, 0.08), 0 8px 24px rgba(53, 34, 31, 0.055);
 }
 
 .btn-secondary,
