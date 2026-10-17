@@ -1,4 +1,4 @@
-const CACHE_VERSION = "fichatec-pwa-v14-force-refresh";
+const CACHE_VERSION = "fichatec-pwa-v15-production-yield";
 const NETWORK_FIRST_EXTENSIONS = new Set([".css", ".html", ".js", ".webmanifest"]);
 const APP_SHELL = [
   "/",

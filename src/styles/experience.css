@@ -763,6 +763,122 @@ textarea:focus {
   animation: recipeFocus 900ms ease 2 alternate;
 }
 
+/* Rendimento operacional e dimensionamento da producao */
+.recipe-yield-header {
+  align-items: center;
+  border-top: 1px solid color-mix(in srgb, var(--md-sys-color-outline-variant) 54%, transparent);
+  display: flex;
+  justify-content: space-between;
+  margin-top: 18px;
+  padding-top: 18px;
+}
+
+.recipe-yield-header strong,
+.recipe-yield-header span {
+  display: block;
+}
+
+.recipe-yield-header strong {
+  color: var(--md-sys-color-on-surface);
+  font-size: 14px;
+}
+
+.recipe-yield-header > div > span,
+.recipe-yield-helper {
+  color: var(--md-sys-color-on-surface-variant);
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+.recipe-yield-header > .material-symbols-rounded {
+  color: var(--md-sys-color-primary);
+  font-size: 22px;
+}
+
+.recipe-yield-grid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-top: 14px;
+}
+
+.recipe-yield-helper {
+  margin: 10px 0 0;
+}
+
+.production-planner {
+  background:
+    radial-gradient(circle at 92% 8%, color-mix(in srgb, var(--md-sys-color-primary-container) 54%, transparent), transparent 36%),
+    var(--md-sys-color-surface-container-low);
+  border-radius: 18px;
+  margin-bottom: var(--s4);
+  padding: 16px;
+}
+
+.production-planner-header {
+  align-items: flex-start;
+  display: flex;
+  gap: 10px;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.production-planner-title {
+  color: var(--md-sys-color-on-surface);
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.production-planner-copy,
+.production-planner-status {
+  color: var(--md-sys-color-on-surface-variant);
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+.production-planner-base {
+  background: var(--md-sys-color-surface);
+  border-radius: 999px;
+  color: var(--md-sys-color-primary);
+  flex: 0 0 auto;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 6px 10px;
+}
+
+.production-planner-control {
+  align-items: end;
+  display: grid;
+  gap: 10px;
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.production-planner-control .input-group {
+  margin: 0;
+}
+
+.production-planner-unit {
+  align-items: center;
+  background: var(--md-sys-color-surface);
+  border-radius: 12px;
+  color: var(--md-sys-color-on-surface);
+  display: flex;
+  font-size: 12px;
+  font-weight: 700;
+  height: 48px;
+  padding: 0 14px;
+}
+
+.production-planner-status {
+  margin: 10px 0 0;
+}
+
+.production-ingredient-quantity {
+  color: var(--md-sys-color-primary);
+  font-size: 13px;
+  font-weight: 800;
+}
+
 @keyframes recipeFocus {
   to { box-shadow: 0 0 0 4px rgba(180, 35, 47, 0.18), 0 14px 34px rgba(65, 0, 8, 0.12); }
 }
@@ -778,6 +894,19 @@ textarea:focus {
 }
 
 @media (max-width: 767px) {
+  .recipe-yield-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .production-planner-header {
+    display: block;
+  }
+
+  .production-planner-base {
+    display: inline-block;
+    margin-top: 10px;
+  }
+
   input,
   select,
   textarea {

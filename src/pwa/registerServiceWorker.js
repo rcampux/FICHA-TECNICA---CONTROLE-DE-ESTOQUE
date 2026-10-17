@@ -1,9 +1,9 @@
 (function registerFichaTecServiceWorker() {
   const SCANNER_ACTION = "scanner";
   const SHORTCUT_TIMEOUT_MS = 5 * 60 * 1000;
-  const RELEASE_ID = "2026.10.17-roboto-mobile-images";
+  const RELEASE_ID = "2026.10.17-production-yield";
   const RELEASE_CACHE_KEY = "fichatec.ui.release";
-  const ACTIVE_CACHE_NAME = "fichatec-pwa-v14-force-refresh";
+  const ACTIVE_CACHE_NAME = "fichatec-pwa-v15-production-yield";
   let isReloadingForUpdate = false;
   let shouldReloadForUpdate = Boolean(navigator.serviceWorker?.controller);
 

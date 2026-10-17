@@ -186,16 +186,31 @@
         <small id="recipe-image-message" role="status" aria-live="polite">JPG, PNG ou WebP. A imagem será otimizada antes de salvar.</small>
       </div>
     </div>
-    <div class="input-row cols-2">
+    <div class="recipe-yield-header">
+      <div>
+        <strong>Rendimento base</strong>
+        <span>Defina como esta receita será produzida e dimensionada.</span>
+      </div>
+      <span class="material-symbols-rounded" aria-hidden="true">scale</span>
+    </div>
+    <div class="recipe-yield-grid">
       <div class="input-group" style="margin-bottom:0">
-        <label class="input-label">Rendimento (g)</label>
-        <input type="number" id="ficha-rendimento" placeholder="Ex: 800" oninput="calcFicha()">
+        <label class="input-label" for="ficha-yield-unit">Tipo de rendimento</label>
+        <select id="ficha-yield-unit" onchange="calcFicha()">
+          <option value="portion">Porções</option>
+          <option value="unit">Unidades</option>
+        </select>
       </div>
       <div class="input-group" style="margin-bottom:0">
-        <label class="input-label">Nº de Porções</label>
-        <input type="number" id="ficha-porcoes" placeholder="Ex: 10" oninput="calcFicha()">
+        <label class="input-label" for="ficha-porcoes">Quantidade-base *</label>
+        <input type="number" id="ficha-porcoes" value="1" min="0.01" step="0.01" inputmode="decimal" placeholder="Ex: 100" oninput="calcFicha()">
+      </div>
+      <div class="input-group" style="margin-bottom:0">
+        <label class="input-label" for="ficha-rendimento">Peso final estimado (g)</label>
+        <input type="number" id="ficha-rendimento" min="0" step="0.01" inputmode="decimal" placeholder="Ex: 800" oninput="calcFicha()">
       </div>
     </div>
+    <p class="recipe-yield-helper">Exemplo: uma receita-base de 100 unidades poderá ser recalculada para produzir 20, sem alterar o cadastro original.</p>
   </div>
 
   <div class="section-label">Adicionar Ingrediente</div>
@@ -285,7 +300,7 @@
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--s4)">
         <div><div class="total-label">Custo Total</div><div class="total-value" id="total-custo">R$ 0,00</div></div>
         <div><div class="total-label">Preço de Venda</div><div class="total-value" id="total-venda">R$ 0,00</div></div>
-        <div><div class="total-label">Por Porção</div><div class="total-value" id="total-porcao" style="font-size:16px">R$ 0,00</div></div>
+        <div><div class="total-label" id="total-unit-label">Por porção</div><div class="total-value" id="total-porcao" style="font-size:16px">R$ 0,00</div></div>
         <div><div class="total-label">Por KG</div><div class="total-value" id="total-kg" style="font-size:16px">—</div></div>
       </div>
     </div>

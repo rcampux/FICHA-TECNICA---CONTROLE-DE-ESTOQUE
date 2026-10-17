@@ -76,6 +76,14 @@ Os tokens canônicos ficam em `src/styles/tokens.css`. Aliases legados existem a
 - Campos têm foco visível e altura mínima de 48 px.
 - Upload de capa aceita JPG, PNG e WebP, otimiza para JPEG e remove metadados no navegador.
 
+### Rendimento e planejamento de produção
+
+- A criação da ficha começa com um rendimento operacional explícito: tipo (`porções` ou `unidades`) e quantidade-base.
+- O peso final estimado continua separado, pois atende custo por quilo e cálculos nutricionais existentes.
+- O detalhe da receita possui um planejador leve, próximo aos ingredientes, que aceita a quantidade desejada e atualiza somente as quantidades exibidas.
+- O planejador nunca sobrescreve o cadastro original e não recalcula custos, preço de venda ou tabela nutricional.
+- Cards, detalhe e PDF usam o tipo de rendimento escolhido, com singular e plural corretos; registros antigos assumem `porções` por compatibilidade.
+
 ## Movimento
 
 - Curto e funcional: 160–420 ms.

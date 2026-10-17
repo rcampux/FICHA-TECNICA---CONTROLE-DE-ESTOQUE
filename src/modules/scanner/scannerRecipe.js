@@ -360,6 +360,7 @@
         ingredients: mapped,
         rendimento,
         porcoes,
+        yieldUnit: existingRecipe?.yieldUnit === "unit" ? "unit" : "portion",
         markup: 0,
         totalCost,
         venda,

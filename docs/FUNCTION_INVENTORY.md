@@ -144,6 +144,10 @@ Este arquivo e um inventario vivo das funcoes utilizadas no projeto. Toda nova f
 | `bindRecipeImageEditor` | `src/modules/recipes/recipeSheet.js` | 342 | Conecta uma unica vez os controles opcionais de selecao e remocao de capa. |
 | `bindRecipeCardActions` | `src/modules/recipes/recipeSheet.js` | 86 | Centraliza cliques de visualizar, editar, deletar e exportar PDF sem handlers inline. |
 | `bindRecipeFilterActions` | `src/modules/recipes/recipeSheet.js` | 378 | Delega cliques dos filtros de ingrediente via `data-*`, sem interpolar nomes em JavaScript inline. |
+| `normalizeRecipeYieldUnit` | `src/modules/recipes/recipeSheet.js` | 460 | Normaliza o tipo de rendimento para `portion` ou `unit`, mantendo receitas antigas como porções. |
+| `formatRecipeYield` | `src/modules/recipes/recipeSheet.js` | 464 | Formata quantidade-base com singular/plural de porção ou unidade para cards, detalhe e PDF. |
+| `formatProductionIngredientQuantity` | `src/modules/recipes/recipeSheet.js` | 475 | Formata a quantidade de ingrediente escalada preservando a unidade cadastrada. |
+| `updateRecipeProductionGuide` | `src/modules/recipes/recipeSheet.js` | 481 | Recalcula apenas as quantidades exibidas no guia de produção, sem modificar receita, custos ou nutrição. |
 | `readNumericValue` | `src/modules/recipes/recipeSheet.js` | 124 | Normaliza valores numericos de formularios e objetos nutricionais com fallback seguro. |
 | `hasNutritionData` | `src/modules/recipes/recipeSheet.js` | 129 | Verifica se um ingrediente/produto possui dados nutricionais manuais aproveitaveis. |
 | `getIngredientNutrition` | `src/modules/recipes/recipeSheet.js` | 134 | Combina nutricao manual do estoque virtual com fallback por nome do ingrediente. |
@@ -166,11 +170,11 @@ Este arquivo e um inventario vivo das funcoes utilizadas no projeto. Toda nova f
 | `calcFicha` | `src/modules/recipes/recipeSheet.js` | 155 | function calcFicha(){ |
 | `calcNutrition` | `src/modules/recipes/recipeSheet.js` | 349 | Atualiza a tabela nutricional da ficha com base nos ingredientes e na porcao selecionada. |
 | `clearFicha` | `src/modules/recipes/recipeSheet.js` | 629 | Limpa ingredientes, campos, contexto de edicao e preview da capa, com modo forcado/silencioso. |
-| `saveRecipe` | `src/modules/recipes/recipeSheet.js` | 644 | Salva ou sobrescreve receita preservando `id/remoteId`, capa/metadados e snapshot nutricional; depois foca a ficha salva. |
+| `saveRecipe` | `src/modules/recipes/recipeSheet.js` | 644 | Salva ou sobrescreve receita com tipo e quantidade-base de rendimento, preservando `id/remoteId`, capa/metadados e snapshot nutricional; depois foca a ficha salva. |
 | `hasPriceChanged` | `src/modules/recipes/recipeSheet.js` | 228 | function hasPriceChanged(refs){ |
 | `renderRecipes` | `src/modules/recipes/recipeSheet.js` | 706 | Renderiza cards com capa ou placeholder culinario, custo, nutricao e delegacao segura de eventos/filtros. |
 | `setIngFilter` | `src/modules/recipes/recipeSheet.js` | 274 | function setIngFilter(val){activeIngFilter=val;renderRecipes(document.getElementById('recipe-search').value,val);} |
-| `viewRecipe` | `src/modules/recipes/recipeSheet.js` | 758 | Abre detalhe da receita com capa/placeholder, custo, ingredientes e nutricao por porcao. |
+| `viewRecipe` | `src/modules/recipes/recipeSheet.js` | 758 | Abre detalhe com capa, custos, nutrição original e guia dinâmico que dimensiona somente os ingredientes para a produção desejada. |
 | `deleteCurrentRecipe` | `src/modules/recipes/recipeSheet.js` | 379 | Exclui a receita atual apos confirmacao visual e sincroniza o snapshot com Supabase quando ativo. |
 | `editRecipe` | `src/modules/recipes/recipeSheet.js` | 343 | Define a receita atual e carrega seus dados na ficha tecnica para edicao. |
 | `deleteRecipe` | `src/modules/recipes/recipeSheet.js` | 347 | Define a receita atual e reaproveita o fluxo existente de exclusao. |
