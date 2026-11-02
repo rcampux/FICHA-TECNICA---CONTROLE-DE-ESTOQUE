@@ -37,20 +37,78 @@ test('metadados de precos sobrevivem ao preenchimento e leitura dos dois editore
     }
     elements.set(`${stock}-qty`,{value:'1'});
     elements.set(`${stock}-unit`,{value:'kg'});
-    elements.set(`${stock}-price`,{value:''});
+    elements.set(`${stock}-price`,{get value(){return this._v ?? '19.95';},set value(v){this._v=String(v);}});
     const nutrition={kcal:219,portionSize:50,priceReference:{quantity:500,unit:'g',price:19.95}};
     discovery.writeNutrition(type,nutrition);
     assert.equal(discovery.readNutrition(type).portionSize,50);
     assert.equal(discovery.readNutrition(type).priceReference.price,19.95);
-    assert.equal(elements.get(`${stock}-price`).value,39.9);
-    elements.get(`${stock}-unit`).value='un';
+    assert.equal(elements.get(`${stock}-price`).value,'19.95');
     discovery.updateProductPrice(type);
-    assert.equal(elements.get(`${stock}-price`).value,'');
+    assert.equal(elements.get(`${stock}-price`).value,'39.9');
+    elements.get(`${stock}-unit`).value='un';
+    discovery.changeProductUnit(type);
+    assert.equal(elements.get(`${stock}-price`).value,'39.9');
     elements.get(`${stock}-price`).value='10';
     discovery.updateProductPrice(type,true);
     elements.get(`${stock}-qty`).value='3';
     discovery.updateProductPrice(type);
-    assert.equal(elements.get(`${stock}-price`).value,30);
+    assert.equal(elements.get(`${stock}-price`).value,'30');
+  }
+});
+
+test('trocar unidade preserva preco; quantidade calcula embalagens nos dois estoques',()=>{
+  for(const type of ['virtual','physical']) {
+    const stock=type==='virtual'?'stock':'pstock';
+    const qty=elements.get(`${stock}-qty`);
+    const unit=elements.get(`${stock}-unit`);
+    const price=elements.get(`${stock}-price`);
+    qty.value='395'; unit.value='g'; price.value='5.69';
+    discovery.writeNutrition(type,{kcal:61,priceReference:{quantity:395,unit:'g',price:5.69}});
+    unit.value='un';
+    discovery.changeProductUnit(type);
+    assert.equal(price.value,'5.69');
+    assert.equal(qty.value,'395');
+    // Nutrition refresh and reopening the editor must not trigger price changes.
+    discovery.writeNutrition(type,discovery.readNutrition(type));
+    assert.equal(price.value,'5.69');
+    qty.value='1'; discovery.updateProductPrice(type);
+    assert.equal(price.value,'5.69');
+    qty.value='2'; discovery.updateProductPrice(type);
+    assert.equal(price.value,'11.38');
+    assert.equal(discovery.readNutrition(type).kcal,61);
+    unit.value='kg'; discovery.changeProductUnit(type);
+    assert.equal(price.value,'11.38');
+    qty.value='0.395'; discovery.updateProductPrice(type);
+    assert.equal(price.value,'5.69');
+    qty.value=''; discovery.updateProductPrice(type);
+    assert.equal(price.value,'5.69');
+    qty.value='0'; discovery.updateProductPrice(type);
+    assert.equal(price.value,'5.69');
+    qty.value='0.79'; discovery.updateProductPrice(type);
+    assert.equal(price.value,'11.38');
+  }
+});
+
+test('troca de peso para volume preserva valor e usa nova quantidade como base sem inventar densidade',()=>{
+  const qty=elements.get('stock-qty'),unit=elements.get('stock-unit'),price=elements.get('stock-price');
+  qty.value='395'; unit.value='g'; price.value='5.69';
+  discovery.writeNutrition('virtual',{priceReference:{quantity:395,unit:'g',price:5.69}});
+  unit.value='ml'; discovery.changeProductUnit('virtual');
+  assert.equal(price.value,'5.69');
+  qty.value='300'; discovery.updateProductPrice('virtual');
+  assert.equal(price.value,'5.69');
+  qty.value='600'; discovery.updateProductPrice('virtual');
+  assert.equal(price.value,'11.38');
+  price.value='20'; discovery.updateProductPrice('virtual',true);
+  qty.value='300'; discovery.updateProductPrice('virtual');
+  assert.equal(price.value,'10');
+});
+
+test('seletores de unidade usam evento separado dos campos de quantidade',()=>{
+  const html=readFileSync(new URL('../public/index.html',import.meta.url),'utf8');
+  for(const type of ['virtual','physical']) {
+    assert.ok(html.includes(`onchange="changeProductUnit('${type}')"`));
+    assert.ok(html.includes(`oninput="updateProductPrice('${type}')"`));
   }
 });
 

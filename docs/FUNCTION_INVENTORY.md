@@ -263,7 +263,8 @@ Este arquivo e um inventario vivo das funcoes utilizadas no projeto. Toda nova f
 | `renderStock` | `src/modules/stock/virtualStock.js` | 143 | Renderiza estoque virtual com `data-stock-id` e delegacao de eventos para CRUD estavel apos refresh. |
 | `exposeProductDiscoveryModule` | `src/modules/stock/productDiscovery.js` | 1 | Expoe o fluxo compartilhado de pesquisa de produtos e nutricao para os dois estoques. |
 | `calculateProductPrice` | `src/modules/stock/productDiscovery.js` | — | Calcula preco pela base de embalagem, com conversao kg/g e rejeicao de dimensoes incompativeis. |
-| `updateProductPrice` | `src/modules/stock/productDiscovery.js` | — | Atualiza valor pago e referencia manual; limpa o preco quando nao existe conversao valida. |
+| `updateProductPrice` | `src/modules/stock/productDiscovery.js` | — | Recalcula somente ao editar quantidade; conta embalagens por unidade, converte kg/g e preserva preco em entrada incompleta. Preco manual redefine a base. |
+| `changeProductUnit` | `src/modules/stock/productDiscovery.js` | — | Troca a unidade sem alterar preco ou quantidade; orienta o proximo ajuste de quantidade. |
 | `editNutritionPortion` | `src/modules/stock/productDiscovery.js` | — | Expande o editor de porcao no quadro verde com foco e estado acessivel. |
 | `setNutritionPortion` | `src/modules/stock/productDiscovery.js` | — | Sincroniza porcao com preview sem recriar o campo em foco. |
 | `updateSearchRadius` | `src/modules/stock/productDiscovery.js` | — | Atualiza o raio exibido e invalida resultados anteriores ate nova pesquisa. |
@@ -281,7 +282,7 @@ Este arquivo e um inventario vivo das funcoes utilizadas no projeto. Toda nova f
 | `scaleNutritionForPortion` | `src/modules/stock/productDiscovery.js` | 74 | Recalcula todos os nutrientes proporcionalmente a porcao escolhida. |
 | `formatNutritionMetric` | `src/modules/stock/productDiscovery.js` | 89 | Formata nutrientes com precisao e unidade apropriadas. |
 | `readNutrition` | `src/modules/stock/productDiscovery.js` | 95 | Coleta nutricao e metadados do editor virtual ou fisico. |
-| `writeNutrition` | `src/modules/stock/productDiscovery.js` | 111 | Preenche o editor, preserva metadados da fonte e atualiza o preview. |
+| `writeNutrition` | `src/modules/stock/productDiscovery.js` | — | Preenche o editor, preserva metadados da fonte e atualiza o preview sem recalcular o preco. |
 | `setNutritionMessage` | `src/modules/stock/productDiscovery.js` | 134 | Exibe estados de carregamento, sucesso, alerta ou erro da fonte nutricional. |
 | `updateNutritionPreview` | `src/modules/stock/productDiscovery.js` | 142 | Atualiza a estimativa nutricional responsiva da porcao atual. |
 | `hasNutritionValues` | `src/modules/stock/productDiscovery.js` | 166 | Verifica se uma resposta nutricional possui valores utilizaveis. |

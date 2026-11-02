@@ -537,7 +537,7 @@
     <div class="input-row cols-2">
       <div class="input-group"><label class="input-label">Quantidade *</label><input type="number" id="stock-qty" placeholder="Ex: 1" step="0.001" oninput="updateProductPrice('virtual')"></div>
       <div class="input-group"><label class="input-label">Unidade</label>
-        <select id="stock-unit" onchange="updateProductPrice('virtual')"><option value="kg">KG</option><option value="g">Gramas</option><option value="ml">Mililitros</option><option value="un">Unidade</option></select>
+        <select id="stock-unit" onchange="changeProductUnit('virtual')"><option value="kg">KG</option><option value="g">Gramas</option><option value="ml">Mililitros</option><option value="un">Unidade</option></select>
       </div>
     </div>
     <div class="input-group"><label class="input-label">Valor Pago (R$) *</label><input type="number" id="stock-price" placeholder="Ex: 10.00" step="0.01" oninput="updateProductPrice('virtual',true)"><small class="product-price-hint" id="stock-price-hint" aria-live="polite"></small></div>
@@ -620,7 +620,7 @@
     <div class="input-row cols-2">
       <div class="input-group"><label class="input-label">Quantidade *</label><input type="number" id="pstock-qty" placeholder="Ex: 5" step="0.001" oninput="updateProductPrice('physical')"></div>
       <div class="input-group"><label class="input-label">Unidade</label>
-        <select id="pstock-unit" onchange="updateProductPrice('physical')"><option value="kg">KG</option><option value="g">Gramas</option><option value="ml">Mililitros</option><option value="un">Unidade</option></select>
+        <select id="pstock-unit" onchange="changeProductUnit('physical')"><option value="kg">KG</option><option value="g">Gramas</option><option value="ml">Mililitros</option><option value="un">Unidade</option></select>
       </div>
     </div>
     <div class="input-group"><label class="input-label">Valor Pago (R$) *</label><input type="number" id="pstock-price" placeholder="Ex: 10.00" step="0.01" oninput="updateProductPrice('physical',true)"><small class="product-price-hint" id="pstock-price-hint" aria-live="polite"></small></div>

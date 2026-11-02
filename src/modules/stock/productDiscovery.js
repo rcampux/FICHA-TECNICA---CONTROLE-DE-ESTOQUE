@@ -58,14 +58,35 @@
         const price = readNumberInput(config.priceId);
         if (price !== null && price >= 0) metadata.priceReference = {quantity,unit,price};
       }
-      const reference = metadata.priceReference;
+      let reference = metadata.priceReference;
       if (!reference) { if (hint) hint.textContent = ""; return; }
-      const price = calculateProductPrice(reference, quantity, unit);
+      let price = calculateProductPrice(reference, quantity, unit);
+      if (price === null && !manualPrice && quantity > 0) {
+        if (unit === "un") {
+          // One unit represents one package of the recorded reference quantity.
+          price = calculateProductPrice({quantity:1,unit,price:reference.price}, quantity, unit);
+        } else {
+          // No density or package weight is known: the entered quantity defines
+          // the new base while preserving the amount already paid.
+          const paid = readNumberInput(config.priceId);
+          if (paid !== null && paid >= 0) {
+            reference = metadata.priceReference = {quantity,unit,price:paid};
+            price = paid;
+          }
+        }
+      }
       if (price !== null && !manualPrice) writeNumberInput(config.priceId, price);
-      if (price === null && !manualPrice) writeNumberInput(config.priceId, null);
       if (hint) hint.textContent = price === null
-        ? "Para trocar entre peso, volume e unidades, informe o valor pago para estabelecer a nova base."
+        ? "Preço mantido. Informe uma quantidade válida para calcular."
+        : unit === "un" && reference.unit !== "un"
+        ? `Cada unidade corresponde à embalagem de ${reference.quantity} ${reference.unit} por ${formatCurrency(reference.price)}.`
         : `Preço proporcional à base de ${reference.quantity} ${reference.unit} por ${formatCurrency(reference.price)}.`;
+    }
+
+    function changeProductUnit(type) {
+      const config = editorConfig[normalizeStockType(type)];
+      const hint = document.getElementById(`${config.priceId}-hint`);
+      if (hint) hint.textContent = "Preço mantido. Ajuste a quantidade para recalcular o valor.";
     }
 
     function editNutritionPortion(type) {
@@ -186,7 +207,10 @@
       writeNumberInput(`${prefix}-sodium`, nutrition.sodium);
       writeNumberInput(`${prefix}-portion-size`, getNutritionPortionSize(nutrition));
       updateNutritionPreview(type);
-      updateProductPrice(type);
+      const hint = document.getElementById(`${config.priceId}-hint`);
+      if (hint) hint.textContent = nutrition.priceReference
+        ? "Ajuste a quantidade para recalcular o valor. Trocar apenas a unidade mantém o preço."
+        : "";
     }
 
     function setNutritionMessage(type, message = "", tone = "neutral") {
@@ -497,6 +521,7 @@
     return {
       calculateProductPrice,
       updateProductPrice,
+      changeProductUnit,
       editNutritionPortion,
       setNutritionPortion,
       updateSearchRadius,

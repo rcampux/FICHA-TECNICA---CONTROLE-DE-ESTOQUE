@@ -221,7 +221,7 @@ Adicionar no cadastro do produto fisico:
 
 - Pesquisar no Google fica ao lado do nome nos dois modais; Gerar tabela nutricional recebe destaque vermelho e pode refazer a consulta preservando a porcao e referencia de preco.
 - A oferta selecionada registra quantidade, unidade e preco de referencia nos metadados nutricionais, preservados na reabertura pelo repository.
-- Quantidades recalculam o valor pago proporcionalmente; kg/g sao conversiveis. Volume, peso e unidades exigem uma nova base manual ao trocar entre dimensoes, sem inventar densidade ou peso por unidade.
+- Trocar somente a unidade preserva preco e quantidade. O recálculo ocorre ao editar a quantidade; kg/g sao conversiveis. Em unidades, cada unidade corresponde a uma embalagem da base registrada (395 g por R$ 5,69: 1 un = R$ 5,69; 2 un = R$ 11,38). Entre dimensoes sem conversao conhecida, a primeira quantidade informada estabelece a nova base mantendo o valor pago, sem inventar densidade. Preco manual redefine a base. Atualizar a nutricao ou reabrir o editor nunca recalcula o preco.
 - Editar manualmente o valor pago estabelece uma nova referencia para os proximos calculos.
 - Editar porcao abre um campo dentro do quadro verde e recalcula apenas sua visualizacao, preservando os nutrientes-base por 100 g/ml.
 - Perto de mim exibe raio de 1 a 50 km. A consulta combina Google Maps (coordenadas de mercados) com Shopping (precos online), filtrando distancias em linha reta no servidor.
