@@ -41,9 +41,16 @@ async function resolveNearbyLocation(latitude, longitude) {
   const payload = await response.json();
   const address = payload?.address || {};
   const city = address.city || address.town || address.village || address.municipality || "";
-  const state = address.state || "";
-  const country = address.country || "Brasil";
-  return [city, state, country].filter(Boolean).join(", ");
+  if (!city) return "";
+  const locationsUrl = new URL("https://serpapi.com/locations.json");
+  locationsUrl.searchParams.set("q", city);
+  locationsUrl.searchParams.set("limit", "10");
+  const locationsResponse = await fetch(locationsUrl, {signal:AbortSignal.timeout(REQUEST_TIMEOUT_MS)});
+  if (!locationsResponse.ok) return "";
+  const locations = await locationsResponse.json();
+  const expectedCountry = String(address.country_code || "br").toUpperCase();
+  const match = Array.isArray(locations) ? locations.find(entry => entry.country_code === expectedCountry && entry.target_type === "City") : null;
+  return match?.canonical_name || "";
 }
 
 function normalizeShoppingResult(result, index) {
