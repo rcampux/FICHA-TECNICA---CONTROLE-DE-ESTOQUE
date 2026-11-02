@@ -247,7 +247,13 @@ Este arquivo e um inventario vivo das funcoes utilizadas no projeto. Toda nova f
 | `exposeCategoryColors` | `src/modules/stock/categoryColors.js` | — | Expoe paleta, conversoes e fabrica do seletor. |
 | `normalizeHex` | `src/modules/stock/categoryColors.js` | — | Valida HEX curto/longo e retorna #RRGGBB. |
 | `defaultCategoryColor` | `src/modules/stock/categoryColors.js` | — | Atribui cores estaveis por nome com paleta distinta para categorias padrao. |
-| `categoryColorStyle` | `src/modules/stock/categoryColors.js` | — | Gera cor e fundo suave a partir de HEX validado. |
+| `categoryColorStyle` | `src/modules/stock/categoryColors.js` | — | Gera cor solida e texto contrastante a partir de HEX validado. |
+| `categoryTextColor` | `src/modules/stock/categoryColors.js` | — | Escolhe preto/branco pela luminancia relativa para maior contraste sobre a cor escolhida. |
+| `exposeCategoryPanels` | `src/modules/stock/categoryPanels.js` | — | Inicializa controles compartilhados e listeners unicos de fechamento dos filtros. |
+| `getTrigger` | `src/modules/stock/categoryPanels.js` | — | Localiza botao associado por aria-controls. |
+| `closePanel` / `closeAll` | `src/modules/stock/categoryPanels.js` | — | Fecha filtros sem apagar selecao e restaura foco quando solicitado. |
+| `toggle` | `src/modules/stock/categoryPanels.js` | — | Alterna painel, renderiza conteudo e sincroniza aria-expanded. |
+| `panelHeader` | `src/modules/stock/categoryPanels.js` | — | Renderiza titulo e X acessivel, inclusive em resultados vazios. |
 | `hsvToHex` / `f` / `hexToHsv` | `src/modules/stock/categoryColors.js` | — | Converte entre estado cromatico e hexadecimal. |
 | `createCategoryColorPicker` / `el` | `src/modules/stock/categoryColors.js` | — | Cria estado isolado e acesso aos controles. |
 | `refreshPreview` / `renderColor` | `src/modules/stock/categoryColors.js` | — | Sincroniza etiqueta, HEX, cursor, luminosidade, presets e acessibilidade. |

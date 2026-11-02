@@ -26,7 +26,16 @@
 
   function categoryColorStyle(color) {
     const hex = normalizeHex(color) || presets[0][1];
-    return `--category-color:${hex};--category-tint:${hex}20`;
+    return `--category-color:${hex};--category-tint:${hex}20;--category-ink:${categoryTextColor(hex)}`;
+  }
+
+  function categoryTextColor(color) {
+    const rgb = (normalizeHex(color) || presets[0][1]).slice(1).match(/../g).map(c => {
+      const value = parseInt(c, 16) / 255;
+      return value <= 0.04045 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4;
+    });
+    const luminance = .2126 * rgb[0] + .7152 * rgb[1] + .0722 * rgb[2];
+    return (luminance + .05) / .05 >= 1.05 / (luminance + .05) ? "#000000" : "#FFFFFF";
   }
 
   function hsvToHex(h, s, v) {
@@ -137,5 +146,5 @@
     return {open, setColor, refreshPreview};
   }
 
-  window.FichaTecCategoryColors = {presets, normalizeHex, defaultCategoryColor, categoryColorStyle, hsvToHex, hexToHsv, createCategoryColorPicker};
+  window.FichaTecCategoryColors = {presets, normalizeHex, defaultCategoryColor, categoryColorStyle, categoryTextColor, hsvToHex, hexToHsv, createCategoryColorPicker};
 })();

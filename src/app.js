@@ -25,6 +25,7 @@ function closeConfirmAction(confirmed){
   pendingConfirmResolve=null;
 }
 function showPage(page,navId){
+  window.FichaTecCategoryPanels.closeAll();
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
   document.getElementById('page-'+page).classList.add('active');

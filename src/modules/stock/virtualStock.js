@@ -78,6 +78,7 @@
       panel.onclick = (event) => {
         const editButton = event.target.closest("[data-edit-category]");
         if (editButton && panel.contains(editButton)) {
+          window.FichaTecCategoryPanels.closePanel(panel);
           openCategoryModal("virtual", editButton.dataset.editCategory);
           return;
         }
@@ -135,12 +136,12 @@
       const categories = getStockCategories().filter((category) => category.toLowerCase().includes(query));
 
       if (!categories.length) {
-        panel.innerHTML = '<div class="category-filter-empty">Nenhuma categoria encontrada.</div>';
+        panel.innerHTML = window.FichaTecCategoryPanels.panelHeader() + '<div class="category-filter-empty">Nenhuma categoria encontrada.</div>';
         return;
       }
 
       panel.innerHTML = `
-        <div class="category-filter-title">Filtrar por categoria</div>
+        ${window.FichaTecCategoryPanels.panelHeader()}
         <div class="category-filter-options">
           ${categories.map((category) => `
             <div class="category-filter-entry" style="${getCategoryStyle(category)}"><label class="category-filter-option">
@@ -155,11 +156,7 @@
     }
 
     function toggleStockCategoryPanel() {
-      const panel = document.getElementById("stock-category-panel");
-      if (!panel) return;
-      const shouldOpen = panel.hidden;
-      panel.hidden = !shouldOpen;
-      if (shouldOpen) renderStockCategoryFilters();
+      window.FichaTecCategoryPanels.toggle("stock-category-panel", renderStockCategoryFilters);
     }
 
     function toggleStockCategoryFilter(category) {

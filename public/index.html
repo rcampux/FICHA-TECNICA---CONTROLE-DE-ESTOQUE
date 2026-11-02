@@ -366,13 +366,13 @@
       <input type="text" id="stock-category-search" placeholder="Busque por categoria" oninput="renderStockCategoryFilters()">
       <span class="material-symbols-rounded">search</span>
     </div>
-    <button class="stock-filter-btn" onclick="toggleStockCategoryPanel()" type="button" title="Filtrar categorias">
+    <button class="stock-filter-btn" onclick="toggleStockCategoryPanel()" type="button" title="Filtrar categorias" aria-label="Filtrar categorias" aria-controls="stock-category-panel" aria-expanded="false">
       <span class="material-symbols-rounded">filter_list</span>
     </button>
     <button class="btn btn-primary btn-sm" onclick="openCategoryModal('virtual')" type="button">
       <span class="material-symbols-rounded">add</span> Novo
     </button>
-    <div class="category-filter-panel" id="stock-category-panel" hidden></div>
+    <div class="category-filter-panel" id="stock-category-panel" role="region" aria-label="Filtros de categorias" hidden></div>
   </div>
   <div class="stock-add-card">
     <div class="stock-add-title">Adicionar Produto</div>
@@ -435,13 +435,13 @@
       <input type="text" id="pstock-category-search" placeholder="Busque por categoria" oninput="renderPhysicalCategoryFilters()">
       <span class="material-symbols-rounded">search</span>
     </div>
-    <button class="stock-filter-btn" onclick="togglePhysicalCategoryPanel()" type="button" title="Filtrar categorias">
+    <button class="stock-filter-btn" onclick="togglePhysicalCategoryPanel()" type="button" title="Filtrar categorias" aria-label="Filtrar categorias" aria-controls="pstock-category-panel" aria-expanded="false">
       <span class="material-symbols-rounded">filter_list</span>
     </button>
     <button class="btn btn-primary btn-sm" onclick="openCategoryModal('physical')" type="button">
       <span class="material-symbols-rounded">add</span> Novo
     </button>
-    <div class="category-filter-panel" id="pstock-category-panel" hidden></div>
+    <div class="category-filter-panel" id="pstock-category-panel" role="region" aria-label="Filtros de categorias" hidden></div>
   </div>
   <div class="stock-add-card">
     <div class="stock-add-title">Adicionar Produto</div>
@@ -1030,6 +1030,7 @@
 <script src="../src/modules/scanner/scannerRecipe.js" defer></script>
 <script src="../src/modules/stock/stockPricing.js" defer></script>
 <script src="../src/modules/stock/categoryCatalog.js" defer></script>
+<script src="../src/modules/stock/categoryPanels.js" defer></script>
 <script src="../src/modules/stock/productDiscovery.js" defer></script>
 <script src="../src/modules/stock/virtualStock.js" defer></script>
 <script src="../src/modules/stock/physicalStock.js" defer></script>

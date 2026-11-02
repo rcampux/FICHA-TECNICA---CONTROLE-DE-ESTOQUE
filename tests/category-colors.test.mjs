@@ -10,6 +10,20 @@ for (const path of ['modules/stock/categoryColors.js','modules/stock/categoryCat
 }
 const colors = context.window.FichaTecCategoryColors;
 
+test('chips solidos escolhem texto com contraste AA inclusive para cores personalizadas',()=>{
+  for(const hex of [...colors.presets.map(p=>p[1]),'#000000','#FFFFFF','#777777','#FFFF00','#12ABCD']) {
+    const values=hex.slice(1).match(/../g).map(c=>{
+      const v=parseInt(c,16)/255;
+      return v<=.04045?v/12.92:((v+.055)/1.055)**2.4;
+    });
+    const luminance=.2126*values[0]+.7152*values[1]+.0722*values[2];
+    const ink=colors.categoryTextColor(hex);
+    const contrast=ink==='#FFFFFF'?1.05/(luminance+.05):(luminance+.05)/.05;
+    assert.ok(contrast>=4.5,`${hex}: ${contrast}`);
+    assert.ok(colors.categoryColorStyle(hex).includes(`--category-ink:${ink}`));
+  }
+});
+
 test('dez presets, validacao hexadecimal e conversao cromatica sem perda',()=>{
   assert.equal(colors.presets.length,10);
   assert.equal(new Set(colors.presets.map(p=>p[1])).size,10);
