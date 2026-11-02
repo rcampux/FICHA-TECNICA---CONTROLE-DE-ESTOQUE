@@ -26,6 +26,10 @@
 .category-color-error { color:#B4232F; font-size:12px; margin-top:8px; }
 .tag.category-colored-tag, .category-colored-tag { display:inline-flex; align-items:center; gap:6px; color:#302b2a; background:var(--category-tint,#f3f0f0); border-radius:12px; padding:4px 8px; }
 .category-colored-tag::before { content:""; flex:none; width:8px; height:8px; border-radius:50%; background:var(--category-color); box-shadow:0 0 0 1px #0001; }
+#page-estoque .item-name,
+#page-fisico .pstock-name { display:flex; flex-direction:column; align-items:flex-start; gap:6px; }
+#page-estoque .item-name > .category-colored-tag,
+#page-fisico .pstock-name > .category-colored-tag { order:-1; max-width:100%; white-space:normal; }
 .category-filter-entry { display:flex; align-items:center; gap:4px; min-width:0; }
 .category-filter-entry .category-filter-option { flex:1; min-width:0; }
 .category-color-edit { flex:none; display:grid; place-items:center; width:40px; height:40px; border:0; border-radius:50%; background:var(--category-tint); color:#423b38; cursor:pointer; }
