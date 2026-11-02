@@ -26,10 +26,13 @@ Aplicativo PWA em evolucao para chefs e negocios de alimentacao criarem receitas
 - Fichas e receitas com capa editável, otimização automática e fallback culinário por cor/ícone.
 - Bucket privado `recipe-images`, com isolamento por organização, quando o Supabase está ativo.
 - PWA instalável com atualização segura e funcionamento básico offline.
+- Estoques virtual e físico com busca de preços, cadastro assistido, tabela nutricional proporcional e sincronização físico → virtual.
 
 Para habilitar capas remotas, aplique as migrations de `supabase/migrations/`, incluindo `20261017163649_recipe_images_storage.sql`, no projeto Supabase do ambiente.
 
 O scanner por IA exige um endpoint `POST /api/scan-recipe`; quando ele nao existe no ambiente, a interface informa claramente que a digitalizacao ainda nao foi configurada.
+
+A pesquisa de preços exige `SERPAPI_API_KEY` somente no servidor. Copie `.env.example` como referência e configure essa variável na Vercel; nunca coloque a chave em `public/`.
 
 Nesta fase, abra `public/index.html` para testar o app.
 
@@ -57,7 +60,7 @@ Importe o repositorio na Vercel por este link:
 
 Vercel produção:
 
-[https://ficha-tecnica-controle-de-estoque.vercel.app](https://ficha-tecnica-controle-de-estoque.vercel.app)
+[https://nk-control.vercel.app](https://nk-control.vercel.app)
 
 GitHub Pages:
 

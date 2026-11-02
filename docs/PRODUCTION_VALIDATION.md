@@ -4,7 +4,7 @@ Este documento acompanha a Fase 2.2: validar o app publicado com Supabase real a
 
 ## URL Validada
 
-- https://ficha-tecnica-controle-de-estoque.vercel.app
+- https://nk-control.vercel.app
 
 ## Resultado Automatico Inicial
 

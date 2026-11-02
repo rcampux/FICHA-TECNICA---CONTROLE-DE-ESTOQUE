@@ -121,4 +121,4 @@ Depois disso, seguir o fatiamento de `docs/STOCK_RECIPES_FEATURE_SPEC.md` para c
 
 ## Link de Producao
 
-- https://ficha-tecnica-controle-de-estoque.vercel.app
+- https://nk-control.vercel.app

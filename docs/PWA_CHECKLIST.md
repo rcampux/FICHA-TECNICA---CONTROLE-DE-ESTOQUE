@@ -33,7 +33,7 @@ Este documento acompanha a evolucao do app como PWA instalavel.
 4. Abrir instalado e navegar entre Ficha, Virtual, Fisico e Receitas.
 5. Ativar modo aviao e validar se a interface base ainda abre.
 6. Voltar online e confirmar que o app verifica atualizacoes sem travar a interface.
-7. Abrir uma URL gerada `*-rcampuxs-projects.vercel.app` e confirmar o redirecionamento para `https://ficha-tecnica-controle-de-estoque.vercel.app/`.
+7. Abrir uma URL gerada `*-rcampuxs-projects.vercel.app` e confirmar o redirecionamento para `https://nk-control.vercel.app/`.
 8. Abrir uma URL gerada com `?preview=1` e confirmar que ela permanece disponivel para QA.
 9. Abrir `/?action=scanner`, autenticar se necessario e confirmar que o scanner abre uma unica vez.
 10. Testar scanner quando a API estiver configurada.

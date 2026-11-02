@@ -145,7 +145,7 @@ Adicionar no cadastro do produto fisico:
 |---|---------|-------|
 | 1 | Criar categorias | Estoque Fisico + Virtual |
 | 2 | Toggle Lista/Grid | Estoque Fisico + Virtual |
-| 3 | Tabela nutricional automatica + porcao customizavel | Estoque Virtual |
+| 3 | Tabela nutricional automatica + porcao customizavel | Estoque Fisico + Virtual |
 | 4 | Novo UX de adicionar ingredientes | Aba Ficha |
 | 5 | Redirect + refresh ao salvar receita | Ficha para Receitas |
 | 6 | Filtro taxonomico + busca por produto | Estoque Fisico + Virtual |
@@ -185,3 +185,34 @@ Adicionar no cadastro do produto fisico:
 - Criar origem de dados de movimentos/uso por periodo.
 - Implementar graficos por categoria, produto e vencimento.
 - Adicionar filtros de periodo e selecao de produtos/categorias.
+
+## 6. Descoberta E Cadastro De Produtos
+
+### 6.1 Entrada Rapida
+
+- O estado vazio dos estoques virtual e fisico funciona como acao para iniciar um novo cadastro.
+- Os botoes `+ Novo` existentes continuam disponiveis.
+- O cadastro manual oferece `Gerar tabela nutricional` usando o nome informado e mantem todos os campos editaveis.
+
+### 6.2 Pesquisa De Precos
+
+- `Pesquisar no Google` abre um modal vermelho, animado e responsivo sem retirar o usuario do fluxo.
+- A busca retorna no maximo dez ofertas de Google Shopping, ordenadas do menor para o maior preco.
+- `Geral` pesquisa no Brasil; `Perto de mim` solicita localizacao apenas ao ser acionado e usa cidade/estado como contexto.
+- Cada resultado exibe imagem quando disponivel, produto, mercado, entrega e preco.
+- Ao selecionar uma oferta, nome, embalagem, unidade, preco e categoria sao preenchidos e a tabela nutricional e consultada automaticamente.
+- A chave do provedor de pesquisa fica exclusivamente no endpoint server-side `/api/product-search`.
+
+### 6.3 Nutricao Responsiva
+
+- `/api/nutrition-search` consulta uma referencia por 100 g no Open Food Facts e o formulario continua editavel para conferencia com o rotulo.
+- A porcao de exibicao em g/ml pode ser alterada sem modificar a base salva por 100 g.
+- Calorias, carboidratos, proteinas, gorduras, saturada, trans, fibras e sodio respondem imediatamente a porcao escolhida.
+- Quando nao houver referencia externa, o app pode apresentar uma estimativa local identificada como estimativa para revisao.
+
+### 6.4 Regra Entre Estoques
+
+- Salvar ou editar no estoque fisico cria/atualiza primeiro o produto correspondente no estoque virtual e depois grava o item fisico com a referencia remota.
+- O estoque fisico reutiliza a mesma tabela nutricional do produto virtual correspondente.
+- Salvar diretamente no estoque virtual nao cria item no estoque fisico.
+- No modo lista do estoque virtual, a apresentacao usa tres colunas: produto e quantidade, preco unitario em verde e valor total.

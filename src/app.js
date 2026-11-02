@@ -181,7 +181,8 @@ async function exitToStartExperience(){
 
 function openStartLogin(){
   const authState=typeof window.getAuthState==='function'?window.getAuthState():null;
-  if(typeof window.setAuthMode==='function'&&!authState?.isPasswordRecovery)window.setAuthMode('login');
+  const shouldPreserveAuthMode=authState?.isPasswordRecovery||authState?.authMode==='forgot';
+  if(typeof window.setAuthMode==='function'&&!shouldPreserveAuthMode)window.setAuthMode('login');
   if(typeof window.openAuthModal==='function'){
     window.openAuthModal();
     return;
@@ -371,6 +372,17 @@ const categoryCatalogModule=window.FichaTecCategoryCatalog.createCategoryCatalog
 const {ensureCategory,getCategoryNames,getDefaultCategoryNames,handleCategoryKeydown,normalizeCategoryName,openCategoryModal,persistCategories,renderCategoryOptions,saveCategory}=categoryCatalogModule;
 Object.assign(window,{ensureCategory,getCategoryNames,getDefaultCategoryNames,handleCategoryKeydown,normalizeCategoryName,openCategoryModal,persistCategories,renderCategoryOptions,saveCategory});
 
+const productDiscoveryModule=window.FichaTecProductDiscovery.createProductDiscoveryModule({
+  closeModal,
+  ensureCategory,
+  formatCurrency:fmtBRL,
+  getNutrition,
+  renderCategoryOptions,
+  showToast,
+});
+const {closeProductSearch,formatNutritionMetric,generateNutrition,getNutritionPortionSize,handleProductSearchKeydown,openProductSearch,runProductSearch,scaleNutritionForPortion,selectProductResult,setProductSearchMode,updateNutritionPreview}=productDiscoveryModule;
+Object.assign(window,{closeProductSearch,formatNutritionMetric,generateNutrition,getNutritionPortionSize,handleProductSearchKeydown,openProductSearch,runProductSearch,scaleNutritionForPortion,selectProductResult,setProductSearchMode,updateNutritionPreview});
+
 const virtualStockModule=window.FichaTecVirtualStock.createVirtualStockModule({
   closeModal,
   db:DB,
@@ -380,15 +392,18 @@ const virtualStockModule=window.FichaTecVirtualStock.createVirtualStockModule({
   getCategoryNames,
   getStock:()=>stock,
   pricePerUnit,
+  readNutrition:productDiscoveryModule.readNutrition,
   renderRecipes,
   renderCategoryOptions,
   setStock:value=>{stock=value;},
   showToast,
   confirmAction,
   storageKeys:STORAGE_KEYS,
+  updateNutritionPreview:productDiscoveryModule.updateNutritionPreview,
+  writeNutrition:productDiscoveryModule.writeNutrition,
 });
-const {openStockModal,applyStockViewMode,setStockViewMode,renderStockCategoryFilters,toggleStockCategoryPanel,toggleStockCategoryFilter,clearStockCategoryFilters,updateGoogleLink,handleGoogleSearch,updateNutritionPreview,getNutritionPortionSize,scaleNutritionForPortion,formatNutritionMetric,saveStock,deleteStock,renderStock}=virtualStockModule;
-Object.assign(window,{openStockModal,applyStockViewMode,setStockViewMode,renderStockCategoryFilters,toggleStockCategoryPanel,toggleStockCategoryFilter,clearStockCategoryFilters,updateGoogleLink,handleGoogleSearch,updateNutritionPreview,getNutritionPortionSize,scaleNutritionForPortion,formatNutritionMetric,saveStock,deleteStock,renderStock});
+const {openStockModal,applyStockViewMode,setStockViewMode,renderStockCategoryFilters,toggleStockCategoryPanel,toggleStockCategoryFilter,clearStockCategoryFilters,saveStock,deleteStock,renderStock}=virtualStockModule;
+Object.assign(window,{openStockModal,applyStockViewMode,setStockViewMode,renderStockCategoryFilters,toggleStockCategoryPanel,toggleStockCategoryFilter,clearStockCategoryFilters,saveStock,deleteStock,renderStock});
 
 const physicalStockModule=window.FichaTecPhysicalStock.createPhysicalStockModule({
   closeModal,
@@ -401,6 +416,7 @@ const physicalStockModule=window.FichaTecPhysicalStock.createPhysicalStockModule
   getNutrition,
   getPhysicalStock:()=>physicalStock,
   getStock:()=>stock,
+  readNutrition:productDiscoveryModule.readNutrition,
   renderCategoryOptions,
   renderRecipes,
   setPhysicalStock:value=>{physicalStock=value;},
@@ -408,6 +424,8 @@ const physicalStockModule=window.FichaTecPhysicalStock.createPhysicalStockModule
   showToast,
   confirmAction,
   storageKeys:STORAGE_KEYS,
+  updateNutritionPreview:productDiscoveryModule.updateNutritionPreview,
+  writeNutrition:productDiscoveryModule.writeNutrition,
 });
 const {stockColor,stockFlag,stockBar,applyPhysicalViewMode,setPhysicalViewMode,renderPhysicalCategoryFilters,togglePhysicalCategoryPanel,togglePhysicalCategoryFilter,clearPhysicalCategoryFilters,openPhysicalModal,savePhysical,deletePhysical,renderPhysical,openMove,setMoveType,confirmMove}=physicalStockModule;
 Object.assign(window,{stockColor,stockFlag,stockBar,applyPhysicalViewMode,setPhysicalViewMode,renderPhysicalCategoryFilters,togglePhysicalCategoryPanel,togglePhysicalCategoryFilter,clearPhysicalCategoryFilters,openPhysicalModal,savePhysical,deletePhysical,renderPhysical,openMove,setMoveType,confirmMove});

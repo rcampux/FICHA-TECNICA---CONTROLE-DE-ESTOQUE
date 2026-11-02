@@ -8,3 +8,8 @@ dev-server.*.log
 .DS_Store
 Thumbs.db
 supabase/.temp/
+
+.vercel
+.env
+.env.*
+!.env.example

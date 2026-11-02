@@ -62,7 +62,7 @@ Este arquivo e um inventario vivo das funcoes utilizadas no projeto. Toda nova f
 | `escapeHtml` | `src/modules/auth/authSession.js` | 36 | Escapa dados vindos do banco antes de renderizar workspaces. |
 | `dispatchWorkspaceChange` | `src/modules/auth/authSession.js` | 46 | Dispara evento de mudanca de workspace para hidratar dados remotos. |
 | `dispatchSignedOut` | `src/modules/auth/authSession.js` | 53 | Dispara evento para limpar dados locais quando a sessao Supabase termina. |
-| `getAuthRedirectUrl` | `src/modules/auth/authSession.js` | 58 | Monta URL atual do app para redirecionamento de confirmacao de e-mail. |
+| `getAuthRedirectUrl` | `src/modules/auth/authSession.js` | 109 | Usa o dominio canonico `nk-control.vercel.app` nos retornos do Auth e preserva a URL local durante o desenvolvimento. |
 | `getPasswordValidation` | `src/modules/auth/authSession.js` | 62 | Valida requisitos de senha forte para criacao de conta. |
 | `isStrongPassword` | `src/modules/auth/authSession.js` | 73 | Confirma se todos os requisitos de senha forte foram atendidos. |
 | `ensureSupabaseClient` | `src/modules/auth/authSession.js` | 79 | Recria ou retorna o client Supabase para login/cadastro mesmo quando o boot de sessao demorou. |
@@ -70,7 +70,7 @@ Este arquivo e um inventario vivo das funcoes utilizadas no projeto. Toda nova f
 | `showInitialUserScreen` | `src/modules/auth/authSession.js` | 77 | Fecha o modal de acesso e retorna para a tela inicial do usuario apos login. |
 | `handleAuthKeydown` | `src/modules/auth/authSession.js` | 84 | Submete login/cadastro ao pressionar Enter nos campos de acesso. |
 | `clearAuthInputs` | `src/modules/auth/authSession.js` | 90 | Limpa campos sensiveis do formulario de acesso e restaura o campo de senha. |
-| `initAuthSession` | `src/modules/auth/authSession.js` | 57 | Inicializa modo local ou Supabase Auth sem bloquear o prototipo. |
+| `initAuthSession` | `src/modules/auth/authSession.js` | 260 | Inicializa o Supabase Auth, trata callbacks de recuperacao e apresenta links expirados sem deixar o usuario em uma tela quebrada. |
 | `syncSupabaseSession` | `src/modules/auth/authSession.js` | 88 | Sincroniza sessao Supabase no estado local do modulo. |
 | `loadOrganizations` | `src/modules/auth/authSession.js` | 98 | Carrega workspaces do usuario autenticado via `organization_members`. |
 | `renderAuthState` | `src/modules/auth/authSession.js` | 135 | Renderiza botao de sessao, formulario e lista de workspaces. |
@@ -257,20 +257,53 @@ Este arquivo e um inventario vivo das funcoes utilizadas no projeto. Toda nova f
 | `toggleStockCategoryPanel` | `src/modules/stock/virtualStock.js` | 67 | Abre ou fecha o painel de categorias do estoque virtual. |
 | `toggleStockCategoryFilter` | `src/modules/stock/virtualStock.js` | 75 | Alterna uma categoria no filtro multi-selecao do estoque virtual. |
 | `clearStockCategoryFilters` | `src/modules/stock/virtualStock.js` | 85 | Limpa filtros de categoria aplicados ao estoque virtual. |
-| `readNumberInput` | `src/modules/stock/virtualStock.js` | 49 | Le campos numericos do modal de estoque virtual com fallback seguro. |
-| `writeNumberInput` | `src/modules/stock/virtualStock.js` | 57 | Preenche campos numericos do modal sem gravar valores invalidos. |
-| `getNutritionPortionSize` | `src/modules/stock/virtualStock.js` | 63 | Resolve a porcao customizada usada para exibicao proporcional da tabela nutricional. |
-| `scaleNutritionForPortion` | `src/modules/stock/virtualStock.js` | 68 | Recalcula valores nutricionais da base por 100g para a porcao escolhida. |
-| `formatNutritionMetric` | `src/modules/stock/virtualStock.js` | 82 | Formata numeros nutricionais com unidade curta para o preview. |
-| `readNutritionFromForm` | `src/modules/stock/virtualStock.js` | 88 | Coleta tabela nutricional completa do modal, incluindo porcao, gordura saturada e trans. |
-| `writeNutritionToForm` | `src/modules/stock/virtualStock.js` | 102 | Restaura tabela nutricional no modal ao editar produto virtual. |
-| `updateNutritionPreview` | `src/modules/stock/virtualStock.js` | 114 | Renderiza preview proporcional da nutricao conforme a porcao informada. |
 | `openStockModal` | `src/modules/stock/virtualStock.js` | 94 | function openStockModal(id=null){ |
-| `updateGoogleLink` | `src/modules/stock/virtualStock.js` | 116 | function updateGoogleLink(){ |
-| `handleGoogleSearch` | `src/modules/stock/virtualStock.js` | 121 | function handleGoogleSearch(e){const h=document.getElementById('google-search-link').href;if(!h\|\|h==='#'){e.preventDefault();return;}window.open(h,'_blank');e |
 | `saveStock` | `src/modules/stock/virtualStock.js` | 145 | Salva ou edita produto virtual preservando IDs remotos e aguardando Supabase quando ativo. |
 | `deleteStock` | `src/modules/stock/virtualStock.js` | 163 | Exclui produto virtual apos confirmacao visual e sincroniza o snapshot remoto. |
 | `renderStock` | `src/modules/stock/virtualStock.js` | 143 | Renderiza estoque virtual com `data-stock-id` e delegacao de eventos para CRUD estavel apos refresh. |
+| `exposeProductDiscoveryModule` | `src/modules/stock/productDiscovery.js` | 1 | Expoe o fluxo compartilhado de pesquisa de produtos e nutricao para os dois estoques. |
+| `createProductDiscoveryModule` | `src/modules/stock/productDiscovery.js` | 2 | Cria o modulo de descoberta com dependencias injetadas e estado isolado por estoque. |
+| `normalizeStockType` | `src/modules/stock/productDiscovery.js` | 42 | Normaliza o contexto para estoque virtual ou fisico. |
+| `escapeHtml` | `src/modules/stock/productDiscovery.js` | 46 | Escapa conteudo retornado por provedores antes de renderizar resultados. |
+| `readNumberInput` | `src/modules/stock/productDiscovery.js` | 55 | Le campos numericos com fallback seguro e suporte a virgula decimal. |
+| `writeNumberInput` | `src/modules/stock/productDiscovery.js` | 63 | Preenche campos numericos sem propagar valores invalidos. |
+| `getNutritionPortionSize` | `src/modules/stock/productDiscovery.js` | 69 | Resolve a porcao de exibicao com base segura de 100 g. |
+| `scaleNutritionForPortion` | `src/modules/stock/productDiscovery.js` | 74 | Recalcula todos os nutrientes proporcionalmente a porcao escolhida. |
+| `formatNutritionMetric` | `src/modules/stock/productDiscovery.js` | 89 | Formata nutrientes com precisao e unidade apropriadas. |
+| `readNutrition` | `src/modules/stock/productDiscovery.js` | 95 | Coleta nutricao e metadados do editor virtual ou fisico. |
+| `writeNutrition` | `src/modules/stock/productDiscovery.js` | 111 | Preenche o editor, preserva metadados da fonte e atualiza o preview. |
+| `setNutritionMessage` | `src/modules/stock/productDiscovery.js` | 134 | Exibe estados de carregamento, sucesso, alerta ou erro da fonte nutricional. |
+| `updateNutritionPreview` | `src/modules/stock/productDiscovery.js` | 142 | Atualiza a estimativa nutricional responsiva da porcao atual. |
+| `hasNutritionValues` | `src/modules/stock/productDiscovery.js` | 166 | Verifica se uma resposta nutricional possui valores utilizaveis. |
+| `generateNutrition` | `src/modules/stock/productDiscovery.js` | 171 | Busca nutricao por produto e aplica fallback local claramente identificado. |
+| `setSearchStatus` | `src/modules/stock/productDiscovery.js` | 214 | Atualiza a mensagem acessivel do modal de pesquisa. |
+| `setSearchBusy` | `src/modules/stock/productDiscovery.js` | 223 | Bloqueia controles e anima o estado enquanto a busca esta ativa. |
+| `renderProductSearchResults` | `src/modules/stock/productDiscovery.js` | 238 | Renderiza ate dez ofertas seguras e delega a selecao de resultado. |
+| `openProductSearch` | `src/modules/stock/productDiscovery.js` | 270 | Abre o popup no contexto do estoque de origem. |
+| `closeProductSearch` | `src/modules/stock/productDiscovery.js` | 285 | Cancela requisicao pendente e fecha o popup. |
+| `requestCurrentPosition` | `src/modules/stock/productDiscovery.js` | 292 | Solicita geolocalizacao somente para a opcao Perto de mim. |
+| `runProductSearch` | `src/modules/stock/productDiscovery.js` | 306 | Consulta o endpoint server-side, ordena ofertas e trata estados de erro. |
+| `setProductSearchMode` | `src/modules/stock/productDiscovery.js` | 351 | Alterna Geral/Perto de mim e sincroniza estado acessivel. |
+| `inferPackage` | `src/modules/stock/productDiscovery.js` | 360 | Infere quantidade e unidade a partir do titulo da oferta. |
+| `inferCategory` | `src/modules/stock/productDiscovery.js` | 382 | Sugere categoria do produto por regras culinarias locais. |
+| `selectProductResult` | `src/modules/stock/productDiscovery.js` | 397 | Preenche cadastro e tabela nutricional a partir da oferta selecionada. |
+| `handleProductSearchKeydown` | `src/modules/stock/productDiscovery.js` | 427 | Executa a busca ao pressionar Enter no campo do popup. |
+| `sendJson` | `api/product-search.js` | 4 | Envia resposta JSON sem cache pela funcao server-side de precos. |
+| `readSearchParams` | `api/product-search.js` | 11 | Le parametros normalizados da requisicao de pesquisa. |
+| `normalizeQuery` | `api/product-search.js` | 15 | Limita e normaliza o texto pesquisado. |
+| `isValidCoordinate` | `api/product-search.js` | 19 | Valida latitude e longitude antes da busca local. |
+| `resolveNearbyLocation` | `api/product-search.js` | 24 | Converte coordenadas em cidade/estado para contextualizar mercados proximos. |
+| `normalizeShoppingResult` | `api/product-search.js` | 48 | Converte uma oferta do Google Shopping no contrato interno seguro. |
+| `selectCheapestResults` | `api/product-search.js` | 66 | Remove duplicados, ordena por preco e limita a dez ofertas. |
+| `handler` | `api/product-search.js` | 82 | Valida a requisicao e consulta Google Shopping via provedor server-side. |
+| `sendJson` | `api/nutrition-search.js` | 3 | Envia resposta nutricional JSON com cache controlado no servidor. |
+| `normalizeQuery` | `api/nutrition-search.js` | 10 | Normaliza e limita o nome usado na busca nutricional. |
+| `normalizeText` | `api/nutrition-search.js` | 14 | Remove acentos e pontuacao para comparar produtos. |
+| `readNumber` | `api/nutrition-search.js` | 24 | Converte nutrientes externos em numeros ou nulo. |
+| `mapNutrition` | `api/nutrition-search.js` | 29 | Converte a resposta Open Food Facts na base nutricional interna por 100 g. |
+| `scoreProduct` | `api/nutrition-search.js` | 52 | Pontua aderencia do nome e completude nutricional. |
+| `chooseNutritionProduct` | `api/nutrition-search.js` | 64 | Seleciona a referencia nutricional mais adequada. |
+| `handler` | `api/nutrition-search.js` | 70 | Consulta Open Food Facts e retorna uma tabela revisavel. |
 | `registerFichaTecServiceWorker` | `src/pwa/registerServiceWorker.js` | 1 | Inicializa, sem bloquear o boot, o atalho do scanner e o ciclo de registro/atualizacao da PWA. |
 | `normalizeReleaseId` | `src/pwa/registerServiceWorker.js` | 11 | Normaliza a release publicada antes de compor URL e nome de cache do Service Worker. |
 | `fetchReleaseId` | `src/pwa/registerServiceWorker.js` | 19 | Consulta `release.json` com `no-store` e parametro unico para descobrir atualizacoes sem cache intermediario. |

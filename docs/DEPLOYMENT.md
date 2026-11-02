@@ -55,7 +55,7 @@ Sempre que uma etapa visual ou funcional for concluida, manter uma forma clara d
 Vercel produção:
 
 ```text
-https://ficha-tecnica-controle-de-estoque.vercel.app
+https://nk-control.vercel.app
 ```
 
 Este e o unico endereco que deve ser compartilhado ou salvo nos navegadores dos usuarios. URLs no formato
@@ -109,3 +109,15 @@ FICHATEC_SUPABASE_ANON_KEY=SUA_ANON_KEY_PUBLICA
 ```
 
 O build gera `public/src/config/env.js` a partir dessas variaveis. Sem elas, a producao continua em modo local.
+
+## Variavel server-side para pesquisa de mercados
+
+Para ativar a lista de precos reais do Google Shopping, configure na Vercel apenas no ambiente de servidor:
+
+```text
+SERPAPI_API_KEY=SUA_CHAVE_SERPAPI
+```
+
+Essa chave e consumida somente por `/api/product-search`; ela nunca entra em `public/src/config/env.js` nem e enviada ao navegador. Depois de adicionar ou trocar a chave, gere um novo deployment de producao.
+
+A tabela nutricional usa o endpoint publico do Open Food Facts por `/api/nutrition-search` e nao exige chave adicional.

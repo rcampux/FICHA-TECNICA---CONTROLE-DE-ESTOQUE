@@ -10,11 +10,14 @@
       getCategoryNames,
       getStock,
       pricePerUnit,
+      readNutrition,
       renderRecipes,
       renderCategoryOptions,
       setStock,
       showToast,
       storageKeys,
+      updateNutritionPreview,
+      writeNutrition,
     } = deps;
 
     let editingStockId = null;
@@ -44,91 +47,6 @@
         .replace(/"/g, "&quot;")
         .replace(/</g, "&lt;")
         .replace(/>/g, "&gt;");
-    }
-
-    function readNumberInput(id, fallback = null) {
-      const element = document.getElementById(id);
-      const rawValue = element?.value?.trim();
-      if (rawValue === "" || rawValue === undefined) return fallback;
-      const number = Number(rawValue);
-      return Number.isFinite(number) ? number : fallback;
-    }
-
-    function writeNumberInput(id, value) {
-      const element = document.getElementById(id);
-      if (!element) return;
-      element.value = value === null || value === undefined ? "" : value;
-    }
-
-    function getNutritionPortionSize(nutrition = {}) {
-      const portionSize = Number(nutrition.portionSize);
-      return Number.isFinite(portionSize) && portionSize > 0 ? portionSize : 100;
-    }
-
-    function scaleNutritionForPortion(nutrition = {}, portionSize = getNutritionPortionSize(nutrition)) {
-      const factor = portionSize / 100;
-      return {
-        kcal: nutrition.kcal == null ? null : nutrition.kcal * factor,
-        carb: nutrition.carb == null ? null : nutrition.carb * factor,
-        prot: nutrition.prot == null ? null : nutrition.prot * factor,
-        fat: nutrition.fat == null ? null : nutrition.fat * factor,
-        satFat: nutrition.satFat == null ? null : nutrition.satFat * factor,
-        transFat: nutrition.transFat == null ? null : nutrition.transFat * factor,
-        fiber: nutrition.fiber == null ? null : nutrition.fiber * factor,
-        sodium: nutrition.sodium == null ? null : nutrition.sodium * factor,
-      };
-    }
-
-    function formatNutritionMetric(value, unit) {
-      if (value === null || value === undefined || !Number.isFinite(Number(value))) return "-";
-      const digits = Math.abs(value) >= 10 || unit === "mg" || unit === "kcal" ? 0 : 1;
-      return `${Number(value).toLocaleString("pt-BR", {maximumFractionDigits: digits})}${unit ? ` ${unit}` : ""}`;
-    }
-
-    function readNutritionFromForm() {
-      return {
-        kcal: readNumberInput("nut-kcal"),
-        carb: readNumberInput("nut-carb"),
-        prot: readNumberInput("nut-prot"),
-        fat: readNumberInput("nut-fat"),
-        satFat: readNumberInput("nut-sat-fat"),
-        transFat: readNumberInput("nut-trans-fat"),
-        fiber: readNumberInput("nut-fiber"),
-        sodium: readNumberInput("nut-sodium"),
-        portionSize: readNumberInput("nut-portion-size", 100),
-      };
-    }
-
-    function writeNutritionToForm(nutrition = {}) {
-      writeNumberInput("nut-kcal", nutrition.kcal);
-      writeNumberInput("nut-carb", nutrition.carb);
-      writeNumberInput("nut-prot", nutrition.prot);
-      writeNumberInput("nut-fat", nutrition.fat);
-      writeNumberInput("nut-sat-fat", nutrition.satFat);
-      writeNumberInput("nut-trans-fat", nutrition.transFat);
-      writeNumberInput("nut-fiber", nutrition.fiber);
-      writeNumberInput("nut-sodium", nutrition.sodium);
-      writeNumberInput("nut-portion-size", getNutritionPortionSize(nutrition));
-    }
-
-    function updateNutritionPreview() {
-      const preview = document.getElementById("nutrition-portion-preview");
-      if (!preview) return;
-      const nutrition = readNutritionFromForm();
-      const portionSize = getNutritionPortionSize(nutrition);
-      const scaled = scaleNutritionForPortion(nutrition, portionSize);
-      preview.innerHTML = `
-        <div class="nutrition-preview-head">Estimativa por porcao de ${formatNutritionMetric(portionSize, "g")}</div>
-        <div class="nutrition-preview-grid">
-          <span><strong>${formatNutritionMetric(scaled.kcal, "kcal")}</strong><small>Calorias</small></span>
-          <span><strong>${formatNutritionMetric(scaled.carb, "g")}</strong><small>Carboidratos</small></span>
-          <span><strong>${formatNutritionMetric(scaled.prot, "g")}</strong><small>Proteinas</small></span>
-          <span><strong>${formatNutritionMetric(scaled.fat, "g")}</strong><small>Gorduras</small></span>
-          <span><strong>${formatNutritionMetric(scaled.satFat, "g")}</strong><small>Saturada</small></span>
-          <span><strong>${formatNutritionMetric(scaled.transFat, "g")}</strong><small>Trans</small></span>
-          <span><strong>${formatNutritionMetric(scaled.fiber, "g")}</strong><small>Fibras</small></span>
-          <span><strong>${formatNutritionMetric(scaled.sodium, "mg")}</strong><small>Sodio</small></span>
-        </div>`;
     }
 
     function bindStockCardActions(listElement) {
@@ -265,31 +183,24 @@
         document.getElementById('stock-unit').value=s.unit;
         document.getElementById('stock-price').value=s.price;
         document.getElementById('stock-category').value=s.category||'';
-        writeNutritionToForm(s.nutrition||{});
+        writeNutrition("virtual",s.nutrition||{});
       }else{
         renderCategoryOptions?.('stock-category','');
         document.getElementById('modal-stock-title').textContent='Novo Produto';
         ['stock-name','stock-qty','stock-price'].forEach(f=>document.getElementById(f).value='');
-        writeNutritionToForm({portionSize: 100});
+        writeNutrition("virtual",{portionSize: 100});
         document.getElementById('stock-unit').value='kg';
         document.getElementById('stock-category').value='';
       }
-      updateGoogleLink();
-      updateNutritionPreview();
+      updateNutritionPreview("virtual");
       document.getElementById('modal-stock').classList.add('open');
     }
-    function updateGoogleLink(){
-      const name=document.getElementById('stock-name').value.trim();
-      const link=document.getElementById('google-search-link');
-      link.href=name?`https://www.google.com/search?q=tabela+nutricional+${encodeURIComponent(name)}+por+100g`:'#';
-    }
-    function handleGoogleSearch(e){const h=document.getElementById('google-search-link').href;if(!h||h==='#'){e.preventDefault();return;}window.open(h,'_blank');e.preventDefault();}
     async function saveStock(){
       const name=document.getElementById('stock-name').value.trim();
       const qty=parseFloat(document.getElementById('stock-qty').value);
       const price=parseFloat(document.getElementById('stock-price').value);
       if(!name||isNaN(qty)||qty<=0||isNaN(price)||price<0){showToast('Preencha nome, quantidade e valor.');return;}
-      const nutrition=readNutritionFromForm();
+      const nutrition=readNutrition("virtual");
       const category = ensureCategory ? ensureCategory(document.getElementById('stock-category').value) : document.getElementById('stock-category').value;
       const existing=editingStockId!==null?getStock().find(s=>String(s.id)===String(editingStockId)):null;
       const item={...(existing||{}),id:existing?.id||editingStockId||Date.now(),name,qty,unit:document.getElementById('stock-unit').value,price,category,nutrition,updatedAt:new Date().toISOString()};
@@ -319,17 +230,34 @@
       });
       if(!f.length){
         el.onclick = null;
-        el.innerHTML=`<div class="empty-state"><span class="empty-icon"><span class="material-symbols-rounded" style="font-size:52px;font-variation-settings:'FILL' 0,'wght' 300,'GRAD' 0,'opsz' 48">inventory_2</span></span><div class="empty-text">${filter?'Nenhum produto encontrado.':'Estoque vazio. Clique em "+ Novo"!'}</div></div>`;
+        if(filter){
+          el.innerHTML='<div class="empty-state"><span class="empty-icon"><span class="material-symbols-rounded">search_off</span></span><div class="empty-text">Nenhum produto encontrado.</div></div>';
+        }else{
+          el.innerHTML='<button class="empty-state stock-empty-action" data-empty-new-stock type="button"><span class="empty-icon"><span class="material-symbols-rounded">inventory_2</span></span><strong>Estoque vazio</strong><span class="empty-text">Clique aqui para gravar o primeiro produto.</span><span class="empty-state-cta"><span class="material-symbols-rounded">add</span> Novo produto</span></button>';
+          el.querySelector('[data-empty-new-stock]')?.addEventListener('click',()=>openStockModal());
+        }
         return;
       }
-      el.innerHTML=f.map(s=>{
+      const rows=f.map(s=>{
         const ppg=pricePerUnit(s);
         const stockId=escapeAttribute(s.id);
         const ps=s.unit==='ml'?formatCurrency(ppg*1000)+'/L · '+formatCurrency(ppg*100)+'/100ml':s.unit==='un'?formatCurrency(ppg)+'/un':formatCurrency(ppg*1000)+'/kg · '+formatCurrency(ppg*100)+'/100g';
+        const name=escapeAttribute(s.name);
+        const category=s.category?` <span class="tag stock-list-category">${escapeAttribute(s.category)}</span>`:'';
+        if(stockViewMode==='list'){
+          return`<div class="stock-list-item item-card">
+            <div class="stock-list-product"><div class="item-name">${name}${category}</div><div class="item-meta">${escapeAttribute(s.qty)} ${escapeAttribute(s.unit)}</div></div>
+            <div class="stock-list-unit"><div class="item-price">${ps}</div></div>
+            <div class="stock-list-total"><strong>${formatCurrency(s.price)}</strong><div class="item-actions">
+              <button class="btn btn-secondary btn-icon" data-stock-action="edit" data-stock-id="${stockId}" type="button" aria-label="Editar ${name}"><span class="material-symbols-rounded">edit</span></button>
+              <button class="btn btn-danger btn-icon" data-stock-action="delete" data-stock-id="${stockId}" type="button" aria-label="Excluir ${name}"><span class="material-symbols-rounded">delete</span></button>
+            </div></div>
+          </div>`;
+        }
         return`<div class="item-card">
           <div style="flex:1;min-width:0">
-            <div class="item-name">${s.name}${s.category?` <span class="tag" style="margin-left:4px;font-size:10px">${s.category}</span>`:''}</div>
-            <div class="item-meta">${s.qty}${s.unit} · ${formatCurrency(s.price)}</div>
+            <div class="item-name">${name}${category}</div>
+            <div class="item-meta">${escapeAttribute(s.qty)} ${escapeAttribute(s.unit)} · ${formatCurrency(s.price)}</div>
             <div class="item-price">${ps}</div>
           </div>
           <div class="item-actions">
@@ -338,6 +266,9 @@
           </div>
         </div>`;
       }).join('');
+      el.innerHTML=stockViewMode==='list'
+        ? `<div class="stock-list-header"><span>Produto e quantidade</span><span>Preço unitário</span><span>Valor total</span></div>${rows}`
+        : rows;
       bindStockCardActions(el);
     }
     
@@ -351,12 +282,6 @@
       toggleStockCategoryPanel,
       toggleStockCategoryFilter,
       clearStockCategoryFilters,
-      updateGoogleLink,
-      handleGoogleSearch,
-      updateNutritionPreview,
-      getNutritionPortionSize,
-      scaleNutritionForPortion,
-      formatNutritionMetric,
       saveStock,
       deleteStock,
       renderStock,

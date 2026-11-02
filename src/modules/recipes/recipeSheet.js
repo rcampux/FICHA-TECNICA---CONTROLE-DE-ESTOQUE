@@ -948,12 +948,6 @@
           <p class="production-planner-status" data-production-status>${formatRecipeYield(porcoes,yieldUnit)} correspondem a 100% da receita-base. Apenas as quantidades abaixo serão ajustadas.</p>
         </section>
         <div style="font-size:11px;font-weight:700;color:var(--n600);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:var(--s2);display:flex;align-items:center;gap:4px">
-          <span class="material-symbols-rounded" style="font-size:14px">nutrition</span> Nutricao por ${nutritionSummary.portion}g
-        </div>
-        <table class="nutrition-table" style="margin-bottom:var(--s4)">
-          <tbody>${renderNutritionRows(nutritionSummary.nutrition)}</tbody>
-        </table>
-        <div style="font-size:11px;font-weight:700;color:var(--n600);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:var(--s2);display:flex;align-items:center;gap:4px">
           <span class="material-symbols-rounded" style="font-size:14px">format_list_bulleted</span> Ingredientes
         </div>
         ${ingredients.map((i,ingredientIndex)=>{
@@ -968,6 +962,12 @@
             <div class="ing-cost" style="${ingChanged?'color:'+(curPPG>i.savedPricePerG?'var(--r400)':'var(--g500)'):''}"> ${fmtBRL(i.cost)}</div>
           </div>`;
         }).join('')}
+        <div style="font-size:11px;font-weight:700;color:var(--n600);text-transform:uppercase;letter-spacing:0.8px;margin-top:var(--s4);margin-bottom:var(--s2);display:flex;align-items:center;gap:4px">
+          <span class="material-symbols-rounded" style="font-size:14px">nutrition</span> Nutricao por ${nutritionSummary.portion}g
+        </div>
+        <table class="nutrition-table" style="margin-bottom:var(--s4)">
+          <tbody>${renderNutritionRows(nutritionSummary.nutrition)}</tbody>
+        </table>
         ${r.modoPreparo?`<div style="margin-top:var(--s4)">
           <div style="font-size:11px;font-weight:700;color:var(--n600);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:var(--s2);display:flex;align-items:center;gap:4px">
             <span class="material-symbols-rounded" style="font-size:14px">menu_book</span> Modo de Preparo

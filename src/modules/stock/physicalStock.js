@@ -12,12 +12,15 @@
       getNutrition,
       getPhysicalStock,
       getStock,
+      readNutrition,
       renderCategoryOptions,
       renderRecipes,
       setPhysicalStock,
       setStock,
       showToast,
       storageKeys,
+      updateNutritionPreview,
+      writeNutrition,
     } = deps;
 
     let editingPhysicalId = null;
@@ -232,6 +235,12 @@
         document.getElementById("pstock-price").value = item.price;
         document.getElementById("pstock-desired").value = item.desiredQty;
         document.getElementById("pstock-category").value = item.category || "";
+        const virtualItem = getStock().find((entry) =>
+          (item.stockRemoteId && entry.remoteId === item.stockRemoteId)
+          || (item.stockId && String(entry.id) === String(item.stockId))
+          || entry.name.toLowerCase() === item.name.toLowerCase()
+        );
+        writeNutrition("physical", virtualItem?.nutrition || item.nutrition || getNutrition(item.name));
       } else {
         renderCategoryOptions?.("pstock-category", "");
         document.getElementById("modal-pstock-title").textContent = "Novo Produto Físico";
@@ -240,8 +249,10 @@
         });
         document.getElementById("pstock-unit").value = "kg";
         document.getElementById("pstock-category").value = "";
+        writeNutrition("physical", {portionSize:100});
       }
 
+      updateNutritionPreview("physical");
       document.getElementById("modal-pstock").classList.add("open");
     }
 
@@ -258,34 +269,64 @@
       }
 
       const category = ensureCategory ? ensureCategory(document.getElementById("pstock-category").value) : document.getElementById("pstock-category").value;
-      const nextPhysicalStock = editingPhysicalId !== null
-        ? getPhysicalStock().map((item) => String(item.id) === String(editingPhysicalId)
-          ? {...item,name,currentQty:qty,unit,price,desiredQty:desired,category}
-          : item)
-        : [...getPhysicalStock(), {
-          id: Date.now(),
+      const nutrition = readNutrition("physical");
+      const previousPhysicalStock = getPhysicalStock();
+      const previousStock = getStock();
+      const existingPhysical = editingPhysicalId !== null
+        ? previousPhysicalStock.find((item) => String(item.id) === String(editingPhysicalId))
+        : null;
+      const existingVirtual = previousStock.find((item) =>
+        (existingPhysical?.stockRemoteId && item.remoteId === existingPhysical.stockRemoteId)
+        || (existingPhysical?.stockId && String(item.id) === String(existingPhysical.stockId))
+        || item.name.toLowerCase() === String(existingPhysical?.name || name).toLowerCase()
+        || item.name.toLowerCase() === name.toLowerCase()
+      );
+      const virtualLocalId = existingVirtual?.id || Date.now();
+      const virtualItem = {
+        ...(existingVirtual || {}),
+        id: virtualLocalId,
+        name,
+        qty,
+        unit,
+        price,
+        category,
+        nutrition,
+        updatedAt:new Date().toISOString(),
+      };
+      const nextStock = existingVirtual
+        ? previousStock.map((item) => String(item.id) === String(existingVirtual.id) ? virtualItem : item)
+        : [...previousStock, virtualItem];
+      const physicalItem = {
+          ...(existingPhysical || {}),
+          id: existingPhysical?.id || editingPhysicalId || Date.now()+1,
           name,
           currentQty: qty,
           desiredQty: desired,
           unit,
           price,
           category,
-          usedTotal: 0,
-          history: [{type:"entrada",qty,date:new Date().toISOString()}],
-        }];
-
-      const existing = getStock().find((item) => item.name.toLowerCase() === name.toLowerCase());
-      const nextStock = existing
-        ? getStock().map((item) => item.name.toLowerCase() === name.toLowerCase()
-          ? {...item,price,qty,unit,category}
-          : item)
-        : [...getStock(), {id:Date.now()+1,name,qty,unit,price,category,nutrition:getNutrition(name)}];
+          nutrition,
+          stockId:virtualLocalId,
+          usedTotal: existingPhysical?.usedTotal || 0,
+          history: existingPhysical?.history || [{type:"entrada",qty,date:new Date().toISOString()}],
+        };
 
       try {
+        const savedStock = await persistVirtualStockSnapshot(nextStock);
+        const savedVirtual = savedStock.find((item) => String(item.id) === String(virtualLocalId) || item.name.toLowerCase() === name.toLowerCase());
+        const synchronizedPhysicalItem = {...physicalItem,stockRemoteId:savedVirtual?.remoteId || physicalItem.stockRemoteId || null};
+        const nextPhysicalStock = editingPhysicalId !== null
+          ? previousPhysicalStock.map((item) => String(item.id) === String(editingPhysicalId) ? synchronizedPhysicalItem : item)
+          : [...previousPhysicalStock, synchronizedPhysicalItem];
         await persistPhysicalSnapshot(nextPhysicalStock);
-        await persistVirtualStockSnapshot(nextStock);
       } catch (error) {
         console.error(error);
+        try {
+          await persistVirtualStockSnapshot(previousStock);
+          await persistPhysicalSnapshot(previousPhysicalStock);
+        } catch (rollbackError) {
+          console.error("Physical stock rollback failed:", rollbackError);
+        }
         showToast("Nao foi possivel salvar o produto no Supabase.");
         return;
       }
@@ -345,7 +386,12 @@
 
       if (!filtered.length) {
         listElement.onclick = null;
-        listElement.innerHTML = `<div class="empty-state"><span class="empty-icon"><span class="material-symbols-rounded" style="font-size:52px;font-variation-settings:'FILL' 0,'wght' 300,'GRAD' 0,'opsz' 48">storefront</span></span><div class="empty-text">${filter?'Nenhum produto encontrado.':'Estoque físico vazio. Clique em "+ Novo"!'}</div></div>`;
+        if(filter){
+          listElement.innerHTML='<div class="empty-state"><span class="empty-icon"><span class="material-symbols-rounded">search_off</span></span><div class="empty-text">Nenhum produto encontrado.</div></div>';
+        }else{
+          listElement.innerHTML='<button class="empty-state stock-empty-action" data-empty-new-physical type="button"><span class="empty-icon"><span class="material-symbols-rounded">storefront</span></span><strong>Estoque físico vazio</strong><span class="empty-text">Clique aqui para gravar o primeiro produto.</span><span class="empty-state-cta"><span class="material-symbols-rounded">add</span> Novo produto</span></button>';
+          listElement.querySelector('[data-empty-new-physical]')?.addEventListener('click',()=>openPhysicalModal());
+        }
         return;
       }
 

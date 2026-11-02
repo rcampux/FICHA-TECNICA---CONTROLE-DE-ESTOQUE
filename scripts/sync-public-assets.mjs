@@ -55,7 +55,7 @@ async function buildPublicEnvConfig() {
 async function buildPublicReleaseManifest() {
   const contents = `${JSON.stringify({
     releaseId: resolveReleaseId(),
-    canonicalUrl: "https://ficha-tecnica-controle-de-estoque.vercel.app/",
+    canonicalUrl: "https://nk-control.vercel.app/",
   }, null, 2)}\n`;
 
   await writeFile(publicReleaseFile, contents, "utf8");

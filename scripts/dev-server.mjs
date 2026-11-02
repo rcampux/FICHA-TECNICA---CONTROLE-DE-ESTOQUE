@@ -1,6 +1,8 @@
 import { createReadStream, existsSync, statSync } from "node:fs";
 import { createServer } from "node:http";
 import { extname, join, normalize, resolve } from "node:path";
+import nutritionSearchHandler from "../api/nutrition-search.js";
+import productSearchHandler from "../api/product-search.js";
 
 const root = resolve(process.cwd());
 const port = Number(process.env.PORT || 4173);
@@ -40,7 +42,19 @@ function resolveRequestPath(url) {
   return filePath;
 }
 
-const server = createServer((req, res) => {
+const apiHandlers = new Map([
+  ["/api/nutrition-search", nutritionSearchHandler],
+  ["/api/product-search", productSearchHandler],
+]);
+
+const server = createServer(async (req, res) => {
+  const pathname = new URL(req.url || "/", `http://localhost:${port}`).pathname;
+  const apiHandler = apiHandlers.get(pathname);
+  if (apiHandler) {
+    await apiHandler(req, res);
+    return;
+  }
+
   const filePath = resolveRequestPath(req.url || "/");
 
   if (!filePath || !existsSync(filePath)) {

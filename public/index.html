@@ -9,10 +9,10 @@
 <meta name="apple-mobile-web-app-title" content="FichaTec">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>FichaTec</title>
-<link rel="canonical" href="https://ficha-tecnica-controle-de-estoque.vercel.app/">
+<link rel="canonical" href="https://nk-control.vercel.app/">
 <script>
   (function redirectGeneratedVercelDeployment() {
-    var canonicalHost = "ficha-tecnica-controle-de-estoque.vercel.app";
+    var canonicalHost = "nk-control.vercel.app";
     var currentHost = window.location.hostname.toLowerCase();
     var isGeneratedDeployment = currentHost.endsWith("-rcampuxs-projects.vercel.app");
     var allowPreview = new URLSearchParams(window.location.search).get("preview") === "1";
@@ -533,7 +533,7 @@
   <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-stock-title">
     <div class="modal-handle"></div>
     <div class="modal-title" id="modal-stock-title">Novo Produto</div>
-    <div class="input-group"><label class="input-label">Nome do Produto *</label><input type="text" id="stock-name" placeholder="Ex: Farinha de trigo..." oninput="updateGoogleLink()"></div>
+    <div class="input-group"><label class="input-label">Nome do Produto *</label><input type="text" id="stock-name" placeholder="Ex: Farinha de trigo..."></div>
     <div class="input-row cols-2">
       <div class="input-group"><label class="input-label">Quantidade *</label><input type="number" id="stock-qty" placeholder="Ex: 1" step="0.001"></div>
       <div class="input-group"><label class="input-label">Unidade</label>
@@ -552,30 +552,36 @@
       </div>
     </div>
     <div class="divider"></div>
-    <div style="font-size:14px;font-weight:700;margin-bottom:4px;color:var(--n900)">Tabela Nutricional <span style="font-weight:400;color:var(--n600);font-size:12px">(base por 100g)</span></div>
-    <div style="font-size:12px;color:var(--n600);margin-bottom:var(--s3);line-height:1.5">Preencha os valores do rotulo. A porcao abaixo recalcula a exibicao sem alterar a base por 100g.</div>
-    <a id="google-search-link" href="#" target="_blank" class="google-search-btn" onclick="handleGoogleSearch(event)">
-      <span class="material-symbols-rounded">open_in_new</span> Pesquisar no Google
-    </a>
+    <div class="nutrition-editor-heading">Tabela nutricional <span>(base por 100 g)</span></div>
+    <div class="nutrition-editor-copy">Pesquise um produto ou gere uma estimativa pelo nome. A porção abaixo recalcula a exibição sem alterar a base por 100 g.</div>
+    <div class="nutrition-editor-actions">
+      <button class="google-search-btn" onclick="openProductSearch('virtual')" type="button">
+        <span class="material-symbols-rounded">travel_explore</span> Pesquisar no Google
+      </button>
+      <button class="google-search-btn" onclick="generateNutrition('virtual')" type="button">
+        <span class="material-symbols-rounded">nutrition</span> Gerar tabela nutricional
+      </button>
+    </div>
+    <div class="nutrition-source-message" id="stock-nutrition-message" hidden></div>
     <div class="input-row cols-2" style="margin-top:var(--s4)">
-      <div class="input-group"><label class="input-label">Porcao para exibicao (g/ml)</label><input type="number" id="nut-portion-size" placeholder="Ex: 30" value="100" oninput="updateNutritionPreview()"></div>
+      <div class="input-group"><label class="input-label">Porção para exibição (g/ml)</label><input type="number" id="nut-portion-size" placeholder="Ex: 30" value="100" oninput="updateNutritionPreview('virtual')"></div>
       <div class="input-group"><label class="input-label">Base nutricional</label><input type="text" value="Valores informados por 100g" disabled></div>
     </div>
     <div class="input-row cols-2">
-      <div class="input-group"><label class="input-label">Calorias (kcal)</label><input type="number" id="nut-kcal" placeholder="Ex: 364" oninput="updateNutritionPreview()"></div>
-      <div class="input-group"><label class="input-label">Carboidratos (g)</label><input type="number" id="nut-carb" placeholder="Ex: 76" oninput="updateNutritionPreview()"></div>
+      <div class="input-group"><label class="input-label">Calorias (kcal)</label><input type="number" id="nut-kcal" placeholder="Ex: 364" oninput="updateNutritionPreview('virtual')"></div>
+      <div class="input-group"><label class="input-label">Carboidratos (g)</label><input type="number" id="nut-carb" placeholder="Ex: 76" oninput="updateNutritionPreview('virtual')"></div>
     </div>
     <div class="input-row cols-2">
-      <div class="input-group"><label class="input-label">Proteinas (g)</label><input type="number" id="nut-prot" placeholder="Ex: 10" oninput="updateNutritionPreview()"></div>
-      <div class="input-group"><label class="input-label">Gorduras totais (g)</label><input type="number" id="nut-fat" placeholder="Ex: 1.2" oninput="updateNutritionPreview()"></div>
+      <div class="input-group"><label class="input-label">Proteínas (g)</label><input type="number" id="nut-prot" placeholder="Ex: 10" oninput="updateNutritionPreview('virtual')"></div>
+      <div class="input-group"><label class="input-label">Gorduras totais (g)</label><input type="number" id="nut-fat" placeholder="Ex: 1.2" oninput="updateNutritionPreview('virtual')"></div>
     </div>
     <div class="input-row cols-2">
-      <div class="input-group"><label class="input-label">Gordura saturada (g)</label><input type="number" id="nut-sat-fat" placeholder="Ex: 0.3" oninput="updateNutritionPreview()"></div>
-      <div class="input-group"><label class="input-label">Gordura trans (g)</label><input type="number" id="nut-trans-fat" placeholder="Ex: 0" oninput="updateNutritionPreview()"></div>
+      <div class="input-group"><label class="input-label">Gordura saturada (g)</label><input type="number" id="nut-sat-fat" placeholder="Ex: 0.3" oninput="updateNutritionPreview('virtual')"></div>
+      <div class="input-group"><label class="input-label">Gordura trans (g)</label><input type="number" id="nut-trans-fat" placeholder="Ex: 0" oninput="updateNutritionPreview('virtual')"></div>
     </div>
     <div class="input-row cols-2">
-      <div class="input-group"><label class="input-label">Fibras (g)</label><input type="number" id="nut-fiber" placeholder="Ex: 2.7" oninput="updateNutritionPreview()"></div>
-      <div class="input-group"><label class="input-label">Sodio (mg)</label><input type="number" id="nut-sodium" placeholder="Ex: 2" oninput="updateNutritionPreview()"></div>
+      <div class="input-group"><label class="input-label">Fibras (g)</label><input type="number" id="nut-fiber" placeholder="Ex: 2.7" oninput="updateNutritionPreview('virtual')"></div>
+      <div class="input-group"><label class="input-label">Sódio (mg)</label><input type="number" id="nut-sodium" placeholder="Ex: 2" oninput="updateNutritionPreview('virtual')"></div>
     </div>
     <div class="nutrition-preview" id="nutrition-portion-preview"></div>
     <div style="display:flex;gap:var(--s2);margin-top:var(--s5)">
@@ -636,11 +642,72 @@
       <span class="material-symbols-rounded">sync</span>
       <span>Ao salvar, este produto será sincronizado no Estoque Virtual.</span>
     </div>
+    <div class="divider"></div>
+    <div class="nutrition-editor-heading">Tabela nutricional <span>(base por 100 g)</span></div>
+    <div class="nutrition-editor-copy">O produto físico será salvo também no estoque virtual com a mesma tabela nutricional.</div>
+    <div class="nutrition-editor-actions">
+      <button class="google-search-btn" onclick="openProductSearch('physical')" type="button">
+        <span class="material-symbols-rounded">travel_explore</span> Pesquisar no Google
+      </button>
+      <button class="google-search-btn" onclick="generateNutrition('physical')" type="button">
+        <span class="material-symbols-rounded">nutrition</span> Gerar tabela nutricional
+      </button>
+    </div>
+    <div class="nutrition-source-message" id="pstock-nutrition-message" hidden></div>
+    <div class="input-row cols-2" style="margin-top:var(--s4)">
+      <div class="input-group"><label class="input-label">Porção para exibição (g/ml)</label><input type="number" id="pnut-portion-size" value="100" min="1" oninput="updateNutritionPreview('physical')"></div>
+      <div class="input-group"><label class="input-label">Base nutricional</label><input type="text" value="Valores informados por 100g" disabled></div>
+    </div>
+    <div class="input-row cols-2">
+      <div class="input-group"><label class="input-label">Calorias (kcal)</label><input type="number" id="pnut-kcal" placeholder="Ex: 364" oninput="updateNutritionPreview('physical')"></div>
+      <div class="input-group"><label class="input-label">Carboidratos (g)</label><input type="number" id="pnut-carb" placeholder="Ex: 76" oninput="updateNutritionPreview('physical')"></div>
+    </div>
+    <div class="input-row cols-2">
+      <div class="input-group"><label class="input-label">Proteínas (g)</label><input type="number" id="pnut-prot" placeholder="Ex: 10" oninput="updateNutritionPreview('physical')"></div>
+      <div class="input-group"><label class="input-label">Gorduras totais (g)</label><input type="number" id="pnut-fat" placeholder="Ex: 1.2" oninput="updateNutritionPreview('physical')"></div>
+    </div>
+    <div class="input-row cols-2">
+      <div class="input-group"><label class="input-label">Gordura saturada (g)</label><input type="number" id="pnut-sat-fat" placeholder="Ex: 0.3" oninput="updateNutritionPreview('physical')"></div>
+      <div class="input-group"><label class="input-label">Gordura trans (g)</label><input type="number" id="pnut-trans-fat" placeholder="Ex: 0" oninput="updateNutritionPreview('physical')"></div>
+    </div>
+    <div class="input-row cols-2">
+      <div class="input-group"><label class="input-label">Fibras (g)</label><input type="number" id="pnut-fiber" placeholder="Ex: 2.7" oninput="updateNutritionPreview('physical')"></div>
+      <div class="input-group"><label class="input-label">Sódio (mg)</label><input type="number" id="pnut-sodium" placeholder="Ex: 2" oninput="updateNutritionPreview('physical')"></div>
+    </div>
+    <div class="nutrition-preview" id="pnutrition-portion-preview"></div>
     <div style="display:flex;gap:var(--s2)">
       <button class="btn btn-secondary" style="flex:1" onclick="closeModal('modal-pstock')" type="button">Cancelar</button>
       <button class="btn btn-primary" style="flex:1" onclick="savePhysical()" type="button">
         <span class="material-symbols-rounded">save</span> Salvar
       </button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: PESQUISA DE PRODUTOS -->
+<div class="modal-overlay" id="modal-product-search">
+  <div class="modal product-search-modal" role="dialog" aria-modal="true" aria-labelledby="product-search-title">
+    <div class="product-search-hero">
+      <button class="product-search-close" onclick="closeProductSearch()" type="button" aria-label="Fechar pesquisa">
+        <span class="material-symbols-rounded">close</span>
+      </button>
+      <span class="product-search-orbit" aria-hidden="true"><span></span></span>
+      <span class="product-search-kicker">Pesquisa de preços</span>
+      <h2 id="product-search-title">Pesquise o nome do seu produto</h2>
+      <p>Compare ofertas de mercados e selecione uma para preencher o cadastro.</p>
+    </div>
+    <div class="product-search-body">
+      <div class="product-search-tabs" role="group" aria-label="Tipo de pesquisa">
+        <button class="active" id="product-search-general" onclick="setProductSearchMode('general')" type="button" aria-pressed="true">Geral</button>
+        <button id="product-search-near" onclick="setProductSearchMode('near')" type="button" aria-pressed="false"><span class="material-symbols-rounded">near_me</span> Perto de mim</button>
+      </div>
+      <div class="product-search-field">
+        <span class="material-symbols-rounded">search</span>
+        <input id="product-search-input" type="search" placeholder="Ex: arroz 5 kg, leite integral…" autocomplete="off" onkeydown="handleProductSearchKeydown(event)">
+        <button id="product-search-submit" onclick="runProductSearch()" type="button"><span class="material-symbols-rounded">search</span> Pesquisar</button>
+      </div>
+      <div class="product-search-status" id="product-search-status" role="status" aria-live="polite" hidden></div>
+      <div class="product-search-results" id="product-search-results"></div>
     </div>
   </div>
 </div>
@@ -941,6 +1008,7 @@
 <script src="../src/modules/scanner/scannerRecipe.js" defer></script>
 <script src="../src/modules/stock/stockPricing.js" defer></script>
 <script src="../src/modules/stock/categoryCatalog.js" defer></script>
+<script src="../src/modules/stock/productDiscovery.js" defer></script>
 <script src="../src/modules/stock/virtualStock.js" defer></script>
 <script src="../src/modules/stock/physicalStock.js" defer></script>
 <script src="../src/pwa/registerServiceWorker.js" defer></script>

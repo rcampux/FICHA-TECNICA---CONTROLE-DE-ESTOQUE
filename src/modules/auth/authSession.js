@@ -21,6 +21,7 @@
     const AUTH_MODES = new Set(["login", "signup", "forgot", "reset"]);
     const PASSWORD_RECOVERY_STORAGE_KEY = "fichatec:password-recovery";
     const PASSWORD_RECOVERY_MAX_AGE_MS = 60 * 60 * 1000;
+    const PRODUCTION_AUTH_REDIRECT_URL = "https://nk-control.vercel.app/";
 
     const state = {
       activeOrganizationId: null,
@@ -108,11 +109,12 @@
     function getAuthRedirectUrl() {
       try {
         const redirectUrl = new URL(window.location.href);
+        const isLocalDevelopment = ["localhost", "127.0.0.1", "[::1]"].includes(redirectUrl.hostname);
         redirectUrl.search = "";
         redirectUrl.hash = "";
-        return redirectUrl.toString();
+        return isLocalDevelopment ? redirectUrl.toString() : PRODUCTION_AUTH_REDIRECT_URL;
       } catch (_error) {
-        return `${window.location.origin}${window.location.pathname}`;
+        return PRODUCTION_AUTH_REDIRECT_URL;
       }
     }
 
@@ -243,7 +245,10 @@
       syncSupabaseSession(session);
 
       try {
-        window.history.replaceState({}, document.title, getAuthRedirectUrl());
+        const cleanUrl = new URL(window.location.href);
+        cleanUrl.search = "";
+        cleanUrl.hash = "";
+        window.history.replaceState({}, document.title, cleanUrl.toString());
       } catch (error) {
         console.warn("Nao foi possivel limpar a URL de recuperacao.", error);
       }
@@ -262,10 +267,33 @@
       }
 
       try {
-        const recoveryType = new URLSearchParams(window.location.search).get("type")
-          || new URLSearchParams(window.location.hash.replace(/^#/, "")).get("type");
-        if (recoveryType === "recovery") setPasswordRecoveryMarker(true);
-        if (recoveryType === "recovery" || hasPendingPasswordRecovery()) state.authMode = "reset";
+        const searchParams = new URLSearchParams(window.location.search);
+        const hashParams = new URLSearchParams(window.location.hash.replace(/^#/, ""));
+        const recoveryType = searchParams.get("type") || hashParams.get("type");
+        const callbackErrorCode = searchParams.get("error_code") || hashParams.get("error_code");
+        const callbackErrorDescription = searchParams.get("error_description") || hashParams.get("error_description");
+
+        if (callbackErrorCode) {
+          setPasswordRecoveryMarker(false);
+          state.authMode = "forgot";
+          state.authMessage = formatAuthError(
+            {code: callbackErrorCode, message: callbackErrorDescription},
+            "Este link nao pode ser usado. Solicite uma nova recuperacao de senha."
+          );
+          state.authMessageTone = "error";
+
+          try {
+            const cleanUrl = new URL(window.location.href);
+            cleanUrl.search = "";
+            cleanUrl.hash = "";
+            window.history.replaceState({}, document.title, cleanUrl.toString());
+          } catch (historyError) {
+            console.warn("Nao foi possivel limpar o erro de recuperacao da URL.", historyError);
+          }
+        } else {
+          if (recoveryType === "recovery") setPasswordRecoveryMarker(true);
+          if (recoveryType === "recovery" || hasPendingPasswordRecovery()) state.authMode = "reset";
+        }
 
         state.client = await ensureSupabaseClient();
         const {data: listenerData} = state.client.auth.onAuthStateChange((event, session) => {
@@ -276,9 +304,11 @@
 
           if (event === "SIGNED_OUT") {
             setPasswordRecoveryMarker(false);
-            state.authMode = "login";
-            state.authMessage = "";
-            state.pendingRecoveryEmail = "";
+            if (!callbackErrorCode) {
+              state.authMode = "login";
+              state.authMessage = "";
+              state.pendingRecoveryEmail = "";
+            }
           }
 
           syncSupabaseSession(session);
@@ -880,7 +910,10 @@
         clearAuthInputs({clearEmail: true});
 
         try {
-          window.history.replaceState({}, document.title, getAuthRedirectUrl());
+          const cleanUrl = new URL(window.location.href);
+          cleanUrl.search = "";
+          cleanUrl.hash = "";
+          window.history.replaceState({}, document.title, cleanUrl.toString());
         } catch (historyError) {
           console.warn("Nao foi possivel limpar a URL apos redefinir a senha.", historyError);
         }

@@ -20,6 +20,8 @@ Atue como dev full-stack senior especialista em aplicativos SaaS/PWA B2B, com fo
 - Antes de encerrar um ciclo de trabalho, definir o proximo passo sequencial recomendado.
 - Toda funcao criada, movida, renomeada ou removida deve ser registrada no inventario vivo `docs/FUNCTION_INVENTORY.md` na mesma etapa de trabalho.
 - Splash, service worker, cache ou inicializacao de autenticacao nunca podem bloquear a interface principal indefinidamente; todo fluxo de boot precisa ter timeout/failsafe e manter o app recuperavel apos F5, hard refresh e token expirado.
+- Produtos gravados no estoque fisico devem existir e permanecer sincronizados no estoque virtual; produtos criados apenas no virtual nunca devem criar automaticamente um item fisico.
+- Integracoes de pesquisa de mercado e nutricao devem passar por endpoints de backend, manter chaves fora do navegador e solicitar geolocalizacao somente apos acao explicita do usuario.
 
 ## Direcao de produto
 
