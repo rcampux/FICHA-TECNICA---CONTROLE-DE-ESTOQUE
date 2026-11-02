@@ -10,18 +10,21 @@ for (const path of ['modules/stock/categoryColors.js','modules/stock/categoryCat
 }
 const colors = context.window.FichaTecCategoryColors;
 
-test('chips solidos escolhem texto com contraste AA inclusive para cores personalizadas',()=>{
+test('chips usam texto branco com contraste minimo 5:1 sem modificar a cor escolhida',()=>{
   for(const hex of [...colors.presets.map(p=>p[1]),'#000000','#FFFFFF','#777777','#FFFF00','#12ABCD']) {
-    const values=hex.slice(1).match(/../g).map(c=>{
+    const displayColor=colors.categoryChipColor(hex);
+    const values=displayColor.slice(1).match(/../g).map(c=>{
       const v=parseInt(c,16)/255;
       return v<=.04045?v/12.92:((v+.055)/1.055)**2.4;
     });
     const luminance=.2126*values[0]+.7152*values[1]+.0722*values[2];
-    const ink=colors.categoryTextColor(hex);
-    const contrast=ink==='#FFFFFF'?1.05/(luminance+.05):(luminance+.05)/.05;
-    assert.ok(contrast>=4.5,`${hex}: ${contrast}`);
-    assert.ok(colors.categoryColorStyle(hex).includes(`--category-ink:${ink}`));
+    const contrast=1.05/(luminance+.05);
+    assert.ok(contrast>=5,`${hex}: ${contrast}`);
+    assert.ok(colors.categoryColorStyle(hex).includes('--category-ink:#FFFFFF'));
+    assert.ok(colors.categoryColorStyle(hex).includes(`--category-color:${displayColor}`));
   }
+  assert.equal(colors.categoryChipColor('#B4232F'),'#B4232F');
+  assert.equal(colors.presets.find(([name])=>name==='Amarelo')[1],'#CAAA20');
 });
 
 test('dez presets, validacao hexadecimal e conversao cromatica sem perda',()=>{

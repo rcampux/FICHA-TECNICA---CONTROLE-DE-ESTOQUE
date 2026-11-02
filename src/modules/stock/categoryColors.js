@@ -26,16 +26,32 @@
 
   function categoryColorStyle(color) {
     const hex = normalizeHex(color) || presets[0][1];
-    return `--category-color:${hex};--category-tint:${hex}20;--category-ink:${categoryTextColor(hex)}`;
+    return `--category-color:${categoryChipColor(hex)};--category-tint:${hex}20;--category-ink:#FFFFFF`;
   }
 
-  function categoryTextColor(color) {
+  function categoryLuminance(color) {
     const rgb = (normalizeHex(color) || presets[0][1]).slice(1).match(/../g).map(c => {
       const value = parseInt(c, 16) / 255;
       return value <= 0.04045 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4;
     });
-    const luminance = .2126 * rgb[0] + .7152 * rgb[1] + .0722 * rgb[2];
-    return (luminance + .05) / .05 >= 1.05 / (luminance + .05) ? "#000000" : "#FFFFFF";
+    return .2126 * rgb[0] + .7152 * rgb[1] + .0722 * rgb[2];
+  }
+
+  function categoryChipColor(color) {
+    const hex = normalizeHex(color) || presets[0][1];
+    if (1.05 / (categoryLuminance(hex) + .05) >= 5) return hex;
+    const rgb = hex.slice(1).match(/../g).map(c => parseInt(c, 16));
+    let low = 0, high = 1, result = "#000000";
+    // Darken only the displayed chip; the chosen/saved HEX remains intact.
+    for (let i = 0; i < 16; i++) {
+      const factor = (low + high) / 2;
+      const candidate = `#${rgb.map(channel => Math.floor(channel * factor).toString(16).padStart(2, "0")).join("")}`.toUpperCase();
+      if (1.05 / (categoryLuminance(candidate) + .05) >= 5) {
+        low = factor;
+        result = candidate;
+      } else high = factor;
+    }
+    return result;
   }
 
   function hsvToHex(h, s, v) {
@@ -146,5 +162,5 @@
     return {open, setColor, refreshPreview};
   }
 
-  window.FichaTecCategoryColors = {presets, normalizeHex, defaultCategoryColor, categoryColorStyle, categoryTextColor, hsvToHex, hexToHsv, createCategoryColorPicker};
+  window.FichaTecCategoryColors = {presets, normalizeHex, defaultCategoryColor, categoryColorStyle, categoryLuminance, categoryChipColor, hsvToHex, hexToHsv, createCategoryColorPicker};
 })();

@@ -248,7 +248,8 @@ Este arquivo e um inventario vivo das funcoes utilizadas no projeto. Toda nova f
 | `normalizeHex` | `src/modules/stock/categoryColors.js` | — | Valida HEX curto/longo e retorna #RRGGBB. |
 | `defaultCategoryColor` | `src/modules/stock/categoryColors.js` | — | Atribui cores estaveis por nome com paleta distinta para categorias padrao. |
 | `categoryColorStyle` | `src/modules/stock/categoryColors.js` | — | Gera cor solida e texto contrastante a partir de HEX validado. |
-| `categoryTextColor` | `src/modules/stock/categoryColors.js` | — | Escolhe preto/branco pela luminancia relativa para maior contraste sobre a cor escolhida. |
+| `categoryLuminance` | `src/modules/stock/categoryColors.js` | — | Calcula luminancia relativa para verificar contraste do chip. |
+| `categoryChipColor` | `src/modules/stock/categoryColors.js` | — | Escurece somente o fundo exibido ate atingir contraste 5:1 com texto branco, sem alterar HEX salvo. Substitui a selecao preto/branco de `categoryTextColor` (removida). |
 | `exposeCategoryPanels` | `src/modules/stock/categoryPanels.js` | — | Inicializa controles compartilhados e listeners unicos de fechamento dos filtros. |
 | `getTrigger` | `src/modules/stock/categoryPanels.js` | — | Localiza botao associado por aria-controls. |
 | `closePanel` / `closeAll` | `src/modules/stock/categoryPanels.js` | — | Fecha filtros sem apagar selecao e restaura foco quando solicitado. |
