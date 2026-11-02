@@ -141,6 +141,15 @@
 #page-estoque .stock-list-item:last-child { border-radius: 0 0 16px 16px; }
 #page-estoque .stock-list-item:only-of-type { border-radius: 16px; }
 
+/* The header is the first child; product rows start at child 2. */
+#page-estoque #stock-list.view-list > .stock-list-item:nth-child(even) {
+  background: #fff;
+}
+
+#page-estoque #stock-list.view-list > .stock-list-item:nth-child(odd) {
+  background: #f3f0f0;
+}
+
 .stock-list-product,
 .stock-list-unit,
 .stock-list-total { min-width: 0; }
