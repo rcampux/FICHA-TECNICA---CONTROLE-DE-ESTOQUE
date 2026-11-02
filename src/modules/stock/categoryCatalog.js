@@ -12,6 +12,9 @@
       showToast,
       storageKeys,
     } = deps;
+    const {presets, normalizeHex, defaultCategoryColor, categoryColorStyle, createCategoryColorPicker} = window.FichaTecCategoryColors;
+    const colorPicker = createCategoryColorPicker();
+    let savingCategory = false;
 
     const defaultCategories = [
       "Proteinas",
@@ -29,7 +32,25 @@
     ];
 
     function normalizeCategoryName(name) {
-      return String(name || "").trim().replace(/[<>]/g, "").replace(/\s+/g, " ");
+      return String((typeof name === "object" ? name?.name : name) || "").trim().replace(/[<>]/g, "").replace(/\s+/g, " ");
+    }
+
+    function getCategoryColor(name) {
+      const record = (getCategories() || []).find(item => normalizeCategoryName(item).toLowerCase() === normalizeCategoryName(name).toLowerCase());
+      return normalizeHex(record?.color) || defaultCategoryColor(normalizeCategoryName(name));
+    }
+
+    function getCategoryStyle(name) {
+      return categoryColorStyle(getCategoryColor(name));
+    }
+
+    function normalizeCategoryRecords(items) {
+      const records = new Map();
+      for (const item of items) {
+        const name = normalizeCategoryName(item);
+        if (name) records.set(name.toLowerCase(), {name, color:normalizeHex(item?.color) || getCategoryColor(name)});
+      }
+      return [...records.values()].sort((a,b) => a.name.localeCompare(b.name, "pt-BR"));
     }
 
     function escapeOptionValue(value) {
@@ -54,8 +75,7 @@
     }
 
     function persistCategories(nextCategories) {
-      const normalized = [...new Set(nextCategories.map(normalizeCategoryName).filter(Boolean))]
-        .sort((a, b) => a.localeCompare(b, "pt-BR"));
+      const normalized = normalizeCategoryRecords(nextCategories);
       setCategories(normalized);
       db.save(storageKeys.categories, normalized);
       return normalized;
@@ -88,29 +108,60 @@
       select.value = selected;
     }
 
-    function openCategoryModal(source = "virtual") {
+    function openCategoryModal(source = "virtual", name = "") {
       document.getElementById("category-source").value = source;
-      document.getElementById("category-name").value = "";
-      document.getElementById("modal-category-title").textContent = "Nova Categoria";
+      document.getElementById("category-name").value = normalizeCategoryName(name);
+      document.getElementById("category-name").readOnly = Boolean(name);
+      document.getElementById("modal-category-title").textContent = name ? "Cor da categoria" : "Nova Categoria";
+      colorPicker.open(name ? getCategoryColor(name) : presets[(getCategories() || []).length % presets.length][1]);
       document.getElementById("modal-category").classList.add("open");
       setTimeout(() => document.getElementById("category-name")?.focus(), 80);
     }
 
-    function saveCategory() {
+    async function saveCategory() {
+      if (savingCategory) return;
       const name = normalizeCategoryName(document.getElementById("category-name")?.value);
       if (!name) {
         showToast("Informe o nome da categoria.");
         return;
       }
 
-      const alreadyExists = getCategoryNames().some((category) => category.toLowerCase() === name.toLowerCase());
-      const savedName = ensureCategory(name);
-      renderCategoryOptions("stock-category", savedName);
-      renderCategoryOptions("pstock-category", savedName);
-      renderStock();
-      renderPhysical();
-      closeModal("modal-category");
-      showToast(alreadyExists ? "Categoria ja existia." : "Categoria cadastrada.");
+      const color = normalizeHex(document.getElementById("category-color-hex").value);
+      if (!color) {
+        colorPicker.setColor("");
+        document.getElementById("category-color-hex").focus();
+        return;
+      }
+      const existingName = getCategoryNames().find(category => category.toLowerCase() === name.toLowerCase());
+      const savedName = existingName || name;
+      const next = normalizeCategoryRecords([...(getCategories() || []), {name:savedName, color}]);
+      const button = document.getElementById("category-save");
+      savingCategory = true;
+      button.disabled = true;
+      try {
+        let saved = next;
+        if (db.mode?.() === "supabase") {
+          const organizationId = db.activeOrganizationId?.();
+          if (!organizationId) throw new Error("Workspace indisponível");
+          saved = await db.saveRemote(storageKeys.categories, next, organizationId);
+        } else {
+          db.save(storageKeys.categories, next);
+        }
+        setCategories(saved);
+        db.saveLocal?.(storageKeys.categories, saved);
+        renderCategoryOptions("stock-category", savedName);
+        renderCategoryOptions("pstock-category", savedName);
+        renderStock();
+        renderPhysical();
+        closeModal("modal-category");
+        showToast(existingName ? "Cor da categoria atualizada." : "Categoria cadastrada.");
+      } catch (error) {
+        console.error("Category color save failed", error);
+        showToast("Não foi possível salvar a categoria. Tente novamente.");
+      } finally {
+        savingCategory = false;
+        button.disabled = false;
+      }
     }
 
     function handleCategoryKeydown(event) {
@@ -121,6 +172,9 @@
 
     return {
       ensureCategory,
+      getCategoryColor,
+      getCategoryStyle,
+      normalizeCategoryRecords,
       getCategoryNames,
       getDefaultCategoryNames,
       handleCategoryKeydown,

@@ -738,13 +738,13 @@
   }
 
   function normalizeCategoryName(name) {
-    return String(name || "").trim().replace(/[<>]/g, "").replace(/\s+/g, " ");
+    return String((typeof name === "object" ? name?.name : name) || "").trim().replace(/[<>]/g, "").replace(/\s+/g, " ");
   }
 
   async function listCategories(client, organizationId) {
     const {data, error} = await client
       .from("product_categories")
-      .select("id, name, parent_id")
+      .select("id, name, parent_id, color")
       .eq("organization_id", organizationId)
       .is("deleted_at", null)
       .order("name", {ascending: true});
@@ -757,23 +757,26 @@
       throw error;
     }
 
-    return (data || []).map((row) => normalizeCategoryName(row.name)).filter(Boolean);
+    return (data || []).map(row => ({name:normalizeCategoryName(row.name),color:row.color})).filter(row => row.name);
   }
 
   async function saveCategories(client, organizationId, categories) {
-    const normalized = [...new Set((categories || []).map(normalizeCategoryName).filter(Boolean))]
-      .sort((a, b) => a.localeCompare(b, "pt-BR"));
+    const normalized = [...new Map((categories || []).map(item => {
+      const name = normalizeCategoryName(item);
+      const color = window.FichaTecCategoryColors.normalizeHex(item?.color);
+      return [name.toLowerCase(), {name, ...(color ? {color} : {})}];
+    })).values()].filter(item => item.name).sort((a,b) => a.name.localeCompare(b.name, "pt-BR"));
     const saved = [];
 
-    for (const name of normalized) {
+    for (const category of normalized) {
       const {data, error} = await client
         .from("product_categories")
         .upsert({
           organization_id: organizationId,
-          name,
+          ...category,
           deleted_at: null,
         }, {onConflict: "organization_id,name"})
-        .select("id, name")
+        .select("id, name, color")
         .single();
 
       if (error) {
@@ -802,7 +805,7 @@
       throw error;
     }
 
-    return saved.map((row) => normalizeCategoryName(row.name)).filter(Boolean);
+    return saved.map(row => ({name:normalizeCategoryName(row.name),color:row.color})).filter(row => row.name);
   }
 
   function resolveDomain(key) {

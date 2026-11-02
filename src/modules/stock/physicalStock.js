@@ -9,6 +9,8 @@
       formatQuantity,
       getActiveIngredientFilter,
       getCategoryNames,
+      getCategoryStyle,
+      openCategoryModal,
       getNutrition,
       getPhysicalStock,
       getStock,
@@ -88,6 +90,11 @@
       };
 
       panel.onclick = (event) => {
+        const editButton = event.target.closest("[data-edit-category]");
+        if (editButton && panel.contains(editButton)) {
+          openCategoryModal("physical", editButton.dataset.editCategory);
+          return;
+        }
         const clearButton = event.target.closest("[data-clear-physical-categories]");
         if (!clearButton || !panel.contains(clearButton)) return;
         clearPhysicalCategoryFilters();
@@ -170,10 +177,11 @@
         <div class="category-filter-title">Filtrar por categoria</div>
         <div class="category-filter-options">
           ${categories.map((category) => `
-            <label class="category-filter-option">
+            <div class="category-filter-entry" style="${getCategoryStyle(category)}"><label class="category-filter-option">
               <input type="checkbox" data-physical-category="${escapeAttribute(category)}" ${selectedPhysicalCategories.has(category) ? "checked" : ""}>
-              <span>${category}</span>
+              <span class="category-colored-tag">${escapeAttribute(category)}</span>
             </label>
+            <button class="category-color-edit" type="button" data-edit-category="${escapeAttribute(category)}" aria-label="Editar cor de ${escapeAttribute(category)}" title="Editar cor"><span class="material-symbols-rounded" aria-hidden="true">palette</span></button></div>
           `).join("")}
         </div>
         <button class="category-clear-btn" data-clear-physical-categories type="button">Limpar filtros</button>`;
@@ -400,7 +408,7 @@
         const physicalId = escapeAttribute(item.id);
         return `<div class="pstock-card">
           <div class="pstock-header">
-            <div class="pstock-name">${item.name}${item.category?` <span class="tag" style="font-size:10px">${item.category}</span>`:''}</div>
+            <div class="pstock-name">${item.name}${item.category?` <span class="tag category-colored-tag" style="${getCategoryStyle(item.category)};font-size:10px">${escapeAttribute(item.category)}</span>`:''}</div>
             <div class="item-actions">
               <button class="btn btn-secondary btn-icon" data-physical-action="edit" data-physical-id="${physicalId}" type="button"><span class="material-symbols-rounded">edit</span></button>
               <button class="btn btn-danger btn-icon" data-physical-action="delete" data-physical-id="${physicalId}" type="button"><span class="material-symbols-rounded">delete</span></button>

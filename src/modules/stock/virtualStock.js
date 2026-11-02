@@ -8,6 +8,8 @@
       formatCurrency,
       getActiveIngredientFilter,
       getCategoryNames,
+      getCategoryStyle,
+      openCategoryModal,
       getStock,
       pricePerUnit,
       readNutrition,
@@ -74,6 +76,11 @@
       };
 
       panel.onclick = (event) => {
+        const editButton = event.target.closest("[data-edit-category]");
+        if (editButton && panel.contains(editButton)) {
+          openCategoryModal("virtual", editButton.dataset.editCategory);
+          return;
+        }
         const clearButton = event.target.closest("[data-clear-stock-categories]");
         if (!clearButton || !panel.contains(clearButton)) return;
         clearStockCategoryFilters();
@@ -136,10 +143,11 @@
         <div class="category-filter-title">Filtrar por categoria</div>
         <div class="category-filter-options">
           ${categories.map((category) => `
-            <label class="category-filter-option">
+            <div class="category-filter-entry" style="${getCategoryStyle(category)}"><label class="category-filter-option">
               <input type="checkbox" data-stock-category="${escapeAttribute(category)}" ${selectedStockCategories.has(category) ? "checked" : ""}>
-              <span>${category}</span>
+              <span class="category-colored-tag">${escapeAttribute(category)}</span>
             </label>
+            <button class="category-color-edit" type="button" data-edit-category="${escapeAttribute(category)}" aria-label="Editar cor de ${escapeAttribute(category)}" title="Editar cor"><span class="material-symbols-rounded" aria-hidden="true">palette</span></button></div>
           `).join("")}
         </div>
         <button class="category-clear-btn" data-clear-stock-categories type="button">Limpar filtros</button>`;
@@ -243,7 +251,7 @@
         const stockId=escapeAttribute(s.id);
         const ps=s.unit==='ml'?formatCurrency(ppg*1000)+'/L · '+formatCurrency(ppg*100)+'/100ml':s.unit==='un'?formatCurrency(ppg)+'/un':formatCurrency(ppg*1000)+'/kg · '+formatCurrency(ppg*100)+'/100g';
         const name=escapeAttribute(s.name);
-        const category=s.category?` <span class="tag stock-list-category">${escapeAttribute(s.category)}</span>`:'';
+        const category=s.category?` <span class="tag stock-list-category category-colored-tag" style="${getCategoryStyle(s.category)}">${escapeAttribute(s.category)}</span>`:'';
         if(stockViewMode==='list'){
           return`<div class="stock-list-item item-card">
             <div class="stock-list-product"><div class="item-name">${name}${category}</div><div class="item-meta">${escapeAttribute(s.qty)} ${escapeAttribute(s.unit)}</div></div>

@@ -240,8 +240,20 @@ Este arquivo e um inventario vivo das funcoes utilizadas no projeto. Toda nova f
 | `persistCategories` | `src/modules/stock/categoryCatalog.js` | 56 | Persiste o catalogo local de categorias reutilizaveis. |
 | `ensureCategory` | `src/modules/stock/categoryCatalog.js` | 63 | Garante existencia de uma categoria antes de vincula-la a um produto. |
 | `renderCategoryOptions` | `src/modules/stock/categoryCatalog.js` | 74 | Preenche selects de categoria do estoque virtual e fisico. |
-| `openCategoryModal` | `src/modules/stock/categoryCatalog.js` | 90 | Abre modal de cadastro independente de categoria. |
-| `saveCategory` | `src/modules/stock/categoryCatalog.js` | 98 | Salva categoria avulsa e atualiza filtros/opcoes dos estoques. |
+| `openCategoryModal` | `src/modules/stock/categoryCatalog.js` | — | Abre cadastro ou edicao de cor com seletor sincronizado. |
+| `saveCategory` | `src/modules/stock/categoryCatalog.js` | — | Valida HEX, aguarda gravacao remota e atualiza ambos os estoques; preserva formulario em falha. |
+| `getCategoryColor` / `getCategoryStyle` | `src/modules/stock/categoryCatalog.js` | — | Resolve cor salva ou automatica e gera CSS seguro para etiquetas e filtros. |
+| `normalizeCategoryRecords` | `src/modules/stock/categoryCatalog.js` | — | Converte strings legadas em registros nome/cor, deduplica e preserva cores. |
+| `exposeCategoryColors` | `src/modules/stock/categoryColors.js` | — | Expoe paleta, conversoes e fabrica do seletor. |
+| `normalizeHex` | `src/modules/stock/categoryColors.js` | — | Valida HEX curto/longo e retorna #RRGGBB. |
+| `defaultCategoryColor` | `src/modules/stock/categoryColors.js` | — | Atribui cores estaveis por nome com paleta distinta para categorias padrao. |
+| `categoryColorStyle` | `src/modules/stock/categoryColors.js` | — | Gera cor e fundo suave a partir de HEX validado. |
+| `hsvToHex` / `f` / `hexToHsv` | `src/modules/stock/categoryColors.js` | — | Converte entre estado cromatico e hexadecimal. |
+| `createCategoryColorPicker` / `el` | `src/modules/stock/categoryColors.js` | — | Cria estado isolado e acesso aos controles. |
+| `refreshPreview` / `renderColor` | `src/modules/stock/categoryColors.js` | — | Sincroniza etiqueta, HEX, cursor, luminosidade, presets e acessibilidade. |
+| `setColor` | `src/modules/stock/categoryColors.js` | — | Valida entrada e atualiza estado ou apresenta erro. |
+| `moveWheel` / `handleWheelKey` | `src/modules/stock/categoryColors.js` | — | Opera o circulo por mouse/toque/caneta ou teclado. |
+| `open` | `src/modules/stock/categoryColors.js` | — | Monta dez presets e conecta controles sem acumular listeners. |
 | `handleCategoryKeydown` | `src/modules/stock/categoryCatalog.js` | 115 | Permite salvar categoria pressionando Enter no modal. |
 | `exposeVirtualStockModule` | `src/modules/stock/virtualStock.js` | 1 | (function exposeVirtualStockModule() { |
 | `createVirtualStockModule` | `src/modules/stock/virtualStock.js` | 2 | function createVirtualStockModule(deps) { |
@@ -390,8 +402,8 @@ Este arquivo e um inventario vivo das funcoes utilizadas no projeto. Toda nova f
 | `rollbackRecipeSave` | `src/services/repositories/supabaseDomainRepository.js` | 560 | Restaura uma edicao remota anterior ou inativa uma receita nova quando ingredientes/capa falham depois do upsert. |
 | `saveRecipes` | `src/services/repositories/supabaseDomainRepository.js` | 641 | Salva receitas/ingredientes, sincroniza capas privadas, compensa falhas parciais e limpa capas canonicas de receitas removidas. |
 | `normalizeCategoryName` | `src/services/repositories/supabaseDomainRepository.js` | 357 | Normaliza nomes de categorias antes de salvar/carregar do Supabase. |
-| `listCategories` | `src/services/repositories/supabaseDomainRepository.js` | 361 | Lista categorias remotas por organizacao, com fallback local quando a tabela ainda nao existe. |
-| `saveCategories` | `src/services/repositories/supabaseDomainRepository.js` | 382 | Salva catalogo de categorias no Supabase e remove logicamente categorias ausentes do snapshot. |
+| `listCategories` | `src/services/repositories/supabaseDomainRepository.js` | — | Lista nome/cor por organizacao, incluindo categorias sem cor. |
+| `saveCategories` | `src/services/repositories/supabaseDomainRepository.js` | — | Salva nome/cor validada; strings legadas nao sobrescrevem cor remota. Mantem reconciliacao do snapshot. |
 | `isMissingProductCategoriesTableError` | `src/services/repositories/supabaseDomainRepository.js` | 53 | Detecta ambiente Supabase ainda sem a tabela `product_categories` para nao quebrar a UI. |
 | `resolveDomain` | `src/services/repositories/supabaseDomainRepository.js` | 342 | Mapeia chave local para funcoes remotas de dominio. |
 | `canSyncKey` | `src/services/repositories/supabaseDomainRepository.js` | 348 | Informa se uma chave local tem dominio remoto seguro antes de tentar sync Supabase. |
