@@ -216,3 +216,16 @@ Adicionar no cadastro do produto fisico:
 - O estoque fisico reutiliza a mesma tabela nutricional do produto virtual correspondente.
 - Salvar diretamente no estoque virtual nao cria item no estoque fisico.
 - No modo lista do estoque virtual, a apresentacao usa tres colunas: produto e quantidade, preco unitario em verde e valor total.
+
+### 6.5 Refinamento Do Cadastro E Busca Local
+
+- Pesquisar no Google fica ao lado do nome nos dois modais; Gerar tabela nutricional recebe destaque vermelho e pode refazer a consulta preservando a porcao e referencia de preco.
+- A oferta selecionada registra quantidade, unidade e preco de referencia nos metadados nutricionais, preservados na reabertura pelo repository.
+- Quantidades recalculam o valor pago proporcionalmente; kg/g sao conversiveis. Volume, peso e unidades exigem uma nova base manual ao trocar entre dimensoes, sem inventar densidade ou peso por unidade.
+- Editar manualmente o valor pago estabelece uma nova referencia para os proximos calculos.
+- Editar porcao abre um campo dentro do quadro verde e recalcula apenas sua visualizacao, preservando os nutrientes-base por 100 g/ml.
+- Perto de mim exibe raio de 1 a 50 km. A consulta combina Google Maps (coordenadas de mercados) com Shopping (precos online), filtrando distancias em linha reta no servidor.
+- Ofertas de redes com unidade encontrada dentro do raio sao identificadas como precos online; preco e disponibilidade na unidade precisam ser confirmados. Sem correspondencia, mostram-se os mercados encontrados, sem inventar ofertas locais. A lista depende da cobertura do provedor.
+- Cada busca local pode consumir duas consultas SerpApi. O controle de raio nao dispara chamadas ao arrastar; o usuario confirma em Pesquisar.
+- Cards em grade possuem alturas uniformes; no celular, o botao de pesquisa permanece ao lado do nome.
+- Verificacao automatizada: `node --test tests/stock-discovery.test.mjs`.

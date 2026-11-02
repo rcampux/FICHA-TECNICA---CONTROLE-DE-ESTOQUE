@@ -37,6 +37,65 @@
     let productSearchResults = [];
     let productSearchController = null;
     const nutritionMetadata = {virtual:{}, physical:{}};
+    const editorVersions = {virtual:0, physical:0};
+
+    function calculateProductPrice(reference, quantity, unit) {
+      const units = {kg:{family:"mass",factor:1000},g:{family:"mass",factor:1},ml:{family:"volume",factor:1},un:{family:"count",factor:1}};
+      const from = units[reference?.unit];
+      const to = units[unit];
+      if (!from || !to || from.family !== to.family || !(reference.quantity > 0) || !(quantity > 0)) return null;
+      return Math.round(reference.price * (quantity * to.factor) / (reference.quantity * from.factor) * 100) / 100;
+    }
+
+    function updateProductPrice(type, manualPrice = false) {
+      const stockType = normalizeStockType(type);
+      const config = editorConfig[stockType];
+      const metadata = nutritionMetadata[stockType];
+      const quantity = readNumberInput(config.qtyId);
+      const unit = document.getElementById(config.unitId).value;
+      const hint = document.getElementById(`${config.priceId}-hint`);
+      if (manualPrice && quantity > 0) {
+        const price = readNumberInput(config.priceId);
+        if (price !== null && price >= 0) metadata.priceReference = {quantity,unit,price};
+      }
+      const reference = metadata.priceReference;
+      if (!reference) { if (hint) hint.textContent = ""; return; }
+      const price = calculateProductPrice(reference, quantity, unit);
+      if (price !== null && !manualPrice) writeNumberInput(config.priceId, price);
+      if (price === null && !manualPrice) writeNumberInput(config.priceId, null);
+      if (hint) hint.textContent = price === null
+        ? "Para trocar entre peso, volume e unidades, informe o valor pago para estabelecer a nova base."
+        : `Preço proporcional à base de ${reference.quantity} ${reference.unit} por ${formatCurrency(reference.price)}.`;
+    }
+
+    function editNutritionPortion(type) {
+      const config = editorConfig[normalizeStockType(type)];
+      const panel = document.getElementById(`${config.prefix}-portion-editor`);
+      if (!panel) return;
+      panel.hidden = !panel.hidden;
+      document.getElementById(`${config.prefix}-portion-toggle`)?.setAttribute("aria-expanded", String(!panel.hidden));
+      if (!panel.hidden) {
+        const input = document.getElementById(`${config.prefix}-portion-inline`);
+        input.focus(); input.select();
+      }
+    }
+
+    function setNutritionPortion(type, value) {
+      const config = editorConfig[normalizeStockType(type)];
+      const size = Number(value);
+      if (!Number.isFinite(size) || size <= 0) return;
+      writeNumberInput(`${config.prefix}-portion-size`, size);
+      updateNutritionPreview(type, true);
+    }
+
+    function updateSearchRadius() {
+      const radius = document.getElementById("product-search-radius");
+      document.getElementById("product-search-radius-value").textContent = `${radius.value} km`;
+      productSearchController?.abort();
+      productSearchResults = [];
+      document.getElementById("product-search-results").innerHTML = "";
+      setSearchStatus("Clique em Pesquisar para aplicar o novo raio.");
+    }
 
     function normalizeStockType(type) {
       return type === "physical" ? "physical" : "virtual";
@@ -115,6 +174,8 @@
       nutritionMetadata[stockType] = Object.fromEntries(
         Object.entries(nutrition).filter(([key]) => !numericKeys.has(key)),
       );
+      editorVersions[stockType] += 1;
+      setNutritionMessage(stockType);
       writeNumberInput(`${prefix}-kcal`, nutrition.kcal);
       writeNumberInput(`${prefix}-carb`, nutrition.carb);
       writeNumberInput(`${prefix}-prot`, nutrition.prot);
@@ -125,6 +186,7 @@
       writeNumberInput(`${prefix}-sodium`, nutrition.sodium);
       writeNumberInput(`${prefix}-portion-size`, getNutritionPortionSize(nutrition));
       updateNutritionPreview(type);
+      updateProductPrice(type);
     }
 
     function setNutritionMessage(type, message = "", tone = "neutral") {
@@ -135,16 +197,14 @@
       element.hidden = !message;
     }
 
-    function updateNutritionPreview(type = "virtual") {
+    function updateNutritionPreview(type = "virtual", preserveEditor = false) {
       const config = editorConfig[normalizeStockType(type)];
       const preview = document.getElementById(config.previewId);
       if (!preview) return;
       const nutrition = readNutrition(type);
       const portionSize = getNutritionPortionSize(nutrition);
       const scaled = scaleNutritionForPortion(nutrition, portionSize);
-      preview.innerHTML = `
-        <div class="nutrition-preview-head">Estimativa por porção de ${formatNutritionMetric(portionSize, "g")}</div>
-        <div class="nutrition-preview-grid">
+      const cards = `
           <span><strong>${formatNutritionMetric(scaled.kcal, "kcal")}</strong><small>Calorias</small></span>
           <span><strong>${formatNutritionMetric(scaled.carb, "g")}</strong><small>Carboidratos</small></span>
           <span><strong>${formatNutritionMetric(scaled.prot, "g")}</strong><small>Proteínas</small></span>
@@ -152,8 +212,20 @@
           <span><strong>${formatNutritionMetric(scaled.satFat, "g")}</strong><small>Saturada</small></span>
           <span><strong>${formatNutritionMetric(scaled.transFat, "g")}</strong><small>Trans</small></span>
           <span><strong>${formatNutritionMetric(scaled.fiber, "g")}</strong><small>Fibras</small></span>
-          <span><strong>${formatNutritionMetric(scaled.sodium, "mg")}</strong><small>Sódio</small></span>
-        </div>`;
+          <span><strong>${formatNutritionMetric(scaled.sodium, "mg")}</strong><small>Sódio</small></span>`;
+      const heading = `Estimativa por porção de ${formatNutritionMetric(portionSize, "g/ml")}`;
+      if (preserveEditor && preview.querySelector(".nutrition-preview-grid")) {
+        preview.querySelector(".nutrition-preview-grid").innerHTML = cards;
+        preview.querySelector(".nutrition-preview-title").textContent = heading;
+        return;
+      }
+      preview.innerHTML = `<div class="nutrition-preview-head"><span class="nutrition-preview-title">${heading}</span>
+        <button type="button" class="nutrition-edit-portion" id="${config.prefix}-portion-toggle" aria-expanded="false" aria-controls="${config.prefix}-portion-editor" onclick="editNutritionPortion('${normalizeStockType(type)}')">Editar porção</button></div>
+        <div class="nutrition-inline-portion" id="${config.prefix}-portion-editor" hidden>
+          <label for="${config.prefix}-portion-inline">Porção (g/ml)</label>
+          <input id="${config.prefix}-portion-inline" type="number" min="0.1" step="any" value="${portionSize}" oninput="setNutritionPortion('${normalizeStockType(type)}',this.value)">
+          <small>Os nutrientes abaixo acompanham a porção. A base por 100 g/ml é preservada.</small>
+        </div><div class="nutrition-preview-grid">${cards}</div>`;
     }
 
     function hasNutritionValues(nutrition = {}) {
@@ -172,12 +244,14 @@
       }
 
       setNutritionMessage(stockType, "Buscando uma referência nutricional por 100 g…", "loading");
+      const version = ++editorVersions[stockType];
       try {
         const response = await fetch(`/api/nutrition-search?q=${encodeURIComponent(name)}`, {headers:{accept:"application/json"}});
         const payload = await response.json().catch(() => ({}));
         if (!response.ok || !payload?.nutrition) throw new Error(payload?.error || "Tabela não encontrada.");
 
-        const nutrition = {...payload.nutrition, portionSize: 100};
+        if (version !== editorVersions[stockType] || document.getElementById(config.nameId).value.trim() !== name) return null;
+        const nutrition = {...readNutrition(stockType), ...payload.nutrition, portionSize: getNutritionPortionSize(readNutrition(stockType))};
         writeNutrition(stockType, nutrition);
         setNutritionMessage(
           stockType,
@@ -187,9 +261,10 @@
         if (!options.silent) showToast("Tabela nutricional preenchida.");
         return nutrition;
       } catch (error) {
+        if (version !== editorVersions[stockType] || document.getElementById(config.nameId).value.trim() !== name) return null;
         const fallback = getNutrition?.(name) || {};
         if (fallback !== window.FichaTecNutrition?.defaultNutrition?.default && hasNutritionValues(fallback)) {
-          const nutrition = {...fallback, portionSize: 100, source: "local-estimate"};
+          const nutrition = {...readNutrition(stockType), ...fallback, portionSize: getNutritionPortionSize(readNutrition(stockType)), source: "local-estimate"};
           writeNutrition(stockType, nutrition);
           setNutritionMessage(stockType, "Estimativa inicial preenchida. Compare com o rótulo do produto antes de salvar.", "warning");
           if (!options.silent) showToast("Estimativa nutricional preenchida para revisão.");
@@ -239,6 +314,7 @@
           <span class="product-result-copy">
             <strong>${escapeHtml(result.title)}</strong>
             <small>${escapeHtml(result.market || "Loja online")}${result.delivery ? ` · ${escapeHtml(result.delivery)}` : ""}</small>
+            ${result.distanceKm != null ? `<small>${Number(result.distanceKm).toLocaleString("pt-BR",{maximumFractionDigits:1})} km · ${escapeHtml(result.nearbyStore)} — preço online da rede; confirme na unidade.</small>` : ""}
           </span>
           <span class="product-result-price"><strong>${escapeHtml(formatCurrency(result.price))}</strong><small>Selecionar</small></span>
         </button>`;
@@ -297,6 +373,7 @@
 
       productSearchController?.abort();
       productSearchController = new AbortController();
+      const controller = productSearchController;
       setSearchBusy(true);
       setSearchStatus(activeSearchMode === "near" ? "Localizando mercados próximos…" : "Consultando preços no Google Shopping…", "loading");
 
@@ -306,35 +383,50 @@
           const position = await requestCurrentPosition();
           params.set("lat", String(position.coords.latitude));
           params.set("lng", String(position.coords.longitude));
+          params.set("radius", document.getElementById("product-search-radius").value);
         }
+        if (controller.signal.aborted) return;
         const response = await fetch(`/api/product-search?${params}`, {
           headers:{accept:"application/json"},
-          signal:productSearchController.signal,
+          signal:controller.signal,
         });
         const payload = await response.json().catch(() => ({}));
         if (!response.ok) throw new Error(payload?.error || "Pesquisa indisponível.");
+        if (controller !== productSearchController || controller.signal.aborted) return;
 
         productSearchResults = (payload.results || []).slice(0, 10).sort((left, right) => Number(left.price) - Number(right.price));
         renderProductSearchResults();
         const locationLabel = payload.location ? ` em ${payload.location}` : "";
-        setSearchStatus(`${productSearchResults.length} oferta(s) ordenada(s) do menor para o maior preço${locationLabel}.`, "success");
+        setSearchStatus(payload.notice || `${productSearchResults.length} oferta(s) ordenada(s) do menor para o maior preço${locationLabel}.`, "success");
+        if (payload.nearbyStores?.length) {
+          const nearby = document.createElement("div");
+          nearby.className = "nearby-stores";
+          nearby.innerHTML = `<strong>Mercados no raio de ${Number(payload.radiusKm)} km</strong>${payload.nearbyStores.map(store => `<p>${escapeHtml(store.name)} · ${Number(store.distanceKm).toLocaleString("pt-BR",{maximumFractionDigits:1})} km<br><small>${escapeHtml(store.address)}</small></p>`).join("")}`;
+          document.getElementById("product-search-results").append(nearby);
+        }
       } catch (error) {
         if (error?.name === "AbortError") return;
         productSearchResults = [];
         renderProductSearchResults();
         setSearchStatus(error?.message || "Não foi possível pesquisar agora.", "error");
       } finally {
-        setSearchBusy(false);
+        if (controller === productSearchController) setSearchBusy(false);
       }
     }
 
     function setProductSearchMode(mode, options = {}) {
       activeSearchMode = mode === "near" ? "near" : "general";
+      productSearchController?.abort();
+      document.getElementById("product-search-radius-panel").hidden = activeSearchMode !== "near";
       document.getElementById("product-search-general")?.classList.toggle("active", activeSearchMode === "general");
       document.getElementById("product-search-near")?.classList.toggle("active", activeSearchMode === "near");
       document.getElementById("product-search-general")?.setAttribute("aria-pressed", String(activeSearchMode === "general"));
       document.getElementById("product-search-near")?.setAttribute("aria-pressed", String(activeSearchMode === "near"));
-      if (options.search !== false && document.getElementById("product-search-input")?.value?.trim()) runProductSearch();
+      if (options.search !== false) {
+        productSearchResults = [];
+        document.getElementById("product-search-results").innerHTML = "";
+        setSearchStatus(activeSearchMode === "near" ? "Escolha o raio e clique em Pesquisar. Precisaremos da sua localização." : "Clique em Pesquisar para comparar as ofertas.");
+      }
     }
 
     function inferPackage(title) {
@@ -386,17 +478,13 @@
       document.getElementById(config.categoryId).value = category;
 
       closeProductSearch();
-      setNutritionMessage(type, "Produto selecionado. Preenchendo a tabela nutricional…", "loading");
-      const nutrition = await generateNutrition(type, result.title, {silent:true});
-      const current = readNutrition(type);
       writeNutrition(type, {
-        ...current,
-        ...(nutrition || {}),
-        sourceMarket: result.market,
-        sourcePrice: result.price,
-        sourceLink: result.link,
-        portionSize: getNutritionPortionSize(nutrition || current),
+        portionSize:100,
+        priceReference:{quantity:packageInfo.quantity,unit:packageInfo.unit,price:result.price},
+        sourceMarket:result.market,sourcePrice:result.price,sourceLink:result.link,
       });
+      setNutritionMessage(type, "Produto selecionado. Preenchendo a tabela nutricional…", "loading");
+      await generateNutrition(type, result.title, {silent:true});
       showToast("Produto selecionado e formulário preenchido.");
     }
 
@@ -407,6 +495,11 @@
     }
 
     return {
+      calculateProductPrice,
+      updateProductPrice,
+      editNutritionPortion,
+      setNutritionPortion,
+      updateSearchRadius,
       closeProductSearch,
       formatNutritionMetric,
       generateNutrition,

@@ -154,6 +154,7 @@
     if (!row) return null;
     const rawPayload = getNutritionRawPayload(row);
     return {
+      ...rawPayload,
       kcal: normalizeNumber(row.kcal),
       carb: normalizeNumber(row.carb_g),
       prot: normalizeNumber(row.protein_g),

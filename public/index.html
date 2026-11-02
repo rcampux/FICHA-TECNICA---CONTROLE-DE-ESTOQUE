@@ -533,14 +533,14 @@
   <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-stock-title">
     <div class="modal-handle"></div>
     <div class="modal-title" id="modal-stock-title">Novo Produto</div>
-    <div class="input-group"><label class="input-label">Nome do Produto *</label><input type="text" id="stock-name" placeholder="Ex: Farinha de trigo..."></div>
+    <div class="input-group"><label class="input-label" for="stock-name">Nome do Produto *</label><div class="product-name-search"><input type="text" id="stock-name" placeholder="Ex: Farinha de trigo..."><button class="btn btn-primary" type="button" onclick="openProductSearch('virtual')">Pesquisar no Google</button></div></div>
     <div class="input-row cols-2">
-      <div class="input-group"><label class="input-label">Quantidade *</label><input type="number" id="stock-qty" placeholder="Ex: 1" step="0.001"></div>
+      <div class="input-group"><label class="input-label">Quantidade *</label><input type="number" id="stock-qty" placeholder="Ex: 1" step="0.001" oninput="updateProductPrice('virtual')"></div>
       <div class="input-group"><label class="input-label">Unidade</label>
-        <select id="stock-unit"><option value="kg">KG</option><option value="g">Gramas</option><option value="ml">Mililitros</option><option value="un">Unidade</option></select>
+        <select id="stock-unit" onchange="updateProductPrice('virtual')"><option value="kg">KG</option><option value="g">Gramas</option><option value="ml">Mililitros</option><option value="un">Unidade</option></select>
       </div>
     </div>
-    <div class="input-group"><label class="input-label">Valor Pago (R$) *</label><input type="number" id="stock-price" placeholder="Ex: 10.00" step="0.01"></div>
+    <div class="input-group"><label class="input-label">Valor Pago (R$) *</label><input type="number" id="stock-price" placeholder="Ex: 10.00" step="0.01" oninput="updateProductPrice('virtual',true)"><small class="product-price-hint" id="stock-price-hint" aria-live="polite"></small></div>
     <div class="input-group"><label class="input-label">Categoria</label>
       <div class="category-select-row">
         <select id="stock-category">
@@ -555,10 +555,7 @@
     <div class="nutrition-editor-heading">Tabela nutricional <span>(base por 100 g)</span></div>
     <div class="nutrition-editor-copy">Pesquise um produto ou gere uma estimativa pelo nome. A porção abaixo recalcula a exibição sem alterar a base por 100 g.</div>
     <div class="nutrition-editor-actions">
-      <button class="google-search-btn" onclick="openProductSearch('virtual')" type="button">
-        <span class="material-symbols-rounded">travel_explore</span> Pesquisar no Google
-      </button>
-      <button class="google-search-btn" onclick="generateNutrition('virtual')" type="button">
+      <button class="btn nutrition-generate-btn" onclick="generateNutrition('virtual')" type="button">
         <span class="material-symbols-rounded">nutrition</span> Gerar tabela nutricional
       </button>
     </div>
@@ -619,14 +616,14 @@
   <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-pstock-title">
     <div class="modal-handle"></div>
     <div class="modal-title" id="modal-pstock-title">Novo Produto Físico</div>
-    <div class="input-group"><label class="input-label">Nome do Produto *</label><input type="text" id="pstock-name" placeholder="Ex: Farinha de trigo..."></div>
+    <div class="input-group"><label class="input-label" for="pstock-name">Nome do Produto *</label><div class="product-name-search"><input type="text" id="pstock-name" placeholder="Ex: Farinha de trigo..."><button class="btn btn-primary" type="button" onclick="openProductSearch('physical')">Pesquisar no Google</button></div></div>
     <div class="input-row cols-2">
-      <div class="input-group"><label class="input-label">Quantidade *</label><input type="number" id="pstock-qty" placeholder="Ex: 5" step="0.001"></div>
+      <div class="input-group"><label class="input-label">Quantidade *</label><input type="number" id="pstock-qty" placeholder="Ex: 5" step="0.001" oninput="updateProductPrice('physical')"></div>
       <div class="input-group"><label class="input-label">Unidade</label>
-        <select id="pstock-unit"><option value="kg">KG</option><option value="g">Gramas</option><option value="ml">Mililitros</option><option value="un">Unidade</option></select>
+        <select id="pstock-unit" onchange="updateProductPrice('physical')"><option value="kg">KG</option><option value="g">Gramas</option><option value="ml">Mililitros</option><option value="un">Unidade</option></select>
       </div>
     </div>
-    <div class="input-group"><label class="input-label">Valor Pago (R$) *</label><input type="number" id="pstock-price" placeholder="Ex: 10.00" step="0.01"></div>
+    <div class="input-group"><label class="input-label">Valor Pago (R$) *</label><input type="number" id="pstock-price" placeholder="Ex: 10.00" step="0.01" oninput="updateProductPrice('physical',true)"><small class="product-price-hint" id="pstock-price-hint" aria-live="polite"></small></div>
     <div class="input-group"><label class="input-label">Estoque Desejado (meta) *</label><input type="number" id="pstock-desired" placeholder="Ex: 10 — será seu 100%" step="0.001"></div>
     <div class="input-group"><label class="input-label">Categoria</label>
       <div class="category-select-row">
@@ -646,10 +643,7 @@
     <div class="nutrition-editor-heading">Tabela nutricional <span>(base por 100 g)</span></div>
     <div class="nutrition-editor-copy">O produto físico será salvo também no estoque virtual com a mesma tabela nutricional.</div>
     <div class="nutrition-editor-actions">
-      <button class="google-search-btn" onclick="openProductSearch('physical')" type="button">
-        <span class="material-symbols-rounded">travel_explore</span> Pesquisar no Google
-      </button>
-      <button class="google-search-btn" onclick="generateNutrition('physical')" type="button">
+      <button class="btn nutrition-generate-btn" onclick="generateNutrition('physical')" type="button">
         <span class="material-symbols-rounded">nutrition</span> Gerar tabela nutricional
       </button>
     </div>
@@ -700,6 +694,11 @@
       <div class="product-search-tabs" role="group" aria-label="Tipo de pesquisa">
         <button class="active" id="product-search-general" onclick="setProductSearchMode('general')" type="button" aria-pressed="true">Geral</button>
         <button id="product-search-near" onclick="setProductSearchMode('near')" type="button" aria-pressed="false"><span class="material-symbols-rounded">near_me</span> Perto de mim</button>
+      </div>
+      <div class="product-search-radius-panel" id="product-search-radius-panel" hidden>
+        <label for="product-search-radius">Raio de busca <output id="product-search-radius-value">5 km</output></label>
+        <input type="range" id="product-search-radius" min="1" max="50" step="1" value="5" oninput="updateSearchRadius()">
+        <small>De 1 a 50 km em linha reta. A busca depende da permissão de localização.</small>
       </div>
       <div class="product-search-field">
         <span class="material-symbols-rounded">search</span>

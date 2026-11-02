@@ -262,6 +262,16 @@ Este arquivo e um inventario vivo das funcoes utilizadas no projeto. Toda nova f
 | `deleteStock` | `src/modules/stock/virtualStock.js` | 163 | Exclui produto virtual apos confirmacao visual e sincroniza o snapshot remoto. |
 | `renderStock` | `src/modules/stock/virtualStock.js` | 143 | Renderiza estoque virtual com `data-stock-id` e delegacao de eventos para CRUD estavel apos refresh. |
 | `exposeProductDiscoveryModule` | `src/modules/stock/productDiscovery.js` | 1 | Expoe o fluxo compartilhado de pesquisa de produtos e nutricao para os dois estoques. |
+| `calculateProductPrice` | `src/modules/stock/productDiscovery.js` | — | Calcula preco pela base de embalagem, com conversao kg/g e rejeicao de dimensoes incompativeis. |
+| `updateProductPrice` | `src/modules/stock/productDiscovery.js` | — | Atualiza valor pago e referencia manual; limpa o preco quando nao existe conversao valida. |
+| `editNutritionPortion` | `src/modules/stock/productDiscovery.js` | — | Expande o editor de porcao no quadro verde com foco e estado acessivel. |
+| `setNutritionPortion` | `src/modules/stock/productDiscovery.js` | — | Sincroniza porcao com preview sem recriar o campo em foco. |
+| `updateSearchRadius` | `src/modules/stock/productDiscovery.js` | — | Atualiza o raio exibido e invalida resultados anteriores ate nova pesquisa. |
+| `distanceInKm` | `api/product-search.js` | — | Calcula distancia geodesica em linha reta entre duas coordenadas. |
+| `filterNearbyStores` | `api/product-search.js` | — | Descarta mercados sem GPS e fora do raio selecionado. |
+| `normalizeMarketName` | `api/product-search.js` | — | Normaliza nomes de redes para correlacionar precos online e locais encontrados. |
+| `matchNearbyOffers` | `api/product-search.js` | — | Vincula ofertas online a redes com unidade no raio, preservando a ressalva de disponibilidade. |
+| `findNearbyStores` | `api/product-search.js` | — | Consulta Maps via SerpApi e filtra coordenadas no servidor. |
 | `createProductDiscoveryModule` | `src/modules/stock/productDiscovery.js` | 2 | Cria o modulo de descoberta com dependencias injetadas e estado isolado por estoque. |
 | `normalizeStockType` | `src/modules/stock/productDiscovery.js` | 42 | Normaliza o contexto para estoque virtual ou fisico. |
 | `escapeHtml` | `src/modules/stock/productDiscovery.js` | 46 | Escapa conteudo retornado por provedores antes de renderizar resultados. |
