@@ -895,6 +895,7 @@
       if(recipeSaveInFlight&&!options.force)return;
       if(currentIngredients.length&&!options.force&&!await confirmAction('Deseja limpar todos os dados desta ficha tecnica?','Limpar ficha','Sim, limpar'))return;
       currentIngredients=[];
+      document.getElementById('page-ficha').classList.remove('editor-open');
       currentRecipeId=null;
       yieldDriver='count';
       recipeImageDirty=false;
@@ -1216,7 +1217,7 @@
       if(input)input.value='';
       bindRecipeImageEditor();
       renderRecipeImageEditor();
-      renderIngredients();calcFicha();showPage('ficha','nav-ficha');
+      renderIngredients();calcFicha();showPage('ficha','nav-ficha',true);
     }
     
     function exportRecipePDF(id) {

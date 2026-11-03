@@ -24,12 +24,16 @@ function closeConfirmAction(confirmed){
   if(pendingConfirmResolve)pendingConfirmResolve(Boolean(confirmed));
   pendingConfirmResolve=null;
 }
-function showPage(page,navId){
+function showPage(page,navId,openEditor=false){
   window.FichaTecCategoryPanels.closeAll();
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
   document.getElementById('page-'+page).classList.add('active');
   document.getElementById(navId).classList.add('active');
+  if(page==='ficha' && openEditor){
+    document.getElementById('page-ficha').classList.add('editor-open');
+    document.getElementById('ficha-nome').focus({preventScroll:true});
+  }
   if(page==='estoque')renderStock();
   if(page==='fisico')renderPhysical();
   if(page==='receitas')renderRecipes();

@@ -1,5 +1,7 @@
 # Ordem dos ingredientes e modo de preparo
 
+A aba Ficha começa com o card fotográfico **Crie sua receita**. Criar receita abre o formulário. A edição de uma receita salva abre diretamente os campos.
+
 A quantidade na linha de cada ingrediente pode ser editada na ficha. O custo e os totais acompanham a edição. Salvar receita confirma as quantidades.
 
 Na biblioteca, os ingredientes ficam recolhidos por padrão. O botão **Ver ingredientes** expande a lista completa do próprio card, respeitando a ordem salva; **Ocultar ingredientes** a recolhe. Expandir não abre o modal da receita. O PDF continua disponível ao lado.

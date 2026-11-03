@@ -204,3 +204,19 @@
 #ingredient-edit-name { margin:0 0 8px; overflow-wrap:anywhere; }
 #ingredient-edit-form label { font-size:13px; font-weight:600; }
 .ingredient-editor-actions { display:flex; justify-content:flex-end; gap:8px; margin-top:12px; }
+.recipe-start-card {
+  display:flex; flex-direction:column; align-items:flex-start; justify-content:flex-end;
+  gap:12px; width:100%; min-height:clamp(260px,34vw,400px); padding:clamp(24px,5vw,64px);
+  border:0; border-radius:22px; overflow:hidden; text-align:left; cursor:pointer; color:white;
+  background:linear-gradient(85deg,rgba(37,16,18,.93),rgba(37,16,18,.58) 60%,rgba(37,16,18,.22)),url("../../assets/images/fichatec-kitchen-hero.jpg") center / cover;
+}
+#page-ficha.active:not(.editor-open) { display:block; }
+#page-ficha:not(.editor-open) > :not(.recipe-start-card), #page-ficha.editor-open > .recipe-start-card { display:none !important; }
+.recipe-start-title { font-weight:800; font-size:clamp(30px,4vw,52px); line-height:1.05; letter-spacing:-.04em; }
+.recipe-start-copy { max-width:35ch; font-size:16px; line-height:1.45; }
+.recipe-start-action { display:inline-flex; align-items:center; gap:12px; padding:12px 18px; margin-top:4px; border-radius:24px; background:#fff; color:#931d2b; font-weight:700; }
+.recipe-start-card:focus-visible { outline:3px solid #ae2537; outline-offset:3px; }
+@media (prefers-reduced-motion:no-preference) {
+  .recipe-start-action { animation:recipe-start-in 550ms ease-out; }
+  @keyframes recipe-start-in { from { opacity:.4; transform:translateY(5px); } to { opacity:1; transform:none; } }
+}
