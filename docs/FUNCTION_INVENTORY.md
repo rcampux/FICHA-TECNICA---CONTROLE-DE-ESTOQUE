@@ -1,5 +1,7 @@
 # FichaTec - Inventario de Funcoes
 
+`openIngredientEditor` em `src/modules/recipes/recipeSheet.js` abre o editor de quantidade e unidade pelo lápis da ficha.
+
 | Função | Arquivo | Responsabilidade |
 |---|---|---|
 | `exportRecipePDF` | `src/modules/recipes/recipeSheet.js` | Abre a prévia e reúne rendimento, ingredientes, custos, preparo e nutrição da ficha salva. |

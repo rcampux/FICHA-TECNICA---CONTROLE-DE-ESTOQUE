@@ -142,14 +142,19 @@ test('editar quantidade recalcula a ficha e só modifica a receita registrada ao
   const recipe = h.getRecipes()[0];
   recipe.ingredients[0].rendimento = 80;
   h.module.editRecipe(recipe.id);
-  const field = {dataset:{editAmount:'0'}, valueAsNumber:80, validity:{valid:true}, setCustomValidity(){},
-    closest:selector=>selector === '[data-edit-amount]' ? field : {querySelector:()=>({})}};
-  h.element('ingredients-list').oninput({target:field});
+  const dialog = h.element('ingredient-editor'), field = h.element('ingredient-edit-qty');
+  dialog.showModal = dialog.close = field.focus = field.setCustomValidity = () => {};
+  h.element('ingredients-list').onclick({target:{closest:()=>({dataset:{editIngredient:'0'}})}});
+  assert.equal(field.value, 360);
+  h.element('ingredient-edit-unit').value = 'kg';
+  field.valueAsNumber = 0.08;
+  h.element('ingredient-edit-form').onsubmit({preventDefault(){}});
   assert.equal(recipe.ingredients[0].qtyG, 360);
   assert.equal(h.element('total-custo').textContent, '1.2');
   await h.module.saveRecipe();
   const saved = h.getRecipes()[0].ingredients[0];
   assert.equal(saved.qtyG, 80);
+  assert.equal(saved.unit, 'kg');
   assert.equal(saved.qtyBruta, 100);
 });
 

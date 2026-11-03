@@ -811,9 +811,10 @@
           <button type="button" class="ingredient-grip" data-ingredient-grip aria-label="Reordenar ${escapeAttribute(i.name)}" title="Arrastar para reordenar"><span class="material-symbols-rounded" aria-hidden="true">drag_indicator</span></button>
           <div style="flex:1;min-width:0">
             <div class="ing-name">${escapeHtml(i.name)}</div>
-            <label class="ing-qty ingredient-amount"><input type="number" step="any" min="0" required inputmode="decimal" data-edit-amount="${index}" aria-label="Quantidade de ${escapeAttribute(i.name)}" value="${Number(i.qtyG)}"> ${i.unit==='un'?'un':i.unit==='ml'?'ml':'g'} <span data-gross-amount>${i.unit!=='un'&&i.rendimento<100?' → '+formatBatchNumber(i.qtyBruta)+(i.unit==='ml'?' ml':' g')+' bruto':''}</span></label>
+            <div class="ing-qty">${formatBatchNumber(i.unit==='kg'?i.qtyG/1000:i.qtyG)} ${escapeHtml(i.unit||'g')}${i.unit!=='un'&&i.rendimento<100?' → '+formatProductionIngredientQuantity(i)+' bruto':''}</div>
           </div>
           <div class="ing-cost">${fmtBRL(i.cost)}</div>
+          <button type="button" class="ingredient-edit-button" data-edit-ingredient="${index}" aria-label="Editar quantidade e unidade de ${escapeAttribute(i.name)}"><span class="material-symbols-rounded" aria-hidden="true">edit</span></button>
           <button type="button" class="ing-del" data-remove-ingredient="${escapeAttribute(i.id)}" aria-label="Remover ${escapeAttribute(i.name)}"><span class="material-symbols-rounded" aria-hidden="true">close</span></button>
         </div>`).join('')}
         </div><p class="ingredient-order-status" id="ingredient-order-status" role="status" aria-live="polite"></p>
@@ -919,8 +920,6 @@
       if(recipeSaveInFlight)return;
       setRecipeSaveBusy(true);
       try{
-      const invalidAmount=document.querySelector('#ingredients-list [data-edit-amount]:invalid');
-      if(invalidAmount){invalidAmount.reportValidity();invalidAmount.focus();return;}
       const nome=document.getElementById('ficha-nome').value.trim();
       if(!nome){showToast('Informe o nome da receita.');return;}
       if(!currentIngredients.length){showToast('Adicione pelo menos um ingrediente.');return;}
@@ -1295,26 +1294,46 @@
       observer.observe(glow.parentElement);
     }
     const ingredientList=document.getElementById('ingredients-list');
-    ingredientList.addEventListener('input', event => {
-      const field = event.target.closest('[data-edit-amount]');
-      if (!field || recipeSaveInFlight) return;
-      const item = currentIngredients[Number(field.dataset.editAmount)];
-      const amount = field.valueAsNumber;
-      field.setCustomValidity(amount > 0 && Number.isFinite(amount) ? '' : 'Informe uma quantidade maior que zero.');
-      if (!item || !field.validity.valid) return;
-      const rate = getIngredientUnitPrice(item);
-      item.qtyG = amount;
-      item.qtyBruta = item.unit === 'un' ? amount : amount / ((item.rendimento || 100) / 100);
-      item.savedPricePerG = rate;
-      item.cost = rate * item.qtyBruta;
-      const row = field.closest('[data-ingredient-index]');
-      row.querySelector('.ing-cost').textContent = fmtBRL(item.cost);
-      row.querySelector('[data-gross-amount]').textContent = item.unit !== 'un' && item.rendimento < 100
-        ? ' → ' + formatBatchNumber(item.qtyBruta) + (item.unit === 'ml' ? ' ml' : ' g') + ' bruto' : '';
+    const editor = document.getElementById('ingredient-editor');
+    const editUnit = document.getElementById('ingredient-edit-unit');
+    const editQty = document.getElementById('ingredient-edit-qty');
+    let editingItem;
+    function openIngredientEditor(index) {
+      editingItem = currentIngredients[index];
+      if (!editingItem || recipeSaveInFlight) return;
+      document.getElementById('ingredient-edit-name').textContent = editingItem.name;
+      editUnit.innerHTML = document.getElementById('ing-unit').innerHTML;
+      editUnit.value = editingItem.unit || 'g';
+      editQty.value = editUnit.value === 'kg' ? editingItem.qtyG / 1000 : editingItem.qtyG;
+      editQty.setCustomValidity('');
+      editor.showModal();
+      editQty.focus();
+    }
+    editQty.addEventListener('input', () => editQty.setCustomValidity(''));
+    document.getElementById('ingredient-edit-form').addEventListener('submit', event => {
+      event.preventDefault();
+      const index = currentIngredients.indexOf(editingItem);
+      if (index < 0 || recipeSaveInFlight) return;
+      const amount = editQty.valueAsNumber;
+      if (!(amount > 0 && Number.isFinite(amount))) {
+        editQty.setCustomValidity('Informe uma quantidade maior que zero.');
+        editQty.reportValidity();
+        return;
+      }
+      const rate = getIngredientUnitPrice(editingItem);
+      const unit = editUnit.value;
+      const qtyG = unit === 'kg' ? amount * 1000 : amount;
+      const qtyBruta = unit === 'un' ? qtyG : qtyG / ((editingItem.rendimento || 100) / 100);
+      Object.assign(editingItem, {unit, qtyG, qtyBruta, savedPricePerG:rate, cost:rate * qtyBruta});
+      editor.close();
+      renderIngredients();
       calcFicha();
+      ingredientList.querySelector('[data-edit-ingredient="'+index+'"]')?.focus();
     });
     window.FichaTecIngredientOrder.bindIngredientOrder(ingredientList,{onMove:reorderIngredient,onCancel:renderIngredients,canMove:()=>!recipeSaveInFlight});
     ingredientList.addEventListener('click',event=>{
+      const pencil=event.target.closest('[data-edit-ingredient]');
+      if(pencil){openIngredientEditor(Number(pencil.dataset.editIngredient));return;}
       const button=event.target.closest('[data-remove-ingredient]');
       if(button)removeIngredient(button.dataset.removeIngredient);
     });

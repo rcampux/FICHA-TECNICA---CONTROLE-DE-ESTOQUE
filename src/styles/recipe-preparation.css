@@ -195,5 +195,12 @@
   .recipe-division { grid-template-columns:repeat(3,minmax(0,1fr)); }
   .recipe-division > :first-child { grid-column:auto; }
 }
-.ingredient-amount { display:flex; align-items:center; flex-wrap:wrap; gap:5px; margin-top:4px; }
-.ingredient-amount input[type=number] { width:84px; min-height:40px; padding:6px 9px; font:inherit; font-size:16px; }
+.ingredient-edit-button { display:grid; place-items:center; flex:none; width:40px; height:44px; border:0; background:transparent; color:#86323c; cursor:pointer; }
+.ingredient-edit-button span { font-size:18px; }
+#ingredient-editor { width:min(380px,calc(100% - 32px)); margin:auto; padding:22px; border:0; border-radius:20px; color:#302626; background:white; }
+#ingredient-editor::backdrop { background:rgb(35 23 24 / 48%); }
+#ingredient-edit-form { display:grid; gap:8px; }
+#ingredient-edit-form h2 { margin:0; font-size:20px; }
+#ingredient-edit-name { margin:0 0 8px; overflow-wrap:anywhere; }
+#ingredient-edit-form label { font-size:13px; font-weight:600; }
+.ingredient-editor-actions { display:flex; justify-content:flex-end; gap:8px; margin-top:12px; }
