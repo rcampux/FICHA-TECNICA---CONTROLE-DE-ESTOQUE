@@ -54,7 +54,20 @@
   .ingredient-row.ingredient-drag-card { transform:none; transition:none; }
 }
 
-#page-ficha .recipe-base-card,.production-planner { background:linear-gradient(150deg,#eef6f0,#f7faf5); }
+.production-planner { background:linear-gradient(150deg,#eef6f0,#f7faf5); }
+#page-ficha .recipe-base-card {
+  background:linear-gradient(145deg,#b42332,#851929);
+}
+.recipe-base-card .input-label,
+.recipe-base-card .recipe-yield-header strong,
+.recipe-base-card .recipe-yield-header span,
+.recipe-base-card .recipe-yield-helper { color:#fff; }
+.recipe-base-card .recipe-yield-header { border-top-color:rgba(255,255,255,.28); }
+.recipe-base-card :is(input:not([type="file"]),select),
+.recipe-base-card .recipe-cover-picker { background-color:#fff; color:#33191d; }
+.recipe-base-card input::placeholder { color:#715f62; }
+.recipe-base-card .weight-note { background:#fff3f3; color:#701425; }
+.recipe-base-card .recipe-image-preview { width:100%; min-width:0; background:#fce6e8; }
 .weight-note { border-radius:12px; background:#fff; color:#285340; padding:12px 14px; margin:12px 0; font-size:13px; font-weight:600; line-height:1.65; }
 .production-planner-control { grid-template-columns:repeat(2,minmax(0,1fr)); }
 .production-planner-control input { width:100%; min-width:0; }
