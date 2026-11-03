@@ -1,6 +1,6 @@
 # Ordem dos ingredientes e modo de preparo
 
-A aba Ficha começa com o card fotográfico **Crie sua receita**. Criar receita abre o formulário. A edição de uma receita salva abre diretamente os campos.
+A aba Ficha apresenta **Monte sua ficha técnica** seguido do card **Crie sua receita**. Criar receita abre o formulário. A edição de uma receita salva abre diretamente os campos.
 
 A quantidade na linha de cada ingrediente pode ser editada na ficha. O custo e os totais acompanham a edição. Salvar receita confirma as quantidades.
 

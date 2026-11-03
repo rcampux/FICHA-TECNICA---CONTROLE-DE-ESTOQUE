@@ -211,7 +211,8 @@
   background:linear-gradient(85deg,rgba(37,16,18,.93),rgba(37,16,18,.58) 60%,rgba(37,16,18,.22)),url("../../assets/images/fichatec-kitchen-hero.jpg") center / cover;
 }
 #page-ficha.active:not(.editor-open) { display:block; }
-#page-ficha:not(.editor-open) > :not(.recipe-start-card), #page-ficha.editor-open > .recipe-start-card { display:none !important; }
+#page-ficha:not(.editor-open) > :not(.recipe-start-card,.page-hero), #page-ficha.editor-open > .recipe-start-card { display:none !important; }
+#page-ficha:not(.editor-open) > .page-hero { margin-bottom:16px; }
 .recipe-start-title { font-weight:800; font-size:clamp(30px,4vw,52px); line-height:1.05; letter-spacing:-.04em; }
 .recipe-start-copy { max-width:35ch; font-size:16px; line-height:1.45; }
 .recipe-start-action { display:inline-flex; align-items:center; gap:12px; padding:12px 18px; margin-top:4px; border-radius:24px; background:#fff; color:#931d2b; font-weight:700; }

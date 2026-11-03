@@ -57,7 +57,7 @@ test('salvar e reordenar na mesma sessão reutiliza IDs e não duplica ingredien
   assert.equal(loaded.ingredients.map(i=>i.name).join(','),'B,A');
 });
 
-function recipeHarness(preview = null){
+function recipeHarness(preview = null, stockOverride = null){
   const elements=new Map(),routes=[],messages=[];
   let reorder,fail=false;
   const element=id=>{
@@ -76,8 +76,8 @@ function recipeHarness(preview = null){
     closeModal(){},confirmAction:async()=>true,
     db:{mode:()=>'supabase',activeOrganizationId:()=>'org',saveLocal(){},saveRemote:async(_key,value)=>{if(fail)throw Error('network');return value;}},
     formatCurrency:n=>String(n),formatQuantity:n=>String(n),getNutrition:()=>({}),
-    getPhysicalStock:()=>[],getStock:()=>ingredients.map(i=>({id:i.stockId,name:i.name,price:1,qty:1,unit:'g'})),getRecipes:()=>recipes,
-    pricePerUnit:()=>.01,setPhysicalStock(){},setStock(){},setRecipes:value=>{recipes=value;},showPage:page=>routes.push(page),showToast:m=>messages.push(m),storageKeys:{recipes:'recipes'},
+    getPhysicalStock:()=>[],getStock:()=>stockOverride || ingredients.map(i=>({id:i.stockId,name:i.name,price:.01,qty:1,unit:'g'})),getRecipes:()=>recipes,
+    pricePerUnit:s=>s.price/s.qty,setPhysicalStock(){},setStock(){},setRecipes:value=>{recipes=value;},showPage:page=>routes.push(page),showToast:m=>messages.push(m),storageKeys:{recipes:'recipes'},
   });
   return {module,element,routes,getRecipes:()=>recipes,reorder:(a,b)=>reorder(a,b),setFail:value=>{fail=value;}};
 }
@@ -156,6 +156,29 @@ test('editar quantidade recalcula a ficha e só modifica a receita registrada ao
   assert.equal(saved.qtyG, 80);
   assert.equal(saved.unit, 'kg');
   assert.equal(saved.qtyBruta, 100);
+});
+
+test('banana vendida por unidade mostra a prévia em gramas e conserva a equivalência ao salvar', async () => {
+  const stock = [{id:1,name:'Banana',qty:1,price:1.39,unit:'un'}];
+  const h = recipeHarness(null,stock), recipe = h.getRecipes()[0];
+  Object.assign(recipe.ingredients[0], {name:'Banana',unit:'un',qtyG:2,qtyBruta:2,cost:2.78});
+  h.module.editRecipe(recipe.id);
+  const field = h.element('ingredient-edit-qty'), unit = h.element('ingredient-edit-unit');
+  const equivalent = h.element('ingredient-equivalence'), output = h.element('ingredient-live-cost');
+  h.element('ingredient-editor').showModal = h.element('ingredient-editor').close = field.focus = field.setCustomValidity = () => {};
+  h.element('ingredients-list').onclick({target:{closest:()=>({dataset:{editIngredient:'0'}})}});
+  field.valueAsNumber=160; unit.value='g'; unit.onchange();
+  assert.match(output.textContent,/equivalência/);
+  equivalent.value='80'; equivalent.oninput();
+  assert.match(output.textContent,/2\.78$/);
+  field.valueAsNumber=80; field.oninput(); assert.match(output.textContent,/1\.39$/);
+  field.valueAsNumber=160; h.element('ingredient-edit-form').onsubmit({preventDefault(){}});
+  await h.module.saveRecipe();
+  const saved=h.getRecipes()[0].ingredients[0];
+  assert.equal(saved.cost,2.78);
+  assert.equal(saved.nutrition.recipeEquivalence.value,80);
+  stock[0].price=2;
+  assert.equal(h.module.calcCosts([saved]).totalCost,4);
 });
 
 test('brigadeiro: custo é a soma dos quatro itens em centavos e a perda acompanha a produção',()=>{

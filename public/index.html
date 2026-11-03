@@ -165,11 +165,6 @@
 
 <!-- PAGE: FICHA -->
 <div class="page active" id="page-ficha">
-  <button type="button" class="recipe-start-card" onclick="showPage('ficha','nav-ficha',true)" aria-label="Crie sua receita. Criar receita">
-    <span class="recipe-start-title">Crie sua receita</span>
-    <span class="recipe-start-copy">Reúna os ingredientes, defina o rendimento e calcule o preço de venda.</span>
-    <span class="recipe-start-action">Criar receita <span aria-hidden="true">→</span></span>
-  </button>
   <div class="page-hero">
     <div class="page-hero-content">
       <div class="page-hero-label">Produção inteligente</div>
@@ -181,6 +176,11 @@
       <span><i class="material-symbols-rounded">inventory_2</i> Estoque conectado</span>
     </div>
   </div>
+  <button type="button" class="recipe-start-card" onclick="showPage('ficha','nav-ficha',true)" aria-label="Crie sua receita. Criar receita">
+    <span class="recipe-start-title">Crie sua receita</span>
+    <span class="recipe-start-copy">Reúna os ingredientes, defina o rendimento e calcule o preço de venda.</span>
+    <span class="recipe-start-action">Criar receita <span aria-hidden="true">→</span></span>
+  </button>
   <div class="card recipe-base-card">
     <div class="input-group">
       <label class="input-label">Nome da Receita *</label>
@@ -652,6 +652,11 @@
     <select id="ingredient-edit-unit"></select>
     <label for="ingredient-edit-qty">Quantidade usada</label>
     <input id="ingredient-edit-qty" type="number" required step="any" min="0" inputmode="decimal">
+    <div id="ingredient-equivalence-group" hidden>
+      <label id="ingredient-equivalence-label" for="ingredient-equivalence"></label>
+      <input id="ingredient-equivalence" type="number" min="0" step="any" inputmode="decimal">
+    </div>
+    <output id="ingredient-live-cost" aria-live="polite"></output>
     <div class="ingredient-editor-actions">
       <button class="btn btn-secondary" type="button" onclick="this.closest('dialog').close()">Cancelar</button>
       <button class="btn btn-primary" type="submit">Aplicar</button>

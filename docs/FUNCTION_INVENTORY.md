@@ -1,5 +1,7 @@
 # FichaTec - Inventario de Funcoes
 
+`conversionFor`, `knownEquivalence` e `previewIngredientEdit` relacionam a unidade do estoque e a da receita e atualizam o custo exibido no editor.
+
 `openIngredientEditor` em `src/modules/recipes/recipeSheet.js` abre o editor de quantidade e unidade pelo lápis da ficha.
 
 | Função | Arquivo | Responsabilidade |
