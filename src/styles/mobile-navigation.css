@@ -1,0 +1,51 @@
+/* Central action belongs to the bottom navigation only. */
+@media (max-width: 767px) {
+  .nav #nav-estoque { order:1; }
+  .nav #nav-fisico { order:2; }
+  .nav #nav-ficha { order:3; }
+  .nav #nav-receitas { order:4; }
+  .nav #nav-cozinha { order:5; }
+
+  .nav #nav-ficha {
+    position:relative;
+    isolation:isolate;
+    overflow:visible;
+    background:transparent;
+    color:#fff;
+    font-size:13px;
+    font-weight:800;
+    letter-spacing:0;
+    padding:0;
+  }
+
+  .nav #nav-ficha::before {
+    content:"";
+    position:absolute;
+    z-index:-1;
+    top:-14px;
+    left:50%;
+    width:62px;
+    height:62px;
+    box-sizing:border-box;
+    transform:translateX(-50%);
+    border:4px solid #fff;
+    border-radius:50%;
+    background:linear-gradient(145deg, #d23948, #ad1727);
+    box-shadow:0 6px 18px rgba(157,23,40,.24);
+    transition:box-shadow 160ms ease, background 160ms ease;
+  }
+
+  .nav #nav-ficha .material-symbols-rounded { display:none; }
+  .nav #nav-ficha > span:last-child { transform:translateY(-16px); }
+  .nav #nav-ficha.active::before {
+    background:linear-gradient(145deg, #c32336, #941323);
+    box-shadow:0 6px 18px rgba(157,23,40,.26), inset 0 0 0 2px rgba(255,255,255,.38);
+  }
+  .nav #nav-ficha:focus-visible { outline:none; }
+  .nav #nav-ficha:focus-visible::before { outline:3px solid #74101e; outline-offset:3px; }
+  .nav #nav-ficha:active::before { box-shadow:0 2px 8px rgba(157,23,40,.2); }
+}
+
+@media (max-width:767px) and (prefers-reduced-motion:reduce) {
+  .nav #nav-ficha::before { transition:none; }
+}
