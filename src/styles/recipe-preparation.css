@@ -74,8 +74,10 @@
 .mobile-fold { display:none; }
 @media(max-width:767px){
   #page-ficha > .section-label:has(+ .mobile-fold) { display:none; }
-  .mobile-fold { display:flex; justify-content:space-between; align-items:center; width:100%; min-height:48px; padding:12px 16px; margin:12px 0; border:0; border-radius:14px; background:#eef5ef; color:#264b37; font:inherit; font-weight:700; cursor:pointer; }
-  .mobile-fold::after { content:'+'; }
+  .mobile-fold { display:flex; justify-content:space-between; align-items:center; width:100%; min-height:48px; padding:12px 16px; margin:12px 0; border:0; border-radius:14px; background:#f6d6bf; color:#61351d; font:inherit; font-weight:700; cursor:pointer; }
+  .mobile-fold[aria-controls="recipe-preparation-editor"] { background:#e7dbf3; color:#4d345f; }
+  .mobile-fold::after { content:'+'; display:grid; place-items:center; width:24px; height:24px; border-radius:50%; background:rgba(255,255,255,.65); font-size:18px; }
+  .mobile-fold:focus-visible { outline:2px solid currentColor; outline-offset:2px; }
   .mobile-fold[aria-expanded=true]::after { content:'−'; }
   #page-ficha .mobile-fold[aria-expanded=false] + .card { display:none; }
 }
