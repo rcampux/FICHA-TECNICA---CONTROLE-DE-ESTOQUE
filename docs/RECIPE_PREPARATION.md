@@ -1,5 +1,7 @@
 # Ordem dos ingredientes e modo de preparo
 
+A quantidade na linha de cada ingrediente pode ser editada na ficha. O custo e os totais acompanham a edição. Salvar receita confirma as quantidades.
+
 Na biblioteca, os ingredientes ficam recolhidos por padrão. O botão **Ver ingredientes** expande a lista completa do próprio card, respeitando a ordem salva; **Ocultar ingredientes** a recolhe. Expandir não abre o modal da receita. O PDF continua disponível ao lado.
 
 A lista expandida também mostra a quantidade de cada ingrediente da receita-base, em g, ml ou un, usando a mesma quantidade bruta do guia de produção (inclui perdas quando cadastradas). Não usa o peso da embalagem contido no nome do produto, nem uma simulação temporária de produção.

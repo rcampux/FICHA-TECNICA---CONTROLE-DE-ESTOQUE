@@ -195,3 +195,5 @@
   .recipe-division { grid-template-columns:repeat(3,minmax(0,1fr)); }
   .recipe-division > :first-child { grid-column:auto; }
 }
+.ingredient-amount { display:flex; align-items:center; flex-wrap:wrap; gap:5px; margin-top:4px; }
+.ingredient-amount input[type=number] { width:84px; min-height:40px; padding:6px 9px; font:inherit; font-size:16px; }

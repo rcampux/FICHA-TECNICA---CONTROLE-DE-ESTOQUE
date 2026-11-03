@@ -553,51 +553,6 @@
   </div>
 </div>
 
-<!-- MODAL: CATEGORIA -->
-<div class="modal-overlay" id="modal-category">
-  <div class="modal category-modal" role="dialog" aria-modal="true" aria-labelledby="modal-category-title">
-    <div class="modal-handle"></div>
-    <div class="modal-title" id="modal-category-title">Nova Categoria</div>
-    <div class="info-banner">
-      <span class="material-symbols-rounded">category</span>
-      <span>A categoria fica disponivel para produtos do Estoque Virtual e Fisico.</span>
-    </div>
-    <input type="hidden" id="category-source" value="virtual">
-    <div class="input-group">
-      <label class="input-label">Nome da Categoria *</label>
-      <input type="text" id="category-name" placeholder="Ex: Proteinas, Bebidas, Embalagens..." onkeydown="handleCategoryKeydown(event)">
-    </div>
-    <fieldset class="category-color-picker">
-      <legend>Cor da categoria</legend>
-      <div id="category-color-presets" class="category-color-presets" role="group" aria-label="10 cores prontas"></div>
-      <details class="category-custom-color">
-        <summary>Cor personalizada</summary>
-        <div class="category-custom-layout">
-          <div id="category-color-wheel" class="category-color-wheel" role="slider" tabindex="0" aria-label="Círculo cromático" aria-valuemin="0" aria-valuemax="359" aria-valuenow="0" aria-describedby="category-wheel-help">
-            <span id="category-color-cursor" class="category-color-cursor" aria-hidden="true"></span>
-          </div>
-          <div class="category-color-controls">
-            <label for="category-color-value">Luminosidade <output id="category-color-value-label">100%</output></label>
-            <input id="category-color-value" type="range" min="0" max="100" value="100">
-            <p id="category-wheel-help">Arraste no círculo. No teclado, use ← → para a cor e ↑ ↓ para a intensidade.</p>
-          </div>
-        </div>
-      </details>
-      <div class="category-color-footer">
-        <div class="input-group"><label class="input-label" for="category-color-hex">Hexadecimal</label><input id="category-color-hex" type="text" value="#B4232F" maxlength="7" spellcheck="false" autocomplete="off" aria-describedby="category-color-error"></div>
-        <span id="category-color-preview" class="tag category-colored-tag">Sua categoria</span>
-      </div>
-      <p id="category-color-error" class="category-color-error" role="alert" hidden>Use uma cor válida, como #B4232F.</p>
-    </fieldset>
-    <div style="display:flex;gap:var(--s2);margin-top:var(--s5);flex-wrap:wrap">
-      <button class="btn btn-secondary" style="flex:1;min-width:120px" onclick="closeModal('modal-category')" type="button">Cancelar</button>
-      <button id="category-save" class="btn btn-primary" style="flex:1;min-width:120px" onclick="saveCategory()" type="button">
-        <span class="material-symbols-rounded">save</span> Salvar Categoria
-      </button>
-    </div>
-  </div>
-</div>
-
 <!-- MODAL: ESTOQUE VIRTUAL -->
 <div class="modal-overlay" id="modal-stock">
   <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-stock-title">
@@ -757,6 +712,51 @@
       <button class="btn btn-secondary" style="flex:1" onclick="closeModal('modal-pstock')" type="button">Cancelar</button>
       <button class="btn btn-primary" style="flex:1" onclick="savePhysical()" type="button">
         <span class="material-symbols-rounded">save</span> Salvar
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: CATEGORIA -->
+<div class="modal-overlay" id="modal-category">
+  <div class="modal category-modal" role="dialog" aria-modal="true" aria-labelledby="modal-category-title">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="modal-category-title">Nova Categoria</div>
+    <div class="info-banner">
+      <span class="material-symbols-rounded">category</span>
+      <span>A categoria fica disponivel para produtos do Estoque Virtual e Fisico.</span>
+    </div>
+    <input type="hidden" id="category-source" value="virtual">
+    <div class="input-group">
+      <label class="input-label">Nome da Categoria *</label>
+      <input type="text" id="category-name" placeholder="Ex: Proteinas, Bebidas, Embalagens..." onkeydown="handleCategoryKeydown(event)">
+    </div>
+    <fieldset class="category-color-picker">
+      <legend>Cor da categoria</legend>
+      <div id="category-color-presets" class="category-color-presets" role="group" aria-label="10 cores prontas"></div>
+      <details class="category-custom-color">
+        <summary>Cor personalizada</summary>
+        <div class="category-custom-layout">
+          <div id="category-color-wheel" class="category-color-wheel" role="slider" tabindex="0" aria-label="Círculo cromático" aria-valuemin="0" aria-valuemax="359" aria-valuenow="0" aria-describedby="category-wheel-help">
+            <span id="category-color-cursor" class="category-color-cursor" aria-hidden="true"></span>
+          </div>
+          <div class="category-color-controls">
+            <label for="category-color-value">Luminosidade <output id="category-color-value-label">100%</output></label>
+            <input id="category-color-value" type="range" min="0" max="100" value="100">
+            <p id="category-wheel-help">Arraste no círculo. No teclado, use ← → para a cor e ↑ ↓ para a intensidade.</p>
+          </div>
+        </div>
+      </details>
+      <div class="category-color-footer">
+        <div class="input-group"><label class="input-label" for="category-color-hex">Hexadecimal</label><input id="category-color-hex" type="text" value="#B4232F" maxlength="7" spellcheck="false" autocomplete="off" aria-describedby="category-color-error"></div>
+        <span id="category-color-preview" class="tag category-colored-tag">Sua categoria</span>
+      </div>
+      <p id="category-color-error" class="category-color-error" role="alert" hidden>Use uma cor válida, como #B4232F.</p>
+    </fieldset>
+    <div style="display:flex;gap:var(--s2);margin-top:var(--s5);flex-wrap:wrap">
+      <button class="btn btn-secondary" style="flex:1;min-width:120px" onclick="closeModal('modal-category')" type="button">Cancelar</button>
+      <button id="category-save" class="btn btn-primary" style="flex:1;min-width:120px" onclick="saveCategory()" type="button">
+        <span class="material-symbols-rounded">save</span> Salvar Categoria
       </button>
     </div>
   </div>

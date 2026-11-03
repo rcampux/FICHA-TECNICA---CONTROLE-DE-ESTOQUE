@@ -62,7 +62,7 @@ function recipeHarness(preview = null){
   let reorder,fail=false;
   const element=id=>{
     if(id.startsWith('recipe-image-'))return null;
-    if(!elements.has(id))elements.set(id,{value:'',innerHTML:'',textContent:'',dataset:{},style:{},hidden:false,classList:{add(){},remove(){},toggle(){}},setAttribute(){},getAttribute(){return null;},addEventListener(){},querySelector(){return null;},querySelectorAll(){return [];}});
+    if(!elements.has(id))elements.set(id,{value:'',innerHTML:'',textContent:'',dataset:{},style:{},hidden:false,classList:{add(){},remove(){},toggle(){}},setAttribute(){},getAttribute(){return null;},addEventListener(name,handler){this['on'+name]=handler;},querySelector(){return null;},querySelectorAll(){return [];}});
     return elements.get(id);
   };
   const ingredients=[{id:'uuid-a',stockId:1,name:'Leite',qtyG:360,qtyBruta:360,unit:'g',rendimento:100,cost:3,nutrition:{}},{id:'uuid-b',stockId:2,name:'Manteiga',qtyG:20,qtyBruta:20,unit:'g',rendimento:100,cost:1,nutrition:{}}];
@@ -135,6 +135,22 @@ test('planeja 10 peças de 25 g a partir de 20 de 50 g, sem alterar a base',()=>
   h.element('production-form').onchange();
   assert.equal(money.textContent,'—');
   assert.equal(JSON.stringify(r),snapshot);
+});
+
+test('editar quantidade recalcula a ficha e só modifica a receita registrada ao salvar', async () => {
+  const h = recipeHarness();
+  const recipe = h.getRecipes()[0];
+  recipe.ingredients[0].rendimento = 80;
+  h.module.editRecipe(recipe.id);
+  const field = {dataset:{editAmount:'0'}, valueAsNumber:80, validity:{valid:true}, setCustomValidity(){},
+    closest:selector=>selector === '[data-edit-amount]' ? field : {querySelector:()=>({})}};
+  h.element('ingredients-list').oninput({target:field});
+  assert.equal(recipe.ingredients[0].qtyG, 360);
+  assert.equal(h.element('total-custo').textContent, '1.2');
+  await h.module.saveRecipe();
+  const saved = h.getRecipes()[0].ingredients[0];
+  assert.equal(saved.qtyG, 80);
+  assert.equal(saved.qtyBruta, 100);
 });
 
 test('brigadeiro: custo é a soma dos quatro itens em centavos e a perda acompanha a produção',()=>{
