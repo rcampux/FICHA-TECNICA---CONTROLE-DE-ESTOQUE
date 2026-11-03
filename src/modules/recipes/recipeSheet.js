@@ -433,7 +433,13 @@
           actionElement.querySelector('[data-ingredients-label]').textContent=panel.hidden?'Ver ingredientes':'Ocultar ingredientes';
           return;
         }
-        if(event.target.closest('[data-card-ingredients]'))return;
+        if (action === "preparation") {
+          const panel=card.querySelector('[data-card-preparation]');
+          panel.hidden=!panel.hidden;
+          actionElement.setAttribute('aria-expanded',String(!panel.hidden));
+          return;
+        }
+        if(event.target.closest('[data-card-ingredients], [data-card-preparation]'))return;
         if (action === "edit") {
           editRecipe(id);
           return;
@@ -909,12 +915,16 @@
           <div class="recipe-card-meta" style="font-size:11px;color:var(--n500)"><span class="material-symbols-rounded" style="font-size:13px">nutrition</span> ${nutritionSummary.label}</div>
           ${changed?`<div class="recipe-card-meta" style="font-size:11px;color:var(--n400)"><span class="material-symbols-rounded" style="font-size:13px">sync</span> Preços atualizados</div>`:''}
           <div class="recipe-card-footer">
+            <div class="recipe-section-actions">
             <button class="btn btn-secondary btn-xs recipe-ingredients-toggle" data-recipe-action="ingredients" type="button" aria-expanded="false" aria-controls="recipe-card-ingredients-${cardIndex}"><span data-ingredients-label>Ver ingredientes</span><span class="material-symbols-rounded" aria-hidden="true">expand_more</span></button>
-            <button class="btn btn-outlined btn-xs" data-recipe-action="pdf" style="margin-left:var(--s2)" type="button">
+            <button class="btn btn-secondary btn-xs recipe-ingredients-toggle" data-recipe-action="preparation" type="button" aria-expanded="false" aria-controls="recipe-card-preparation-${cardIndex}">Modo de preparo<span class="material-symbols-rounded" aria-hidden="true">expand_more</span></button>
+            </div>
+            <button class="btn btn-outlined btn-xs" data-recipe-action="pdf" type="button">
               <span class="material-symbols-rounded" style="font-size:14px">picture_as_pdf</span> PDF
             </button>
           </div>
           <ul class="recipe-card-ingredients" id="recipe-card-ingredients-${cardIndex}" data-card-ingredients hidden aria-label="Ingredientes e quantidades da receita-base de ${escapeAttribute(r.nome)}">${r.ingredients.map(i=>`<li><span>${escapeHtml(i.name)}</span><strong class="recipe-card-ingredient-quantity">${formatProductionIngredientQuantity(i)}</strong></li>`).join('')}</ul>
+          <div class="recipe-preparation-content" id="recipe-card-preparation-${cardIndex}" data-card-preparation hidden aria-label="Modo de preparo de ${escapeAttribute(r.nome)}">${r.modoPreparo?escapeHtml(r.modoPreparo):'Modo de preparo ainda não informado. Clique em Editar para adicioná-lo.'}</div>
         </div>`;
       }).join('');
       bindRecipeCardActions(el);
@@ -938,7 +948,10 @@
           Criada em ${new Date(r.createdAt).toLocaleDateString('pt-BR')} · ${r.ingredients.length} ingrediente(s)
         </div>
         <div class="recipe-preparation-view">
+          <div class="recipe-section-actions">
+          <button type="button" class="btn btn-secondary" id="recipe-ingredients-shortcut" aria-controls="recipe-detail-ingredients"><span class="material-symbols-rounded" aria-hidden="true">format_list_bulleted</span>Ver ingredientes</button>
           <button type="button" class="btn btn-secondary" id="recipe-preparation-toggle" aria-controls="recipe-preparation-content" aria-expanded="false"><span class="material-symbols-rounded" aria-hidden="true">menu_book</span>Modo de preparo<span class="material-symbols-rounded preparation-chevron" aria-hidden="true">expand_more</span></button>
+          </div>
           <div id="recipe-preparation-content" class="recipe-preparation-content" hidden>${r.modoPreparo?escapeHtml(r.modoPreparo):'Modo de preparo ainda não informado. Clique em Editar para adicioná-lo.'}</div>
         </div>
         ${changed?`<div style="background:${diff>0?'var(--r100)':'var(--g50)'};border:1px solid ${diff>0?'var(--r400)':'var(--g200)'};border-radius:var(--r-md);padding:var(--s3) var(--s4);margin-bottom:var(--s4);font-size:12px;color:${diff>0?'var(--r400)':'var(--g600)'};display:flex;align-items:flex-start;gap:var(--s2)">
@@ -974,7 +987,7 @@
           </div>
           <p class="production-planner-status" data-production-status>${formatRecipeYield(porcoes,yieldUnit)} correspondem a 100% da receita-base. Apenas as quantidades abaixo serão ajustadas.</p>
         </section>
-        <div style="font-size:11px;font-weight:700;color:var(--n600);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:var(--s2);display:flex;align-items:center;gap:4px">
+        <div id="recipe-detail-ingredients" tabindex="-1" style="font-size:11px;font-weight:700;color:var(--n600);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:var(--s2);display:flex;align-items:center;gap:4px">
           <span class="material-symbols-rounded" style="font-size:14px">format_list_bulleted</span> Ingredientes
         </div>
         ${ingredients.map((i,ingredientIndex)=>{
@@ -999,6 +1012,11 @@
           <strong>Obs:</strong> ${escapeHtml(r.observacoes).replace(/\n/g,'<br>')}</div>`:''}`;
       const productionInput=document.getElementById('recipe-production-quantity');
       productionInput?.addEventListener('input',()=>updateRecipeProductionGuide(r,productionInput.value));
+      document.getElementById('recipe-ingredients-shortcut').addEventListener('click',()=>{
+        const heading=document.getElementById('recipe-detail-ingredients');
+        heading.focus({preventScroll:true});
+        heading.scrollIntoView({behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth',block:'start'});
+      });
       const prepToggle=document.getElementById('recipe-preparation-toggle');
       prepToggle?.addEventListener('click',()=>{
         const panel=document.getElementById('recipe-preparation-content');

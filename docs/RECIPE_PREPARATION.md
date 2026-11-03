@@ -19,4 +19,6 @@ Validação no navegador: arraste real por mouse, teclado, salvamento com navega
 
 Auditoria Supabase: nenhum apontamento de RLS para a alteração. Aviso preexistente de Auth, fora desta entrega: [proteção contra senhas vazadas desabilitada](https://supabase.com/docs/guides/auth/password-security#password-strength-and-leaked-password-protection).
 
-Próximo passo: abrir uma receita existente, ordenar os ingredientes, completar o preparo e salvar.
+Nos cards, Ver ingredientes precede Modo de preparo. Ambos expandem seu conteúdo no próprio card, independentemente; o PDF permanece disponível. Nos detalhes, o atalho Ver ingredientes aparece antes de Modo de preparo e leva às quantidades abaixo do planejamento, preservando o ajuste de produção.
+
+Próximo passo: abrir uma receita existente e consultar ingredientes e preparo pelos novos botões.

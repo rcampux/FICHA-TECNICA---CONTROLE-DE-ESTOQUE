@@ -1,5 +1,10 @@
 .ingredient-order-help { color:#7b6d68; font-size:12px; line-height:1.5; margin:0 0 12px; }
-.recipe-card-footer { display:flex; justify-content:space-between; align-items:center; gap:8px; margin-top:var(--s3); }
+.recipe-card-footer { display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:8px; margin-top:var(--s3); }
+.recipe-section-actions { display:flex; flex-wrap:wrap; align-items:center; gap:8px; min-width:0; }
+.recipe-card-footer > [data-recipe-action="pdf"] { margin-left:auto; }
+.recipe-section-actions .btn { min-height:40px; }
+#recipe-detail-ingredients { scroll-margin-top:16px; }
+.recipe-preparation-content[hidden] { display:none; }
 .recipe-ingredients-toggle { min-height:40px; gap:6px; }
 .recipe-ingredients-toggle .material-symbols-rounded { font-size:18px; }
 .recipe-ingredients-toggle[aria-expanded="true"] .material-symbols-rounded { transform:rotate(180deg); }
