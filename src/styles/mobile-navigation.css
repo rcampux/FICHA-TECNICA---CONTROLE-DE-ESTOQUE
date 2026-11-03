@@ -1,5 +1,8 @@
 /* Central action belongs to the bottom navigation only. */
 @media (max-width: 767px) {
+  body.recipe-keyboard-open .nav, body.recipe-keyboard-open .scan-fab { visibility:hidden; pointer-events:none; }
+  #page-ficha :is(input,select,textarea), #ingredient-editor :is(input,select) { font-size:16px; }
+  #ficha-editor-title:focus { outline:none; }
   .nav #nav-estoque { order:1; }
   .nav #nav-fisico { order:2; }
   .nav #nav-ficha { order:3; }

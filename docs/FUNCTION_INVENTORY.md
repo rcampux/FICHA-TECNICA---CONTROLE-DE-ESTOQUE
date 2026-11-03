@@ -1,5 +1,7 @@
 # FichaTec - Inventario de Funcoes
 
+`syncRecipeKeyboard` em `src/app.js` acompanha a área visível durante a digitação na ficha e restaura a navegação quando o teclado fecha.
+
 `openFichaFromNavigation` em `src/app.js` retorna aos cards da Ficha a cada toque no menu mobile e preserva o rascunho.
 
 `conversionFor`, `knownEquivalence` e `previewIngredientEdit` relacionam a unidade do estoque e a da receita e atualizam o custo exibido no editor.

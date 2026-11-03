@@ -38,7 +38,9 @@ function showPage(page,navId,openEditor=false){
   document.getElementById(navId).classList.add('active');
   if(page==='ficha' && openEditor){
     document.getElementById('page-ficha').classList.add('editor-open');
-    document.getElementById('ficha-nome').focus({preventScroll:true});
+    const touchLayout = window.matchMedia('(max-width: 767px), (pointer: coarse)').matches;
+    document.getElementById(touchLayout ? 'ficha-editor-title' : 'ficha-nome').focus({preventScroll:true});
+    if (touchLayout) window.scrollTo({top:0,behavior:'instant'});
   }
   if(page==='estoque')renderStock();
   if(page==='fisico')renderPhysical();
@@ -46,6 +48,26 @@ function showPage(page,navId,openEditor=false){
   if(page==='cozinha')kitchenBoard.show();
 }
 function closeModal(id){document.getElementById(id)?.classList.remove('open');}
+
+// Hide the fixed controls only while the software keyboard occupies the recipe view.
+let recipeViewportHeight = window.innerHeight;
+let recipeViewportWidth = window.innerWidth;
+function syncRecipeKeyboard(){
+  const viewport = window.visualViewport;
+  const field = document.activeElement;
+  const editing = field?.matches('#page-ficha.active input:not([readonly]):not([type=file]), #page-ficha.active textarea, #ingredient-editor[open] input');
+  if (window.innerWidth !== recipeViewportWidth || !editing) {
+    recipeViewportWidth = window.innerWidth;
+    recipeViewportHeight = window.innerHeight;
+  }
+  const available = viewport?.height ?? window.innerHeight;
+  document.body.classList.toggle('recipe-keyboard-open', Boolean(editing && (viewport?.scale ?? 1) === 1 &&
+    Math.max(recipeViewportHeight,window.innerHeight) - available > 120));
+}
+window.visualViewport?.addEventListener('resize',syncRecipeKeyboard);
+window.addEventListener('resize',syncRecipeKeyboard);
+document.addEventListener('focusin',syncRecipeKeyboard);
+document.addEventListener('focusout',() => requestAnimationFrame(syncRecipeKeyboard));
 
 const modalReturnFocus=new WeakMap();
 let activeModal=null;
