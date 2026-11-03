@@ -57,7 +57,7 @@ test('salvar e reordenar na mesma sessão reutiliza IDs e não duplica ingredien
   assert.equal(loaded.ingredients.map(i=>i.name).join(','),'B,A');
 });
 
-function recipeHarness(){
+function recipeHarness(preview = null){
   const elements=new Map(),routes=[],messages=[];
   let reorder,fail=false;
   const element=id=>{
@@ -67,8 +67,10 @@ function recipeHarness(){
   };
   const ingredients=[{id:'uuid-a',stockId:1,name:'Leite',qtyG:360,qtyBruta:360,unit:'g',rendimento:100,cost:3,nutrition:{}},{id:'uuid-b',stockId:2,name:'Manteiga',qtyG:20,qtyBruta:20,unit:'g',rendimento:100,cost:1,nutrition:{}}];
   let recipes=[{id:'recipe-1',nome:'Brigadeiro',ingredients,modoPreparo:'Texto anterior',observacoes:'Manter refrigerado',origem:'scan',porcoes:20,yieldUnit:'unit',markup:0,createdAt:'2026-11-02',totalCost:4}];
-  const context={window:{FichaTecIngredientOrder:{...order,bindIngredientOrder:(_el,options)=>{reorder=options.onMove;}},requestAnimationFrame(){},setTimeout(){}},document:{getElementById:element,querySelector(){return null;}},console:{error(){},warn(){}}};
+  const baseURI='https://example.test/public/index.html';
+  const context={URL,window:{location:{href:baseURI},open:()=>preview,FichaTecIngredientOrder:{...order,bindIngredientOrder:(_el,options)=>{reorder=options.onMove;}},requestAnimationFrame(){},setTimeout(){}},document:{baseURI,getElementById:element,querySelector(){return null;}},console:{error(){},warn(){}}};
   vm.runInNewContext(read('modules/recipes/productionPlan.js'),context);
+  vm.runInNewContext(read('modules/recipes/recipePrint.js'),context);
   vm.runInNewContext(read('modules/recipes/recipeSheet.js'),context);
   const module=context.window.FichaTecRecipeSheet.createRecipeSheetModule({
     closeModal(){},confirmAction:async()=>true,
@@ -241,4 +243,51 @@ test('ganho de peso, pesagem ausente ou ingredientes sem massa conhecida preserv
     assert.equal(price.venda,20);
   }
   assert.equal(divideBatch(.3,null,.1).count,3);
+});
+
+test('PDF da receita preserva ordem, custos e preparo e recupera uma foto indisponível', () => {
+  let html, printAction, imageError, printed = false;
+  const coverFigure = {}, caption = {hidden:true};
+  const cover = {
+    src:'https://example.test/foto.jpg',
+    getAttribute(){ return this.src; },
+    closest(){ return coverFigure; },
+    addEventListener(_name, callback){ imageError = callback; },
+  };
+  const technicalPhoto = {querySelector:()=>({addEventListener(){}})};
+  const controls = {
+    'print-recipe':{addEventListener(_name, callback){ printAction = callback; }},
+    'cover-photo':cover, 'cover-caption':caption,
+  };
+  const preview = {
+    document:{open(){}, write(value){ html = value; }, close(){}, getElementById:id=>controls[id], querySelector:()=>technicalPhoto},
+    print(){ printed = true; },
+  };
+  const h = recipeHarness(preview), recipe = h.getRecipes()[0];
+  Object.assign(recipe, {nome:'Brigadeiro <teste>', image:cover.src, modoPreparo:'Misture <devagar>.', rendimento:323, markup:100});
+  const snapshot = JSON.stringify(recipe);
+  h.module.exportRecipePDF(recipe.id);
+  assert.equal(preview.opener, null);
+  assert.equal(JSON.stringify(recipe), snapshot);
+  assert.match(html, /Brigadeiro &lt;teste&gt;/);
+  assert.match(html, /Misture &lt;devagar&gt;\./);
+  assert.match(html, /Leite<\/th><td>360 g<\/td>[\s\S]*Manteiga<\/th><td>20 g/);
+  assert.match(html, /Venda do lote<\/dt><dd>8\.74<\/dd>/);
+  assert.match(html, /Perda no preparo<\/dt><dd>57 g \(15%\)/);
+  assert.match(html, /id="cover-photo" src="https:\/\/example\.test\/foto\.jpg"/);
+  assert.match(html, /src="https:\/\/example\.test\/assets\/images\/caderno-confeitaria\.jpg"/);
+  printAction();
+  assert.equal(printed, true);
+  imageError();
+  assert.equal(cover.src, 'https://example.test/assets/images/caderno-confeitaria.jpg');
+  assert.equal(caption.hidden, false);
+  assert.equal(technicalPhoto.hidden, true);
+  imageError();
+  assert.equal(coverFigure.hidden, true);
+
+  recipe.nome = 'Bolo salgado de frango';
+  recipe.image = 'javascript:alert(1)';
+  h.module.exportRecipePDF(recipe.id);
+  assert.match(html, /id="cover-photo" src="https:\/\/example\.test\/assets\/images\/caderno-cozinha\.jpg"/);
+  assert.doesNotMatch(html, /javascript:|<figure class="technical-photo">/);
 });

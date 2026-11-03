@@ -60,6 +60,29 @@
 .production-planner-control .input-group { min-width:0; }
 .production-planner-control :is(input,select) { background:#fffaf1; color:#422d1b; width:100%; min-width:0; }
 .production-planner-control .input-label { color:#523820; }
+.markup-row .markup-caption, .production-planner-control .markup-caption {
+  display:inline-flex; align-items:center; gap:7px; color:#186344; font-weight:700;
+}
+.markup-caption .material-symbols-rounded {
+  display:inline-grid; place-items:center; width:24px; height:24px; border-radius:50%;
+  font-size:17px; background:#dceee2; color:inherit;
+}
+.production-planner-control .markup-caption .material-symbols-rounded { width:18px; height:18px; font-size:14px; }
+@media (prefers-reduced-motion:no-preference) {
+  .markup-caption { animation:markup-appear 520ms cubic-bezier(.2,.75,.25,1) both; }
+  :is(.markup-row,.input-group):focus-within > .markup-caption .material-symbols-rounded {
+    animation:markup-rise 650ms cubic-bezier(.2,.7,.2,1) both;
+  }
+  @media (hover:hover) {
+    .markup-caption:hover .material-symbols-rounded { animation:markup-rise 650ms cubic-bezier(.2,.7,.2,1) both; }
+  }
+  @keyframes markup-appear { from { opacity:.65; transform:translate(-2px,4px); } to { opacity:1; transform:none; } }
+  @keyframes markup-rise {
+    0% { transform:translate(-1px,2px); box-shadow:0 0 0 0 #2f82504d; }
+    45% { transform:translate(1px,-2px); }
+    100% { transform:none; box-shadow:0 0 0 6px #2f825000; }
+  }
+}
 .production-calculate { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-top:14px; }
 .production-calculate .btn { flex:none; }
 #production-status { font-size:12px; line-height:1.5; color:#624426; }

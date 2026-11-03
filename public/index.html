@@ -329,9 +329,9 @@
 
   <div id="ficha-totals" style="display:none">
     <div class="markup-row">
-      <div class="markup-label">
-        <span class="material-symbols-rounded icon-sm">trending_up</span> Markup (%)
-      </div>
+      <label class="markup-label markup-caption" for="markup-pct">
+        <span class="material-symbols-rounded" aria-hidden="true">trending_up</span> Markup (%)
+      </label>
       <input type="number" class="markup-input" id="markup-pct" placeholder="0" oninput="calcFicha()" min="0" style="width:80px">
     </div>
     <div class="total-box">
@@ -662,21 +662,24 @@
 <!-- MODAL: VER RECEITA -->
 <div class="modal-overlay" id="modal-recipe">
   <div class="modal recipe-detail-modal" role="dialog" aria-modal="true" aria-labelledby="modal-recipe-title">
-    <div class="modal-handle"></div>
-    <h2 class="visually-hidden" id="modal-recipe-title">Detalhes da receita</h2>
+    <header class="recipe-detail-bar">
+      <h2 id="modal-recipe-title">Detalhes da receita</h2>
+      <button class="recipe-dialog-close" type="button" aria-label="Fechar detalhes da receita" onclick="closeModal('modal-recipe')">
+        <span class="material-symbols-rounded" aria-hidden="true">close</span>
+      </button>
+    </header>
     <div class="recipe-detail-scroll" id="recipe-detail-content"></div>
-    <div class="recipe-detail-actions">
-      <button class="btn btn-secondary btn-sm" style="flex:1;min-width:70px" onclick="closeModal('modal-recipe')">Fechar</button>
-      <button class="btn btn-danger btn-sm" style="flex:1;min-width:70px" onclick="deleteCurrentRecipe()">
-        <span class="material-symbols-rounded">delete</span> Excluir
+    <footer class="recipe-detail-actions" aria-label="Ações da receita">
+      <button class="recipe-dialog-action recipe-action-delete" type="button" onclick="deleteCurrentRecipe()">
+        <span class="recipe-action-face"><span class="material-symbols-rounded" aria-hidden="true">delete</span>Excluir</span>
       </button>
-      <button class="btn btn-primary btn-sm" style="flex:1;min-width:70px" onclick="loadRecipeToFicha()">
-        <span class="material-symbols-rounded">edit</span> Editar
+      <button class="recipe-dialog-action recipe-action-edit" type="button" onclick="loadRecipeToFicha()">
+        <span class="recipe-action-face"><span class="material-symbols-rounded" aria-hidden="true">edit</span>Editar</span>
       </button>
-      <button class="btn btn-outlined btn-sm" style="flex:1;min-width:70px" onclick="exportRecipePDF(currentRecipeId)">
-        <span class="material-symbols-rounded">picture_as_pdf</span> PDF
+      <button class="recipe-dialog-action recipe-action-pdf" type="button" onclick="exportRecipePDF(currentRecipeId)">
+        <span class="recipe-action-face"><span class="material-symbols-rounded" aria-hidden="true">picture_as_pdf</span>PDF</span>
       </button>
-    </div>
+    </footer>
   </div>
 </div>
 
@@ -1075,6 +1078,7 @@
 <script src="../src/modules/nutrition/nutritionDefaults.js" defer></script>
 <script src="../src/modules/recipes/ingredientOrder.js" defer></script>
 <script src="../src/modules/recipes/productionPlan.js" defer></script>
+<script src="../src/modules/recipes/recipePrint.js" defer></script>
 <script src="../src/modules/recipes/recipeSheet.js" defer></script>
 <script src="../src/modules/scanner/scannerRecipe.js" defer></script>
 <script src="../src/modules/stock/stockPricing.js" defer></script>

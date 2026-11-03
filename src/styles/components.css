@@ -671,8 +671,45 @@ textarea:focus {
   padding: 0;
 }
 
-#modal-recipe .modal-handle {
+.recipe-detail-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   flex: 0 0 auto;
+  padding: 0 12px 0 24px;
+}
+
+.recipe-detail-bar h2 {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+.recipe-dialog-close, .recipe-dialog-action {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 44px;
+  min-width: 44px;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  border-radius: 12px;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.recipe-dialog-close .material-symbols-rounded {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  font-size: 18px;
+  background: var(--md-sys-color-surface-container);
+  color: var(--md-sys-color-on-surface);
 }
 
 .recipe-detail-scroll {
@@ -684,12 +721,39 @@ textarea:focus {
 
 .recipe-detail-actions {
   background: var(--md-sys-color-surface);
-  border-top: 1px solid var(--md-sys-color-outline-variant);
+  border-top: 1px solid color-mix(in srgb, var(--md-sys-color-outline-variant) 45%, transparent);
   display: flex;
   flex: 0 0 auto;
-  flex-wrap: wrap;
-  gap: var(--s2);
-  padding: var(--s3) 24px calc(24px + env(safe-area-inset-bottom));
+  justify-content: flex-end;
+  align-items: center;
+  gap: 4px;
+  padding: 3px clamp(12px, 3vw, 22px) 5px;
+}
+
+.recipe-action-face {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 0 12px;
+  height: 30px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 650;
+  line-height: 1;
+}
+.recipe-action-face .material-symbols-rounded { font-size: 16px; }
+.recipe-action-delete { margin-right: auto; color: var(--md-sys-color-primary); }
+.recipe-action-delete .recipe-action-face { padding-inline: 6px; }
+.recipe-action-edit .recipe-action-face { background: var(--md-sys-color-primary); color: white; }
+.recipe-action-pdf .recipe-action-face { background: var(--md-sys-color-surface-container); color: var(--md-sys-color-on-surface); }
+.recipe-dialog-action:focus-visible, .recipe-dialog-close:focus-visible {
+  outline: 2px solid var(--md-sys-color-primary);
+  outline-offset: -2px;
+}
+@media (hover: hover) {
+  .recipe-action-edit:hover .recipe-action-face { background: #8f1724; }
+  .recipe-action-delete:hover .recipe-action-face, .recipe-action-pdf:hover .recipe-action-face,
+  .recipe-dialog-close:hover .material-symbols-rounded { background: var(--md-sys-color-primary-container); }
 }
 
 .auth-modal {

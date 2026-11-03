@@ -2,6 +2,8 @@
 
 | Função | Arquivo | Responsabilidade |
 |---|---|---|
+| `exportRecipePDF` | `src/modules/recipes/recipeSheet.js` | Abre a prévia e reúne rendimento, ingredientes, custos, preparo e nutrição da ficha salva. |
+| `exposeRecipePrint`, `choosePrintPhoto`, `writeRecipeBook`, auxiliares locais `normalize`, `facts` e `recoverCover` | `src/modules/recipes/recipePrint.js` | Diagramam as páginas de preparo e de custos, imprimem a ficha e substituem uma foto indisponível por uma fotografia editorial identificada. |
 | `exposeRecipeProduction`, `grossQuantity`, `ingredientMass`, `priceRecipe`, `calculatePlan` | `src/modules/recipes/productionPlan.js` | Calculam pesos, perda, quantidades proporcionais e venda do lote a partir dos custos de cada item em centavos. |
 | `getIngredientUnitPrice`, `calcCosts`, `updateRecipeProductionGuide`, `bindProductionPlanner` e seu handler `revealProduction` | `src/modules/recipes/recipeSheet.js` | Resolvem o preço de estoque ou o salvo, atualizam a prévia e exibem o relatório ao calcular. |
 | `bindRecipeFilterActions`, `renderRecipes` | `src/modules/recipes/recipeSheet.js` | Mantêm o filtro de ingredientes recolhido e combinam a seleção com a busca por nome. |

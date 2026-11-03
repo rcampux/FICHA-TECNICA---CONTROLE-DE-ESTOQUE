@@ -32,3 +32,5 @@ O peso antes do preparo e o peso pronto determinam a perda percentual. O custo s
 No Brigadeiro com 445 g de ingredientes e 378,25 g de rendimento estimado, a perda de 15% acrescenta R$ 2,59 à venda de R$ 17,24 com markup de 100%. A venda final é R$ 19,83 e o lucro bruto sobre o custo de R$ 8,62 é R$ 11,21. A mesma regra vale para a ficha, os cards, o planejamento, a receita digitalizada e o PDF.
 
 Para conferir um lote, abra a ficha em Receitas, informe a quantidade e o peso de cada peça e toque em Calcular.
+
+O X no alto dos detalhes fecha a receita mesmo após rolar o conteúdo. O rodapé reúne Excluir, Editar e PDF. No card ou nos detalhes, PDF abre o caderno da receita. O botão **Salvar ou imprimir PDF** abre a impressão do navegador. A primeira parte reúne foto, rendimento, ingredientes na ordem salva e preparo. A ficha técnica reúne venda, lucro, perda e informação nutricional. O caderno usa os valores da receita-base e os preços vigentes de seus ingredientes.

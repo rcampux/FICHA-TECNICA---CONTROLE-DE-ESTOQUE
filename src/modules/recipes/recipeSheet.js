@@ -574,14 +574,14 @@
     }
 
     const nutritionFields = [
-      ["kcal", "Valor Energetico", "kcal", 2500],
+      ["kcal", "Valor energético", "kcal", 2500],
       ["carb", "Carboidratos", "g", 375],
-      ["prot", "Proteinas", "g", 75],
+      ["prot", "Proteínas", "g", 75],
       ["fat", "Gorduras Totais", "g", 83],
       ["satFat", "Gordura Saturada", "g", 20],
       ["transFat", "Gordura Trans", "g", null],
       ["fiber", "Fibra Alimentar", "g", 25],
-      ["sodium", "Sodio", "mg", 2400],
+      ["sodium", "Sódio", "mg", 2400],
     ];
 
     function readNumericValue(value, fallback = 0) {
@@ -1117,7 +1117,7 @@
                 <input id="recipe-production-quantity" type="number" required inputmode="decimal" value="${escapeAttribute(plannedCount)}"></div>
               <div class="input-group"><label class="input-label" id="production-weight-label" for="production-weight">Peso por peça (g)</label>
                 <input id="production-weight" type="number" step="any" min="0" inputmode="decimal" ${basePiece>0?'required value="'+basePiece+'"':'disabled placeholder="Sem pesagem"'}></div>
-              <div class="input-group"><label class="input-label" for="production-markup">Markup (%)</label>
+              <div class="input-group"><label class="input-label markup-caption" for="production-markup"><span class="material-symbols-rounded" aria-hidden="true">trending_up</span>Markup (%)</label>
                 <input id="production-markup" type="number" required min="0" step="any" inputmode="decimal" value="${Number(r.markup)||0}"></div>
             </div>
             ${r.rendimento>0?'':'<p class="production-base-line">Para planejar por peso, informe o peso da receita pronta em Editar.</p>'}
@@ -1218,111 +1218,48 @@
       renderIngredients();calcFicha();showPage('ficha','nav-ficha');
     }
     
-    /* ══ PDF ══ */
-    function exportRecipePDF(id){
-      const r=recipes.find(x=>String(x.id)===String(id));if(!r)return;
-      const {ingredients,totalCost,venda,saleBeforeLoss,lossPremium,grossProfit,lossPercent}=calcCosts(r.ingredients,r.markup,r.rendimento);
-      const porcoes = Number(r.porcoes) || 1;
-      const now=new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
-      const criado=new Date(r.createdAt).toLocaleDateString('pt-BR');
-      const changed=hasPriceChanged(r.ingredients);
-      const nutritionSummary=getRecipeNutritionSummary(r);
-      const recipeImageSource=resolveImageSource(normalizeRecipeImage(r.image),r);
-      const safeRecipeName=escapeHtml(r.nome);
-      const rows=ingredients.map(i=>`<tr>
-        <td style="padding:10px 12px;border-bottom:1px solid #F0F0F0;font-size:13px;font-weight:500">${escapeHtml(i.name)}</td>
-        <td style="padding:10px 12px;border-bottom:1px solid #F0F0F0;font-size:12px;color:#717171;font-family:monospace">${formatProductionIngredientQuantity(i)}</td>
-        <td style="padding:10px 12px;border-bottom:1px solid #F0F0F0;font-size:12px;color:#27AE60;font-family:monospace;font-weight:700;text-align:right">${fmtBRL(i.cost)}</td>
-      </tr>`).join('');
-      const nutritionRows=nutritionFields.map(([key,label,unit,dailyValue])=>{
-        const value=readNumericValue(nutritionSummary.nutrition[key],0);
-        const pct=dailyValue?`${Math.round((value/dailyValue)*100)}%`:'-';
-        return`<tr>
-          <td>${label}</td>
-          <td>${formatNutritionValue(value,unit)}</td>
-          <td>${pct}</td>
-        </tr>`;
-      }).join('');
-      const html=`<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><title>Ficha — ${safeRecipeName}</title>
-      <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-      <style>
-        *{box-sizing:border-box;margin:0;padding:0}
-        body{font-family:'Roboto',sans-serif;color:#3E3E3E;padding:36px 40px;max-width:720px;margin:0 auto;line-height:1.5;-webkit-font-smoothing:antialiased}
-        @media print{body{padding:20px 24px}.no-print{display:none!important}@page{margin:15mm 18mm;size:A4}}
-        .header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:24px;padding-bottom:16px;border-bottom:3px solid #27AE60}
-        .logo{display:flex;align-items:center;gap:12px}
-        .logo-box{width:40px;height:40px;background:#27AE60;border-radius:10px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:20px;font-weight:800}
-        .summary{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:20px 0 24px}
-        .si{background:#F7F7F7;border-radius:12px;padding:12px 14px}
-        .si.hl{background:#27AE60}
-        .sl{font-size:10px;color:#717171;text-transform:uppercase;letter-spacing:0.6px;margin-bottom:4px;font-weight:700}
-        .sl.hl{color:rgba(255,255,255,0.8)}
-        .sv{font-size:16px;font-weight:800;font-family:'Roboto',sans-serif;color:#3E3E3E}
-        .sv.hl{color:#fff}
-        table{width:100%;border-collapse:collapse;border:1px solid #E0E0E0;border-radius:12px;overflow:hidden}
-        thead tr{background:#F7F7F7}
-        th{padding:10px 12px;text-align:left;font-size:11px;font-weight:700;color:#717171;text-transform:uppercase;letter-spacing:0.5px}
-        th:last-child{text-align:right}
-        .section-title{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:0.7px;color:#717171;margin:22px 0 8px}
-        .nutrition-report{margin-bottom:18px;page-break-inside:avoid}
-        .nutrition-report td{padding:9px 12px;border-bottom:1px solid #F0F0F0;font-size:12px;color:#3E3E3E}
-        .nutrition-report td:nth-child(2){font-family:'Roboto',sans-serif;font-weight:700;text-align:right}
-        .nutrition-report td:last-child{font-family:'Roboto',sans-serif;text-align:right;color:#4A7745}
-        .nutrition-report tr:last-child td{border-bottom:none}
-        tfoot td{padding:10px 12px;font-size:13px;font-weight:800;border-top:2px solid #E0E0E0;background:#F7F7F7}
-        tfoot td:last-child{text-align:right;color:#27AE60;font-family:'Roboto',sans-serif}
-        footer{margin-top:28px;padding-top:12px;border-top:1px solid #E0E0E0;display:flex;justify-content:space-between;font-size:11px;color:#BDBDBD}
-        .btn-print{display:inline-flex;align-items:center;gap:8px;background:#27AE60;color:#fff;border:none;padding:12px 24px;border-radius:999px;font-size:14px;font-family:'Roboto',sans-serif;font-weight:700;cursor:pointer;margin-bottom:20px}
-        .prep{background:#F7F7F7;border-radius:10px;padding:14px 16px;margin-top:20px;font-size:13px;line-height:1.8;color:#3E3E3E}
-        .prep-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.6px;color:#717171;margin-bottom:8px}
-        .recipe-cover{width:100%;height:220px;object-fit:cover;border-radius:16px;margin:0 0 20px;display:block;page-break-inside:avoid}
-      </style></head><body>
-      <div class="no-print" style="display:flex;gap:12px;align-items:center;margin-bottom:20px">
-        <button class="btn-print" onclick="window.print()">Salvar / Imprimir PDF</button>
-        <span style="font-size:12px;color:#BDBDBD">Selecione "Salvar como PDF"</span>
-      </div>
-      <div class="header">
-        <div class="logo">
-          <div class="logo-box">FT</div>
-          <div><div style="font-size:18px;font-weight:800;color:#1A1A1A">FichaTec</div><div style="font-size:11px;color:#BDBDBD">Fichas Técnicas & Estoque</div></div>
-        </div>
-        <div style="text-align:right;font-size:11px;color:#BDBDBD;line-height:2"><div>Gerado em ${now}</div><div>Criado em ${criado}</div>${r.origem==='scan'?'<div style="color:#27AE60;font-weight:700">📷 Digitalizada</div>':''}</div>
-      </div>
-      ${recipeImageSource?`<img class="recipe-cover" src="${escapeAttribute(recipeImageSource)}" alt="Imagem da receita ${escapeAttribute(r.nome)}" width="640" height="360">`:''}
-      <div style="margin-bottom:20px">
-        <div style="font-size:22px;font-weight:800;margin-bottom:4px;letter-spacing:-0.5px">${safeRecipeName}</div>
-        <div style="font-size:12px;color:#717171;font-weight:500">${r.ingredients.length} ingrediente(s) · ${formatRecipeYield(porcoes,r.yieldUnit)}${r.rendimento ? ' de ' + formatBatchNumber(r.targetPieceWeightG || r.rendimento / porcoes) + ' g · ' + formatBatchNumber(r.rendimento) + ' g no lote' : ''}${r.markup?' · Markup: '+r.markup+'%':''}</div>
-      </div>
-      ${changed?`<div style="background:#E8F8EE;border:1px solid #8FD9AB;border-radius:8px;padding:10px 14px;margin-bottom:16px;font-size:12px;color:#1E8449;font-weight:600">Precos atualizados. Custo original: ${fmtBRL(r.totalCost)}.</div>`:''}
-      <div class="summary">
-        <div class="si"><div class="sl">Custo Total</div><div class="sv">${fmtBRL(totalCost)}</div></div>
-        <div class="si hl"><div class="sl hl">Venda do lote</div><div class="sv hl">${fmtBRL(venda)}</div></div>
-        <div class="si"><div class="sl">${normalizeRecipeYieldUnit(r.yieldUnit)==='unit'?'Venda por unidade':'Venda por porção'}</div><div class="sv">${fmtBRL(venda/porcoes)}</div></div>
-        <div class="si"><div class="sl">Markup</div><div class="sv">${r.markup||0}%</div></div>
-        <div class="si"><div class="sl">Venda com markup</div><div class="sv">${fmtBRL(saleBeforeLoss)}</div></div>
-        <div class="si"><div class="sl">Adicional pela perda${lossPercent > 0 ? ' (' + formatBatchNumber(lossPercent) + '%)' : ''}</div><div class="sv">${lossPercent === null ? '—' : fmtBRL(lossPremium)}</div></div>
-        <div class="si"><div class="sl">Lucro bruto do lote</div><div class="sv">${fmtBRL(grossProfit)}</div></div>
-        <div class="si"><div class="sl">Lucro bruto por peça</div><div class="sv">${fmtBRL(grossProfit/porcoes)}</div></div>
-      </div>
-      <div class="section-title">Nutricao por ${nutritionSummary.portion}g</div>
-      <table class="nutrition-report">
-        <thead><tr><th>Nutriente</th><th style="text-align:right">Valor</th><th style="text-align:right">%VD</th></tr></thead>
-        <tbody>${nutritionRows}</tbody>
-      </table>
-      <div class="section-title">Ingredientes</div>
-      <table><thead><tr><th>Ingrediente</th><th>Quantidade</th><th style="text-align:right">Custo</th></tr></thead>
-      <tbody>${rows}</tbody>
-      <tfoot><tr><td colspan="2">Total</td><td>${fmtBRL(totalCost)}</td></tr></tfoot></table>
-      ${r.modoPreparo?`<div class="prep"><div class="prep-title">Modo de Preparo</div>${escapeHtml(r.modoPreparo).replace(/\n/g,'<br>')}</div>`:''}
-      ${r.observacoes?`<div style="margin-top:12px;background:#FFF4E5;border-radius:10px;padding:12px 16px;font-size:12px;color:#FF8C00"><strong>Observações:</strong> ${escapeHtml(r.observacoes).replace(/\n/g,'<br>')}</div>`:''}
-      <footer><span>FichaTec</span><span>${safeRecipeName} · ${now}</span></footer>
-      </body></html>`;
-      const win=window.open('','_blank','width=800,height=920');
-      if(!win){showToast('Permita pop-ups para gerar o PDF.');return;}
-      win.document.write(html);win.document.close();
+    function exportRecipePDF(id) {
+      const recipe = recipes.find(item => String(item.id) === String(id));
+      if (!recipe) return;
+      const preview = window.open('', '_blank');
+      if (!preview) { showToast('Permita a abertura da prévia para salvar o PDF.'); return; }
+      preview.opener = null;
+      const price = calcCosts(recipe.ingredients, recipe.markup, recipe.rendimento);
+      const count = Number(recipe.porcoes) || 1;
+      const unit = normalizeRecipeYieldUnit(recipe.yieldUnit) === 'unit' ? 'unidade' : 'porção';
+      const pieceWeight = window.FichaTecProduction.divideBatch(recipe.rendimento, count, recipe.targetPieceWeightG).pieceWeight;
+      const nutrition = getRecipeNutritionSummary(recipe);
+      const created = new Date(recipe.createdAt);
+      const origin = [Number.isFinite(created.getTime()) ? 'Criada em ' + created.toLocaleDateString('pt-BR') : '', recipe.origem === 'scan' ? 'Receita digitalizada' : ''].filter(Boolean).join(' · ');
+      const grams = value => formatBatchNumber(value) + ' g';
+      const loss = price.loss === null ? 'Sem pesagem completa'
+        : grams(Math.abs(price.loss)) + ' (' + formatBatchNumber(Math.abs(price.lossPercent)) + '%)';
+      window.FichaTecRecipePrint.writeRecipeBook(preview, {
+        name: recipe.nome, preparation: recipe.modoPreparo, notes: recipe.observacoes,
+        cover: resolveImageSource(normalizeRecipeImage(recipe.image), recipe),
+        origin, issuedOn: new Date().toLocaleString('pt-BR', {dateStyle:'short', timeStyle:'short'}),
+        yieldFacts: [
+          ['Rendimento', formatRecipeYield(count, recipe.yieldUnit)],
+          ['Peso pronto', recipe.rendimento > 0 ? grams(recipe.rendimento) : 'A pesar'],
+          ...(pieceWeight > 0 ? [['Peso por ' + unit, grams(pieceWeight)]] : []),
+        ],
+        ingredients: price.ingredients.map(item => ({name:item.name, quantity:formatProductionIngredientQuantity(item), cost:fmtBRL(item.cost)})),
+        cost: fmtBRL(price.totalCost),
+        saleFacts: [['Venda do lote', fmtBRL(price.venda)], ['Venda por ' + unit, fmtBRL(price.venda / count)]],
+        costFacts: [
+          ['Custo dos ingredientes', fmtBRL(price.totalCost)], ['Markup', formatBatchNumber(Number(recipe.markup) || 0) + '%', 'markup'],
+          ['Venda com markup', fmtBRL(price.saleBeforeLoss)], ['Adicional pela perda', price.lossPercent === null ? '—' : fmtBRL(price.lossPremium)],
+          ['Lucro bruto do lote', fmtBRL(price.grossProfit)], ['Lucro bruto por ' + unit, fmtBRL(price.grossProfit / count)],
+          ['Peso dos ingredientes', price.rawWeight === null ? 'A pesar' : grams(price.rawWeight)], [price.loss < 0 ? 'Ganho no preparo' : 'Perda no preparo', loss],
+        ],
+        priceNote: hasPriceChanged(recipe.ingredients) ? 'Preços atualizados pelo estoque. Custo registrado na ficha: ' + fmtBRL(recipe.totalCost) + '.' : '',
+        nutritionWeight: formatBatchNumber(nutrition.portion),
+        nutrients: nutritionFields.map(([key, label, measure, daily]) => {
+          const value = readNumericValue(nutrition.nutrition[key]);
+          return {label, value:formatNutritionValue(value, measure), daily:daily ? Math.round(value / daily * 100) + '%' : '—'};
+        }),
+      }, escapeHtml, document.baseURI);
     }
-    
-    
 
     function runWithState(fn, options = {}) {
       const shouldCommit = options.commit !== false;

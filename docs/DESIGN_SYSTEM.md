@@ -93,7 +93,9 @@ Os tokens canônicos ficam em `src/styles/tokens.css`. Aliases legados existem a
 
 ## Imagens
 
-- A imagem editorial aparece somente no acesso, onde cria contexto e identidade.
+- O acesso usa a fotografia de cozinha. No caderno de receitas em PDF, a foto cadastrada ocupa a capa. Quando ela está ausente ou indisponível, uma fotografia editorial de confeitaria ou cozinha ocupa o espaço e recebe legenda.
+- Nos detalhes da receita, o X permanece no topo. As ações Excluir, Editar e PDF têm aparência compacta e área de toque de pelo menos 44 px.
+- O rótulo Markup usa verde escuro e uma seta de alta. A entrada e o foco têm um movimento breve, que respeita a preferência por movimento reduzido. A versão impressa usa o mesmo verde.
 - Fotos de receita são adicionadas pelo usuário e sempre possuem alternativa visual.
 - O asset editorial local é `assets/images/fichatec-kitchen-hero.jpg`.
 - Créditos e origem ficam em `docs/ASSET_LICENSES.md`.
