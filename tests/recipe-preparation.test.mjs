@@ -61,7 +61,7 @@ function recipeHarness(){
   let reorder,fail=false;
   const element=id=>{
     if(id.startsWith('recipe-image-'))return null;
-    if(!elements.has(id))elements.set(id,{value:'',innerHTML:'',textContent:'',dataset:{},style:{},hidden:false,classList:{add(){},remove(){},toggle(){}},setAttribute(){},getAttribute(){return null;},addEventListener(){},querySelectorAll(){return [];}});
+    if(!elements.has(id))elements.set(id,{value:'',innerHTML:'',textContent:'',dataset:{},style:{},hidden:false,classList:{add(){},remove(){},toggle(){}},setAttribute(){},getAttribute(){return null;},addEventListener(){},querySelector(){return null;},querySelectorAll(){return [];}});
     return elements.get(id);
   };
   const ingredients=[{id:'uuid-a',stockId:1,name:'Leite',qtyG:360,qtyBruta:360,unit:'g',rendimento:100,cost:3,nutrition:{}},{id:'uuid-b',stockId:2,name:'Manteiga',qtyG:20,qtyBruta:20,unit:'g',rendimento:100,cost:1,nutrition:{}}];
@@ -98,4 +98,23 @@ test('salvar edição mantém preparo, ordem e metadados e abre receitas apenas 
   assert.ok(detail.includes('id="recipe-preparation-toggle"'));
   assert.ok(detail.includes('&lt;lentamente&gt;'));assert.ok(!detail.includes('<lentamente>'));
   h.module.editRecipe('recipe-1');assert.equal(h.element('ficha-modo-preparo').value,saved.modoPreparo);
+});
+
+
+test('planeja 10 peças de 25 g a partir de 20 de 50 g, sem alterar a base',()=>{
+  const h=recipeHarness(),r=h.getRecipes()[0];
+  r.rendimento=1000;r.porcoes=20;r.markup=100;
+  r.ingredients[0].qtyG=r.ingredients[0].qtyBruta=900;
+  r.ingredients[1].qtyG=r.ingredients[1].qtyBruta=200;
+  const snapshot=JSON.stringify(r);
+  const rows=r.ingredients.map((_,i)=>({dataset:{productionIngredient:String(i)},closest:()=>null}));
+  const status={},detail=h.element('recipe-detail-content');
+  detail.querySelectorAll=()=>rows; detail.querySelector=()=>status;
+  h.element('recipe-production-quantity').value='10';
+  h.element('production-weight').value='25';
+  h.module.viewRecipe(r.id);
+  assert.match(detail.innerHTML,/9,09%/);
+  assert.deepEqual(rows.map(x=>x.textContent),['225','50']);
+  assert.match(status.textContent,/Venda por unidade: 0.55 · Venda do lote: 5.5/);
+  assert.equal(JSON.stringify(r),snapshot);
 });

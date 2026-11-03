@@ -176,7 +176,7 @@
       <span><i class="material-symbols-rounded">inventory_2</i> Estoque conectado</span>
     </div>
   </div>
-  <div class="card">
+  <div class="card recipe-base-card">
     <div class="input-group">
       <label class="input-label">Nome da Receita *</label>
       <input type="text" id="ficha-nome" placeholder="Ex: Bolo de banana, Esfiha de carne...">
@@ -219,19 +219,24 @@
         </select>
       </div>
       <div class="input-group" style="margin-bottom:0">
-        <label class="input-label" for="ficha-porcoes">Quantidade-base *</label>
+        <label class="input-label" for="ficha-porcoes">Quantas porções ou unidades rende? *</label>
         <input type="number" id="ficha-porcoes" value="1" min="0.01" step="0.01" inputmode="decimal" placeholder="Ex: 100" oninput="calcFicha()">
       </div>
       <div class="input-group" style="margin-bottom:0">
-        <label class="input-label" for="ficha-rendimento">Peso final estimado (g)</label>
+        <label class="input-label" for="weight-raw">Ingredientes somados (g)</label>
+        <input id="weight-raw" readonly placeholder="Calculado ao adicionar">
+      </div>
+      <div class="input-group" style="margin-bottom:0">
+        <label class="input-label" for="ficha-rendimento">Peso da receita pronta (g)</label>
         <input type="number" id="ficha-rendimento" min="0" step="0.01" inputmode="decimal" placeholder="Ex: 800" oninput="calcFicha()">
       </div>
     </div>
-    <p class="recipe-yield-helper">Exemplo: uma receita-base de 100 unidades poderá ser recalculada para produzir 20, sem alterar o cadastro original.</p>
+    <p class="recipe-yield-helper">Pese a receita depois de pronta, sem o recipiente.</p><div class="weight-note" id="weight-summary">Adicione ingredientes para calcular o peso.</div>
   </div>
 
   <div class="section-label">Adicionar Ingrediente</div>
-  <div class="card ingredient-builder-card">
+  <button class="mobile-fold" type="button" aria-expanded="false" aria-controls="ingredient-builder" onclick="this.setAttribute('aria-expanded',this.getAttribute('aria-expanded')!=='true')">Adicionar ingredientes</button>
+  <div id="ingredient-builder" class="card ingredient-builder-card">
     <div class="builder-step">
       <div class="builder-step-header">
         <span class="builder-step-number">1</span>
@@ -307,6 +312,7 @@
   <div id="recipe-composition">
   <div id="ingredients-list"></div>
 
+  <button class="mobile-fold" type="button" aria-expanded="false" aria-controls="recipe-preparation-editor" onclick="this.setAttribute('aria-expanded',this.getAttribute('aria-expanded')!=='true')">Modo de preparo</button>
   <section class="card recipe-preparation-editor" id="recipe-preparation-editor" aria-labelledby="preparation-label">
     <label class="card-title" id="preparation-label" for="ficha-modo-preparo"><span class="material-symbols-rounded" aria-hidden="true">menu_book</span>Modo de preparo</label>
     <p>Descreva as etapas na ordem em que devem ser executadas.</p>

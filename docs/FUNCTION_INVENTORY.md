@@ -482,3 +482,5 @@ Este arquivo e um inventario vivo das funcoes utilizadas no projeto. Toda nova f
 | `private.handle_new_user` | `supabase/migrations/20260523090000_harden_internal_functions.sql` | 70 | Trigger interno para criar profile e organizacao inicial. |
 | `private.bootstrap_organization_owner` | `supabase/migrations/20260523090000_harden_internal_functions.sql` | 108 | Trigger interno para vincular owner ao workspace inicial. |
 | `private.recipe_image_organization_id` | `supabase/migrations/20261017163649_recipe_images_storage.sql` | 50 | Extrai com seguranca o workspace do caminho da capa para as politicas privadas do Storage. |
+
+Calculadora de produção: `weightSummary` informa peso bruto, peso pronto, perda ou ganho e peso por peça. `calcFicha` atualiza o resumo; `viewRecipe` e `updateRecipeProductionGuide` dimensionam ingredientes e preços pela massa final solicitada ou, em fichas sem peso pronto, pela quantidade.

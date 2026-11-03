@@ -53,3 +53,20 @@
 @media (prefers-reduced-motion:reduce) {
   .ingredient-row.ingredient-drag-card { transform:none; transition:none; }
 }
+
+#page-ficha .recipe-base-card,.production-planner { background:linear-gradient(150deg,#eef6f0,#f7faf5); }
+.weight-note { border-radius:12px; background:#fff; color:#285340; padding:12px 14px; margin:12px 0; font-size:13px; font-weight:600; line-height:1.65; }
+.production-planner-control { grid-template-columns:repeat(2,minmax(0,1fr)); }
+.production-planner-control input { width:100%; min-width:0; }
+.mobile-fold { display:none; }
+@media(max-width:767px){
+  #page-ficha > .section-label:has(+ .mobile-fold) { display:none; }
+  .mobile-fold { display:flex; justify-content:space-between; align-items:center; width:100%; min-height:48px; padding:12px 16px; margin:12px 0; border:0; border-radius:14px; background:#eef5ef; color:#264b37; font:inherit; font-weight:700; cursor:pointer; }
+  .mobile-fold::after { content:'+'; }
+  .mobile-fold[aria-expanded=true]::after { content:'−'; }
+  #page-ficha .mobile-fold[aria-expanded=false] + .card { display:none; }
+}
+
+@media(min-width:768px) {
+  .recipe-base-card .recipe-yield-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+}
