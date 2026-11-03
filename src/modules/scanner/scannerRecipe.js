@@ -347,7 +347,7 @@
         };
       });
 
-      const {totalCost, venda} = calcCosts(mapped, 0);
+      const {totalCost, venda} = calcCosts(mapped, 0, rendimento);
       const modoPreparo = document.getElementById("scan-modo-preparo").value.trim() || null;
       const observacoes = document.getElementById("scan-obs").value.trim() || null;
       const index = recipes.findIndex((item) => item.nome.toLowerCase() === nome.toLowerCase());
@@ -360,6 +360,7 @@
         ingredients: mapped,
         rendimento,
         porcoes,
+        targetPieceWeightG: null,
         yieldUnit: existingRecipe?.yieldUnit === "unit" ? "unit" : "portion",
         markup: 0,
         totalCost,

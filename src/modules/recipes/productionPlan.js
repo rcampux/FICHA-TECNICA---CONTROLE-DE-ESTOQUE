@@ -4,12 +4,29 @@
   }
 
   function ingredientMass(ingredients) {
-    if (!ingredients.length || ingredients.some(item => item.unit === 'ml' || item.unit === 'un')) return null;
+    if (!ingredients.length || ingredients.some(item => item.unit && !['g', 'kg'].includes(item.unit))) return null;
     // The recipe editor stores both g and kg in grams.
     return ingredients.reduce((grams, item) => grams + grossQuantity(item), 0);
   }
 
-  function priceRecipe(ingredients, markup, getUnitPrice, factor = 1) {
+  function divideBatch(readyWeight, count, targetPieceWeight) {
+    const ready = Number(readyWeight);
+    const target = Number(targetPieceWeight);
+    if (!(ready > 0)) return {count: Number(count) || null, pieceWeight: null};
+    if (target > 0) {
+      // Remove binary noise such as 0.3 / 0.1 = 2.9999999999999996.
+      return {count: Number((ready / target).toPrecision(15)), pieceWeight: target};
+    }
+    return {count: Number(count) || null, pieceWeight: count > 0 ? ready / count : null};
+  }
+
+  function weightChange(rawWeight, readyWeight) {
+    if (!(rawWeight > 0 && readyWeight > 0)) return {loss: null, lossPercent: null};
+    const loss = rawWeight - readyWeight;
+    return {loss, lossPercent: 100 * loss / rawWeight};
+  }
+
+  function priceRecipe(ingredients, markup, getUnitPrice, factor = 1, readyWeight = 0) {
     let costCents = 0;
     const lines = ingredients.map(item => {
       const price = getUnitPrice(item);
@@ -19,8 +36,18 @@
       costCents += cents;
       return {...item, currentPricePerG: price, cost: cents / 100};
     });
-    const saleCents = Math.round(costCents * (100 + Number(markup)) / 100);
-    return {ingredients: lines, totalCost: costCents / 100, venda: saleCents / 100};
+    const rawBase = ingredientMass(ingredients);
+    const change = weightChange(rawBase, readyWeight);
+    const markedUpCents = Math.round(costCents * (100 + Number(markup)) / 100);
+    const lossRate = Math.max(0, change.lossPercent ?? 0);
+    const extraCents = Math.round(Number((markedUpCents * lossRate / 100).toPrecision(15)));
+    const saleCents = markedUpCents + extraCents;
+    return {
+      ingredients: lines, totalCost: costCents / 100, venda: saleCents / 100,
+      saleBeforeLoss: markedUpCents / 100, lossPremium: extraCents / 100, grossProfit: (saleCents - costCents) / 100,
+      rawWeight: rawBase === null ? null : rawBase * factor,
+      loss: change.loss === null ? null : change.loss * factor, lossPercent: change.lossPercent,
+    };
   }
 
   function calculatePlan(recipe, draft, getUnitPrice) {
@@ -39,14 +66,10 @@
     if (hasWeight && (!Number.isFinite(weight) || weight <= 0)) return {error: 'Informe o peso de cada peça em gramas.'};
     const finalWeight = hasWeight ? count * weight : null;
     const factor = hasWeight ? finalWeight / baseWeight : count / (Number(recipe.porcoes) || 1);
-    const priced = priceRecipe(recipe.ingredients, markup, getUnitPrice, factor);
+    const priced = priceRecipe(recipe.ingredients, markup, getUnitPrice, factor, baseWeight);
     if (!Number.isFinite(priced.venda) || !Number.isFinite(factor)) return {error: 'Revise os valores deste lote.'};
-    const rawBase = ingredientMass(recipe.ingredients);
-    const rawWeight = rawBase === null ? null : rawBase * factor;
-    const loss = rawWeight !== null && finalWeight !== null ? rawWeight - finalWeight : null;
-    const lossPercent = loss !== null && rawWeight > 0 ? 100 * loss / rawWeight : null;
-    return {...priced, count, unit, markup, factor, rawWeight, finalWeight, loss, lossPercent, salePerPiece: priced.venda / count};
+    return {...priced, count, unit, markup, factor, finalWeight, salePerPiece: priced.venda / count};
   }
 
-  window.FichaTecProduction = {grossQuantity, ingredientMass, priceRecipe, calculatePlan};
+  window.FichaTecProduction = {grossQuantity, ingredientMass, divideBatch, weightChange, priceRecipe, calculatePlan};
 })();

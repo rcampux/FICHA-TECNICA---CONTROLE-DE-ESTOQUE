@@ -36,6 +36,7 @@
     let recipeImageOperationId = 0;
     let recipeImageProcessing = false;
     let recipeSaveInFlight = false;
+    let yieldDriver = 'count';
 
     const recipeImageElementIds = {
       input: "recipe-image-input",
@@ -480,8 +481,8 @@
     }
 
     function formatRecipeYield(quantity, yieldUnit) {
-      const normalizedQuantity = Math.max(readNumericValue(quantity, 1), 0.01);
-      const formattedQuantity = new Intl.NumberFormat("pt-BR", {maximumFractionDigits:2}).format(normalizedQuantity);
+      const normalizedQuantity = Math.max(readNumericValue(quantity, 1), 0);
+      const formattedQuantity = formatBatchNumber(normalizedQuantity);
       const normalizedUnit = normalizeRecipeYieldUnit(yieldUnit);
       const label = normalizedUnit === "unit"
         ? (normalizedQuantity === 1 ? "unidade" : "unidades")
@@ -514,7 +515,9 @@
       const grams = value => value == null ? 'Não informado' : number(value) + ' g';
       const amounts = valid ? {
         cost: fmtBRL(plan.totalCost), sale: fmtBRL(plan.venda), piece: fmtBRL(plan.salePerPiece),
-        markup: number(plan.markup) + '%', raw: grams(plan.rawWeight), ready: grams(plan.finalWeight)
+        markup: number(plan.markup) + '%', raw: grams(plan.rawWeight), ready: grams(plan.finalWeight),
+        beforeLoss: fmtBRL(plan.saleBeforeLoss), premium: plan.lossPercent === null ? 'Sem pesagem completa' : fmtBRL(plan.lossPremium),
+        profit: fmtBRL(plan.grossProfit), pieceProfit: fmtBRL(plan.grossProfit / plan.count)
       } : {};
       const content = byId('recipe-detail-content');
       content.querySelectorAll('[data-plan-value]').forEach(node => {
@@ -692,8 +695,8 @@
       return savedRate;
     }
 
-    function calcCosts(ingredients, markup = 0) {
-      return window.FichaTecProduction.priceRecipe(ingredients, markup, getIngredientUnitPrice);
+    function calcCosts(ingredients, markup = 0, readyWeight = 0) {
+      return window.FichaTecProduction.priceRecipe(ingredients, markup, getIngredientUnitPrice, 1, readyWeight);
     }
     /* ══ FICHA ══ */
     function setIngSource(src){
@@ -816,36 +819,67 @@
         </div><p class="ingredient-order-status" id="ingredient-order-status" role="status" aria-live="polite"></p>
       </div>`;
     }
-    function weightSummary(items,weight,count,unit){
-      if(!items.length)return 'Adicione ingredientes para calcular o peso.';
-      const grams = window.FichaTecProduction.ingredientMass(items);
-      const mixed = grams === null;
-      const parts=[mixed?'Peso dos ingredientes indisponível: ml e unidades não têm conversão automática para gramas.':'Ingredientes: '+fmtQty(grams,' g')];
-      if(weight>0){
-        parts.push('Receita pronta: '+fmtQty(weight,' g'));
-        const diff=grams-weight;
-        if(!mixed&&grams>0)parts.push((diff<0?'Ganho':'Perda')+': '+fmtQty(Math.abs(diff),' g')+' ('+(Math.abs(diff)/grams*100).toLocaleString('pt-BR',{maximumFractionDigits:2})+'%)');
-        if(count>0)parts.push(fmtQty(weight/count,' g')+' por '+(unit==='unit'?'unidade':'porção'));
-      }
-      return parts.join(' · ');
+    function formatBatchNumber(value) {
+      return Number(value).toLocaleString('pt-BR', {maximumFractionDigits: 4});
     }
-    function calcFicha(){
-      const raw=document.getElementById('weight-raw');
+
+    function syncBaseYield(changedField) {
+      const ready = getRecipeYieldG();
+      const unit = document.getElementById('ficha-yield-unit').value;
+      const countInput = document.getElementById('ficha-porcoes');
+      const pieceInput = document.getElementById('ficha-peso-unidade');
+      if (changedField === 'count' || changedField === 'piece') yieldDriver = changedField;
+      const byPiece = yieldDriver === 'piece';
+      const target = byPiece ? Number(pieceInput.value) : null;
+      const division = window.FichaTecProduction.divideBatch(ready, byPiece ? null : countInput.value, target);
+      const noun = unit === 'unit' ? 'unidade' : 'porção';
+      const plural = unit === 'unit' ? 'unidades' : 'porções';
+      pieceInput.disabled = !(ready > 0);
+      pieceInput.placeholder = ready > 0 ? 'Ex.: 25' : 'Após a pesagem';
+      countInput.step = unit === 'unit' && !byPiece ? '1' : 'any';
+      countInput.min = unit === 'unit' && !byPiece ? '1' : '0.0001';
+      if (byPiece) countInput.value = division.count > 0 ? Number(division.count.toFixed(4)) : '';
+      else pieceInput.value = division.pieceWeight > 0 ? Number(division.pieceWeight.toFixed(4)) : '';
+      document.getElementById('batch-count-label').textContent = 'Quantidade de ' + plural;
+      document.getElementById('batch-piece-label').textContent = 'Peso por ' + noun + ' (g)';
+      document.getElementById('batch-divide-help').textContent = 'Com o peso pronto, informe a quantidade ou o peso de cada ' + noun + '. A ficha calcula o outro campo.';
+      return {...division, ready, unit, noun, target};
+    }
+
+    function weightSummary(rawWeight, batch) {
+      if (!(batch.ready > 0)) return 'A perda será calculada quando você informar o peso pronto.';
+      const {loss, lossPercent} = window.FichaTecProduction.weightChange(rawWeight, batch.ready);
+      const parts = [];
+      if (loss === null) parts.push('Para calcular a perda, é preciso conhecer o peso de todos os ingredientes em gramas.');
+      else if (loss === 0) parts.push('Sem perda de peso no preparo (0%).');
+      else parts.push((loss > 0 ? 'Perda' : 'Ganho') + ' no preparo de ' + formatBatchNumber(Math.abs(loss)) + ' g (' + Math.abs(lossPercent).toLocaleString('pt-BR', {maximumFractionDigits: 2}) + '%).');
+      if (batch.target > 0 && batch.count > 0 && !Number.isInteger(batch.count)) {
+        const whole = Math.floor(batch.count);
+        const rest = batch.ready - whole * batch.target;
+        parts.push('Cabem ' + whole + (batch.unit === 'unit' ? (whole === 1 ? ' unidade inteira' : ' unidades inteiras') : (whole === 1 ? ' porção inteira' : ' porções inteiras')) + ' de ' + formatBatchNumber(batch.target) + ' g e sobram ' + formatBatchNumber(rest) + ' g.');
+      }
+      return parts.join(' ');
+    }
+
+    function calcFicha(changedField){
+      const batch = syncBaseYield(changedField);
       const rawWeight = window.FichaTecProduction.ingredientMass(currentIngredients);
-      if (raw) raw.value = rawWeight === null ? '' : rawWeight.toLocaleString('pt-BR', {maximumFractionDigits: 2});
-      const summary=document.getElementById('weight-summary');
-      if(summary)summary.textContent=weightSummary(currentIngredients,Number(document.getElementById('ficha-rendimento').value),Number(document.getElementById('ficha-porcoes').value),document.getElementById('ficha-yield-unit').value);
+      document.getElementById('weight-raw').value = rawWeight === null ? '' : formatBatchNumber(rawWeight);
+      document.getElementById('weight-summary').textContent = weightSummary(rawWeight, batch);
       if(!currentIngredients.length){document.getElementById('ficha-totals').style.display='none';return;}
       const markup=parseFloat(document.getElementById('markup-pct').value)||0;
-      const {totalCost,venda}=calcCosts(currentIngredients,markup);
-      const rend=parseFloat(document.getElementById('ficha-rendimento').value)||0;
-      const porcoes = Number(document.getElementById('ficha-porcoes').value);
-      const yieldUnit=normalizeRecipeYieldUnit(document.getElementById('ficha-yield-unit')?.value);
+      const {totalCost,venda,saleBeforeLoss,lossPremium,grossProfit,lossPercent}=calcCosts(currentIngredients,markup,batch.ready);
       document.getElementById('total-custo').textContent=fmtBRL(totalCost);
       document.getElementById('total-venda').textContent=fmtBRL(venda);
-      document.getElementById('total-porcao').textContent = porcoes > 0 ? fmtBRL(venda / porcoes) : '—';
-      document.getElementById('total-unit-label').textContent = yieldUnit === 'unit' ? 'Venda por unidade' : 'Venda por porção';
-      document.getElementById('total-kg').textContent=rend>0?fmtBRL(totalCost/(rend/1000)):'—';
+      document.getElementById('total-porcao').textContent = batch.count > 0 ? fmtBRL(venda / batch.count) : '—';
+      document.getElementById('total-unit-label').textContent = 'Venda por ' + batch.noun;
+      document.getElementById('total-kg').textContent=batch.ready>0?fmtBRL(totalCost/(batch.ready/1000)):'—';
+      document.getElementById('total-antes-perda').textContent = fmtBRL(saleBeforeLoss);
+      document.getElementById('sale-loss-rate').textContent = lossPercent === null ? '' : '(' + formatBatchNumber(Math.max(0, lossPercent)) + '%)';
+      document.getElementById('total-adicional-perda').textContent = lossPercent === null ? 'Sem pesagem completa' : fmtBRL(lossPremium);
+      document.getElementById('total-lucro').textContent = fmtBRL(grossProfit);
+      document.getElementById('profit-unit-label').textContent = 'Lucro bruto por ' + batch.noun;
+      document.getElementById('unit-lucro').textContent = batch.count > 0 ? fmtBRL(grossProfit / batch.count) : '—';
       document.getElementById('ficha-totals').style.display='block';
       calcNutrition();
     }
@@ -861,6 +895,7 @@
       if(currentIngredients.length&&!options.force&&!await confirmAction('Deseja limpar todos os dados desta ficha tecnica?','Limpar ficha','Sim, limpar'))return;
       currentIngredients=[];
       currentRecipeId=null;
+      yieldDriver='count';
       recipeImageDirty=false;
       currentRecipeImage=null;
       recipeImageOperationId+=1;
@@ -889,7 +924,24 @@
       if(!currentIngredients.length){showToast('Adicione pelo menos um ingrediente.');return;}
       const markup=parseFloat(document.getElementById('markup-pct').value)||0;
       if (markup < 0) { showToast('Informe um markup maior ou igual a zero.'); return; }
-      const {ingredients: priced, totalCost, venda} = calcCosts(currentIngredients, markup);
+      const batch = syncBaseYield();
+      const readyInput = document.getElementById('ficha-rendimento');
+      if (readyInput.validity?.badInput || (readyInput.value !== '' && (batch.ready < 0.0001 || !Number.isFinite(batch.ready)))) {
+        showToast('Informe um peso pronto positivo ou deixe a pesagem para depois.'); return;
+      }
+      if (readyInput.validity?.stepMismatch || readyInput.validity?.rangeOverflow) {
+        showToast('Revise o peso pronto e use até quatro casas decimais em gramas.'); return;
+      }
+      if (!(batch.count >= 0.0001) || !Number.isFinite(batch.count) || batch.count >= 1e10) {
+        showToast('Revise a quantidade do lote ou o peso de cada ' + batch.noun + '.'); return;
+      }
+      if (batch.unit === 'unit' && yieldDriver === 'count' && !Number.isInteger(batch.count)) {
+        showToast('Informe um número inteiro de unidades ou digite o peso por unidade.'); return;
+      }
+      if (yieldDriver === 'count' && Number(batch.count.toFixed(4)) !== batch.count) {
+        showToast('Use até quatro casas decimais na quantidade de porções.'); return;
+      }
+      const {ingredients: priced, totalCost, venda} = calcCosts(currentIngredients, markup, batch.ready);
       const ingredientRefs = priced.map(({currentPricePerG, ...item}) => ({...item, savedPricePerG: currentPricePerG}));
       const editingIndex=currentRecipeId===null? -1 : recipes.findIndex(r=>String(r.id)===String(currentRecipeId));
       const namedIndex=recipes.findIndex(r=>r.nome.toLocaleLowerCase('pt-BR')===nome.toLocaleLowerCase('pt-BR'));
@@ -908,24 +960,20 @@
         return;
       }
       const now=new Date().toISOString();
-      const recipeYield=parseFloat(document.getElementById('ficha-rendimento').value)||0;
-      const recipeBaseQuantity=parseFloat(document.getElementById('ficha-porcoes').value)||0;
-      if(recipeBaseQuantity<=0){showToast('Informe uma quantidade-base maior que zero.');return;}
-      if(recipeYield<0){showToast('O peso pronto não pode ser negativo.');return;}
-      if(document.getElementById('ficha-yield-unit').value==='unit'&&!Number.isInteger(recipeBaseQuantity)){showToast('Informe um número inteiro de unidades.');return;}
       const recipePortionSize=parseFloat(document.getElementById('portion-size').value)||100;
       const recipe={
         id:existingRecipe?.id||Date.now(),remoteId:existingRecipe?.remoteId,nome,ingredients:ingredientRefs,
-        rendimento:recipeYield,
-        porcoes:recipeBaseQuantity,
-        yieldUnit:normalizeRecipeYieldUnit(document.getElementById('ficha-yield-unit').value),
+        rendimento:batch.ready,
+        porcoes:batch.count,
+        targetPieceWeightG:batch.target,
+        yieldUnit:normalizeRecipeYieldUnit(batch.unit),
         markup,totalCost,venda,
         porcaoSize:recipePortionSize,
         modoPreparo:document.getElementById('ficha-modo-preparo').value.trim(),
         observacoes:existingRecipe?.observacoes||'',
         origem:existingRecipe?.origem||'manual',
         nutritionTotals:calculateRecipeNutritionTotals(ingredientRefs),
-        nutritionPortion:calculateRecipeNutritionPortion(ingredientRefs,recipePortionSize,recipeYield),
+        nutritionPortion:calculateRecipeNutritionPortion(ingredientRefs,recipePortionSize,batch.ready),
         image:recipeImage,
         imagePath:recipeImage?.path || existingRecipe?.image?.path || existingRecipe?.imagePath || null,
         createdAt:existingRecipe?.createdAt||now,
@@ -985,7 +1033,7 @@
         return;
       }
       el.innerHTML=f.map((r,cardIndex)=>{
-        const {totalCost,venda}=calcCosts(r.ingredients,r.markup);
+        const {totalCost,venda}=calcCosts(r.ingredients,r.markup,r.rendimento);
         const changed=hasPriceChanged(r.ingredients);
         const diff=totalCost-r.totalCost;
         const recipeId=escapeAttribute(r.id);
@@ -1003,7 +1051,7 @@
               </span>
             </div>
           </div>
-          <div class="recipe-card-meta"><span class="material-symbols-rounded">fork_spoon</span>${r.ingredients.length} ingrediente(s) · ${formatRecipeYield(r.porcoes,r.yieldUnit)}${r.rendimento?' · '+r.rendimento+'g':''} · Markup ${r.markup}%</div>
+          <div class="recipe-card-meta"><span class="material-symbols-rounded">fork_spoon</span>${r.ingredients.length} ingrediente(s) · ${formatRecipeYield(r.porcoes,r.yieldUnit)}${r.rendimento?' · '+formatBatchNumber(r.rendimento)+' g':''} · Markup ${r.markup}%</div>
           <div class="recipe-card-prices"><div>Venda do lote<strong>${fmtBRL(venda)}</strong></div><div>Venda por ${r.yieldUnit === 'unit' ? 'unidade' : 'porção'}<strong>${fmtBRL(venda / (Number(r.porcoes) || 1))}</strong></div></div>
           <div class="recipe-card-meta" style="font-size:11px;color:var(--n500)"><span class="material-symbols-rounded" style="font-size:13px">nutrition</span> ${nutritionSummary.label}</div>
           ${changed?`<div class="recipe-card-meta" style="font-size:11px;color:var(--n400)"><span class="material-symbols-rounded" style="font-size:13px">sync</span> Preços atualizados</div>`:''}
@@ -1026,12 +1074,14 @@
     function viewRecipe(id){
       const r=recipes.find(x=>String(x.id)===String(id));if(!r)return;
       currentRecipeId=id;
-      const {ingredients,totalCost}=calcCosts(r.ingredients,r.markup);
+      const {ingredients,totalCost,venda}=calcCosts(r.ingredients,r.markup,r.rendimento);
       const porcoes=Number(r.porcoes)||1;
       const changed=hasPriceChanged(r.ingredients);
       const diff=totalCost-r.totalCost;
       const nutritionSummary=getRecipeNutritionSummary(r);
       const yieldUnit=normalizeRecipeYieldUnit(r.yieldUnit);
+      const plannedCount = yieldUnit === 'unit' ? Math.max(1, Math.floor(porcoes)) : porcoes;
+      const basePiece = window.FichaTecProduction.divideBatch(r.rendimento,porcoes,r.targetPieceWeightG).pieceWeight;
 
       document.getElementById('recipe-detail-content').innerHTML=`
         ${renderRecipeMedia(r,"modal")}
@@ -1052,20 +1102,21 @@
           <span><strong>Preços atualizados</strong><br>Custo salvo: ${fmtBRL(r.totalCost)} → Atual: <strong>${fmtBRL(totalCost)}</strong>${diff!==0?` (${diff>0?'+':''}${fmtBRL(diff)})`:''}  </span>
         </div>`:''}
         <dl class="recipe-sale-summary">
-          <div><dt>Venda do lote</dt><dd data-plan-value="sale">—</dd></div>
+          <div><dt>Venda do lote planejado</dt><dd data-plan-value="sale">—</dd></div>
           <div><dt id="production-piece-label">Venda por peça</dt><dd data-plan-value="piece">—</dd></div>
         </dl>
         <section class="production-planner" aria-labelledby="production-planner-title">
           <h3 class="production-planner-title" id="production-planner-title">Planejar esta produção</h3>
-          <p class="production-base-line"><strong>Receita-base</strong> · ${formatRecipeYield(r.porcoes,yieldUnit)}${r.rendimento>0 ? ' · '+Number(r.rendimento).toLocaleString('pt-BR')+' g prontos' : ''} · markup ${Number(r.markup)||0}%</p>
+          <p class="production-base-line"><strong>Receita-base</strong> · ${formatRecipeYield(porcoes,yieldUnit)}${r.rendimento>0 ? ' · '+formatBatchNumber(Number(r.rendimento))+' g prontos' : ''} · ${fmtBRL(venda)} o lote · markup ${Number(r.markup)||0}%</p>
+          ${plannedCount !== porcoes ? '<p class="production-base-line">Para planejar a produção, escolha um número inteiro de unidades.</p>' : ''}
           <form id="production-form">
             <div class="production-planner-control">
               <div class="input-group"><label class="input-label" for="production-unit">Produzir em</label>
                 <select id="production-unit"><option value="portion" ${yieldUnit==='portion'?'selected':''}>Porções</option><option value="unit" ${yieldUnit==='unit'?'selected':''}>Unidades</option></select></div>
               <div class="input-group"><label class="input-label" id="production-count-label" for="recipe-production-quantity">Quantidade</label>
-                <input id="recipe-production-quantity" type="number" required inputmode="decimal" value="${escapeAttribute(porcoes)}"></div>
+                <input id="recipe-production-quantity" type="number" required inputmode="decimal" value="${escapeAttribute(plannedCount)}"></div>
               <div class="input-group"><label class="input-label" id="production-weight-label" for="production-weight">Peso por peça (g)</label>
-                <input id="production-weight" type="number" step="any" min="0" inputmode="decimal" ${r.rendimento>0?'required value="'+(r.rendimento/porcoes)+'"':'disabled placeholder="Sem pesagem"'}></div>
+                <input id="production-weight" type="number" step="any" min="0" inputmode="decimal" ${basePiece>0?'required value="'+basePiece+'"':'disabled placeholder="Sem pesagem"'}></div>
               <div class="input-group"><label class="input-label" for="production-markup">Markup (%)</label>
                 <input id="production-markup" type="number" required min="0" step="any" inputmode="decimal" value="${Number(r.markup)||0}"></div>
             </div>
@@ -1081,8 +1132,12 @@
             <div><dt id="production-loss-label">Perda de peso</dt><dd id="production-loss">—</dd></div>
             <div><dt>Markup aplicado</dt><dd data-plan-value="markup">—</dd></div>
             <div><dt>Custo dos ingredientes</dt><dd data-plan-value="cost">—</dd></div>
+            <div><dt>Venda com markup</dt><dd data-plan-value="beforeLoss">—</dd></div>
+            <div><dt>Adicional pela perda</dt><dd data-plan-value="premium">—</dd></div>
             <div><dt>Venda total do lote</dt><dd data-plan-value="sale">—</dd></div>
             <div><dt>Venda média por peça</dt><dd data-plan-value="piece">—</dd></div>
+            <div><dt>Lucro bruto do lote</dt><dd data-plan-value="profit">—</dd></div>
+            <div><dt>Lucro bruto por peça</dt><dd data-plan-value="pieceProfit">—</dd></div>
           </dl>
           <p class="production-footnote" id="production-weight-help"></p>
           <p class="production-footnote" id="production-rounding" hidden>O preço por peça é a média do lote arredondada para centavos.</p>
@@ -1149,6 +1204,8 @@
       document.getElementById('ficha-modo-preparo').value=r.modoPreparo||'';
       document.getElementById('ficha-rendimento').value=r.rendimento||'';
       document.getElementById('ficha-porcoes').value=r.porcoes||'';
+      yieldDriver = r.targetPieceWeightG > 0 && r.rendimento > 0 ? 'piece' : 'count';
+      document.getElementById('ficha-peso-unidade').value = r.targetPieceWeightG || '';
       document.getElementById('ficha-yield-unit').value=normalizeRecipeYieldUnit(r.yieldUnit);
       document.getElementById('markup-pct').value=r.markup||'';
       document.getElementById('portion-size').value=r.porcaoSize||100;
@@ -1164,7 +1221,7 @@
     /* ══ PDF ══ */
     function exportRecipePDF(id){
       const r=recipes.find(x=>String(x.id)===String(id));if(!r)return;
-      const {ingredients,totalCost,venda}=calcCosts(r.ingredients,r.markup);
+      const {ingredients,totalCost,venda,saleBeforeLoss,lossPremium,grossProfit,lossPercent}=calcCosts(r.ingredients,r.markup,r.rendimento);
       const porcoes = Number(r.porcoes) || 1;
       const now=new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
       const criado=new Date(r.createdAt).toLocaleDateString('pt-BR');
@@ -1234,7 +1291,7 @@
       ${recipeImageSource?`<img class="recipe-cover" src="${escapeAttribute(recipeImageSource)}" alt="Imagem da receita ${escapeAttribute(r.nome)}" width="640" height="360">`:''}
       <div style="margin-bottom:20px">
         <div style="font-size:22px;font-weight:800;margin-bottom:4px;letter-spacing:-0.5px">${safeRecipeName}</div>
-        <div style="font-size:12px;color:#717171;font-weight:500">${r.ingredients.length} ingrediente(s) · ${formatRecipeYield(r.porcoes,r.yieldUnit)}${r.rendimento?' · Rendimento: '+r.rendimento+'g':''}${r.markup?' · Markup: '+r.markup+'%':''}</div>
+        <div style="font-size:12px;color:#717171;font-weight:500">${r.ingredients.length} ingrediente(s) · ${formatRecipeYield(porcoes,r.yieldUnit)}${r.rendimento ? ' de ' + formatBatchNumber(r.targetPieceWeightG || r.rendimento / porcoes) + ' g · ' + formatBatchNumber(r.rendimento) + ' g no lote' : ''}${r.markup?' · Markup: '+r.markup+'%':''}</div>
       </div>
       ${changed?`<div style="background:#E8F8EE;border:1px solid #8FD9AB;border-radius:8px;padding:10px 14px;margin-bottom:16px;font-size:12px;color:#1E8449;font-weight:600">Precos atualizados. Custo original: ${fmtBRL(r.totalCost)}.</div>`:''}
       <div class="summary">
@@ -1242,6 +1299,10 @@
         <div class="si hl"><div class="sl hl">Venda do lote</div><div class="sv hl">${fmtBRL(venda)}</div></div>
         <div class="si"><div class="sl">${normalizeRecipeYieldUnit(r.yieldUnit)==='unit'?'Venda por unidade':'Venda por porção'}</div><div class="sv">${fmtBRL(venda/porcoes)}</div></div>
         <div class="si"><div class="sl">Markup</div><div class="sv">${r.markup||0}%</div></div>
+        <div class="si"><div class="sl">Venda com markup</div><div class="sv">${fmtBRL(saleBeforeLoss)}</div></div>
+        <div class="si"><div class="sl">Adicional pela perda${lossPercent > 0 ? ' (' + formatBatchNumber(lossPercent) + '%)' : ''}</div><div class="sv">${lossPercent === null ? '—' : fmtBRL(lossPremium)}</div></div>
+        <div class="si"><div class="sl">Lucro bruto do lote</div><div class="sv">${fmtBRL(grossProfit)}</div></div>
+        <div class="si"><div class="sl">Lucro bruto por peça</div><div class="sv">${fmtBRL(grossProfit/porcoes)}</div></div>
       </div>
       <div class="section-title">Nutricao por ${nutritionSummary.portion}g</div>
       <table class="nutrition-report">

@@ -7,6 +7,7 @@ import {webcrypto} from 'node:crypto';
 const read=file=>readFileSync(new URL(`../src/${file}`,import.meta.url),'utf8');
 const modelContext={window:{FichaTecStorageKeys:{recipes:'recipes'}},crypto:webcrypto};
 vm.runInNewContext(read('modules/recipes/ingredientOrder.js'),modelContext);
+vm.runInNewContext(read('modules/recipes/productionPlan.js'),modelContext);
 vm.runInNewContext(read('services/repositories/supabaseDomainRepository.js'),modelContext);
 const order=modelContext.window.FichaTecIngredientOrder;
 const repo=modelContext.window.FichaTecSupabaseDomainRepository;
@@ -119,10 +120,10 @@ test('planeja 10 peças de 25 g a partir de 20 de 50 g, sem alterar a base',()=>
   h.module.viewRecipe(r.id);
   assert.equal(h.element('production-loss').textContent,'25 g (9,09%)');
   assert.deepEqual(rows.map(x=>x.textContent),['225 g','50 g']);
-  assert.equal(money.textContent,'5.5');
+  assert.equal(money.textContent,'6');
   h.element('production-markup').value='0';
   h.element('production-form').oninput();
-  assert.equal(money.textContent,'2.75');
+  assert.equal(money.textContent,'3');
   h.element('production-unit').value='portion';
   h.element('recipe-production-quantity').value='2.5';
   h.element('production-form').onchange();
@@ -135,7 +136,6 @@ test('planeja 10 peças de 25 g a partir de 20 de 50 g, sem alterar a base',()=>
 });
 
 test('brigadeiro: custo é a soma dos quatro itens em centavos e a perda acompanha a produção',()=>{
-  vm.runInNewContext(read('modules/recipes/productionPlan.js'),modelContext);
   const {calculatePlan} = modelContext.window.FichaTecProduction;
   const recipe = {porcoes:20,rendimento:378.25,ingredients:[
     {qtyBruta:360,rate:5.69/395},{qtyBruta:15,rate:9.9/100},
@@ -145,11 +145,15 @@ test('brigadeiro: custo é a soma dos quatro itens em centavos e a perda acompan
   const price = item=>item.rate;
   const base=calculatePlan(recipe,draft,price);
   assert.deepEqual(Array.from(base.ingredients,i=>i.cost),[5.19,1.49,1.19,.75]);
-  assert.deepEqual([base.rawWeight,base.finalWeight,base.loss,base.lossPercent,base.totalCost,base.venda],[445,378.25,66.75,15,8.62,17.24]);
+  assert.deepEqual([base.rawWeight,base.finalWeight,base.loss,base.lossPercent],[445,378.25,66.75,15]);
+  assert.deepEqual([base.totalCost,base.markup,base.saleBeforeLoss,base.lossPremium,base.venda,base.grossProfit],[8.62,100,17.24,2.59,19.83,11.21]);
+  assert.equal(base.salePerPiece.toFixed(2),'0.99');
+  assert.equal((base.grossProfit / base.count).toFixed(2),'0.56');
   const batch=calculatePlan(recipe,{...draft,count:10,weight:25},price);
   assert.equal(batch.finalWeight,250);
   assert.ok(Math.abs(batch.rawWeight-250/.85)<1e-9);
   assert.ok(Math.abs(batch.lossPercent-15)<1e-9);
+  assert.deepEqual([batch.totalCost,batch.saleBeforeLoss,batch.lossPremium,batch.venda,batch.grossProfit],[5.69,11.38,1.71,13.09,7.4]);
   assert.equal(batch.salePerPiece,batch.venda/10);
   const withoutWeight=calculatePlan({...recipe,rendimento:0},{...draft,count:5},price);
   assert.equal(withoutWeight.factor,.25);
@@ -158,4 +162,83 @@ test('brigadeiro: custo é a soma dos quatro itens em centavos e a perda acompan
   assert.equal(mixed.rawWeight,null);
   assert.equal(mixed.loss,null);
   assert.equal(repo.mapRecipeIngredientToRemote({savedPricePerG:5.69/395},'recipe','org').saved_unit_price_cents,1.440506);
+});
+
+test('peso pronto vincula os dois campos e respeita o último valor digitado', async () => {
+  const h = recipeHarness();
+  h.module.editRecipe('recipe-1');
+  const count = h.element('ficha-porcoes'), ready = h.element('ficha-rendimento'), piece = h.element('ficha-peso-unidade');
+  assert.equal(piece.disabled, true);
+  assert.equal(piece.value, '');
+  ready.value = '1000';
+  h.module.calcFicha();
+  assert.equal(Number(piece.value), 50);
+  piece.value = '25';
+  h.module.calcFicha('piece');
+  assert.equal(Number(count.value), 40);
+  assert.equal(ready.value, '1000');
+  ready.value = '500';
+  h.module.calcFicha();
+  assert.equal(Number(count.value), 20);
+  assert.equal(Number(piece.value), 25);
+  count.value = '10';
+  h.module.calcFicha('count');
+  assert.equal(Number(piece.value), 50);
+  ready.value = '378.25';
+  count.value = '20';
+  h.module.calcFicha('count');
+  assert.equal(Number(piece.value), 18.9125);
+  await h.module.saveRecipe();
+  h.module.editRecipe('recipe-1');
+  assert.equal(Number(piece.value), 18.9125);
+  assert.equal(h.getRecipes()[0].targetPieceWeightG, null);
+  ready.value = '';
+  h.module.calcFicha();
+  assert.equal(piece.disabled, true);
+  assert.equal(piece.value, '');
+  await h.module.saveRecipe();
+  assert.equal(h.getRecipes()[0].rendimento, 0);
+  assert.equal(h.getRecipes()[0].porcoes, 20);
+});
+
+test('divisão por peso mantém a sobra, o preço, a precisão e o vínculo ao salvar e reabrir', async () => {
+  const h = recipeHarness();
+  h.module.editRecipe('recipe-1');
+  h.element('ficha-rendimento').value = '323'; // 15% de perda sobre 380 g.
+  h.element('markup-pct').value = '100';
+  h.module.calcFicha();
+  h.element('ficha-peso-unidade').value = '24';
+  h.module.calcFicha('piece');
+  assert.match(h.element('weight-summary').textContent, /57 g \(15%\).*13 unidades inteiras de 24 g e sobram 11 g/);
+  assert.equal(Number(h.element('ficha-porcoes').value), 13.4583);
+  assert.equal(h.element('total-adicional-perda').textContent, '1.14');
+  assert.equal(h.element('total-venda').textContent, '8.74');
+  assert.equal(h.element('total-lucro').textContent, '4.94');
+  await h.module.saveRecipe();
+  const saved = h.getRecipes()[0];
+  assert.equal(saved.targetPieceWeightG, 24);
+  assert.equal(saved.markup, 100);
+  assert.equal(saved.venda, 8.74);
+  const row = repo.mapRecipeToRemote(saved,'org');
+  assert.equal(row.sale_price_cents, 874);
+  const remote = repo.mapRecipeFromRemote({...row,portions:13.4583});
+  assert.ok(Math.abs(remote.porcoes - 323 / 24) < 1e-12);
+  assert.equal(remote.targetPieceWeightG, 24);
+  h.module.editRecipe(saved.id);
+  assert.equal(Number(h.element('ficha-peso-unidade').value), 24);
+  h.element('ficha-rendimento').value = '480';
+  h.module.calcFicha();
+  assert.equal(Number(h.element('ficha-porcoes').value), 20);
+  assert.equal(h.element('total-adicional-perda').textContent, '0');
+});
+
+test('ganho de peso, pesagem ausente ou ingredientes sem massa conhecida preservam a venda com markup', () => {
+  const {priceRecipe,divideBatch} = modelContext.window.FichaTecProduction;
+  for (const [unit,ready] of [['g',120],['g',100],['g',0],['ml',85],['un',85],['l',85]]) {
+    const price = priceRecipe([{qtyG:100,unit}],100,()=>0.1,1,ready);
+    assert.equal(price.lossPremium,0);
+    assert.equal(price.grossProfit,10);
+    assert.equal(price.venda,20);
+  }
+  assert.equal(divideBatch(.3,null,.1).count,3);
 });

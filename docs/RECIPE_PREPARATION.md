@@ -25,6 +25,10 @@ Na biblioteca, o botão Filtro abre o painel de ingredientes. Uma seleção fech
 
 No planejamento, a quantidade e o peso por peça determinam o peso final desejado. A razão entre esse peso e o peso pronto cadastrado dimensiona cada ingrediente e a perda. O markup pode ser simulado por lote. Calcular exibe os pesos, a perda percentual, os preços e a lista de ingredientes. Com o resultado aberto, os valores acompanham a edição. Fichas sem pesagem admitem planejamento por quantidade. Receitas com itens em ml ou unidades precisam de mais informação para expressar o peso bruto em gramas.
 
-O custo do lote soma os custos de cada ingrediente arredondados em centavos. O markup incide sobre essa soma. O valor por peça é a média da venda do lote. O PDF apresenta os dados da receita cadastrada.
+Na ficha, o peso pronto é opcional antes da pesagem. Depois de cozinhar, informe o peso sem o recipiente. Digitar a quantidade divide esse peso igualmente pelas peças. Digitar o peso de uma peça calcula a quantidade equivalente e mostra as peças inteiras e a sobra, quando houver. Uma nova pesagem mantém o último critério escolhido. Fichas antigas abrem divididas pela quantidade cadastrada.
+
+O peso antes do preparo e o peso pronto determinam a perda percentual. O custo soma os ingredientes arredondados em centavos. Aplica-se primeiro o markup, depois o percentual de perda sobre a venda com markup. O adicional entra uma vez na venda e no lucro bruto. Ganho de peso, pesos iguais ou pesagem incompleta não geram adicional. A venda por peça e o lucro bruto por peça dividem os valores do lote pela quantidade equivalente.
+
+No Brigadeiro com 445 g de ingredientes e 378,25 g de rendimento estimado, a perda de 15% acrescenta R$ 2,59 à venda de R$ 17,24 com markup de 100%. A venda final é R$ 19,83 e o lucro bruto sobre o custo de R$ 8,62 é R$ 11,21. A mesma regra vale para a ficha, os cards, o planejamento, a receita digitalizada e o PDF.
 
 Para conferir um lote, abra a ficha em Receitas, informe a quantidade e o peso de cada peça e toque em Calcular.

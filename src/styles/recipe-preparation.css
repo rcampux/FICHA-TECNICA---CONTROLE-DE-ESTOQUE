@@ -108,6 +108,15 @@
 .recipe-base-card :is(input:not([type="file"]),select),
 .recipe-base-card .recipe-cover-picker { background-color:#fff; color:#33191d; }
 .recipe-base-card input::placeholder { color:#715f62; }
+.recipe-base-card :is(.recipe-yield-grid,.recipe-division) .input-group { min-width:0; margin:0; }
+.recipe-division { display:grid; gap:12px; margin-top:16px; grid-template-columns:repeat(2,minmax(0,1fr)); }
+.recipe-division > :first-child { grid-column:1 / -1; }
+.recipe-base-card :is(input[readonly],input:disabled) { background-color:#f7e9eb; color:#55333a; opacity:1; }
+.recipe-base-card #ficha-peso-unidade:disabled::placeholder { color:#76565c; }
+.recipe-profit-lines { margin:16px 0 0; padding-top:10px; border-top:1px solid rgba(255,255,255,.42); font-size:13px; }
+.recipe-profit-lines > div { display:flex; justify-content:space-between; align-items:baseline; gap:12px; padding:3px 0; }
+.recipe-profit-lines dd { margin:0; font-weight:700; text-align:right; font-variant-numeric:tabular-nums; }
+.loss-pricing-help { margin:8px 0 0; color:inherit; font-size:12px; line-height:1.45; }
 .recipe-base-card .weight-note { background:#fff3f3; color:#701425; }
 .recipe-base-card .recipe-image-preview { width:100%; min-width:0; background:#fce6e8; }
 .weight-note { border-radius:12px; background:#fff; color:#285340; padding:12px 14px; margin:12px 0; font-size:13px; font-weight:600; line-height:1.65; }
@@ -126,4 +135,6 @@
 
 @media(min-width:768px) {
   .recipe-base-card .recipe-yield-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .recipe-division { grid-template-columns:repeat(3,minmax(0,1fr)); }
+  .recipe-division > :first-child { grid-column:auto; }
 }

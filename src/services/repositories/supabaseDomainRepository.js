@@ -291,6 +291,7 @@
       name: recipe.nome,
       yield_g: normalizeNumber(recipe.rendimento),
       portions: normalizeNumber(recipe.porcoes, 1),
+      ...(Object.hasOwn(recipe, 'targetPieceWeightG') ? {target_piece_weight_g: recipe.targetPieceWeightG || null} : {}),
       yield_unit: recipe.yieldUnit === "unit" ? "unit" : "portion",
       markup_percent: normalizeNumber(recipe.markup),
       portion_size_g: normalizeNumber(recipe.porcaoSize, 100),
@@ -311,7 +312,10 @@
       nome: row.name,
       ingredients: [...(row.recipe_ingredients || [])].sort((a,b)=>normalizeNumber(a.sort_order)-normalizeNumber(b.sort_order)||String(a.created_at||'').localeCompare(String(b.created_at||''))||String(a.id).localeCompare(String(b.id))).map(mapRecipeIngredientFromRemote),
       rendimento: normalizeNumber(row.yield_g),
-      porcoes: normalizeNumber(row.portions, 1),
+      porcoes: row.target_piece_weight_g > 0 && row.yield_g > 0
+        ? window.FichaTecProduction.divideBatch(row.yield_g, row.portions, row.target_piece_weight_g).count
+        : normalizeNumber(row.portions, 1),
+      targetPieceWeightG: normalizeNumber(row.target_piece_weight_g) || null,
       yieldUnit: row.yield_unit === "unit" ? "unit" : "portion",
       markup: normalizeNumber(row.markup_percent),
       totalCost: currencyFromCents(row.total_cost_cents),
@@ -596,6 +600,8 @@
         name:snapshot.name,
         yield_g:snapshot.yield_g,
         portions:snapshot.portions,
+        yield_unit:snapshot.yield_unit,
+        target_piece_weight_g:snapshot.target_piece_weight_g ?? null,
         markup_percent:snapshot.markup_percent,
         portion_size_g:snapshot.portion_size_g,
         total_cost_cents:snapshot.total_cost_cents,

@@ -6,6 +6,9 @@
 | `getIngredientUnitPrice`, `calcCosts`, `updateRecipeProductionGuide`, `bindProductionPlanner` e seu handler `revealProduction` | `src/modules/recipes/recipeSheet.js` | Resolvem o preço de estoque ou o salvo, atualizam a prévia e exibem o relatório ao calcular. |
 | `bindRecipeFilterActions`, `renderRecipes` | `src/modules/recipes/recipeSheet.js` | Mantêm o filtro de ingredientes recolhido e combinam a seleção com a busca por nome. |
 | `mapRecipeIngredientToRemote` | `src/services/repositories/supabaseDomainRepository.js` | Mantém seis casas decimais para o preço em centavos por grama, ml ou unidade. |
+| `divideBatch`, `weightChange`, `priceRecipe`, `calculatePlan` | `src/modules/recipes/productionPlan.js` | Dividem o peso pronto, apuram a perda sobre o peso bruto e somam o adicional ao preço de venda e ao lucro bruto. |
+| `syncBaseYield`, `formatBatchNumber`, `weightSummary`, `calcFicha` | `src/modules/recipes/recipeSheet.js` | Mantêm quantidade e peso por peça vinculados ao último campo editado e apresentam o rendimento, a sobra e os valores do lote. |
+| `mapRecipeToRemote`, `mapRecipeFromRemote`, `rollbackRecipeSave` | `src/services/repositories/supabaseDomainRepository.js` | Preservam o peso por peça escolhido e o tipo de rendimento ao salvar, reabrir ou reverter uma gravação. |
 
 Ações de consulta da receita: `renderRecipes` e `bindRecipeCardActions` exibem/alternam o modo de preparo ao lado de Ver ingredientes no card, sem abrir o modal. `viewRecipe` inclui um atalho para os ingredientes antes do botão de preparo, com foco acessível e rolagem respeitando movimento reduzido. Nenhuma alteração na persistência.
 

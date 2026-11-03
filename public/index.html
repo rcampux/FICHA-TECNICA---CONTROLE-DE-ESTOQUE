@@ -205,33 +205,40 @@
     </div>
     <div class="recipe-yield-header">
       <div>
-        <strong>Rendimento base</strong>
-        <span>Defina como esta receita será produzida e dimensionada.</span>
+        <strong>Rendimento da receita</strong>
+        <span id="batch-weigh-help">Depois de cozinhar, pese o lote sem o recipiente. Você pode salvar a ficha antes da pesagem.</span>
       </div>
       <span class="material-symbols-rounded" aria-hidden="true">scale</span>
     </div>
     <div class="recipe-yield-grid">
-      <div class="input-group" style="margin-bottom:0">
-        <label class="input-label" for="ficha-yield-unit">Tipo de rendimento</label>
+      <div class="input-group">
+        <label class="input-label" for="weight-raw">Ingredientes somados (g)</label>
+        <input id="weight-raw" readonly placeholder="Calculado ao adicionar">
+      </div>
+      <div class="input-group">
+        <label class="input-label" for="ficha-rendimento">Peso da receita pronta (g)</label>
+        <input type="number" id="ficha-rendimento" min="0.0001" max="9999999999.9999" step="0.0001" inputmode="decimal" placeholder="Peso após cozinhar" aria-describedby="batch-weigh-help" oninput="calcFicha()">
+      </div>
+    </div>
+    <div class="recipe-division">
+      <div class="input-group">
+        <label class="input-label" for="ficha-yield-unit">Dividir o lote em</label>
         <select id="ficha-yield-unit" onchange="calcFicha()">
           <option value="portion">Porções</option>
           <option value="unit">Unidades</option>
         </select>
       </div>
-      <div class="input-group" style="margin-bottom:0">
-        <label class="input-label" for="ficha-porcoes">Quantas porções ou unidades rende? *</label>
-        <input type="number" id="ficha-porcoes" value="1" min="0.01" step="0.01" inputmode="decimal" placeholder="Ex: 100" oninput="calcFicha()">
+      <div class="input-group">
+        <label class="input-label" for="ficha-porcoes" id="batch-count-label">Quantidade de porções</label>
+        <input type="number" id="ficha-porcoes" value="1" min="0.0001" step="any" inputmode="decimal" aria-describedby="batch-divide-help" oninput="calcFicha('count')">
       </div>
-      <div class="input-group" style="margin-bottom:0">
-        <label class="input-label" for="weight-raw">Ingredientes somados (g)</label>
-        <input id="weight-raw" readonly placeholder="Calculado ao adicionar">
-      </div>
-      <div class="input-group" style="margin-bottom:0">
-        <label class="input-label" for="ficha-rendimento">Peso da receita pronta (g)</label>
-        <input type="number" id="ficha-rendimento" min="0" step="0.01" inputmode="decimal" placeholder="Ex: 800" oninput="calcFicha()">
+      <div class="input-group">
+        <label class="input-label" for="ficha-peso-unidade" id="batch-piece-label">Peso por porção (g)</label>
+        <input type="number" id="ficha-peso-unidade" min="0" step="any" inputmode="decimal" placeholder="Após a pesagem" aria-describedby="batch-divide-help" oninput="calcFicha('piece')" disabled>
       </div>
     </div>
-    <p class="recipe-yield-helper">Pese a receita depois de pronta, sem o recipiente.</p><div class="weight-note" id="weight-summary">Adicione ingredientes para calcular o peso.</div>
+    <p class="recipe-yield-helper" id="batch-divide-help">Com o peso pronto, informe a quantidade ou o peso de cada porção. A ficha calcula o outro campo.</p>
+    <div class="weight-note" id="weight-summary" role="status">Adicione ingredientes para calcular a perda.</div>
   </div>
 
   <div class="section-label">Adicionar Ingrediente</div>
@@ -334,6 +341,13 @@
         <div><div class="total-label" id="total-unit-label">Venda por porção</div><div class="total-value" id="total-porcao" style="font-size:16px">R$ 0,00</div></div>
         <div><div class="total-label">Custo por kg</div><div class="total-value" id="total-kg" style="font-size:16px">—</div></div>
       </div>
+      <dl class="recipe-profit-lines">
+        <div><dt>Venda com markup</dt><dd id="total-antes-perda">—</dd></div>
+        <div><dt>Adicional pela perda <span id="sale-loss-rate"></span></dt><dd id="total-adicional-perda">—</dd></div>
+        <div><dt>Lucro bruto do lote</dt><dd id="total-lucro">—</dd></div>
+        <div><dt id="profit-unit-label">Lucro bruto por porção</dt><dd id="unit-lucro">—</dd></div>
+      </dl>
+      <p class="loss-pricing-help">A perda acrescenta ao lucro a mesma porcentagem sobre a venda com markup.</p>
     </div>
 
     <div class="section-label" style="margin-top:var(--s5)">Tabela Nutricional Estimada</div>
