@@ -914,7 +914,7 @@
               <span class="material-symbols-rounded" style="font-size:14px">picture_as_pdf</span> PDF
             </button>
           </div>
-          <ul class="recipe-card-ingredients" id="recipe-card-ingredients-${cardIndex}" data-card-ingredients hidden aria-label="Ingredientes de ${escapeAttribute(r.nome)}">${r.ingredients.map(i=>`<li>${escapeHtml(i.name)}</li>`).join('')}</ul>
+          <ul class="recipe-card-ingredients" id="recipe-card-ingredients-${cardIndex}" data-card-ingredients hidden aria-label="Ingredientes e quantidades da receita-base de ${escapeAttribute(r.nome)}">${r.ingredients.map(i=>`<li><span>${escapeHtml(i.name)}</span><strong class="recipe-card-ingredient-quantity">${formatProductionIngredientQuantity(i)}</strong></li>`).join('')}</ul>
         </div>`;
       }).join('');
       bindRecipeCardActions(el);

@@ -1,6 +1,10 @@
 # FichaTec - Inventario de Funcoes
 
+Animação de arraste: `reducedMotion`, `layoutTop`, `liftCard`, `positionPreview` e `complete` (callback de finalização), em `src/modules/recipes/ingredientOrder.js`, tratam preferências de movimento, geometria sem transformação, prévia elevada, acompanhamento do ponteiro e limpeza após encaixe. `placeAtPointer`, `finish`, `scrollWhileDragging` e `bindIngredientOrder` foram ajustadas para animar vizinhos, preservar o espaço e bloquear gestos concorrentes. `dragHarness`, `classList`, `node`, `makeRow` e `send` em `tests/ingredient-drag.test.mjs` simulam gestos para verificar confirmação, cancelamento e movimento reduzido.
+
 Atualização dos cards de receitas: `renderRecipes` e `bindRecipeCardActions` (`src/modules/recipes/recipeSheet.js`) exibem um botão acessível para expandir/recolher todos os ingredientes no próprio card, inicialmente ocultos, sem abrir o modal ao acionar a lista.
+
+`renderRecipes` também reutiliza `formatProductionIngredientQuantity` para mostrar a quantidade-base e unidade de cada ingrediente na lista expandida.
 
 ## Ordem dos ingredientes e modo de preparo — novembro de 2026
 
