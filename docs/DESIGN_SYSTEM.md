@@ -124,3 +124,4 @@ Os tokens canônicos ficam em `src/styles/tokens.css`. Aliases legados existem a
 - `src/styles/layout.css`: breakpoints e navegação adaptativa.
 - `src/styles/pages.css`: composição das páginas.
 - `src/styles/saas-workspace.css`: adaptação estrutural mobile/desktop, drawer SaaS e grids fluidos.
+- Na entrada da Ficha em desktop (a partir de 1200 px), a apresentação em marfim e o cartão de criação em vinho formam uma página dupla com uma única fotografia de cozinha.
