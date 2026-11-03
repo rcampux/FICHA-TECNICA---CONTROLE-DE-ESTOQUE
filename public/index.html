@@ -304,7 +304,15 @@
     </div>
   </div>
 
+  <div id="recipe-composition">
   <div id="ingredients-list"></div>
+
+  <section class="card recipe-preparation-editor" id="recipe-preparation-editor" aria-labelledby="preparation-label">
+    <label class="card-title" id="preparation-label" for="ficha-modo-preparo"><span class="material-symbols-rounded" aria-hidden="true">menu_book</span>Modo de preparo</label>
+    <p>Descreva as etapas na ordem em que devem ser executadas.</p>
+    <textarea id="ficha-modo-preparo" rows="6" placeholder="1. Separe os ingredientes.&#10;2. Misture e prepare conforme a receita.&#10;3. Finalize e sirva."></textarea>
+  </section>
+  </div>
 
   <div id="ficha-totals" style="display:none">
     <div class="markup-row">
@@ -1039,6 +1047,7 @@
 <script src="../src/modules/auth/authSession.js" defer></script>
 <script src="../src/modules/billing/planAccess.js" defer></script>
 <script src="../src/modules/nutrition/nutritionDefaults.js" defer></script>
+<script src="../src/modules/recipes/ingredientOrder.js" defer></script>
 <script src="../src/modules/recipes/recipeSheet.js" defer></script>
 <script src="../src/modules/scanner/scannerRecipe.js" defer></script>
 <script src="../src/modules/stock/stockPricing.js" defer></script>

@@ -703,22 +703,34 @@
       renderIngredients();calcFicha();
     }
     async function removeIngredient(id){
+      if(recipeSaveInFlight)return;
       if(!await confirmAction('Deseja remover este ingrediente da ficha tecnica?','Remover ingrediente'))return;
-      currentIngredients=currentIngredients.filter(i=>i.id!==id);renderIngredients();calcFicha();
+      currentIngredients=currentIngredients.filter(i=>String(i.id)!==String(id));renderIngredients();calcFicha();
+    }
+    function reorderIngredient(from,to){
+      if(to<0||to>=currentIngredients.length){renderIngredients();return;}
+      currentIngredients=window.FichaTecIngredientOrder.moveIngredient(currentIngredients,from,to);
+      renderIngredients();
+      document.querySelector(`#ingredients-list [data-ingredient-index="${to}"] [data-ingredient-grip]`)?.focus({preventScroll:true});
+      document.getElementById('ingredient-order-status').textContent=`Ingrediente movido para a posição ${to+1}. Salve a receita para manter esta ordem.`;
     }
     function renderIngredients(){
       const el=document.getElementById('ingredients-list');
       if(!currentIngredients.length){el.innerHTML='';return;}
       el.innerHTML=`<div class="card">
         <div class="card-title"><span class="material-symbols-rounded icon-sm">format_list_bulleted</span> Ingredientes (${currentIngredients.length})</div>
-        ${currentIngredients.map(i=>`<div class="ingredient-row">
+        <p class="ingredient-order-help">Arraste pelo ícone para organizar. Pelo teclado, use as setas ↑ e ↓.</p>
+        <div role="list" aria-label="Ingredientes na ordem de preparo">
+        ${currentIngredients.map((i,index)=>`<div class="ingredient-row" role="listitem" data-ingredient-index="${index}">
+          <button type="button" class="ingredient-grip" data-ingredient-grip aria-label="Reordenar ${escapeAttribute(i.name)}" title="Arrastar para reordenar"><span class="material-symbols-rounded" aria-hidden="true">drag_indicator</span></button>
           <div style="flex:1;min-width:0">
-            <div class="ing-name">${i.name}</div>
+            <div class="ing-name">${escapeHtml(i.name)}</div>
             <div class="ing-qty">${i.unit==='un'?i.qtyG+'un':i.unit==='ml'?i.qtyG+'ml':i.qtyG+'g'} usados${i.unit!=='un'&&i.rendimento<100?' → '+i.qtyBruta.toFixed(0)+(i.unit==='ml'?'ml':'g')+' bruto':''}</div>
           </div>
           <div class="ing-cost">${fmtBRL(i.cost)}</div>
-          <button class="ing-del" onclick="removeIngredient(${i.id})"><span class="material-symbols-rounded">close</span></button>
+          <button type="button" class="ing-del" data-remove-ingredient="${escapeAttribute(i.id)}" aria-label="Remover ${escapeAttribute(i.name)}"><span class="material-symbols-rounded" aria-hidden="true">close</span></button>
         </div>`).join('')}
+        </div><p class="ingredient-order-status" id="ingredient-order-status" role="status" aria-live="polite"></p>
       </div>`;
     }
     function calcFicha(){
@@ -752,7 +764,7 @@
       currentRecipeImage=null;
       recipeImageOperationId+=1;
       setRecipeImageProcessing(false);
-      ['ficha-nome','ficha-rendimento','markup-pct'].forEach(f=>document.getElementById(f).value='');
+      ['ficha-nome','ficha-rendimento','markup-pct','ficha-modo-preparo'].forEach(f=>document.getElementById(f).value='');
       document.getElementById('ficha-porcoes').value='1';
       document.getElementById('ficha-yield-unit').value='portion';
       document.getElementById('total-unit-label').textContent='Por porção';
@@ -803,6 +815,9 @@
         yieldUnit:normalizeRecipeYieldUnit(document.getElementById('ficha-yield-unit').value),
         markup,totalCost,venda,
         porcaoSize:recipePortionSize,
+        modoPreparo:document.getElementById('ficha-modo-preparo').value.trim(),
+        observacoes:existingRecipe?.observacoes||'',
+        origem:existingRecipe?.origem||'manual',
         nutritionTotals:calculateRecipeNutritionTotals(ingredientRefs),
         nutritionPortion:calculateRecipeNutritionPortion(ingredientRefs,recipePortionSize,recipeYield),
         image:recipeImage,
@@ -827,6 +842,8 @@
         return;
       }
       showToast(DB.mode?.() === "supabase" ? `"${nome}" salva no banco!` : `"${nome}" salva!`);
+      document.getElementById('recipe-search').value='';
+      activeIngFilter=null;
       showPage('receitas','nav-receitas');
       renderRecipes('',null);
       focusRecipeCard(recipe.id);
@@ -914,6 +931,10 @@
           <span class="material-symbols-rounded" style="font-size:14px">calendar_today</span>
           Criada em ${new Date(r.createdAt).toLocaleDateString('pt-BR')} · ${r.ingredients.length} ingrediente(s)
         </div>
+        <div class="recipe-preparation-view">
+          <button type="button" class="btn btn-secondary" id="recipe-preparation-toggle" aria-controls="recipe-preparation-content" aria-expanded="false"><span class="material-symbols-rounded" aria-hidden="true">menu_book</span>Modo de preparo<span class="material-symbols-rounded preparation-chevron" aria-hidden="true">expand_more</span></button>
+          <div id="recipe-preparation-content" class="recipe-preparation-content" hidden>${r.modoPreparo?escapeHtml(r.modoPreparo):'Modo de preparo ainda não informado. Clique em Editar para adicioná-lo.'}</div>
+        </div>
         ${changed?`<div style="background:${diff>0?'var(--r100)':'var(--g50)'};border:1px solid ${diff>0?'var(--r400)':'var(--g200)'};border-radius:var(--r-md);padding:var(--s3) var(--s4);margin-bottom:var(--s4);font-size:12px;color:${diff>0?'var(--r400)':'var(--g600)'};display:flex;align-items:flex-start;gap:var(--s2)">
           <span class="material-symbols-rounded" style="font-size:16px;flex-shrink:0">sync</span>
           <span><strong>Preços atualizados</strong><br>Custo salvo: ${fmtBRL(r.totalCost)} → Atual: <strong>${fmtBRL(totalCost)}</strong>${diff!==0?` (${diff>0?'+':''}${fmtBRL(diff)})`:''}  </span>
@@ -968,16 +989,16 @@
         <table class="nutrition-table" style="margin-bottom:var(--s4)">
           <tbody>${renderNutritionRows(nutritionSummary.nutrition)}</tbody>
         </table>
-        ${r.modoPreparo?`<div style="margin-top:var(--s4)">
-          <div style="font-size:11px;font-weight:700;color:var(--n600);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:var(--s2);display:flex;align-items:center;gap:4px">
-            <span class="material-symbols-rounded" style="font-size:14px">menu_book</span> Modo de Preparo
-          </div>
-          <div style="font-size:13px;color:var(--n800);line-height:1.7;background:var(--n50);border-radius:var(--r-md);padding:var(--s3) var(--s4)">${escapeHtml(r.modoPreparo).replace(/\n/g,'<br>')}</div>
-        </div>`:''}
         ${r.observacoes?`<div style="margin-top:var(--s3);font-size:12px;color:var(--n600);background:var(--warn-bg);border-radius:var(--r-md);padding:var(--s3) var(--s4);line-height:1.6">
           <strong>Obs:</strong> ${escapeHtml(r.observacoes).replace(/\n/g,'<br>')}</div>`:''}`;
       const productionInput=document.getElementById('recipe-production-quantity');
       productionInput?.addEventListener('input',()=>updateRecipeProductionGuide(r,productionInput.value));
+      const prepToggle=document.getElementById('recipe-preparation-toggle');
+      prepToggle?.addEventListener('click',()=>{
+        const panel=document.getElementById('recipe-preparation-content');
+        panel.hidden=!panel.hidden;
+        prepToggle.setAttribute('aria-expanded',String(!panel.hidden));
+      });
       document.getElementById('modal-recipe').classList.add('open');
     }
     async function deleteCurrentRecipe(){
@@ -1009,6 +1030,7 @@
       recipeImageOperationId+=1;
       setRecipeImageProcessing(false);
       document.getElementById('ficha-nome').value=r.nome;
+      document.getElementById('ficha-modo-preparo').value=r.modoPreparo||'';
       document.getElementById('ficha-rendimento').value=r.rendimento||'';
       document.getElementById('ficha-porcoes').value=r.porcoes||'';
       document.getElementById('ficha-yield-unit').value=normalizeRecipeYieldUnit(r.yieldUnit);
@@ -1146,6 +1168,12 @@
     function getCurrentRecipeImage() { return currentRecipeImage ? {...currentRecipeImage} : null; }
 
     bindRecipeImageEditor();
+    const ingredientList=document.getElementById('ingredients-list');
+    window.FichaTecIngredientOrder.bindIngredientOrder(ingredientList,{onMove:reorderIngredient,onCancel:renderIngredients,canMove:()=>!recipeSaveInFlight});
+    ingredientList.addEventListener('click',event=>{
+      const button=event.target.closest('[data-remove-ingredient]');
+      if(button)removeIngredient(button.dataset.removeIngredient);
+    });
 
     return {
       findStockItem: runWithState(findStockItem, {commit:false}),

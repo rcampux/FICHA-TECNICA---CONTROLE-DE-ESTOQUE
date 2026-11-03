@@ -1,5 +1,17 @@
 # FichaTec - Inventario de Funcoes
 
+## Ordem dos ingredientes e modo de preparo — novembro de 2026
+
+| Funções | Arquivo | Responsabilidade |
+|---|---|---|
+| `exposeIngredientOrder`, `moveIngredient` | `src/modules/recipes/ingredientOrder.js` | Expõe reordenação imutável, preservando os dados dos ingredientes. |
+| `bindIngredientOrder`, `rows`, `placeAtPointer`, `scrollWhileDragging`, `finish` | `src/modules/recipes/ingredientOrder.js` | Arraste por mouse/toque/caneta, rolagem nas bordas, cancelamento e teclado. |
+| `reorderIngredient` | `src/modules/recipes/recipeSheet.js` | Aplica ordem à ficha e informa a posição ao leitor de tela. |
+| `renderIngredients`, `removeIngredient` (alteradas) | `src/modules/recipes/recipeSheet.js` | Alças de arraste, remoção compatível com UUID e conteúdo escapado. |
+| `saveRecipe`, `clearFicha`, `loadRecipeToFicha`, `viewRecipe` (alteradas) | `src/modules/recipes/recipeSheet.js` | Persiste/restaura preparo; botão expansível; limpa filtros e abre receitas após sucesso. Preserva notas e origem. |
+| `mapRecipeIngredientToRemote`, `mapRecipeFromRemote`, `saveRecipes`, `rollbackRecipeSave` (alteradas) | `src/services/repositories/supabaseDomainRepository.js` | Posições persistidas, leitura ordenada, rollback da ordem e IDs estáveis para evitar duplicação em salvamentos consecutivos. |
+| `read`, `recipeHarness`, `element` | `tests/recipe-preparation.test.mjs` | Apoio a testes de reordenação, ida/volta remota e salvamento do formulário. |
+
 ## Cozinha / Kanban — novembro de 2026
 
 | Funções | Arquivo | Responsabilidade |

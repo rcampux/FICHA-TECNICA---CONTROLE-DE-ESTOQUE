@@ -1,0 +1,101 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import vm from 'node:vm';
+import {readFileSync} from 'node:fs';
+import {webcrypto} from 'node:crypto';
+
+const read=file=>readFileSync(new URL(`../src/${file}`,import.meta.url),'utf8');
+const modelContext={window:{FichaTecStorageKeys:{recipes:'recipes'}},crypto:webcrypto};
+vm.runInNewContext(read('modules/recipes/ingredientOrder.js'),modelContext);
+vm.runInNewContext(read('services/repositories/supabaseDomainRepository.js'),modelContext);
+const order=modelContext.window.FichaTecIngredientOrder;
+const repo=modelContext.window.FichaTecSupabaseDomainRepository;
+
+test('reordenar preserva objetos, quantidades, custo e nutrição sem mutar a lista',()=>{
+  const original=[{id:'a',qtyG:100,cost:3,nutrition:{kcal:200}},{id:'b',qtyG:20},{id:'c',qtyG:5}];
+  const result=order.moveIngredient(original,0,2);
+  assert.equal(result.map(i=>i.id).join(','),'b,c,a');
+  assert.equal(original.map(i=>i.id).join(','),'a,b,c');
+  assert.equal(result[2],original[0]);
+  assert.equal(order.moveIngredient(original,-1,2),original);
+  assert.equal(order.moveIngredient(original,0,3),original);
+  assert.equal(order.moveIngredient(original,1,1),original);
+});
+test('ordem persistida e preparo sobrevivem ao retorno desordenado do banco',()=>{
+  const ingredients=[{id:'a',name:'Leite',qtyG:360,qtyBruta:360},{id:'b',name:'Manteiga',qtyG:20,qtyBruta:20}];
+  const payloads=ingredients.map((i,index)=>repo.mapRecipeIngredientToRemote(i,'recipe','org',index));
+  assert.equal(payloads[0].sort_order,0);assert.equal(payloads[1].sort_order,1);
+  const recipe=repo.mapRecipeFromRemote({id:'recipe',name:'Brigadeiro',preparation_method:'1. Misture.\n2. Cozinhe.',recipe_ingredients:[payloads[1],payloads[0]]});
+  assert.equal(recipe.ingredients.map(i=>i.name).join(','),'Leite,Manteiga');
+  assert.equal(recipe.modoPreparo,'1. Misture.\n2. Cozinhe.');
+  assert.equal(repo.mapRecipeToRemote(recipe,'org').preparation_method,recipe.modoPreparo);
+});
+
+test('salvar e reordenar na mesma sessão reutiliza IDs e não duplica ingredientes',async()=>{
+  const tables={recipes:new Map(),recipe_ingredients:new Map()};
+  const client={from(table){
+    let action='select',payload,single=false;const predicates=[];
+    const q={select(){return q;},eq(key,value){predicates.push(row=>row[key]===value);return q;},is(key,value){predicates.push(row=>(row[key]??null)===value);return q;},not(key,_op,value){const excluded=value.slice(1,-1).split(',');predicates.push(row=>!excluded.includes(row[key]));return q;},upsert(value){action='upsert';payload=value;return q;},update(value){action='update';payload=value;return q;},delete(){action='delete';return q;},single(){single=true;return q;},maybeSingle(){single=true;return q;},then(resolve){
+      let result=[...tables[table].values()].filter(row=>predicates.every(p=>p(row)));
+      if(action==='upsert')result=(Array.isArray(payload)?payload:[payload]).map(row=>{const saved={...row,id:row.id||webcrypto.randomUUID()};tables[table].set(saved.id,saved);return saved;});
+      if(action==='delete')result.forEach(row=>tables[table].delete(row.id));
+      if(action==='update')result.forEach(row=>Object.assign(row,payload));
+      if(table==='recipes'&&action==='select')result=result.map(row=>({...row,recipe_ingredients:[...tables.recipe_ingredients.values()].filter(i=>i.recipe_id===row.id)}));
+      return Promise.resolve(resolve({data:single?(result[0]||null):result,error:null}));
+    }};return q;
+  }};
+  let [saved]=await repo.saveRecipes(client,'org',[{id:1,nome:'Teste',modoPreparo:'Misturar.',ingredients:[{id:10,name:'A',qtyG:10},{id:20,name:'B',qtyG:20}]}]);
+  assert.equal(tables.recipe_ingredients.size,2);
+  const firstId=saved.ingredients[0].remoteId;
+  saved={...saved,ingredients:[...saved.ingredients].reverse()};
+  [saved]=await repo.saveRecipes(client,'org',[saved]);
+  assert.equal(tables.recipe_ingredients.size,2);
+  assert.equal(saved.ingredients[1].remoteId,firstId);
+  assert.equal(tables.recipe_ingredients.get(firstId).sort_order,1);
+  const loaded=repo.mapRecipeFromRemote({...tables.recipes.get(saved.remoteId),recipe_ingredients:[...tables.recipe_ingredients.values()]});
+  assert.equal(loaded.ingredients.map(i=>i.name).join(','),'B,A');
+});
+
+function recipeHarness(){
+  const elements=new Map(),routes=[],messages=[];
+  let reorder,fail=false;
+  const element=id=>{
+    if(id.startsWith('recipe-image-'))return null;
+    if(!elements.has(id))elements.set(id,{value:'',innerHTML:'',textContent:'',dataset:{},style:{},hidden:false,classList:{add(){},remove(){},toggle(){}},setAttribute(){},getAttribute(){return null;},addEventListener(){},querySelectorAll(){return [];}});
+    return elements.get(id);
+  };
+  const ingredients=[{id:'uuid-a',stockId:1,name:'Leite',qtyG:360,qtyBruta:360,unit:'g',rendimento:100,cost:3,nutrition:{}},{id:'uuid-b',stockId:2,name:'Manteiga',qtyG:20,qtyBruta:20,unit:'g',rendimento:100,cost:1,nutrition:{}}];
+  let recipes=[{id:'recipe-1',nome:'Brigadeiro',ingredients,modoPreparo:'Texto anterior',observacoes:'Manter refrigerado',origem:'scan',porcoes:20,yieldUnit:'unit',markup:0,createdAt:'2026-11-02',totalCost:4}];
+  const context={window:{FichaTecIngredientOrder:{...order,bindIngredientOrder:(_el,options)=>{reorder=options.onMove;}},requestAnimationFrame(){},setTimeout(){}},document:{getElementById:element,querySelector(){return null;}},console:{error(){},warn(){}}};
+  vm.runInNewContext(read('modules/recipes/recipeSheet.js'),context);
+  const module=context.window.FichaTecRecipeSheet.createRecipeSheetModule({
+    closeModal(){},confirmAction:async()=>true,
+    db:{mode:()=>'supabase',activeOrganizationId:()=>'org',saveLocal(){},saveRemote:async(_key,value)=>{if(fail)throw Error('network');return value;}},
+    formatCurrency:n=>String(n),formatQuantity:n=>String(n),getNutrition:()=>({}),
+    getPhysicalStock:()=>[],getStock:()=>ingredients.map(i=>({id:i.stockId,name:i.name,price:1,qty:1,unit:'g'})),getRecipes:()=>recipes,
+    pricePerUnit:()=>.01,setPhysicalStock(){},setStock(){},setRecipes:value=>{recipes=value;},showPage:page=>routes.push(page),showToast:m=>messages.push(m),storageKeys:{recipes:'recipes'},
+  });
+  return {module,element,routes,getRecipes:()=>recipes,reorder:(a,b)=>reorder(a,b),setFail:value=>{fail=value;}};
+}
+test('salvar edição mantém preparo, ordem e metadados e abre receitas apenas após sucesso',async()=>{
+  const h=recipeHarness();h.module.editRecipe('recipe-1');
+  assert.equal(h.element('ficha-modo-preparo').value,'Texto anterior');
+  h.reorder(0,1);
+  h.element('ficha-modo-preparo').value='1. Misture.\n2. Cozinhe <lentamente>.';
+  h.element('recipe-search').value='filtro antigo';
+  h.setFail(true);await h.module.saveRecipe();
+  assert.equal(h.routes.at(-1),'ficha');
+  assert.equal(h.element('ficha-modo-preparo').value,'1. Misture.\n2. Cozinhe <lentamente>.');
+  h.setFail(false);await h.module.saveRecipe();
+  assert.equal(h.routes.at(-1),'receitas');
+  const saved=h.getRecipes()[0];
+  assert.equal(saved.ingredients.map(i=>i.id).join(','),'uuid-b,uuid-a');
+  assert.equal(saved.modoPreparo,'1. Misture.\n2. Cozinhe <lentamente>.');
+  assert.equal(saved.observacoes,'Manter refrigerado');assert.equal(saved.origem,'scan');
+  assert.equal(h.element('recipe-search').value,'');assert.equal(h.element('ficha-modo-preparo').value,'');
+  h.module.viewRecipe('recipe-1');
+  const detail=h.element('recipe-detail-content').innerHTML;
+  assert.ok(detail.includes('id="recipe-preparation-toggle"'));
+  assert.ok(detail.includes('&lt;lentamente&gt;'));assert.ok(!detail.includes('<lentamente>'));
+  h.module.editRecipe('recipe-1');assert.equal(h.element('ficha-modo-preparo').value,saved.modoPreparo);
+});

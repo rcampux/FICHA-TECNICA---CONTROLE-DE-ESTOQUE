@@ -1,0 +1,30 @@
+.ingredient-order-help { color:#7b6d68; font-size:12px; line-height:1.5; margin:0 0 12px; }
+.ingredient-grip { display:grid; place-items:center; width:36px; min-height:44px; flex:none; padding:0; border:0; border-radius:10px; color:#95847d; background:transparent; cursor:grab; touch-action:none; user-select:none; -webkit-user-select:none; }
+.ingredient-grip:hover,.ingredient-grip:focus-visible { color:#b4232f; background:#f7e8ea; }
+.ingredient-grip:focus-visible { outline:2px solid #b4232f; outline-offset:2px; }
+#ingredients-list .ingredient-row { gap:10px; border-radius:10px; transition:background .15s; }
+#ingredients-list.is-reordering { user-select:none; -webkit-user-select:none; }
+#ingredients-list .ingredient-row.is-reordering { background:#fbe9eb; box-shadow:0 0 0 2px #b4232f33; }
+.ingredient-row.is-reordering .ingredient-grip { cursor:grabbing; color:#b4232f; }
+.ingredient-order-status { color:#77665f; font-size:11px; line-height:1.5; margin:10px 0 0; }
+.ingredient-order-status:empty { display:none; }
+#recipe-composition { display:flex; flex-direction:column; gap:20px; min-width:0; }
+.recipe-preparation-editor { min-width:0; margin:0; }
+.recipe-preparation-editor .card-title { display:flex; align-items:center; gap:8px; }
+.recipe-preparation-editor p { color:#7b6d68; font-size:12px; line-height:1.6; margin:0 0 14px; }
+#ficha-modo-preparo { width:100%; min-height:160px; resize:vertical; font:inherit; font-size:14px; line-height:1.7; padding:16px; border:0; border-radius:14px; background:#f6f3f2; color:#352c28; }
+.recipe-preparation-view { margin:0 0 20px; }
+#recipe-preparation-toggle { min-height:44px; gap:8px; }
+#recipe-preparation-toggle[aria-expanded="true"] { background:#f7e8ea; color:#a51c2a; }
+#recipe-preparation-toggle[aria-expanded="true"] .preparation-chevron { transform:rotate(180deg); }
+.recipe-preparation-content { margin-top:12px; padding:18px; border-radius:16px; background:#f4f0ee; color:#4b3c35; font-size:14px; line-height:1.8; white-space:pre-wrap; overflow-wrap:anywhere; }
+@media (min-width:768px) {
+  #page-ficha>#recipe-composition { grid-area:ingredients; }
+}
+@media (max-width:767px) {
+  #ficha-modo-preparo { font-size:16px; }
+  #ingredients-list .ingredient-row { gap:6px; }
+  .ingredient-grip { width:30px; }
+  #ingredients-list .ing-name { overflow-wrap:anywhere; }
+  #ingredients-list .ing-cost { white-space:nowrap; font-size:12px; }
+}

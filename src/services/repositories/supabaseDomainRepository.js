@@ -309,7 +309,7 @@
       id: row.localId || row.id,
       remoteId: row.id,
       nome: row.name,
-      ingredients: (row.recipe_ingredients || []).map(mapRecipeIngredientFromRemote),
+      ingredients: [...(row.recipe_ingredients || [])].sort((a,b)=>normalizeNumber(a.sort_order)-normalizeNumber(b.sort_order)||String(a.created_at||'').localeCompare(String(b.created_at||''))||String(a.id).localeCompare(String(b.id))).map(mapRecipeIngredientFromRemote),
       rendimento: normalizeNumber(row.yield_g),
       porcoes: normalizeNumber(row.portions, 1),
       yieldUnit: row.yield_unit === "unit" ? "unit" : "portion",
@@ -333,7 +333,7 @@
     };
   }
 
-  function mapRecipeIngredientToRemote(ingredient, recipeId, organizationId) {
+  function mapRecipeIngredientToRemote(ingredient, recipeId, organizationId, sortOrder = 0) {
     const remoteId = getRemoteId(ingredient);
     const rawStockId = String(ingredient.stockId || "");
     const rawPhysicalId = String(ingredient.physicalId || "").replace(/^pf_/, "");
@@ -346,6 +346,7 @@
       ...(remoteId ? {id: remoteId} : {}),
       organization_id: organizationId,
       recipe_id: recipeId,
+      sort_order: sortOrder,
       stock_item_id: stockRemoteId,
       physical_stock_item_id: physicalRemoteId,
       name: ingredient.name,
@@ -624,6 +625,7 @@
         id:ingredient.id,
         organization_id:ingredient.organization_id,
         recipe_id:ingredient.recipe_id,
+        sort_order:ingredient.sort_order||0,
         stock_item_id:ingredient.stock_item_id,
         physical_stock_item_id:ingredient.physical_stock_item_id,
         name:ingredient.name,
@@ -671,9 +673,11 @@
         if (recipeError) throw recipeError;
         savedRecipe = data;
 
-        const ingredientRows = (recipe.ingredients || []).map((ingredient) =>
-          mapRecipeIngredientToRemote(ingredient, savedRecipe.id, organizationId)
-        );
+        const ingredientRows = (recipe.ingredients || []).map((ingredient,index) => ({
+          ...mapRecipeIngredientToRemote(ingredient, savedRecipe.id, organizationId,index),
+          id:getRemoteId(ingredient)||crypto.randomUUID(),
+        }));
+        const savedIngredients=(recipe.ingredients||[]).map((ingredient,index)=>({...ingredient,remoteId:ingredientRows[index].id}));
 
         if (ingredientRows.length) {
           const {error: ingredientError} = await client
@@ -683,11 +687,12 @@
           if (ingredientError) throw ingredientError;
         }
 
-        await deleteMissingRecipeIngredients(client, savedRecipe.id, recipe.ingredients || []);
+        await deleteMissingRecipeIngredients(client, savedRecipe.id, savedIngredients);
         const image = await persistRecipeImage(client, organizationId, recipe, savedRecipe, previousImagePath);
         const savedItem = {
           ...recipe,
           remoteId:savedRecipe.id,
+          ingredients:savedIngredients,
           imagePath:image?.path || null,
         };
         if (image) savedItem.image = image;
