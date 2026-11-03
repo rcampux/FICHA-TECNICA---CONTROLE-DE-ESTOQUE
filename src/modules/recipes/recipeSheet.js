@@ -1221,9 +1221,7 @@
     function exportRecipePDF(id) {
       const recipe = recipes.find(item => String(item.id) === String(id));
       if (!recipe) return;
-      const preview = window.open('', '_blank');
-      if (!preview) { showToast('Permita a abertura da prévia para salvar o PDF.'); return; }
-      preview.opener = null;
+      const preview = window.FichaTecRecipePrint.openRecipePreview();
       const price = calcCosts(recipe.ingredients, recipe.markup, recipe.rendimento);
       const count = Number(recipe.porcoes) || 1;
       const unit = normalizeRecipeYieldUnit(recipe.yieldUnit) === 'unit' ? 'unidade' : 'porção';

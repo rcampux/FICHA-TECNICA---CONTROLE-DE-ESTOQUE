@@ -291,3 +291,25 @@ test('PDF da receita preserva ordem, custos e preparo e recupera uma foto indisp
   assert.match(html, /id="cover-photo" src="https:\/\/example\.test\/assets\/images\/caderno-cozinha\.jpg"/);
   assert.doesNotMatch(html, /javascript:|<figure class="technical-photo">/);
 });
+
+test('prévia embutida funciona no celular e com popups bloqueados no desktop', () => {
+  for (const mobile of [true, false]) {
+    let opens = 0, shown = false, removed = false, onClose;
+    const frame = {contentWindow:{}, remove(){ removed = true; }};
+    const dialog = {
+      append(element){ assert.equal(element, frame); },
+      addEventListener(event, listener){ assert.equal(event, 'close'); onClose = listener; },
+      showModal(){ shown = true; },
+    };
+    const ctx = {
+      window:{matchMedia:()=>({matches:mobile}), open(){ opens++; return null; }},
+      document:{getElementById:()=>dialog, createElement:()=>frame},
+    };
+    vm.runInNewContext(read('modules/recipes/recipePrint.js'), ctx);
+    assert.equal(ctx.window.FichaTecRecipePrint.openRecipePreview(), frame.contentWindow);
+    assert.equal(opens, mobile ? 0 : 1);
+    assert.equal(shown, true);
+    onClose();
+    assert.equal(removed, true);
+  }
+});

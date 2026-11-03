@@ -34,3 +34,5 @@ No Brigadeiro com 445 g de ingredientes e 378,25 g de rendimento estimado, a per
 Para conferir um lote, abra a ficha em Receitas, informe a quantidade e o peso de cada peça e toque em Calcular.
 
 O X no alto dos detalhes fecha a receita mesmo após rolar o conteúdo. O rodapé reúne Excluir, Editar e PDF. No card ou nos detalhes, PDF abre o caderno da receita. O botão **Salvar ou imprimir PDF** abre a impressão do navegador. A primeira parte reúne foto, rendimento, ingredientes na ordem salva e preparo. A ficha técnica reúne venda, lucro, perda e informação nutricional. O caderno usa os valores da receita-base e os preços vigentes de seus ingredientes.
+
+No celular, a prévia do PDF abre no próprio app e tem um X para voltar à receita. O mesmo fluxo atende navegadores de desktop que bloqueiam novas abas.

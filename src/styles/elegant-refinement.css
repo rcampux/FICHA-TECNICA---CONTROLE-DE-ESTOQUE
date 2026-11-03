@@ -203,11 +203,6 @@ textarea:focus,
   box-shadow: 0 20px 56px rgba(53, 34, 31, 0.13);
 }
 
-.markup-row {
-  background: #fff6e7;
-  border-color: transparent;
-}
-
 .info-banner,
 #ing-selected-info {
   border-color: transparent;

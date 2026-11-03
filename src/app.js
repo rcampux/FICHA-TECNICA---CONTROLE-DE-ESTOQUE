@@ -539,6 +539,7 @@ document.querySelectorAll('.modal-overlay').forEach(m=>{
 syncModalAccessibility();
 
 document.addEventListener('keydown',event=>{
+  if (document.getElementById('recipe-print-preview')?.open) return;
   if(!activeModal)return;
   if(event.key==='Escape'){
     if(activeModal.id==='modal-auth'&&activeModal.classList.contains('auth-gate'))return;

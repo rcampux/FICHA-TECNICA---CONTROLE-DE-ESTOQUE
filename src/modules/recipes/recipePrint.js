@@ -1,4 +1,21 @@
 (function exposeRecipePrint() {
+  function openRecipePreview() {
+    if (!window.matchMedia?.('(max-width: 600px)').matches) {
+      const tab = window.open('', '_blank');
+      if (tab) {
+        tab.opener = null;
+        return tab;
+      }
+    }
+    const dialog = document.getElementById('recipe-print-preview');
+    const frame = document.createElement('iframe');
+    frame.title = 'Páginas da receita para imprimir';
+    dialog.append(frame);
+    dialog.addEventListener('close', () => frame.remove(), {once:true});
+    dialog.showModal();
+    return frame.contentWindow;
+  }
+
   function choosePrintPhoto(name, ingredients) {
     const normalize = value => String(value ?? '').toLocaleLowerCase('pt-BR').normalize('NFD').replace(/[\u0300-\u036f]/g, '');
     const title = normalize(name);
@@ -83,5 +100,5 @@
     }
   }
 
-  window.FichaTecRecipePrint = {writeRecipeBook};
+  window.FichaTecRecipePrint = {openRecipePreview, writeRecipeBook};
 })();
