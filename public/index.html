@@ -330,9 +330,9 @@
     <div class="total-box">
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--s4)">
         <div><div class="total-label">Custo Total</div><div class="total-value" id="total-custo">R$ 0,00</div></div>
-        <div><div class="total-label">Preço de Venda</div><div class="total-value" id="total-venda">R$ 0,00</div></div>
-        <div><div class="total-label" id="total-unit-label">Por porção</div><div class="total-value" id="total-porcao" style="font-size:16px">R$ 0,00</div></div>
-        <div><div class="total-label">Por KG</div><div class="total-value" id="total-kg" style="font-size:16px">—</div></div>
+        <div><div class="total-label">Venda do lote</div><div class="total-value" id="total-venda">R$ 0,00</div></div>
+        <div><div class="total-label" id="total-unit-label">Venda por porção</div><div class="total-value" id="total-porcao" style="font-size:16px">R$ 0,00</div></div>
+        <div><div class="total-label">Custo por kg</div><div class="total-value" id="total-kg" style="font-size:16px">—</div></div>
       </div>
     </div>
 
@@ -422,12 +422,18 @@
     </div>
     <div class="page-header-image" role="img" aria-label="Bancada de cozinha com ingredientes frescos"></div>
   </div>
-  <div class="search-bar">
-    <span class="material-symbols-rounded search-icon">search</span>
-    <input type="text" placeholder="Buscar receita..." oninput="renderRecipes(this.value,activeIngFilter)" id="recipe-search">
+  <div class="recipe-filter-bar">
+    <div class="search-bar">
+      <span class="material-symbols-rounded search-icon" aria-hidden="true">search</span>
+      <input type="search" aria-label="Buscar receita" placeholder="Buscar receita..." oninput="renderRecipes(this.value,activeIngFilter)" id="recipe-search">
+    </div>
+    <button class="btn btn-secondary" id="recipe-filter-trigger" type="button" aria-label="Filtrar por ingrediente" aria-controls="recipe-filter-panel" aria-expanded="false"><span class="material-symbols-rounded" aria-hidden="true">filter_list</span> Filtro<span id="recipe-filter-count" hidden>1</span></button>
+    <div class="category-filter-panel" id="recipe-filter-panel" role="region" aria-label="Filtro de ingredientes" hidden>
+      <div class="category-filter-header"><strong>Filtrar por ingrediente</strong><button type="button" class="category-panel-close" data-close-category-panel aria-label="Fechar filtros"><span class="material-symbols-rounded" aria-hidden="true">close</span></button></div>
+      <div class="category-filter-options" id="ingredient-filter-chips"></div>
+      <button type="button" class="btn btn-quiet" data-ingredient-filter="">Limpar filtro</button>
+    </div>
   </div>
-  <div class="section-label" style="margin-top:0;margin-bottom:var(--s2)">Filtrar por ingrediente</div>
-  <div class="filter-chips" id="ingredient-filter-chips"></div>
   <div id="recipes-list"></div>
 </div>
 
@@ -1054,6 +1060,7 @@
 <script src="../src/modules/billing/planAccess.js" defer></script>
 <script src="../src/modules/nutrition/nutritionDefaults.js" defer></script>
 <script src="../src/modules/recipes/ingredientOrder.js" defer></script>
+<script src="../src/modules/recipes/productionPlan.js" defer></script>
 <script src="../src/modules/recipes/recipeSheet.js" defer></script>
 <script src="../src/modules/scanner/scannerRecipe.js" defer></script>
 <script src="../src/modules/stock/stockPricing.js" defer></script>

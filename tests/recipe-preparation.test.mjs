@@ -67,6 +67,7 @@ function recipeHarness(){
   const ingredients=[{id:'uuid-a',stockId:1,name:'Leite',qtyG:360,qtyBruta:360,unit:'g',rendimento:100,cost:3,nutrition:{}},{id:'uuid-b',stockId:2,name:'Manteiga',qtyG:20,qtyBruta:20,unit:'g',rendimento:100,cost:1,nutrition:{}}];
   let recipes=[{id:'recipe-1',nome:'Brigadeiro',ingredients,modoPreparo:'Texto anterior',observacoes:'Manter refrigerado',origem:'scan',porcoes:20,yieldUnit:'unit',markup:0,createdAt:'2026-11-02',totalCost:4}];
   const context={window:{FichaTecIngredientOrder:{...order,bindIngredientOrder:(_el,options)=>{reorder=options.onMove;}},requestAnimationFrame(){},setTimeout(){}},document:{getElementById:element,querySelector(){return null;}},console:{error(){},warn(){}}};
+  vm.runInNewContext(read('modules/recipes/productionPlan.js'),context);
   vm.runInNewContext(read('modules/recipes/recipeSheet.js'),context);
   const module=context.window.FichaTecRecipeSheet.createRecipeSheetModule({
     closeModal(){},confirmAction:async()=>true,
@@ -108,13 +109,53 @@ test('planeja 10 peças de 25 g a partir de 20 de 50 g, sem alterar a base',()=>
   r.ingredients[1].qtyG=r.ingredients[1].qtyBruta=200;
   const snapshot=JSON.stringify(r);
   const rows=r.ingredients.map((_,i)=>({dataset:{productionIngredient:String(i)},closest:()=>null}));
-  const status={},detail=h.element('recipe-detail-content');
-  detail.querySelectorAll=()=>rows; detail.querySelector=()=>status;
+  const money={dataset:{planValue:'sale'}};
+  const detail=h.element('recipe-detail-content');
+  detail.querySelectorAll=selector=>selector==='[data-plan-value]'?[money]:rows;
+  h.element('production-unit').value='unit';
+  h.element('production-markup').value='100';
   h.element('recipe-production-quantity').value='10';
   h.element('production-weight').value='25';
   h.module.viewRecipe(r.id);
-  assert.match(detail.innerHTML,/9,09%/);
-  assert.deepEqual(rows.map(x=>x.textContent),['225','50']);
-  assert.match(status.textContent,/Venda por unidade: 0.55 · Venda do lote: 5.5/);
+  assert.equal(h.element('production-loss').textContent,'25 g (9,09%)');
+  assert.deepEqual(rows.map(x=>x.textContent),['225 g','50 g']);
+  assert.equal(money.textContent,'5.5');
+  h.element('production-markup').value='0';
+  h.element('production-form').oninput();
+  assert.equal(money.textContent,'2.75');
+  h.element('production-unit').value='portion';
+  h.element('recipe-production-quantity').value='2.5';
+  h.element('production-form').onchange();
+  assert.equal(h.element('production-piece-label').textContent,'Venda por porção');
+  assert.equal(h.element('production-status').textContent,'2,5 porções de 25 g cada.');
+  h.element('production-unit').value='unit';
+  h.element('production-form').onchange();
+  assert.equal(money.textContent,'—');
   assert.equal(JSON.stringify(r),snapshot);
+});
+
+test('brigadeiro: custo é a soma dos quatro itens em centavos e a perda acompanha a produção',()=>{
+  vm.runInNewContext(read('modules/recipes/productionPlan.js'),modelContext);
+  const {calculatePlan} = modelContext.window.FichaTecProduction;
+  const recipe = {porcoes:20,rendimento:378.25,ingredients:[
+    {qtyBruta:360,rate:5.69/395},{qtyBruta:15,rate:9.9/100},
+    {qtyBruta:20,rate:11.9/200},{qtyBruta:50,rate:2.99/200},
+  ]};
+  const draft = {count:20,weight:18.9125,unit:'portion',markup:100};
+  const price = item=>item.rate;
+  const base=calculatePlan(recipe,draft,price);
+  assert.deepEqual(Array.from(base.ingredients,i=>i.cost),[5.19,1.49,1.19,.75]);
+  assert.deepEqual([base.rawWeight,base.finalWeight,base.loss,base.lossPercent,base.totalCost,base.venda],[445,378.25,66.75,15,8.62,17.24]);
+  const batch=calculatePlan(recipe,{...draft,count:10,weight:25},price);
+  assert.equal(batch.finalWeight,250);
+  assert.ok(Math.abs(batch.rawWeight-250/.85)<1e-9);
+  assert.ok(Math.abs(batch.lossPercent-15)<1e-9);
+  assert.equal(batch.salePerPiece,batch.venda/10);
+  const withoutWeight=calculatePlan({...recipe,rendimento:0},{...draft,count:5},price);
+  assert.equal(withoutWeight.factor,.25);
+  assert.equal(withoutWeight.loss,null);
+  const mixed=calculatePlan({...recipe,ingredients:[{unit:'ml',qtyBruta:50,rate:.03}]},draft,price);
+  assert.equal(mixed.rawWeight,null);
+  assert.equal(mixed.loss,null);
+  assert.equal(repo.mapRecipeIngredientToRemote({savedPricePerG:5.69/395},'recipe','org').saved_unit_price_cents,1.440506);
 });

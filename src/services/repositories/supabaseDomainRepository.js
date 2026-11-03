@@ -355,7 +355,8 @@
       gross_quantity: normalizeNumber(ingredient.qtyBruta),
       yield_percent: normalizeNumber(ingredient.rendimento, 100),
       cost_cents: centsFromCurrency(ingredient.cost),
-      saved_unit_price_cents: centsFromCurrency(ingredient.savedPricePerG || 0),
+      // A price per gram can be a fraction of one cent.
+      saved_unit_price_cents: Number((normalizeNumber(ingredient.savedPricePerG) * 100).toFixed(6)),
       nutrition_snapshot: ingredient.nutrition || {},
     };
   }

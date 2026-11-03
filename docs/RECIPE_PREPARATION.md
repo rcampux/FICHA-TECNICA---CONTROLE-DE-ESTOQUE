@@ -21,4 +21,10 @@ Auditoria Supabase: nenhum apontamento de RLS para a alteração. Aviso preexist
 
 Nos cards, Ver ingredientes precede Modo de preparo. Ambos expandem seu conteúdo no próprio card, independentemente; o PDF permanece disponível. Nos detalhes, o atalho Ver ingredientes aparece antes de Modo de preparo e leva às quantidades abaixo do planejamento, preservando o ajuste de produção.
 
-Próximo passo: abrir uma receita existente e consultar ingredientes e preparo pelos novos botões.
+Na biblioteca, o botão Filtro abre o painel de ingredientes. Uma seleção fecha o painel e pode ser combinada com a busca por nome. O card exibe a venda do lote e a média por unidade ou porção.
+
+No planejamento, a quantidade e o peso por peça determinam o peso final desejado. A razão entre esse peso e o peso pronto cadastrado dimensiona cada ingrediente e a perda. O markup pode ser simulado por lote. Calcular exibe os pesos, a perda percentual, os preços e a lista de ingredientes. Com o resultado aberto, os valores acompanham a edição. Fichas sem pesagem admitem planejamento por quantidade. Receitas com itens em ml ou unidades precisam de mais informação para expressar o peso bruto em gramas.
+
+O custo do lote soma os custos de cada ingrediente arredondados em centavos. O markup incide sobre essa soma. O valor por peça é a média da venda do lote. O PDF apresenta os dados da receita cadastrada.
+
+Para conferir um lote, abra a ficha em Receitas, informe a quantidade e o peso de cada peça e toque em Calcular.

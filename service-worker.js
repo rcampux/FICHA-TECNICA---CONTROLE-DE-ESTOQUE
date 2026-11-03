@@ -34,6 +34,7 @@ const APP_SHELL = [
   "/src/modules/billing/planAccess.js",
   "/src/modules/nutrition/nutritionDefaults.js",
   "/src/modules/recipes/recipeSheet.js",
+  "/src/modules/recipes/productionPlan.js",
   "/src/modules/scanner/scannerRecipe.js",
   "/src/modules/stock/categoryCatalog.js",
   "/src/modules/stock/stockPricing.js",

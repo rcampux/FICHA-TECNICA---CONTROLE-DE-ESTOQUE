@@ -463,11 +463,15 @@
       };
     }
 
-    function bindRecipeFilterActions(filterElement) {
-      filterElement.onclick = (event) => {
-        const chip = event.target.closest("[data-ingredient-filter]");
-        if (!chip || !filterElement.contains(chip)) return;
-        setIngFilter(chip.dataset.ingredientFilter || null);
+    function bindRecipeFilterActions() {
+      const panel = document.getElementById('recipe-filter-panel');
+      const trigger = document.getElementById('recipe-filter-trigger');
+      trigger.onclick = () => window.FichaTecCategoryPanels.toggle(panel.id);
+      panel.onclick = (event) => {
+        const option = event.target.closest('[data-ingredient-filter]');
+        if (!option || !panel.contains(option)) return;
+        setIngFilter(option.dataset.ingredientFilter || null);
+        window.FichaTecCategoryPanels.closePanel(panel, true);
       };
     }
 
@@ -488,33 +492,82 @@
     function formatProductionIngredientQuantity(ingredient, factor = 1) {
       const baseQuantity = readNumericValue(ingredient?.qtyBruta ?? ingredient?.qtyG, 0);
       const suffix = ingredient?.unit === "un" ? " un" : ingredient?.unit === "ml" ? " ml" : " g";
-      return fmtQty(baseQuantity * factor, suffix);
+      return (baseQuantity * factor).toLocaleString('pt-BR', {maximumFractionDigits: 3}) + suffix;
     }
 
-    function updateRecipeProductionGuide(recipe, requestedValue) {
-      const baseQuantity = Math.max(readNumericValue(recipe?.porcoes, 1), 0.01);
-      const requestedQuantity = Number(requestedValue);
-      const weight=Number(document.getElementById('production-weight')?.value);
-      const valid=requestedQuantity>0 && (recipe.yieldUnit!=='unit'||Number.isInteger(requestedQuantity)) && (!(recipe.rendimento>0)||weight>0);
-      const factor=recipe.rendimento>0?requestedQuantity*weight/recipe.rendimento:requestedQuantity/baseQuantity;
-      const {ingredients,venda}=calcCosts(recipe.ingredients,recipe.markup);
-      const content = document.getElementById("recipe-detail-content");
-      if (!content) return;
-
-      content.querySelectorAll("[data-production-ingredient]").forEach((quantityElement) => {
-        const ingredientIndex = Number(quantityElement.dataset.productionIngredient);
-        const ingredient = recipe?.ingredients?.[ingredientIndex];
-        if (!ingredient) return;
-        quantityElement.textContent = valid?formatProductionIngredientQuantity(ingredient, factor):'—';
-        const cost=quantityElement.closest('.ingredient-row')?.querySelector('.ing-cost');
-        if(cost)cost.textContent=valid?fmtBRL(ingredients[ingredientIndex].cost*factor):'—';
+    function updateRecipeProductionGuide(recipe) {
+      const byId = id => document.getElementById(id);
+      const countInput = byId('recipe-production-quantity');
+      const unit = byId('production-unit').value;
+      const piece = unit === 'unit' ? 'unidade' : 'porção';
+      countInput.step = unit === 'unit' ? '1' : 'any';
+      countInput.min = unit === 'unit' ? '1' : '0';
+      byId('production-count-label').textContent = unit === 'unit' ? 'Quantas unidades?' : 'Quantas porções?';
+      byId('production-weight-label').textContent = 'Peso por ' + piece + ' (g)';
+      byId('production-piece-label').textContent = 'Venda por ' + piece;
+      const plan = window.FichaTecProduction.calculatePlan(recipe, {
+        count: countInput.value, weight: byId('production-weight').value,
+        markup: byId('production-markup').value, unit
+      }, getIngredientUnitPrice);
+      const valid = !plan.error;
+      const number = value => Number(value).toLocaleString('pt-BR', {maximumFractionDigits: 2});
+      const grams = value => value == null ? 'Não informado' : number(value) + ' g';
+      const amounts = valid ? {
+        cost: fmtBRL(plan.totalCost), sale: fmtBRL(plan.venda), piece: fmtBRL(plan.salePerPiece),
+        markup: number(plan.markup) + '%', raw: grams(plan.rawWeight), ready: grams(plan.finalWeight)
+      } : {};
+      const content = byId('recipe-detail-content');
+      content.querySelectorAll('[data-plan-value]').forEach(node => {
+        node.textContent = amounts[node.dataset.planValue] ?? '—';
       });
-
-      const statusElement = content.querySelector("[data-production-status]");
-      if (statusElement) {
-        const percentage = new Intl.NumberFormat("pt-BR", {maximumFractionDigits:1}).format(factor * 100);
-        statusElement.textContent = valid?(recipe.rendimento>0?fmtQty(requestedQuantity*weight,' g')+' de receita pronta':'Produção por quantidade')+' · '+percentage+'% da receita-base · Venda por '+(recipe.yieldUnit==='unit'?'unidade':'porção')+': '+fmtBRL(venda*factor/requestedQuantity)+' · Venda do lote: '+fmtBRL(venda*factor):'Preencha a quantidade e o peso com valores positivos. Para unidades, use um número inteiro.';
+      const yieldText = valid ? formatRecipeYield(plan.count, plan.unit) : '';
+      byId('production-status').textContent = valid
+        ? yieldText + (plan.finalWeight === null ? ' no lote.' : ' de ' + grams(plan.finalWeight / plan.count) + ' cada.')
+        : plan.error;
+      byId('recipe-detail-ingredients').textContent = valid ? 'Ingredientes para ' + yieldText : 'Ingredientes do lote';
+      byId('production-loss-label').textContent = valid && plan.loss < 0 ? 'Ganho de peso' : 'Perda de peso';
+      let lossText = '—';
+      if (valid && plan.loss !== null) {
+        lossText = grams(Math.abs(plan.loss));
+        if (plan.lossPercent !== null) lossText += ' (' + number(Math.abs(plan.lossPercent)) + '%)';
       }
+      byId('production-loss').textContent = lossText;
+      byId('production-weight-help').textContent = valid && plan.rawWeight === null
+        ? 'Para calcular a perda em gramas, é preciso conhecer o peso de todos os ingredientes.' : '';
+      byId('production-rounding').hidden = !valid || Math.abs(Math.round(plan.salePerPiece * 100) * plan.count - plan.venda * 100) < 0.5;
+      content.querySelectorAll('[data-production-ingredient]').forEach(node => {
+        const index = Number(node.dataset.productionIngredient);
+        node.textContent = valid ? formatProductionIngredientQuantity(plan.ingredients[index], plan.factor) : '—';
+        const cost = node.closest('.ingredient-row')?.querySelector('.ing-cost');
+        if (cost) cost.textContent = valid ? fmtBRL(plan.ingredients[index].cost) : '—';
+      });
+      return valid;
+    }
+
+    function bindProductionPlanner(recipe) {
+      const form = document.getElementById('production-form');
+      const report = document.getElementById('production-report');
+      const shortcut = document.getElementById('recipe-ingredients-shortcut');
+      const refresh = () => updateRecipeProductionGuide(recipe);
+      function revealProduction(event) {
+        event.preventDefault();
+        if (!form.reportValidity()) return;
+        if (!refresh()) {
+          document.getElementById('production-status').focus();
+          return;
+        }
+        report.hidden = false;
+        shortcut.setAttribute('aria-expanded', 'true');
+        const headingId = event.currentTarget === shortcut ? 'recipe-detail-ingredients' : 'production-report-title';
+        const heading = document.getElementById(headingId);
+        heading.focus({preventScroll: true});
+        heading.scrollIntoView({block: 'start', behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth'});
+      }
+      form.oninput = refresh;
+      form.onchange = refresh;
+      form.onsubmit = revealProduction;
+      shortcut.onclick = revealProduction;
+      refresh();
     }
 
     const nutritionFields = [
@@ -626,10 +679,21 @@
       if(stockId&&!String(stockId).startsWith('pf_')){const s=stock.find(x=>x.id===stockId||x.id===parseInt(stockId));if(s)return s;}
       return stock.find(x=>x.name.toLowerCase()===name.toLowerCase())||null;
     }
-    function calcCosts(ingredients,markup=0){
-      const list=ingredients.map(i=>{const s=findStockItem(i.stockId,i.name);const ppg=s?pricePerUnit(s):0;return{...i,cost:ppg*i.qtyBruta,currentPricePerG:ppg};});
-      const totalCost=list.reduce((a,i)=>a+i.cost,0);
-      return{ingredients:list,totalCost,venda:totalCost*(1+(markup||0)/100)};
+    function getIngredientUnitPrice(item) {
+      const source = findStockItem(item.stockId, item.name);
+      if (source && Number(source.qty) > 0) return pricePerUnit(source);
+      const quantity = window.FichaTecProduction.grossQuantity(item);
+      const savedRate = readNumericValue(item.savedPricePerG);
+      const savedCost = readNumericValue(item.cost);
+      // Older snapshots rounded the rate to whole cents per gram.
+      if (quantity > 0 && savedCost > 0 && Math.round(savedRate * quantity * 100) !== Math.round(savedCost * 100)) {
+        return savedCost / quantity;
+      }
+      return savedRate;
+    }
+
+    function calcCosts(ingredients, markup = 0) {
+      return window.FichaTecProduction.priceRecipe(ingredients, markup, getIngredientUnitPrice);
     }
     /* ══ FICHA ══ */
     function setIngSource(src){
@@ -740,7 +804,7 @@
         <div class="card-title"><span class="material-symbols-rounded icon-sm">format_list_bulleted</span> Ingredientes (${currentIngredients.length})</div>
         <p class="ingredient-order-help">Arraste pelo ícone para organizar. Pelo teclado, use as setas ↑ e ↓.</p>
         <div role="list" aria-label="Ingredientes na ordem de preparo">
-        ${currentIngredients.map((i,index)=>`<div class="ingredient-row" role="listitem" data-ingredient-index="${index}">
+        ${calcCosts(currentIngredients).ingredients.map((i,index)=>`<div class="ingredient-row" role="listitem" data-ingredient-index="${index}">
           <button type="button" class="ingredient-grip" data-ingredient-grip aria-label="Reordenar ${escapeAttribute(i.name)}" title="Arrastar para reordenar"><span class="material-symbols-rounded" aria-hidden="true">drag_indicator</span></button>
           <div style="flex:1;min-width:0">
             <div class="ing-name">${escapeHtml(i.name)}</div>
@@ -754,8 +818,8 @@
     }
     function weightSummary(items,weight,count,unit){
       if(!items.length)return 'Adicione ingredientes para calcular o peso.';
-      const mixed=items.some(i=>i.unit==='ml'||i.unit==='un');
-      const grams=items.reduce((sum,i)=>sum+Number(i.qtyBruta??i.qtyG??0),0);
+      const grams = window.FichaTecProduction.ingredientMass(items);
+      const mixed = grams === null;
       const parts=[mixed?'Peso dos ingredientes indisponível: ml e unidades não têm conversão automática para gramas.':'Ingredientes: '+fmtQty(grams,' g')];
       if(weight>0){
         parts.push('Receita pronta: '+fmtQty(weight,' g'));
@@ -767,19 +831,20 @@
     }
     function calcFicha(){
       const raw=document.getElementById('weight-raw');
-      if(raw)raw.value=currentIngredients.some(i=>i.unit==='ml'||i.unit==='un')?'Peso desconhecido':currentIngredients.reduce((n,i)=>n+Number(i.qtyBruta??i.qtyG??0),0).toLocaleString('pt-BR',{maximumFractionDigits:2});
+      const rawWeight = window.FichaTecProduction.ingredientMass(currentIngredients);
+      if (raw) raw.value = rawWeight === null ? '' : rawWeight.toLocaleString('pt-BR', {maximumFractionDigits: 2});
       const summary=document.getElementById('weight-summary');
       if(summary)summary.textContent=weightSummary(currentIngredients,Number(document.getElementById('ficha-rendimento').value),Number(document.getElementById('ficha-porcoes').value),document.getElementById('ficha-yield-unit').value);
       if(!currentIngredients.length){document.getElementById('ficha-totals').style.display='none';return;}
       const markup=parseFloat(document.getElementById('markup-pct').value)||0;
       const {totalCost,venda}=calcCosts(currentIngredients,markup);
       const rend=parseFloat(document.getElementById('ficha-rendimento').value)||0;
-      const porcoes=Math.max(parseFloat(document.getElementById('ficha-porcoes').value)||1,1);
+      const porcoes = Number(document.getElementById('ficha-porcoes').value);
       const yieldUnit=normalizeRecipeYieldUnit(document.getElementById('ficha-yield-unit')?.value);
       document.getElementById('total-custo').textContent=fmtBRL(totalCost);
       document.getElementById('total-venda').textContent=fmtBRL(venda);
-      document.getElementById('total-porcao').textContent=fmtBRL(totalCost/porcoes);
-      document.getElementById('total-unit-label').textContent=yieldUnit==='unit'?'Por unidade':'Por porção';
+      document.getElementById('total-porcao').textContent = porcoes > 0 ? fmtBRL(venda / porcoes) : '—';
+      document.getElementById('total-unit-label').textContent = yieldUnit === 'unit' ? 'Venda por unidade' : 'Venda por porção';
       document.getElementById('total-kg').textContent=rend>0?fmtBRL(totalCost/(rend/1000)):'—';
       document.getElementById('ficha-totals').style.display='block';
       calcNutrition();
@@ -803,7 +868,7 @@
       ['ficha-nome','ficha-rendimento','markup-pct','ficha-modo-preparo'].forEach(f=>document.getElementById(f).value='');
       document.getElementById('ficha-porcoes').value='1';
       document.getElementById('ficha-yield-unit').value='portion';
-      document.getElementById('total-unit-label').textContent='Por porção';
+      document.getElementById('total-unit-label').textContent='Venda por porção';
       document.getElementById('portion-size').value='100';
       document.getElementById('ficha-totals').style.display='none';
       document.getElementById('ingredients-list').innerHTML='';
@@ -823,8 +888,9 @@
       if(!nome){showToast('Informe o nome da receita.');return;}
       if(!currentIngredients.length){showToast('Adicione pelo menos um ingrediente.');return;}
       const markup=parseFloat(document.getElementById('markup-pct').value)||0;
-      const ingredientRefs=currentIngredients.map(i=>({...i,savedPricePerG:pricePerUnit(findStockItem(i.stockId,i.name)||{price:0,qty:1,unit:'kg'})}));
-      const {totalCost,venda}=calcCosts(ingredientRefs,markup);
+      if (markup < 0) { showToast('Informe um markup maior ou igual a zero.'); return; }
+      const {ingredients: priced, totalCost, venda} = calcCosts(currentIngredients, markup);
+      const ingredientRefs = priced.map(({currentPricePerG, ...item}) => ({...item, savedPricePerG: currentPricePerG}));
       const editingIndex=currentRecipeId===null? -1 : recipes.findIndex(r=>String(r.id)===String(currentRecipeId));
       const namedIndex=recipes.findIndex(r=>r.nome.toLocaleLowerCase('pt-BR')===nome.toLocaleLowerCase('pt-BR'));
       if(editingIndex>=0&&namedIndex>=0&&editingIndex!==namedIndex){
@@ -901,13 +967,14 @@
         return s&&Math.abs(pricePerUnit(s)-i.savedPricePerG)>0.000001;
       });
     }
-    function renderRecipes(filter='',ingFilter=null){
-      const allIng=[...new Set(recipes.flatMap(r=>r.ingredients.map(i=>i.name)))].slice(0,15);
-      const filterElement=document.getElementById('ingredient-filter-chips');
-      filterElement.innerHTML=
-        `<div class="chip ${!ingFilter?'active':''}" data-ingredient-filter=""><span class="material-symbols-rounded" style="font-size:14px">grid_view</span> Todas</div>`+
-        allIng.map(n=>`<div class="chip ${ingFilter===n?'active':''}" data-ingredient-filter="${escapeAttribute(n)}">${escapeHtml(n)}</div>`).join('');
-      bindRecipeFilterActions(filterElement);
+    function renderRecipes(filter = document.getElementById('recipe-search').value, ingFilter = activeIngFilter) {
+      const allIngredients = [...new Set(recipes.flatMap(recipe => recipe.ingredients.map(item => item.name)))].sort((a,b) => a.localeCompare(b,'pt-BR'));
+      activeIngFilter = allIngredients.includes(ingFilter) ? ingFilter : null;
+      ingFilter = activeIngFilter;
+      document.getElementById('recipe-filter-count').hidden = !ingFilter;
+      const filterElement = document.getElementById('ingredient-filter-chips');
+      filterElement.innerHTML = allIngredients.map(name => `<button type="button" class="recipe-filter-choice" aria-pressed="${name === ingFilter}" data-ingredient-filter="${escapeAttribute(name)}">${escapeHtml(name)}</button>`).join('') || '<p>Nenhum ingrediente nas receitas.</p>';
+      bindRecipeFilterActions();
       let f=recipes.filter(r=>r.nome.toLowerCase().includes((filter||'').toLowerCase()));
       if(ingFilter)f=f.filter(r=>r.ingredients.some(i=>i.name===ingFilter));
       const el=document.getElementById('recipes-list');
@@ -928,8 +995,8 @@
           <div class="recipe-card-heading">
             <div class="recipe-card-title">${escapeHtml(r.nome)}${r.origem==='scan'?` <span class="scan-badge" style="font-size:10px"><span class="material-symbols-rounded" style="font-size:12px">document_scanner</span>Scan</span>`:''}</div>
             <div style="display:flex;gap:6px;align-items:center;flex-shrink:0">
-              ${changed?`<span style="font-size:11px;background:${diff>0?'var(--r100)':'var(--g50)'};color:${diff>0?'var(--r400)':'var(--g600)'};padding:2px 8px;border-radius:var(--r-pill);font-weight:700">${diff>0?'▲':'▼'} ${fmtBRL(Math.abs(diff))}</span>`:''}
-              <span class="badge badge-green">${fmtBRL(totalCost)}</span>
+              ${changed && Math.round(diff*100)!==0?`<span style="font-size:11px;background:${diff>0?'var(--r100)':'var(--g50)'};color:${diff>0?'var(--r400)':'var(--g600)'};padding:2px 8px;border-radius:var(--r-pill);font-weight:700">${diff>0?'▲':'▼'} ${fmtBRL(Math.abs(diff))}</span>`:''}
+              <span class="badge badge-green">Custo ${fmtBRL(totalCost)}</span>
               <span class="recipe-card-actions">
                 <button class="btn btn-secondary btn-icon" data-recipe-action="edit" type="button" aria-label="Editar ${escapeAttribute(r.nome)}"><span class="material-symbols-rounded" aria-hidden="true">edit</span></button>
                 <button class="btn btn-danger btn-icon" data-recipe-action="delete" type="button" aria-label="Excluir ${escapeAttribute(r.nome)}"><span class="material-symbols-rounded" aria-hidden="true">delete</span></button>
@@ -937,7 +1004,7 @@
             </div>
           </div>
           <div class="recipe-card-meta"><span class="material-symbols-rounded">fork_spoon</span>${r.ingredients.length} ingrediente(s) · ${formatRecipeYield(r.porcoes,r.yieldUnit)}${r.rendimento?' · '+r.rendimento+'g':''} · Markup ${r.markup}%</div>
-          <div class="recipe-card-meta" style="color:var(--g600);font-weight:700"><span class="material-symbols-rounded" style="color:var(--g500)">payments</span> Venda: ${fmtBRL(venda)}</div>
+          <div class="recipe-card-prices"><div>Venda do lote<strong>${fmtBRL(venda)}</strong></div><div>Venda por ${r.yieldUnit === 'unit' ? 'unidade' : 'porção'}<strong>${fmtBRL(venda / (Number(r.porcoes) || 1))}</strong></div></div>
           <div class="recipe-card-meta" style="font-size:11px;color:var(--n500)"><span class="material-symbols-rounded" style="font-size:13px">nutrition</span> ${nutritionSummary.label}</div>
           ${changed?`<div class="recipe-card-meta" style="font-size:11px;color:var(--n400)"><span class="material-symbols-rounded" style="font-size:13px">sync</span> Preços atualizados</div>`:''}
           <div class="recipe-card-footer">
@@ -959,13 +1026,13 @@
     function viewRecipe(id){
       const r=recipes.find(x=>String(x.id)===String(id));if(!r)return;
       currentRecipeId=id;
-      const {ingredients,totalCost,venda}=calcCosts(r.ingredients,r.markup);
-      const porcoes=Math.max(r.porcoes||1,0.01);
+      const {ingredients,totalCost}=calcCosts(r.ingredients,r.markup);
+      const porcoes=Number(r.porcoes)||1;
       const changed=hasPriceChanged(r.ingredients);
       const diff=totalCost-r.totalCost;
       const nutritionSummary=getRecipeNutritionSummary(r);
       const yieldUnit=normalizeRecipeYieldUnit(r.yieldUnit);
-      const yieldLabel=yieldUnit==='unit'?'unidades':'porções';
+
       document.getElementById('recipe-detail-content').innerHTML=`
         ${renderRecipeMedia(r,"modal")}
         <div style="font-size:20px;font-weight:800;margin-bottom:4px;letter-spacing:-0.4px">${escapeHtml(r.nome)}${r.origem==='scan'?` <span class="scan-badge" style="font-size:10px"><span class="material-symbols-rounded" style="font-size:12px">document_scanner</span>Scan</span>`:''}</div>
@@ -975,7 +1042,7 @@
         </div>
         <div class="recipe-preparation-view">
           <div class="recipe-section-actions">
-          <button type="button" class="btn btn-secondary" id="recipe-ingredients-shortcut" aria-controls="recipe-detail-ingredients"><span class="material-symbols-rounded" aria-hidden="true">format_list_bulleted</span>Ver ingredientes</button>
+          <button type="button" class="btn btn-secondary" id="recipe-ingredients-shortcut" aria-controls="production-report" aria-expanded="false"><span class="material-symbols-rounded" aria-hidden="true">format_list_bulleted</span>Ver ingredientes</button>
           <button type="button" class="btn btn-secondary" id="recipe-preparation-toggle" aria-controls="recipe-preparation-content" aria-expanded="false"><span class="material-symbols-rounded" aria-hidden="true">menu_book</span>Modo de preparo<span class="material-symbols-rounded preparation-chevron" aria-hidden="true">expand_more</span></button>
           </div>
           <div id="recipe-preparation-content" class="recipe-preparation-content" hidden>${r.modoPreparo?escapeHtml(r.modoPreparo):'Modo de preparo ainda não informado. Clique em Editar para adicioná-lo.'}</div>
@@ -984,39 +1051,42 @@
           <span class="material-symbols-rounded" style="font-size:16px;flex-shrink:0">sync</span>
           <span><strong>Preços atualizados</strong><br>Custo salvo: ${fmtBRL(r.totalCost)} → Atual: <strong>${fmtBRL(totalCost)}</strong>${diff!==0?` (${diff>0?'+':''}${fmtBRL(diff)})`:''}  </span>
         </div>`:''}
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--s2);margin-bottom:var(--s4)">
-          ${[['Custo Total',fmtBRL(totalCost),'var(--n50)','var(--n900)','payments'],
-             ['Preço de Venda',fmtBRL(venda),'var(--g50)','var(--g600)','sell'],
-             ['Markup',r.markup+'%','var(--n50)','var(--n900)','trending_up'],
-             [yieldUnit==='unit'?'Venda por unidade':'Venda por porção',fmtBRL(venda/porcoes),'var(--n50)','var(--n900)','restaurant']
-            ].map(([l,v,bg,c,ico])=>`<div style="background:${bg};padding:var(--s3) var(--s4);border-radius:var(--r-md)">
-              <div style="font-size:11px;color:var(--n600);font-weight:600;margin-bottom:3px;display:flex;align-items:center;gap:4px">
-                <span class="material-symbols-rounded" style="font-size:13px">${ico}</span>${l}
-              </div>
-              <div style="font-size:16px;font-weight:800;font-family:'Roboto',sans-serif;color:${c}">${v}</div>
-            </div>`).join('')}
-        </div>
+        <dl class="recipe-sale-summary">
+          <div><dt>Venda do lote</dt><dd data-plan-value="sale">—</dd></div>
+          <div><dt id="production-piece-label">Venda por peça</dt><dd data-plan-value="piece">—</dd></div>
+        </dl>
         <section class="production-planner" aria-labelledby="production-planner-title">
-          <div class="production-planner-header">
-            <div>
-              <div class="production-planner-title" id="production-planner-title">Planejar esta produção</div>
-              <div class="production-planner-copy">Ajuste o volume desejado. A receita salva, os custos e a tabela nutricional não serão modificados.</div>
+          <h3 class="production-planner-title" id="production-planner-title">Planejar esta produção</h3>
+          <p class="production-base-line"><strong>Receita-base</strong> · ${formatRecipeYield(r.porcoes,yieldUnit)}${r.rendimento>0 ? ' · '+Number(r.rendimento).toLocaleString('pt-BR')+' g prontos' : ''} · markup ${Number(r.markup)||0}%</p>
+          <form id="production-form">
+            <div class="production-planner-control">
+              <div class="input-group"><label class="input-label" for="production-unit">Produzir em</label>
+                <select id="production-unit"><option value="portion" ${yieldUnit==='portion'?'selected':''}>Porções</option><option value="unit" ${yieldUnit==='unit'?'selected':''}>Unidades</option></select></div>
+              <div class="input-group"><label class="input-label" id="production-count-label" for="recipe-production-quantity">Quantidade</label>
+                <input id="recipe-production-quantity" type="number" required inputmode="decimal" value="${escapeAttribute(porcoes)}"></div>
+              <div class="input-group"><label class="input-label" id="production-weight-label" for="production-weight">Peso por peça (g)</label>
+                <input id="production-weight" type="number" step="any" min="0" inputmode="decimal" ${r.rendimento>0?'required value="'+(r.rendimento/porcoes)+'"':'disabled placeholder="Sem pesagem"'}></div>
+              <div class="input-group"><label class="input-label" for="production-markup">Markup (%)</label>
+                <input id="production-markup" type="number" required min="0" step="any" inputmode="decimal" value="${Number(r.markup)||0}"></div>
             </div>
-            <span class="production-planner-base">Base: ${formatRecipeYield(r.porcoes,yieldUnit)}</span>
-          </div>
-          <p class="weight-note">${weightSummary(r.ingredients,r.rendimento,porcoes,yieldUnit)}</p>
-          <div class="production-planner-control">
-            <div class="input-group">
-              <label class="input-label" for="recipe-production-quantity">Quantidade de ${yieldLabel}</label>
-              <input id="recipe-production-quantity" type="number" min="${yieldUnit==='unit'?1:0.01}" step="${yieldUnit==='unit'?1:'any'}" inputmode="decimal" value="${escapeAttribute(porcoes)}">
-            </div>
-            <div class="input-group"><label class="input-label" for="production-weight">Peso de cada ${yieldUnit==='unit'?'unidade':'porção'} (g)</label><input id="production-weight" type="number" step="any" min="0" inputmode="decimal" ${r.rendimento>0?'value="'+(r.rendimento/porcoes)+'"':'disabled placeholder="Informe o peso pronto na ficha"'}></div>
-          </div>
-          <p class="production-planner-status" data-production-status>${formatRecipeYield(porcoes,yieldUnit)} correspondem a 100% da receita-base. Apenas as quantidades abaixo serão ajustadas.</p>
+            ${r.rendimento>0?'':'<p class="production-base-line">Para planejar por peso, informe o peso da receita pronta em Editar.</p>'}
+            <div class="production-calculate"><span id="production-status" role="status" tabindex="-1"></span><button type="submit" class="btn btn-primary" aria-controls="production-report"><span class="material-symbols-rounded" aria-hidden="true">calculate</span>Calcular</button></div>
+          </form>
         </section>
-        <div id="recipe-detail-ingredients" tabindex="-1" style="font-size:11px;font-weight:700;color:var(--n600);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:var(--s2);display:flex;align-items:center;gap:4px">
-          <span class="material-symbols-rounded" style="font-size:14px">format_list_bulleted</span> Ingredientes
-        </div>
+        <section id="production-report" aria-labelledby="production-report-title" hidden>
+          <h3 id="production-report-title" tabindex="-1">Resultado do lote</h3>
+          <dl class="production-facts">
+            <div><dt>Ingredientes antes do preparo</dt><dd data-plan-value="raw">—</dd></div>
+            <div><dt>Peso pronto</dt><dd data-plan-value="ready">—</dd></div>
+            <div><dt id="production-loss-label">Perda de peso</dt><dd id="production-loss">—</dd></div>
+            <div><dt>Markup aplicado</dt><dd data-plan-value="markup">—</dd></div>
+            <div><dt>Custo dos ingredientes</dt><dd data-plan-value="cost">—</dd></div>
+            <div><dt>Venda total do lote</dt><dd data-plan-value="sale">—</dd></div>
+            <div><dt>Venda média por peça</dt><dd data-plan-value="piece">—</dd></div>
+          </dl>
+          <p class="production-footnote" id="production-weight-help"></p>
+          <p class="production-footnote" id="production-rounding" hidden>O preço por peça é a média do lote arredondada para centavos.</p>
+          <h4 id="recipe-detail-ingredients" tabindex="-1">Ingredientes do lote</h4>
         ${ingredients.map((i,ingredientIndex)=>{
           const s=findStockItem(i.stockId,i.name);
           const curPPG=s?pricePerUnit(s):0;
@@ -1029,23 +1099,16 @@
             <div class="ing-cost" style="${ingChanged?'color:'+(curPPG>i.savedPricePerG?'var(--r400)':'var(--g500)'):''}"> ${fmtBRL(i.cost)}</div>
           </div>`;
         }).join('')}
+        </section>
         <div style="font-size:11px;font-weight:700;color:var(--n600);text-transform:uppercase;letter-spacing:0.8px;margin-top:var(--s4);margin-bottom:var(--s2);display:flex;align-items:center;gap:4px">
-          <span class="material-symbols-rounded" style="font-size:14px">nutrition</span> Nutricao por ${nutritionSummary.portion}g
+          <span class="material-symbols-rounded" style="font-size:14px">nutrition</span> Nutrição da receita-base por ${nutritionSummary.portion} g
         </div>
         <table class="nutrition-table" style="margin-bottom:var(--s4)">
           <tbody>${renderNutritionRows(nutritionSummary.nutrition)}</tbody>
         </table>
         ${r.observacoes?`<div style="margin-top:var(--s3);font-size:12px;color:var(--n600);background:var(--warn-bg);border-radius:var(--r-md);padding:var(--s3) var(--s4);line-height:1.6">
           <strong>Obs:</strong> ${escapeHtml(r.observacoes).replace(/\n/g,'<br>')}</div>`:''}`;
-      const productionInput=document.getElementById('recipe-production-quantity');
-      productionInput?.addEventListener('input',()=>updateRecipeProductionGuide(r,productionInput.value));
-      document.getElementById('recipe-ingredients-shortcut').addEventListener('click',()=>{
-        const heading=document.getElementById('recipe-detail-ingredients');
-        heading.focus({preventScroll:true});
-        heading.scrollIntoView({behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth',block:'start'});
-      });
-      document.getElementById('production-weight').addEventListener('input',()=>updateRecipeProductionGuide(r,productionInput.value));
-      updateRecipeProductionGuide(r,productionInput.value);
+      bindProductionPlanner(r);
       const prepToggle=document.getElementById('recipe-preparation-toggle');
       prepToggle?.addEventListener('click',()=>{
         const panel=document.getElementById('recipe-preparation-content');
@@ -1102,7 +1165,7 @@
     function exportRecipePDF(id){
       const r=recipes.find(x=>String(x.id)===String(id));if(!r)return;
       const {ingredients,totalCost,venda}=calcCosts(r.ingredients,r.markup);
-      const porcoes=Math.max(r.porcoes||1,1);
+      const porcoes = Number(r.porcoes) || 1;
       const now=new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
       const criado=new Date(r.createdAt).toLocaleDateString('pt-BR');
       const changed=hasPriceChanged(r.ingredients);
@@ -1111,7 +1174,7 @@
       const safeRecipeName=escapeHtml(r.nome);
       const rows=ingredients.map(i=>`<tr>
         <td style="padding:10px 12px;border-bottom:1px solid #F0F0F0;font-size:13px;font-weight:500">${escapeHtml(i.name)}</td>
-        <td style="padding:10px 12px;border-bottom:1px solid #F0F0F0;font-size:12px;color:#717171;font-family:monospace">${i.qtyBruta.toFixed(0)}${i.unit==='ml'?'ml':'g'}</td>
+        <td style="padding:10px 12px;border-bottom:1px solid #F0F0F0;font-size:12px;color:#717171;font-family:monospace">${formatProductionIngredientQuantity(i)}</td>
         <td style="padding:10px 12px;border-bottom:1px solid #F0F0F0;font-size:12px;color:#27AE60;font-family:monospace;font-weight:700;text-align:right">${fmtBRL(i.cost)}</td>
       </tr>`).join('');
       const nutritionRows=nutritionFields.map(([key,label,unit,dailyValue])=>{
@@ -1176,8 +1239,8 @@
       ${changed?`<div style="background:#E8F8EE;border:1px solid #8FD9AB;border-radius:8px;padding:10px 14px;margin-bottom:16px;font-size:12px;color:#1E8449;font-weight:600">Precos atualizados. Custo original: ${fmtBRL(r.totalCost)}.</div>`:''}
       <div class="summary">
         <div class="si"><div class="sl">Custo Total</div><div class="sv">${fmtBRL(totalCost)}</div></div>
-        <div class="si hl"><div class="sl hl">Preco de Venda</div><div class="sv hl">${fmtBRL(venda)}</div></div>
-        <div class="si"><div class="sl">${normalizeRecipeYieldUnit(r.yieldUnit)==='unit'?'Por unidade':'Por porção'}</div><div class="sv">${fmtBRL(totalCost/porcoes)}</div></div>
+        <div class="si hl"><div class="sl hl">Venda do lote</div><div class="sv hl">${fmtBRL(venda)}</div></div>
+        <div class="si"><div class="sl">${normalizeRecipeYieldUnit(r.yieldUnit)==='unit'?'Venda por unidade':'Venda por porção'}</div><div class="sv">${fmtBRL(venda/porcoes)}</div></div>
         <div class="si"><div class="sl">Markup</div><div class="sv">${r.markup||0}%</div></div>
       </div>
       <div class="section-title">Nutricao por ${nutritionSummary.portion}g</div>

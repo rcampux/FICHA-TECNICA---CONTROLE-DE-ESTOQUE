@@ -1,5 +1,12 @@
 # FichaTec - Inventario de Funcoes
 
+| Função | Arquivo | Responsabilidade |
+|---|---|---|
+| `exposeRecipeProduction`, `grossQuantity`, `ingredientMass`, `priceRecipe`, `calculatePlan` | `src/modules/recipes/productionPlan.js` | Calculam pesos, perda, quantidades proporcionais e venda do lote a partir dos custos de cada item em centavos. |
+| `getIngredientUnitPrice`, `calcCosts`, `updateRecipeProductionGuide`, `bindProductionPlanner` e seu handler `revealProduction` | `src/modules/recipes/recipeSheet.js` | Resolvem o preço de estoque ou o salvo, atualizam a prévia e exibem o relatório ao calcular. |
+| `bindRecipeFilterActions`, `renderRecipes` | `src/modules/recipes/recipeSheet.js` | Mantêm o filtro de ingredientes recolhido e combinam a seleção com a busca por nome. |
+| `mapRecipeIngredientToRemote` | `src/services/repositories/supabaseDomainRepository.js` | Mantém seis casas decimais para o preço em centavos por grama, ml ou unidade. |
+
 Ações de consulta da receita: `renderRecipes` e `bindRecipeCardActions` exibem/alternam o modo de preparo ao lado de Ver ingredientes no card, sem abrir o modal. `viewRecipe` inclui um atalho para os ingredientes antes do botão de preparo, com foco acessível e rolagem respeitando movimento reduzido. Nenhuma alteração na persistência.
 
 Animação de arraste: `reducedMotion`, `layoutTop`, `liftCard`, `positionPreview` e `complete` (callback de finalização), em `src/modules/recipes/ingredientOrder.js`, tratam preferências de movimento, geometria sem transformação, prévia elevada, acompanhamento do ponteiro e limpeza após encaixe. `placeAtPointer`, `finish`, `scrollWhileDragging` e `bindIngredientOrder` foram ajustadas para animar vizinhos, preservar o espaço e bloquear gestos concorrentes. `dragHarness`, `classList`, `node`, `makeRow` e `send` em `tests/ingredient-drag.test.mjs` simulam gestos para verificar confirmação, cancelamento e movimento reduzido.

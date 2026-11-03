@@ -21,7 +21,7 @@
     const shouldOpen = panel.hidden;
     closeAll();
     if (!shouldOpen) return;
-    render();
+    render?.();
     panel.hidden = false;
     getTrigger(panel)?.setAttribute("aria-expanded", "true");
     panel.querySelector("[data-close-category-panel]")?.focus();
