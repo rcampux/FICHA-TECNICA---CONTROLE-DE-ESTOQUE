@@ -465,6 +465,8 @@
   <div id="pstock-list"></div>
 </div>
 
+<div class="page" id="page-cozinha"></div>
+
 <!-- NAV -->
 <nav class="nav" aria-label="Navegação principal">
   <div class="desktop-nav-brand" aria-hidden="true">
@@ -478,14 +480,14 @@
   <button class="nav-btn" id="nav-estoque" onclick="showPage('estoque','nav-estoque')">
     <span class="material-symbols-rounded">inventory_2</span><span>Virtual</span>
   </button>
-  <div class="nav-fab">
-    <span class="ft-logo-mark">FT</span>
-  </div>
   <button class="nav-btn" id="nav-fisico" onclick="showPage('fisico','nav-fisico')">
     <span class="material-symbols-rounded">storefront</span><span>Físico</span>
   </button>
   <button class="nav-btn" id="nav-receitas" onclick="showPage('receitas','nav-receitas')">
     <span class="material-symbols-rounded">menu_book</span><span>Receitas</span>
+  </button>
+  <button class="nav-btn" id="nav-cozinha" onclick="showPage('cozinha','nav-cozinha')">
+    <span class="material-symbols-rounded">view_kanban</span><span>Cozinha</span>
   </button>
   <div class="desktop-nav-spacer"></div>
   <button class="desktop-scan-action" onclick="openScanModal()" type="button">
@@ -503,6 +505,17 @@
   <span class="material-symbols-rounded">document_scanner</span>
 </button>
 
+</div>
+
+<div class="modal-overlay" id="modal-kitchen-task">
+  <div class="modal kitchen-modal" role="dialog" aria-modal="true" aria-labelledby="kitchen-task-title">
+    <form id="kitchen-task-form"></form>
+  </div>
+</div>
+<div class="modal-overlay" id="modal-kitchen-settings">
+  <div class="modal kitchen-modal" role="dialog" aria-modal="true" aria-labelledby="kitchen-settings-title">
+    <form id="kitchen-settings-form"></form>
+  </div>
 </div>
 
 <!-- MODAL: CATEGORIA -->
@@ -1034,6 +1047,9 @@
 <script src="../src/modules/stock/productDiscovery.js" defer></script>
 <script src="../src/modules/stock/virtualStock.js" defer></script>
 <script src="../src/modules/stock/physicalStock.js" defer></script>
+<script src="../src/modules/kitchen/kanbanModel.js" defer></script>
+<script src="../src/services/repositories/kitchenRepository.js" defer></script>
+<script src="../src/modules/kitchen/kanbanBoard.js" defer></script>
 <script src="../src/pwa/registerServiceWorker.js" defer></script>
 <script src="../src/app.js" defer></script>
 </body>

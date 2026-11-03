@@ -33,6 +33,7 @@ function showPage(page,navId){
   if(page==='estoque')renderStock();
   if(page==='fisico')renderPhysical();
   if(page==='receitas')renderRecipes();
+  if(page==='cozinha')kitchenBoard.show();
 }
 function closeModal(id){document.getElementById(id)?.classList.remove('open');}
 
@@ -447,6 +448,17 @@ const authSessionModule=window.FichaTecAuthSession.createAuthSessionModule({
 const {backToAuthForm,clearAuthInputs,getAuthRedirectUrl,getAuthState,getPasswordValidation,handleAuthBack,handleAuthKeydown,handlePasswordRecovery,initAuthSession,isStrongPassword,loadOrganizations,openAuthModal,renderAuthState,renderPasswordFeedback,requestPasswordReset,resendConfirmationEmail,selectOrganization,setAuthMode,signOutAuth,submitAuthForm,syncSupabaseSession,togglePasswordConfirmationVisibility,togglePasswordVisibility,updatePassword}=authSessionModule;
 Object.assign(window,{backToAuthForm,clearAuthInputs,getAuthRedirectUrl,getAuthState,getPasswordValidation,handleAuthBack,handleAuthKeydown,handlePasswordRecovery,initAuthSession,isStrongPassword,loadOrganizations,openAuthModal,renderAuthState,renderPasswordFeedback,requestPasswordReset,resendConfirmationEmail,selectOrganization,setAuthMode,signOutAuth,submitAuthForm,syncSupabaseSession,togglePasswordConfirmationVisibility,togglePasswordVisibility,updatePassword,openStartLogin,showBootSplash,showStartScreen,enterAppExperience,exitToStartExperience});
 
+const kitchenRepository=window.FichaTecKitchenRepository.createKitchenRepository({db:DB,createClient:window.FichaTecSupabaseClientService.createClient});
+const kitchenBoard=window.FichaTecKitchenBoard.createKitchenBoard({
+  repository:kitchenRepository,
+  getScope:()=>DB.mode()==='supabase'?DB.activeOrganizationId():'local',
+  canWrite:()=>DB.mode()!=='supabase'||['owner','admin','chef'].includes(getAuthState().organizations.find(org=>org.id===DB.activeOrganizationId())?.role),
+  getRecipes:()=>recipes,
+  viewRecipe,closeModal,showToast,
+});
+window.addEventListener('fichatec:workspace-change',()=>kitchenBoard.load());
+window.addEventListener('fichatec:auth-signed-out',()=>kitchenBoard.reset());
+
 async function hydrateWorkspaceData(event){
   const organizationId=event?.detail?.organizationId || DB.activeOrganizationId?.();
   if(DB.mode()!=='supabase'||!organizationId)return;
@@ -460,12 +472,14 @@ async function hydrateWorkspaceData(event){
       loadPlanAccess(organizationId),
     ]);
 
+    if(organizationId!==DB.activeOrganizationId())return;
     if(Array.isArray(remoteStock)){stock=remoteStock;DB.saveLocal?.(STORAGE_KEYS.stock,stock);}
     if(Array.isArray(remotePhysicalStock)){physicalStock=remotePhysicalStock;DB.saveLocal?.(STORAGE_KEYS.physicalStock,physicalStock);}
     if(Array.isArray(remoteRecipes)){recipes=remoteRecipes;DB.saveLocal?.(STORAGE_KEYS.recipes,recipes);}
     if(Array.isArray(remoteCategories)){categories=remoteCategories;DB.saveLocal?.(STORAGE_KEYS.categories,categories);}
 
     renderStock();renderPhysical();renderRecipes();
+    kitchenBoard.render();
     showToast('Workspace sincronizado.');
   }catch(error){
     console.error(error);
@@ -569,6 +583,7 @@ recipes=recipes.map(r=>({...r,ingredients:r.ingredients.map(i=>{
 renderStock();
 renderRecipes();
 renderPhysical();
+if(DB.mode()==='local')kitchenBoard.load();
 bootstrapAppExperience();
 
 async function bootstrapAppExperience(){

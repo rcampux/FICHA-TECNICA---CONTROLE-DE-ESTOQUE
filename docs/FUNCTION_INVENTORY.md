@@ -1,5 +1,25 @@
 # FichaTec - Inventario de Funcoes
 
+## Cozinha / Kanban — novembro de 2026
+
+| Funções | Arquivo | Responsabilidade |
+|---|---|---|
+| `exposeKitchenModel`, `clean`, `id` | `src/modules/kitchen/kanbanModel.js` | Expõe regras, limita textos e gera identificadores. |
+| `defaultBoard`, `normalizeBoard` | `src/modules/kitchen/kanbanModel.js` | Quadro inicial e normalização de dados persistidos. |
+| `validDate`, `todayKey` | `src/modules/kitchen/kanbanModel.js` | Valida datas de calendário e identifica o dia local. |
+| `saveTask`, `moveTask`, `updateColumns` | `src/modules/kitchen/kanbanModel.js` | Cria/edita tarefas, move/reordena cartões e personaliza etapas sem mutar a base. |
+| `isDone`, `isOverdue`, `filterTasks` | `src/modules/kitchen/kanbanModel.js` | Conclusão, atraso e filtros do quadro. |
+| `exposeKitchenRepository`, `createKitchenRepository`, `load`, `save` | `src/services/repositories/kitchenRepository.js` | Persistência local isolada ou remota por organização, com revisão otimista e conflito explícito. |
+| `exposeKitchenBoard`, `createKitchenBoard`, `el`, `esc` | `src/modules/kitchen/kanbanBoard.js` | Monta controlador, acessa elementos e escapa conteúdo HTML. |
+| `writable`, `status`, `setBusy` | `src/modules/kitchen/kanbanBoard.js` | Permissão de edição, mensagens e estado de salvamento. |
+| `load`, `reset`, `show`, `persist` | `src/modules/kitchen/kanbanBoard.js` | Carregamento/salvamento e isolamento de respostas de sessões anteriores. |
+| `render`, `renderCards`, `renderTask` | `src/modules/kitchen/kanbanBoard.js` | Cabeçalho, indicadores, filtros, etapas, cartões e abas mobile. |
+| `checklistRow`, `openTask`, `submitTask` | `src/modules/kitchen/kanbanBoard.js` | Formulário de tarefa, checklist e validação/salvamento. |
+| `columnRow`, `openSettings`, `submitSettings` | `src/modules/kitchen/kanbanBoard.js` | Formulário de nome, cores, ordem e conclusão de etapas. |
+| `setArchived`, `handleAction`, `handleFormClick` | `src/modules/kitchen/kanbanBoard.js` | Arquivo/restauração, ações do quadro e controles dos formulários. |
+| `showPage`, `hydrateWorkspaceData` (alteradas) | `src/app.js` | Navega para Cozinha, atualiza receitas disponíveis e descarta hidratação de workspace anterior. |
+| `plain`, `add`, `remoteMock` | `tests/kitchen-kanban.test.mjs` | Helpers para validação das regras e chamadas ao repositório. |
+
 Este arquivo e um inventario vivo das funcoes utilizadas no projeto. Toda nova funcao criada, movida, renomeada ou removida deve ser refletida aqui durante a mesma etapa de trabalho.
 
 ## Regra
