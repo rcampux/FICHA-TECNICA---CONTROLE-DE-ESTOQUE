@@ -1,5 +1,7 @@
 # FichaTec - Inventario de Funcoes
 
+Atualização dos cards de receitas: `renderRecipes` e `bindRecipeCardActions` (`src/modules/recipes/recipeSheet.js`) exibem um botão acessível para expandir/recolher todos os ingredientes no próprio card, inicialmente ocultos, sem abrir o modal ao acionar a lista.
+
 ## Ordem dos ingredientes e modo de preparo — novembro de 2026
 
 | Funções | Arquivo | Responsabilidade |

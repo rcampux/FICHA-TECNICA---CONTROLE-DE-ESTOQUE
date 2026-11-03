@@ -1,5 +1,7 @@
 # Ordem dos ingredientes e modo de preparo
 
+Na biblioteca, os ingredientes ficam recolhidos por padrão. O botão **Ver ingredientes** expande a lista completa do próprio card, respeitando a ordem salva; **Ocultar ingredientes** a recolhe. Expandir não abre o modal da receita. O PDF continua disponível ao lado.
+
 - A ficha permite arrastar os ingredientes pela alça, usando mouse ou toque. Com foco na alça, as setas para cima e para baixo também alteram a ordem. Escape cancela um arraste em andamento.
 - A reordenação não altera quantidades, custos, nutrição ou estoque. A nova ordem é persistida ao salvar a receita e aparece na consulta, edição, guia de produção e PDF.
 - O campo de modo de preparo fica imediatamente abaixo dos ingredientes, no mesmo bloco de composição tanto no desktop quanto no mobile. O texto preserva parágrafos e não é interpretado como HTML.

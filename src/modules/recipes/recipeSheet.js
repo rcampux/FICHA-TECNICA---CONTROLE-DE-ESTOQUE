@@ -426,6 +426,14 @@
         const id = card.dataset.recipeId;
         const actionElement = event.target.closest("[data-recipe-action]");
         const action = actionElement?.dataset.recipeAction || "view";
+        if (action === "ingredients") {
+          const panel=card.querySelector('[data-card-ingredients]');
+          panel.hidden=!panel.hidden;
+          actionElement.setAttribute('aria-expanded',String(!panel.hidden));
+          actionElement.querySelector('[data-ingredients-label]').textContent=panel.hidden?'Ver ingredientes':'Ocultar ingredientes';
+          return;
+        }
+        if(event.target.closest('[data-card-ingredients]'))return;
         if (action === "edit") {
           editRecipe(id);
           return;
@@ -877,7 +885,7 @@
         el.innerHTML=`<div class="empty-state"><span class="empty-icon"><span class="material-symbols-rounded" style="font-size:52px;font-variation-settings:'FILL' 0,'wght' 300,'GRAD' 0,'opsz' 48">menu_book</span></span><div class="empty-text">${filter||ingFilter?'Nenhuma receita encontrada.':'Nenhuma receita salva ainda.'}</div></div>`;
         return;
       }
-      el.innerHTML=f.map(r=>{
+      el.innerHTML=f.map((r,cardIndex)=>{
         const {totalCost,venda}=calcCosts(r.ingredients,r.markup);
         const changed=hasPriceChanged(r.ingredients);
         const diff=totalCost-r.totalCost;
@@ -900,15 +908,13 @@
           <div class="recipe-card-meta" style="color:var(--g600);font-weight:700"><span class="material-symbols-rounded" style="color:var(--g500)">payments</span> Venda: ${fmtBRL(venda)}</div>
           <div class="recipe-card-meta" style="font-size:11px;color:var(--n500)"><span class="material-symbols-rounded" style="font-size:13px">nutrition</span> ${nutritionSummary.label}</div>
           ${changed?`<div class="recipe-card-meta" style="font-size:11px;color:var(--n400)"><span class="material-symbols-rounded" style="font-size:13px">sync</span> Preços atualizados</div>`:''}
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-top:var(--s3)">
-            <div style="display:flex;gap:4px;flex-wrap:wrap">
-              ${r.ingredients.slice(0,4).map(i=>`<span class="tag">${escapeHtml(i.name)}</span>`).join('')}
-              ${r.ingredients.length>4?`<span class="tag">+${r.ingredients.length-4}</span>`:''}
-            </div>
+          <div class="recipe-card-footer">
+            <button class="btn btn-secondary btn-xs recipe-ingredients-toggle" data-recipe-action="ingredients" type="button" aria-expanded="false" aria-controls="recipe-card-ingredients-${cardIndex}"><span data-ingredients-label>Ver ingredientes</span><span class="material-symbols-rounded" aria-hidden="true">expand_more</span></button>
             <button class="btn btn-outlined btn-xs" data-recipe-action="pdf" style="margin-left:var(--s2)" type="button">
               <span class="material-symbols-rounded" style="font-size:14px">picture_as_pdf</span> PDF
             </button>
           </div>
+          <ul class="recipe-card-ingredients" id="recipe-card-ingredients-${cardIndex}" data-card-ingredients hidden aria-label="Ingredientes de ${escapeAttribute(r.nome)}">${r.ingredients.map(i=>`<li>${escapeHtml(i.name)}</li>`).join('')}</ul>
         </div>`;
       }).join('');
       bindRecipeCardActions(el);
