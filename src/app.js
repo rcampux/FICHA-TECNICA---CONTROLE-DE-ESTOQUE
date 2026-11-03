@@ -24,6 +24,12 @@ function closeConfirmAction(confirmed){
   if(pendingConfirmResolve)pendingConfirmResolve(Boolean(confirmed));
   pendingConfirmResolve=null;
 }
+function openFichaFromNavigation(){
+  const mobile = window.matchMedia('(max-width: 767px)').matches;
+  if (mobile) document.getElementById('page-ficha').classList.remove('editor-open');
+  showPage('ficha','nav-ficha');
+  if (mobile) window.scrollTo({top:0,behavior:'instant'});
+}
 function showPage(page,navId,openEditor=false){
   window.FichaTecCategoryPanels.closeAll();
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
