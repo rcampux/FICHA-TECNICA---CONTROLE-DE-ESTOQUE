@@ -95,7 +95,7 @@ Os tokens canônicos ficam em `src/styles/tokens.css`. Aliases legados existem a
 
 - O acesso usa a fotografia de cozinha. No caderno de receitas em PDF, a foto cadastrada ocupa a capa. Quando ela está ausente ou indisponível, uma fotografia editorial de confeitaria ou cozinha ocupa o espaço e recebe legenda.
 - Nos detalhes da receita, o X permanece no topo. As ações Excluir, Editar e PDF têm aparência compacta e área de toque de pelo menos 44 px.
-- Na ficha, uma faixa de luz atravessa o card verde do Markup e ilumina uma moeda dourada que gira a cada 3,6 segundos. O campo claro mantém o percentual legível. Com movimento reduzido, a moeda fica estática. No planejamento e na impressão, o rótulo usa verde escuro.
+- Na ficha, um reflexo com o símbolo $ atravessa o card verde de ponta a ponta quando ele aparece pela primeira vez. O efeito dura 2,1 segundos e desaparece. A preferência por movimento reduzido mantém o card estático.
 - Fotos de receita são adicionadas pelo usuário e sempre possuem alternativa visual.
 - O asset editorial local é `assets/images/fichatec-kitchen-hero.jpg`.
 - Créditos e origem ficam em `docs/ASSET_LICENSES.md`.

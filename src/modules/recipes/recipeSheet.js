@@ -1280,6 +1280,18 @@
     function getCurrentRecipeImage() { return currentRecipeImage ? {...currentRecipeImage} : null; }
 
     bindRecipeImageEditor();
+    const glow = document.querySelector('.markup-glow');
+    if (glow && 'IntersectionObserver' in window) {
+      const observer = new IntersectionObserver(([entry]) => {
+        if (entry.intersectionRatio < 0.5) return;
+        observer.disconnect();
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+        glow.addEventListener('animationend', () => glow.remove(), {once:true});
+        glow.addEventListener('animationcancel', () => glow.remove(), {once:true});
+        glow.classList.add('is-sweeping');
+      }, {threshold:0.5});
+      observer.observe(glow.parentElement);
+    }
     const ingredientList=document.getElementById('ingredients-list');
     window.FichaTecIngredientOrder.bindIngredientOrder(ingredientList,{onMove:reorderIngredient,onCancel:renderIngredients,canMove:()=>!recipeSaveInFlight});
     ingredientList.addEventListener('click',event=>{
