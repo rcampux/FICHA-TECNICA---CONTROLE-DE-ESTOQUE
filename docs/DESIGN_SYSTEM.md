@@ -124,4 +124,4 @@ Os tokens canônicos ficam em `src/styles/tokens.css`. Aliases legados existem a
 - `src/styles/layout.css`: breakpoints e navegação adaptativa.
 - `src/styles/pages.css`: composição das páginas.
 - `src/styles/saas-workspace.css`: adaptação estrutural mobile/desktop, drawer SaaS e grids fluidos.
-- A entrada desktop da Ficha (1200 px ou mais) é uma abertura de livro culinário. A página esquerda combina título editorial serifado, instrução em Roboto e gravura botânica do ingrediente. A direita reserva a fotografia do prato e sua legenda. Ao entrar em Ficha, a capa antecede o editor em todos os tamanhos de tela. Editar uma receita salva abre o editor diretamente.
+- A entrada da Ficha é uma abertura de livro culinário. A página esquerda combina título editorial serifado, instrução em Roboto e gravura botânica do ingrediente. A direita reserva a fotografia do prato e sua legenda. Em telas abaixo de 768 px, a capa usa uma coluna com o botão Criar receita antes da fotografia e a gravura abaixo da legenda. Ao entrar em Ficha, a capa antecede o editor em todos os tamanhos de tela. Editar uma receita salva abre o editor diretamente.
