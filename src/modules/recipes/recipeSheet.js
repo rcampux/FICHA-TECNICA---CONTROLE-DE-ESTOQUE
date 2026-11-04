@@ -728,6 +728,8 @@
     function setIngSource(src){
       ingSource=src;
       const manual=src==='manual';
+      document.getElementById('recipe-note-mode').setAttribute('aria-pressed',String(manual));
+      if(manual)document.getElementById('ingredient-builder-toggle').setAttribute('aria-expanded','true');
       document.getElementById('src-btn-manual').classList.toggle('active',manual);
       document.getElementById('ing-search').placeholder=manual?'Ex.: Farinha de trigo':'Buscar ingrediente...';
       document.getElementById('ing-source-help').textContent=manual?'Digite o nome. Você poderá cadastrar este produto no estoque depois.':'Pesquise pelo nome e selecione um produto cadastrado.';

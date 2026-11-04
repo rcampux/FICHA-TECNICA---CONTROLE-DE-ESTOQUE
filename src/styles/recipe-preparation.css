@@ -260,7 +260,19 @@
   font-weight: 600;
   cursor: pointer;
 }
-.cookbook-note { display:block; margin-top:6px; padding:10px 0; min-height:44px; background:none; border:0; color:#672c31; font:inherit; text-decoration:underline; text-underline-offset:3px; cursor:pointer; }
+#recipe-note-mode {
+  display: flex; align-items: center; gap: 12px; width: 100%; padding: 14px 16px;
+  margin-bottom: 18px; border: 0; border-radius: 14px; text-align: left;
+  background: #ffedCF; color: #492c1f; font: inherit; cursor: pointer;
+}
+#recipe-note-mode strong, #recipe-note-mode small { display: block; }
+#recipe-note-mode strong { font-size: 16px; }
+#recipe-note-mode small { margin-top: 4px; line-height: 1.4; }
+.note-mode-indicator { flex: none; width: 22px; height: 22px; margin-left: auto; border: 1px solid #927665; border-radius: 50%; display: grid; place-items: center; }
+.note-mode-indicator span { visibility: hidden; font-size: 16px; }
+#recipe-note-mode[aria-pressed="true"] .note-mode-indicator { background: #59342a; color: #fff; }
+#recipe-note-mode[aria-pressed="true"] .note-mode-indicator span { visibility: visible; }
+#recipe-note-mode:focus-visible { outline: 3px solid white; outline-offset: 3px; }
 .pending-note, .pending-tag { background:#fff0d4; color:#654112; border-radius:10px; padding:8px 12px; font-size:13px; }
 .pending-tag { display:inline-block; font-weight:700; }
 #ficha-totals.cost-pending > :is(.markup-row,.total-box,.section-label,.card) { display:none; }

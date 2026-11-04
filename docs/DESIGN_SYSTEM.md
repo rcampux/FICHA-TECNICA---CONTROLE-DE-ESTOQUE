@@ -127,5 +127,6 @@ Os tokens canônicos ficam em `src/styles/tokens.css`. Aliases legados existem a
 - A entrada da Ficha é uma abertura de livro culinário. A página esquerda combina título editorial serifado, instrução em Roboto e gravura botânica do ingrediente. A direita reserva a fotografia do prato e sua legenda. Em telas abaixo de 768 px, a capa usa uma coluna com o botão Criar receita antes da fotografia e a gravura abaixo da legenda. Ao entrar em Ficha, a capa antecede o editor em todos os tamanhos de tela. Editar uma receita salva abre o editor diretamente.
 
 ## Receitas anotadas sem estoque
+- Ao tocar em Criar receita, a opção Anotar receita sem estoque aparece no início da ficha, antes do nome. Ativá-la abre a seção de ingredientes no celular.
 - O editor aceita ingredientes digitados com quantidade e unidade. Na lista, a etiqueta Custo pendente identifica as receitas com ingredientes sem vínculo.
 - Ao salvar um produto físico ou virtual, ingredientes pendentes de mesmo nome e medida compatível recebem o custo proporcional e a nutrição do catálogo virtual. A venda só aparece quando todos têm preço. O cadastro não registra consumo.

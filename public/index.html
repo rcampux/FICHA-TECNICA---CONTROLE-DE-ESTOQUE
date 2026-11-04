@@ -183,7 +183,6 @@
         <h1 id="cookbook-title">Caderno<br> de receitas</h1>
         <p>Anote os ingredientes e o preparo de cada prato. Defina o rendimento e calcule o custo por porção.</p>
         <button class="cookbook-create" type="button" onclick="showPage('ficha','nav-ficha',true)">Criar receita <span aria-hidden="true">→</span></button>
-        <button type="button" class="cookbook-note" onclick="showPage('ficha','nav-ficha',true);setIngSource('manual')">Anotar receita sem estoque</button>
       </div>
       <figure class="cookbook-specimen">
         <span aria-hidden="true" class="cookbook-etching"></span>
@@ -196,6 +195,11 @@
     </figure>
   </section>
   <div class="card recipe-base-card">
+    <button type="button" id="recipe-note-mode" aria-pressed="false" onclick="setIngSource(this.getAttribute('aria-pressed')==='true'?'virtual':'manual')">
+      <span class="material-symbols-rounded" aria-hidden="true">edit_note</span>
+      <span><strong>Anotar receita sem estoque</strong><small>Digite os ingredientes agora e cadastre os preços depois.</small></span>
+      <span class="note-mode-indicator" aria-hidden="true"><span class="material-symbols-rounded">check</span></span>
+    </button>
     <div class="input-group">
       <label class="input-label">Nome da Receita *</label>
       <input type="text" id="ficha-nome" placeholder="Ex: Bolo de banana, Esfiha de carne...">
@@ -261,7 +265,7 @@
   </div>
 
   <div class="section-label">Adicionar Ingrediente</div>
-  <button class="mobile-fold" type="button" aria-expanded="false" aria-controls="ingredient-builder" onclick="this.setAttribute('aria-expanded',this.getAttribute('aria-expanded')!=='true')">Adicionar ingredientes</button>
+  <button class="mobile-fold" id="ingredient-builder-toggle" type="button" aria-expanded="false" aria-controls="ingredient-builder" onclick="this.setAttribute('aria-expanded',this.getAttribute('aria-expanded')!=='true')">Adicionar ingredientes</button>
   <div id="ingredient-builder" class="card ingredient-builder-card">
     <div class="builder-step">
       <div class="builder-step-header">
