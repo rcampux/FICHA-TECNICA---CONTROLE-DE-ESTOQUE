@@ -238,65 +238,65 @@
       gap: 48px;
       margin: 0;
       padding: clamp(34px, 4vw, 72px);
-      border-radius: 20px 0 0 20px;
-      background: #f5ede0;
+      border-radius: 12px 0 0 12px;
+      background: radial-gradient(ellipse at top left, #29463a, #142b24 76%);
       box-shadow: none;
     }
+    & > .page-hero::after {
+      content: "";
+      position: absolute;
+      inset: 13px;
+      border: 1px solid #af995c73;
+      pointer-events: none;
+    }
     & .page-hero-content { align-self: stretch; margin-block: auto; }
-    & .page-hero-label { color: #873b34; letter-spacing: .16em; }
+    & .page-hero-label { color: #e7cc91; letter-spacing: .16em; }
     & .page-hero-label::before {
       content: "";
       display: block;
-      width: 40px;
-      height: 3px;
+      width: 16px;
+      height: 16px;
+      transform: rotate(45deg);
+      border: 1px solid #e7cc91;
       margin-bottom: 22px;
-      background: #873b34;
+      background: transparent;
     }
     & .page-hero-title {
       max-width: 11ch;
       margin: 16px 0;
-      color: #332a24;
+      font-weight: 450;
+      color: #fff7e7;
       font-size: clamp(40px, 3.9vw, 72px);
       line-height: 1.03;
     }
-    & .page-hero-copy { max-width: 34ch; color: #66564a; font-size: 16px; }
+    & .page-hero-copy { max-width: 34ch; color: #e2e5d9; font-size: 16px; }
     & .page-hero-art {
       display: flex;
       flex-wrap: wrap;
       gap: 8px 20px;
-      border-top: 1px solid #d8cbbb;
+      border-top: 1px solid #af995c73;
       padding-top: 16px;
     }
     & .page-hero-art span {
       padding: 0;
-      color: #645045;
+      color: #e7cc91;
       background: transparent;
       border: 0;
       backdrop-filter: none;
     }
     & .recipe-start-card {
       grid-area: create;
-      display: grid;
-      grid-template-columns: 1fr;
-      align-content: end;
-      justify-items: start;
-      gap: 8px;
-      padding: 0 0 30px;
-      border-radius: 0 20px 20px 0;
-      background: #491f23;
+      gap: 14px;
+      min-height: clamp(470px, 33vw, 640px);
+      padding: clamp(32px, 3.5vw, 68px);
+      border-radius: 0 12px 12px 0;
+      background:
+        linear-gradient(0deg, #1c1511 0%, rgba(28,21,17,.94) 23%, rgba(28,21,17,.62) 42%, transparent 67%),
+        url("../../assets/images/fichatec-kitchen-hero.jpg") 68% center / cover;
     }
-    & .recipe-start-card::before {
-      content: "";
-      align-self: stretch;
-      justify-self: stretch;
-      height: clamp(220px, 18vw, 360px);
-      margin-bottom: 16px;
-      background: url("../../assets/images/fichatec-kitchen-hero.jpg") center 72% / cover;
-    }
-    & .recipe-start-card > span { margin-inline: clamp(28px, 3vw, 54px); }
-    & .recipe-start-title { font-size: clamp(28px, 2.2vw, 42px); color: #fff8ec; }
-    & .recipe-start-copy { max-width: 48ch; color: #f2ded8; }
-    & .recipe-start-action { margin-top: 10px; color: #57262b; background: #fff6e6; }
-    & .recipe-start-card:is(:hover, :focus-visible) .recipe-start-action { background: white; text-decoration: underline; text-underline-offset: 3px; }
+    & .recipe-start-title { font-size: clamp(32px, 2.5vw, 48px); font-weight: 500; color: #fff8eb; }
+    & .recipe-start-copy { max-width: 40ch; color: #f2e9dc; }
+    & .recipe-start-action { background: #f5e6c6; color: #38281f; border-radius: 5px; padding: 13px 22px; }
+    & .recipe-start-card:is(:hover, :focus-visible) .recipe-start-action { background: #fff6e4; text-decoration: underline; text-underline-offset: 4px; }
   }
 }

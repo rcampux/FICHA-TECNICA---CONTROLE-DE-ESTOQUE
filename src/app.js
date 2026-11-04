@@ -25,10 +25,8 @@ function closeConfirmAction(confirmed){
   pendingConfirmResolve=null;
 }
 function openFichaFromNavigation(){
-  const mobile = window.matchMedia('(max-width: 767px)').matches;
-  if (mobile) document.getElementById('page-ficha').classList.remove('editor-open');
   showPage('ficha','nav-ficha');
-  if (mobile) window.scrollTo({top:0,behavior:'instant'});
+  window.scrollTo({top:0,behavior:'instant'});
 }
 function showPage(page,navId,openEditor=false){
   window.FichaTecCategoryPanels.closeAll();
@@ -36,8 +34,8 @@ function showPage(page,navId,openEditor=false){
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
   document.getElementById('page-'+page).classList.add('active');
   document.getElementById(navId).classList.add('active');
+  if(page==='ficha') document.getElementById('page-ficha').classList.toggle('editor-open', openEditor);
   if(page==='ficha' && openEditor){
-    document.getElementById('page-ficha').classList.add('editor-open');
     const touchLayout = window.matchMedia('(max-width: 767px), (pointer: coarse)').matches;
     document.getElementById(touchLayout ? 'ficha-editor-title' : 'ficha-nome').focus({preventScroll:true});
     if (touchLayout) window.scrollTo({top:0,behavior:'instant'});

@@ -124,4 +124,4 @@ Os tokens canônicos ficam em `src/styles/tokens.css`. Aliases legados existem a
 - `src/styles/layout.css`: breakpoints e navegação adaptativa.
 - `src/styles/pages.css`: composição das páginas.
 - `src/styles/saas-workspace.css`: adaptação estrutural mobile/desktop, drawer SaaS e grids fluidos.
-- Na entrada da Ficha em desktop (a partir de 1200 px), a apresentação em marfim e o cartão de criação em vinho formam uma página dupla com uma única fotografia de cozinha.
+- A entrada desktop da Ficha (1200 px ou mais) combina uma capa verde escura com filete dourado e uma fotografia de cozinha. A navegação para Ficha apresenta a capa antes do editor em todos os tamanhos de tela. Editar uma receita salva abre diretamente o editor.
