@@ -183,6 +183,7 @@
         <h1 id="cookbook-title">Caderno<br> de receitas</h1>
         <p>Anote os ingredientes e o preparo de cada prato. Defina o rendimento e calcule o custo por porção.</p>
         <button class="cookbook-create" type="button" onclick="showPage('ficha','nav-ficha',true)">Criar receita <span aria-hidden="true">→</span></button>
+        <button type="button" class="cookbook-note" onclick="showPage('ficha','nav-ficha',true);setIngSource('manual')">Anotar receita sem estoque</button>
       </div>
       <figure class="cookbook-specimen">
         <span aria-hidden="true" class="cookbook-etching"></span>
@@ -271,6 +272,7 @@
         </div>
       </div>
       <div class="source-toggle ingredient-source-toggle">
+        <button class="source-btn" type="button" id="src-btn-manual" onclick="setIngSource('manual')">Sem estoque<br><small>digitar ingrediente</small></button>
         <button class="source-btn active" id="src-btn-virtual" onclick="setIngSource('virtual')">
           <span class="material-symbols-rounded icon-xs" style="vertical-align:middle">inventory_2</span> Virtual<br>
           <span style="font-size:9px;font-weight:400;opacity:0.8">fichas & precificação</span>
@@ -286,7 +288,7 @@
         <span class="builder-step-number">2</span>
         <div>
           <div class="builder-step-title">Ingrediente</div>
-          <div class="builder-step-sub">Pesquise pelo nome e selecione um produto cadastrado.</div>
+          <div class="builder-step-sub" id="ing-source-help">Pesquise pelo nome e selecione um produto cadastrado.</div>
         </div>
       </div>
       <div class="ingredient-search-shell" id="ing-search-wrap">
@@ -346,6 +348,7 @@
   </div>
 
   <div id="ficha-totals" style="display:none">
+    <p class="pending-note" id="pending-cost-notice" hidden>Custo pendente. Salve a receita agora e cadastre os preços na aba Receitas.</p>
     <div class="markup-row">
       <span class="markup-glow" aria-hidden="true">$</span>
       <label class="markup-label markup-caption" for="markup-pct">

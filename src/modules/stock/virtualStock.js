@@ -176,7 +176,11 @@
     }
 
     
-    function openStockModal(id=null){
+    let linkingIngredient=null;
+    let savingProduct=false;
+    function openStockModal(id=null,ingredient=null){
+      linkingIngredient=ingredient;
+      document.getElementById('stock-name').readOnly=Boolean(ingredient);
       editingStockId=id;
       if(id!==null){
         const s=getStock().find(x=>String(x.id)===String(id));
@@ -201,20 +205,35 @@
       document.getElementById('modal-stock').classList.add('open');
     }
     async function saveStock(){
+      if(savingProduct)return;
+      savingProduct=true;
+      try {await persistProductForm();} finally {savingProduct=false;}
+    }
+    async function persistProductForm(){
       const name=document.getElementById('stock-name').value.trim();
       const qty=parseFloat(document.getElementById('stock-qty').value);
       const price=parseFloat(document.getElementById('stock-price').value);
       if(!name||isNaN(qty)||qty<=0||isNaN(price)||price<0){showToast('Preencha nome, quantidade e valor.');return;}
+      if(linkingIngredient && (qty<=0 || (document.getElementById('stock-unit').value==='kg'?'g':document.getElementById('stock-unit').value) !== (linkingIngredient.unit==='kg'?'g':linkingIngredient.unit))) {
+        showToast('Informe a quantidade comprada em uma unidade compatível com a receita ('+linkingIngredient.unit+').');return;
+      }
       const nutrition=readNutrition("virtual");
       const category = ensureCategory ? ensureCategory(document.getElementById('stock-category').value) : document.getElementById('stock-category').value;
       const existing=editingStockId!==null?getStock().find(s=>String(s.id)===String(editingStockId)):null;
       const item={...(existing||{}),id:existing?.id||editingStockId||Date.now(),name,qty,unit:document.getElementById('stock-unit').value,price,category,nutrition,updatedAt:new Date().toISOString()};
-      const nextStock=editingStockId!==null?getStock().map(s=>String(s.id)===String(editingStockId)?item:s):[...getStock(),item];
+      const previousStock=getStock();
+      const nextStock=editingStockId!==null?previousStock.map(s=>String(s.id)===String(editingStockId)?item:s):[...getStock(),item];
       try{await persistStockSnapshot(nextStock);}
-      catch(error){console.error(error);showToast('Nao foi possivel salvar o produto no Supabase.');return;}
+      catch(error){
+        setStock(previousStock);
+        if(db.saveLocal)db.saveLocal(storageKeys.stock,previousStock);
+        console.error(error);showToast('Nao foi possivel salvar o produto no Supabase.');return;
+      }
       closeModal('modal-stock');renderStock();renderStockCategoryFilters();
       renderRecipes(document.getElementById('recipe-search').value,getActiveIngredientFilter());
       showToast(editingStockId?'Produto atualizado!':'Produto adicionado!');
+      const savedProduct=getStock().find(p=>String(p.id)===String(item.id)) || getStock().find(p=>p.name.toLowerCase()===name.toLowerCase());
+      await deps.applyStockPrice?.(savedProduct);
     }
     async function deleteStock(id){
       if(!await confirmAction('Deseja excluir este produto do estoque virtual?','Excluir produto'))return;

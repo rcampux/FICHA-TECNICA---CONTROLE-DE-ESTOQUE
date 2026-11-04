@@ -361,7 +361,7 @@
       cost_cents: centsFromCurrency(ingredient.cost),
       // A price per gram can be a fraction of one cent.
       saved_unit_price_cents: Number((normalizeNumber(ingredient.savedPricePerG) * 100).toFixed(6)),
-      nutrition_snapshot: ingredient.nutrition || {},
+      nutrition_snapshot: ingredient.source === "manual" ? {...ingredient.nutrition, pendingStock:true} : ingredient.nutrition || {},
     };
   }
 
@@ -373,7 +373,7 @@
       stockRemoteId: row.stock_item_id,
       physicalId: row.physical_stock_item_id,
       physicalRemoteId: row.physical_stock_item_id,
-      source: row.physical_stock_item_id ? "fisico" : "virtual",
+      source: row.nutrition_snapshot?.pendingStock ? "manual" : row.physical_stock_item_id ? "fisico" : "virtual",
       name: row.name,
       qtyG: normalizeNumber(row.used_quantity),
       qtyBruta: normalizeNumber(row.gross_quantity),

@@ -26,6 +26,7 @@
     let currentIngredients = [];
     let selectedIngredient = null;
     let currentRecipeId = null;
+    let editingRecipeId = null;
     let activeIngFilter = null;
     let ingSource = 'virtual';
     let stock = getStock();
@@ -345,7 +346,7 @@
             input: sourceInput,
             preview,
             currentImage: currentRecipeImage ? {...currentRecipeImage} : null,
-            recipeId: currentRecipeId,
+            recipeId: editingRecipeId,
             reason: "selection",
           });
         }
@@ -395,7 +396,7 @@
           input,
           preview,
           currentImage: currentRecipeImage ? {...currentRecipeImage} : null,
-          recipeId: currentRecipeId,
+          recipeId: editingRecipeId,
           reason: "save",
         });
         if (suppliedImage !== undefined) setCurrentRecipeImage(suppliedImage, {file:input?.files?.[0] || null});
@@ -679,7 +680,7 @@
     }
 
     function findStockItem(stockId,name){
-      if(stockId&&!String(stockId).startsWith('pf_')){const s=stock.find(x=>x.id===stockId||x.id===parseInt(stockId));if(s)return s;}
+      if(stockId&&!String(stockId).startsWith('pf_')){const s=stock.find(x=>x.remoteId===stockId||String(x.id)===String(stockId));if(s)return s;}
       return stock.find(x=>x.name.toLowerCase()===name.toLowerCase())||null;
     }
     function conversionFor(sourceUnit, unit) {
@@ -702,7 +703,8 @@
       return 0;
     }
     function getIngredientUnitPrice(item) {
-      const source = findStockItem(item.stockId, item.name);
+      if (item.source === 'manual') return 0;
+      const source = findStockItem(item.stockRemoteId || item.stockId, item.name);
       if (source && Number(source.qty) > 0) {
         const conversion = conversionFor(source.unit,item.unit || 'g');
         if (!conversion) return pricePerUnit(source);
@@ -725,6 +727,10 @@
     /* ══ FICHA ══ */
     function setIngSource(src){
       ingSource=src;
+      const manual=src==='manual';
+      document.getElementById('src-btn-manual').classList.toggle('active',manual);
+      document.getElementById('ing-search').placeholder=manual?'Ex.: Farinha de trigo':'Buscar ingrediente...';
+      document.getElementById('ing-source-help').textContent=manual?'Digite o nome. Você poderá cadastrar este produto no estoque depois.':'Pesquise pelo nome e selecione um produto cadastrado.';
       document.getElementById('src-btn-virtual').classList.toggle('active',src==='virtual');
       document.getElementById('src-btn-fisico').classList.toggle('active',src==='fisico');
       document.getElementById('ing-search').value='';
@@ -736,7 +742,7 @@
     function searchIngredient(){
       const q=document.getElementById('ing-search').value.toLowerCase().trim();
       const dd=document.getElementById('ing-dropdown');
-      if(!q){dd.classList.remove('open');return;}
+      if(ingSource==='manual'||!q){dd.classList.remove('open');return;}
       const matches=ingSource==='fisico'
         ?physicalStock.filter(p=>p.name.toLowerCase().includes(q)&&p.currentQty>0).slice(0,8).map(p=>({id:'pf_'+p.id,name:p.name,unit:p.unit,price:p.price,qty:p.currentQty,_physicalId:p.id,nutrition:getNutrition(p.name)}))
         :stock.filter(s=>s.name.toLowerCase().includes(q)).slice(0,8);
@@ -746,7 +752,7 @@
           const ppg=pricePerUnit(s);
           const sub=s.unit==='ml'?fmtBRL(ppg*1000)+'/L':s.unit==='un'?fmtBRL(ppg)+'/un':fmtBRL(ppg*1000)+'/kg';
           return`<div class="autocomplete-item" onclick="selectIngredient('${s.id}')">
-            <div>${s.name}${ingSource==='fisico'?` <span style="font-size:11px;color:var(--g500);font-weight:700">${fmtQty(s.qty,s.unit)} disp.</span>`:''}</div>
+            <div>${escapeHtml(s.name)}${ingSource==='fisico'?` <span style="font-size:11px;color:var(--g500);font-weight:700">${fmtQty(s.qty,s.unit)} disp.</span>`:''}</div>
             <div class="sub">${s.qty}${s.unit} · ${fmtBRL(s.price)} · ${sub}</div>
           </div>`;
         }).join('');
@@ -791,23 +797,26 @@
       else el.style.display='none';
     }
     function addIngredient(){
-      if(!selectedIngredient){showToast('Selecione um ingrediente.');return;}
+      const manual=ingSource==='manual';
+      const product=manual?{name:document.getElementById('ing-search').value.trim()}:selectedIngredient;
+      if(!product?.name){showToast(manual?'Digite o nome do ingrediente.':'Selecione um ingrediente.');return;}
       const qty=parseFloat(document.getElementById('ing-qty').value);
       const unit=document.getElementById('ing-unit').value;
-      const rend=parseFloat(document.getElementById('ing-rendimento').value)||100;
-      const conversion = conversionFor(selectedIngredient.unit,unit);
+      const rend=Number(document.getElementById('ing-rendimento').value || 100);
+      if(!Number.isFinite(rend)||rend<=0||rend>100){showToast('Informe um rendimento maior que zero e até 100%.');return;}
+      const conversion = !manual && conversionFor(product.unit,unit);
       const equivalent = conversion && knownEquivalence(selectedIngredient,selectedIngredient,conversion);
       if(conversion && (!equivalent || ingSource==='fisico')){showToast('Adicione na unidade do estoque. Depois, use o lápis para converter.');return;}
-      const rate = pricePerUnit(selectedIngredient) * (!conversion ? 1 : conversion.divide ? 1/equivalent : equivalent);
-      if(!qty||qty<=0){showToast('Informe a quantidade.');return;}
+      const rate = manual ? 0 : pricePerUnit(product) * (!conversion ? 1 : conversion.divide ? 1/equivalent : equivalent);
+      if(!Number.isFinite(qty)||!qty||qty<=0){showToast('Informe a quantidade.');return;}
       const isUn=unit==='un';
       const qtyG=isUn?qty:(unit==='kg'?qty*1000:qty);
       const qtyBruta=isUn?qty:qtyG/(rend/100);
       currentIngredients.push({
-        id:Date.now(),stockId:selectedIngredient.id,physicalId:selectedIngredient._physicalId||null,
-        source:ingSource,name:selectedIngredient.name,qtyG,qtyBruta,unit,rendimento:rend,
+        id:Date.now(),stockId:product.id||null,physicalId:product._physicalId||null,
+        source:ingSource,name:product.name,qtyG,qtyBruta,unit,rendimento:rend,
         cost:rate*qtyBruta,savedPricePerG:rate,
-        nutrition:selectedIngredient.nutrition||getNutrition(selectedIngredient.name)
+        nutrition:manual?{}:product.nutrition||getNutrition(product.name)
       });
       if(ingSource==='fisico'&&selectedIngredient._physicalId){
         const pid=selectedIngredient._physicalId;
@@ -851,7 +860,7 @@
             <div class="ing-name">${escapeHtml(i.name)}</div>
             <div class="ing-qty">${formatBatchNumber(i.unit==='kg'?i.qtyG/1000:i.qtyG)} ${escapeHtml(i.unit||'g')}${i.unit!=='un'&&i.rendimento<100?' → '+formatProductionIngredientQuantity(i)+' bruto':''}</div>
           </div>
-          <div class="ing-cost">${fmtBRL(i.cost)}</div>
+          <div class="ing-cost">${i.source==='manual'?'Sem preço':fmtBRL(i.cost)}</div>
           <button type="button" class="ingredient-edit-button" data-edit-ingredient="${index}" aria-label="Editar quantidade e unidade de ${escapeAttribute(i.name)}"><span class="material-symbols-rounded" aria-hidden="true">edit</span></button>
           <button type="button" class="ing-del" data-remove-ingredient="${escapeAttribute(i.id)}" aria-label="Remover ${escapeAttribute(i.name)}"><span class="material-symbols-rounded" aria-hidden="true">close</span></button>
         </div>`).join('')}
@@ -901,6 +910,9 @@
     }
 
     function calcFicha(changedField){
+      const pending = currentIngredients.some(i=>i.source==='manual');
+      document.getElementById('ficha-totals').classList.toggle('cost-pending',pending);
+      document.getElementById('pending-cost-notice').hidden=!pending;
       const batch = syncBaseYield(changedField);
       const rawWeight = window.FichaTecProduction.ingredientMass(currentIngredients);
       document.getElementById('weight-raw').value = rawWeight === null ? '' : formatBatchNumber(rawWeight);
@@ -933,8 +945,10 @@
       if(recipeSaveInFlight&&!options.force)return;
       if(currentIngredients.length&&!options.force&&!await confirmAction('Deseja limpar todos os dados desta ficha tecnica?','Limpar ficha','Sim, limpar'))return;
       currentIngredients=[];
+      setIngSource('virtual');
       document.getElementById('page-ficha').classList.remove('editor-open');
       currentRecipeId=null;
+      editingRecipeId=null;
       yieldDriver='count';
       recipeImageDirty=false;
       currentRecipeImage=null;
@@ -983,7 +997,7 @@
       }
       const {ingredients: priced, totalCost, venda} = calcCosts(currentIngredients, markup, batch.ready);
       const ingredientRefs = priced.map(({currentPricePerG, ...item}) => ({...item, savedPricePerG: currentPricePerG}));
-      const editingIndex=currentRecipeId===null? -1 : recipes.findIndex(r=>String(r.id)===String(currentRecipeId));
+      const editingIndex=editingRecipeId===null? -1 : recipes.findIndex(r=>String(r.id)===String(editingRecipeId));
       const namedIndex=recipes.findIndex(r=>r.nome.toLocaleLowerCase('pt-BR')===nome.toLocaleLowerCase('pt-BR'));
       if(editingIndex>=0&&namedIndex>=0&&editingIndex!==namedIndex){
         showToast('Ja existe outra receita com esse nome.');
@@ -1073,6 +1087,7 @@
         return;
       }
       el.innerHTML=f.map((r,cardIndex)=>{
+        const pending=r.ingredients.some(i=>i.source==='manual');
         const {totalCost,venda}=calcCosts(r.ingredients,r.markup,r.rendimento);
         const changed=hasPriceChanged(r.ingredients);
         const diff=totalCost-r.totalCost;
@@ -1083,18 +1098,18 @@
           <div class="recipe-card-heading">
             <div class="recipe-card-title">${escapeHtml(r.nome)}${r.origem==='scan'?` <span class="scan-badge" style="font-size:10px"><span class="material-symbols-rounded" style="font-size:12px">document_scanner</span>Scan</span>`:''}</div>
             <div style="display:flex;gap:6px;align-items:center;flex-shrink:0">
-              ${changed && Math.round(diff*100)!==0?`<span style="font-size:11px;background:${diff>0?'var(--r100)':'var(--g50)'};color:${diff>0?'var(--r400)':'var(--g600)'};padding:2px 8px;border-radius:var(--r-pill);font-weight:700">${diff>0?'▲':'▼'} ${fmtBRL(Math.abs(diff))}</span>`:''}
-              <span class="badge badge-green">Custo ${fmtBRL(totalCost)}</span>
+              ${!pending && changed && Math.round(diff*100)!==0?`<span style="font-size:11px;background:${diff>0?'var(--r100)':'var(--g50)'};color:${diff>0?'var(--r400)':'var(--g600)'};padding:2px 8px;border-radius:var(--r-pill);font-weight:700">${diff>0?'▲':'▼'} ${fmtBRL(Math.abs(diff))}</span>`:''}
+              ${pending?'<span class="pending-tag">Custo pendente</span>':`<span class="badge badge-green">Custo ${fmtBRL(totalCost)}</span>`}
               <span class="recipe-card-actions">
                 <button class="btn btn-secondary btn-icon" data-recipe-action="edit" type="button" aria-label="Editar ${escapeAttribute(r.nome)}"><span class="material-symbols-rounded" aria-hidden="true">edit</span></button>
                 <button class="btn btn-danger btn-icon" data-recipe-action="delete" type="button" aria-label="Excluir ${escapeAttribute(r.nome)}"><span class="material-symbols-rounded" aria-hidden="true">delete</span></button>
               </span>
             </div>
           </div>
-          <div class="recipe-card-meta"><span class="material-symbols-rounded">fork_spoon</span>${r.ingredients.length} ingrediente(s) · ${formatRecipeYield(r.porcoes,r.yieldUnit)}${r.rendimento?' · '+formatBatchNumber(r.rendimento)+' g':''} · Markup ${r.markup}%</div>
-          <div class="recipe-card-prices"><div>Venda do lote<strong>${fmtBRL(venda)}</strong></div><div>Venda por ${r.yieldUnit === 'unit' ? 'unidade' : 'porção'}<strong>${fmtBRL(venda / (Number(r.porcoes) || 1))}</strong></div></div>
-          <div class="recipe-card-meta" style="font-size:11px;color:var(--n500)"><span class="material-symbols-rounded" style="font-size:13px">nutrition</span> ${nutritionSummary.label}</div>
-          ${changed?`<div class="recipe-card-meta" style="font-size:11px;color:var(--n400)"><span class="material-symbols-rounded" style="font-size:13px">sync</span> Preços atualizados</div>`:''}
+          <div class="recipe-card-meta"><span class="material-symbols-rounded">fork_spoon</span>${r.ingredients.length} ingrediente(s) · ${formatRecipeYield(r.porcoes,r.yieldUnit)}${r.rendimento?' · '+formatBatchNumber(r.rendimento)+' g':''}${pending?'':' · Markup '+r.markup+'%'}</div>
+          ${pending?`<button class="btn btn-secondary btn-sm" data-recipe-action="view" type="button">Adicionar ao estoque</button>`:`<div class="recipe-card-prices"><div>Venda do lote<strong>${fmtBRL(venda)}</strong></div><div>Venda por ${r.yieldUnit === 'unit' ? 'unidade' : 'porção'}<strong>${fmtBRL(venda / (Number(r.porcoes) || 1))}</strong></div></div>
+          <div class="recipe-card-meta" style="font-size:11px;color:var(--n500)"><span class="material-symbols-rounded" style="font-size:13px">nutrition</span> ${nutritionSummary.label}</div>`}
+          ${!pending && changed?`<div class="recipe-card-meta" style="font-size:11px;color:var(--n400)"><span class="material-symbols-rounded" style="font-size:13px">sync</span> Preços atualizados</div>`:''}
           <div class="recipe-card-footer">
             <div class="recipe-section-actions">
             <button class="btn btn-secondary btn-xs recipe-ingredients-toggle" data-recipe-action="ingredients" type="button" aria-expanded="false" aria-controls="recipe-card-ingredients-${cardIndex}"><span data-ingredients-label>Ver ingredientes</span><span class="material-symbols-rounded" aria-hidden="true">expand_more</span></button>
@@ -1111,9 +1126,86 @@
       bindRecipeCardActions(el);
     }
     function setIngFilter(val){activeIngFilter=val;renderRecipes(document.getElementById('recipe-search').value,val);}
+    function sameProductName(a,b) {
+      return a.trim().toLocaleLowerCase('pt-BR') === b.trim().toLocaleLowerCase('pt-BR');
+    }
+
+    async function applyStockPrice(product) {
+      syncState();
+      if (!product || !(product.qty > 0)) return false;
+      let changed=false;
+      const next=recipes.map(recipe=>{
+        const items=recipe.ingredients.map(linkIngredient);
+        if(!items.some((item,index)=>item!==recipe.ingredients[index]))return recipe;
+        changed=true;
+        const price=calcCosts(items,recipe.markup,recipe.rendimento);
+        const ingredients=price.ingredients.map(({currentPricePerG,...item})=>({...item,savedPricePerG:currentPricePerG}));
+        return {...recipe,ingredients,totalCost:price.totalCost,venda:price.venda,updatedAt:new Date().toISOString(),
+          nutritionTotals:calculateRecipeNutritionTotals(ingredients),
+          nutritionPortion:calculateRecipeNutritionPortion(ingredients,recipe.porcaoSize,recipe.rendimento)};
+      });
+      function linkIngredient(item) {
+        if(item.source!=='manual' || !sameProductName(item.name,product.name) || conversionFor(product.unit,item.unit)) return item;
+        const rate=pricePerUnit(product);
+        return {...item,source:'virtual',stockId:product.id,stockRemoteId:product.remoteId||null,
+            nutrition:{...product.nutrition},savedPricePerG:rate,cost:rate*window.FichaTecProduction.grossQuantity(item)};
+      }
+      if(!changed)return false;
+      try {
+        await persistRecipesSnapshot(next);
+        if(editingRecipeId!==null){
+          currentIngredients=currentIngredients.map(linkIngredient);
+          renderIngredients();
+          calcFicha();
+        }
+        renderRecipes();
+        showToast('Preço vinculado. Receita atualizada!');
+        return true;
+      } catch {
+        showToast('Produto salvo. Abra a receita e toque em Usar preço cadastrado para tentar novamente.');
+        return false;
+      }
+    }
+
+    function viewPendingRecipe(recipe) {
+      const content=document.getElementById('recipe-detail-content');
+      const findMatch=item=>stock.find(p=>sameProductName(p.name,item.name)&&p.qty>0&&!conversionFor(p.unit,item.unit));
+      content.innerHTML=renderRecipeMedia(recipe,'modal')+`<h3>${escapeHtml(recipe.nome)}</h3>
+        <span class="pending-tag">Custo pendente</span>
+        <p>Cadastre a quantidade comprada e o valor pago. O custo da receita será calculado quando todos os ingredientes tiverem preço.</p>
+        <p>Rendimento: ${formatRecipeYield(recipe.porcoes,recipe.yieldUnit)}</p>
+        ${recipe.ingredients.map((item,index)=>`<div class="pending-ingredient">
+          <strong>${escapeHtml(item.name)}</strong> · ${formatProductionIngredientQuantity(item)}
+          ${item.source==='manual'?`<div class="recipe-section-actions">
+            ${findMatch(item)?`<button type="button" class="btn btn-primary btn-sm" data-dest="link" data-index="${index}">Usar preço cadastrado</button>`:`<button type="button" class="btn btn-secondary btn-sm" data-dest="virtual" data-index="${index}">Adicionar ao virtual</button>`}
+            <button type="button" class="btn btn-secondary btn-sm" data-dest="physical" data-index="${index}">Adicionar ao físico</button>
+          </div>`:` · ${fmtBRL(calcCosts([item]).totalCost)}`}</div>`).join('')}
+        <details><summary>Modo de preparo</summary><p class="recipe-preparation-content">${escapeHtml(recipe.modoPreparo||'Ainda não informado.')}</p></details>`;
+      content.querySelectorAll('[data-dest]').forEach(button=>button.onclick=async()=>{
+        const item=recipe.ingredients[Number(button.dataset.index)];
+        const dest=button.dataset.dest;
+        if(dest==='link'){
+          button.disabled=true;
+          await applyStockPrice(findMatch(item));
+          viewRecipe(recipe.id);
+          return;
+        }
+        closeModal('modal-recipe');
+        const physical=dest==='physical';
+        const existing=(physical?physicalStock:stock).find(p=>sameProductName(p.name,item.name));
+        const prefix=physical?'pstock':'stock';
+        const open=physical?window.openPhysicalModal:window.openStockModal;
+        open(existing?.id??null,item);
+        document.getElementById(prefix+'-name').value=item.name;
+        if(!existing) document.getElementById(prefix+'-unit').value=item.unit;
+      });
+      document.getElementById('modal-recipe').classList.add('open');
+    }
+
     function viewRecipe(id){
       const r=recipes.find(x=>String(x.id)===String(id));if(!r)return;
       currentRecipeId=id;
+      if(r.ingredients.some(i=>i.source==='manual')){viewPendingRecipe(r);return;}
       const {ingredients,totalCost,venda}=calcCosts(r.ingredients,r.markup,r.rendimento);
       const porcoes=Number(r.porcoes)||1;
       const changed=hasPriceChanged(r.ingredients);
@@ -1237,6 +1329,7 @@
     function loadRecipeToFicha(){
       const r=recipes.find(x=>String(x.id)===String(currentRecipeId));if(!r)return;
       closeModal('modal-recipe');
+      editingRecipeId=r.id;
       currentIngredients=r.ingredients.map(item => ({...item}));
       recipeImageOperationId+=1;
       setRecipeImageProcessing(false);
@@ -1255,12 +1348,14 @@
       if(input)input.value='';
       bindRecipeImageEditor();
       renderRecipeImageEditor();
+      setIngSource(r.ingredients.some(i=>i.source==='manual')?'manual':'virtual');
       renderIngredients();calcFicha();showPage('ficha','nav-ficha',true);
     }
     
     function exportRecipePDF(id) {
       const recipe = recipes.find(item => String(item.id) === String(id));
       if (!recipe) return;
+      const pending=recipe.ingredients.some(i=>i.source==='manual');
       const preview = window.FichaTecRecipePrint.openRecipePreview();
       const price = calcCosts(recipe.ingredients, recipe.markup, recipe.rendimento);
       const count = Number(recipe.porcoes) || 1;
@@ -1281,18 +1376,18 @@
           ['Peso pronto', recipe.rendimento > 0 ? grams(recipe.rendimento) : 'A pesar'],
           ...(pieceWeight > 0 ? [['Peso por ' + unit, grams(pieceWeight)]] : []),
         ],
-        ingredients: price.ingredients.map(item => ({name:item.name, quantity:formatProductionIngredientQuantity(item), cost:fmtBRL(item.cost)})),
-        cost: fmtBRL(price.totalCost),
-        saleFacts: [['Venda do lote', fmtBRL(price.venda)], ['Venda por ' + unit, fmtBRL(price.venda / count)]],
-        costFacts: [
+        ingredients: price.ingredients.map(item => ({name:item.name, quantity:formatProductionIngredientQuantity(item), cost:item.source==='manual'?'Pendente':fmtBRL(item.cost)})),
+        cost: pending?'Custo pendente':fmtBRL(price.totalCost),
+        saleFacts: pending?[]:[['Venda do lote', fmtBRL(price.venda)], ['Venda por ' + unit, fmtBRL(price.venda / count)]],
+        costFacts: pending?[]:[
           ['Custo dos ingredientes', fmtBRL(price.totalCost)], ['Markup', formatBatchNumber(Number(recipe.markup) || 0) + '%', 'markup'],
           ['Venda com markup', fmtBRL(price.saleBeforeLoss)], ['Adicional pela perda', price.lossPercent === null ? '—' : fmtBRL(price.lossPremium)],
           ['Lucro bruto do lote', fmtBRL(price.grossProfit)], ['Lucro bruto por ' + unit, fmtBRL(price.grossProfit / count)],
           ['Peso dos ingredientes', price.rawWeight === null ? 'A pesar' : grams(price.rawWeight)], [price.loss < 0 ? 'Ganho no preparo' : 'Perda no preparo', loss],
         ],
-        priceNote: hasPriceChanged(recipe.ingredients) ? 'Preços atualizados pelo estoque. Custo registrado na ficha: ' + fmtBRL(recipe.totalCost) + '.' : '',
+        priceNote: pending?'Custo pendente. Cadastre os ingredientes no estoque para calcular a venda.':hasPriceChanged(recipe.ingredients) ? 'Preços atualizados pelo estoque. Custo registrado na ficha: ' + fmtBRL(recipe.totalCost) + '.' : '',
         nutritionWeight: formatBatchNumber(nutrition.portion),
-        nutrients: nutritionFields.map(([key, label, measure, daily]) => {
+        nutrients: pending?[]:nutritionFields.map(([key, label, measure, daily]) => {
           const value = readNumericValue(nutrition.nutrition[key]);
           return {label, value:formatNutritionValue(value, measure), daily:daily ? Math.round(value / daily * 100) + '%' : '—'};
         }),
@@ -1343,7 +1438,7 @@
       const source = findStockItem(editingItem.stockId,editingItem.name);
       const unit = editUnit.value;
       const pricedSource = source && source.qty > 0 ? source : null;
-      const c = conversionFor(pricedSource?.unit || editingItem.unit || 'g',unit);
+      const c = editingItem.source!=='manual' && conversionFor(pricedSource?.unit || editingItem.unit || 'g',unit);
       document.getElementById('ingredient-equivalence-group').hidden = !c;
       equivalent.disabled = !c;
       equivalent.required = Boolean(c);
@@ -1359,11 +1454,11 @@
         return null;
       }
       const base = source && source.qty > 0 ? pricePerUnit(source) : getIngredientUnitPrice(editingItem);
-      const rate = !c ? base : c.divide ? base/value : base*value;
+      const rate = editingItem.source==='manual'?0:!c ? base : c.divide ? base/value : base*value;
       const qtyG = unit==='kg' ? amount*1000 : amount;
       const qtyBruta = unit==='un' ? qtyG : qtyG/((editingItem.rendimento || 100)/100);
       const cost = rate*qtyBruta;
-      output.textContent = 'Custo do ingrediente: '+fmtBRL(Math.round((cost+Number.EPSILON)*100)/100);
+      output.textContent = editingItem.source==='manual'?'Custo pendente': 'Custo do ingrediente: '+fmtBRL(Math.round((cost+Number.EPSILON)*100)/100);
       return {unit,qtyG,qtyBruta,cost,savedPricePerG:rate,nutrition:c
         ? {...editingItem.nutrition,recipeEquivalence:{key:c.key,value}} : editingItem.nutrition};
     }
@@ -1409,6 +1504,7 @@
     });
 
     return {
+      applyStockPrice,
       findStockItem: runWithState(findStockItem, {commit:false}),
       calcCosts: runWithState(calcCosts, {commit:false}),
       setIngSource: runWithState(setIngSource),

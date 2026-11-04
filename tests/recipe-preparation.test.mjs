@@ -357,3 +357,45 @@ test('prévia embutida funciona no celular e com popups bloqueados no desktop', 
     assert.equal(removed, true);
   }
 });
+
+test('anotação sem estoque recebe preços proporcionais e perde a pendência só após o último vínculo', async () => {
+  const stock=[];
+  const h=recipeHarness(null,stock);
+  h.module.setIngSource('manual');
+  for(const [name,qty] of [['Farinha',250],['Açúcar',50]]) {
+    h.element('ing-search').value=name;
+    h.element('ing-unit').value='g';
+    h.element('ing-qty').value=qty;
+    h.module.addIngredient();
+  }
+  h.element('ficha-nome').value='Bolo anotado';
+  h.element('ficha-porcoes').value=2;
+  h.element('markup-pct').value=50;
+  await h.module.saveRecipe();
+  const saved=()=>h.getRecipes().find(r=>r.nome==='Bolo anotado');
+  assert.ok(saved().ingredients.every(i=>i.source==='manual'));
+  const row=repo.mapRecipeIngredientToRemote(saved().ingredients[0],'recipe','org');
+  assert.equal(repo.mapRecipeIngredientFromRemote(row).source,'manual');
+  const wrong={id:9,name:'Farinha',price:8,qty:1,unit:'un'};
+  assert.equal(await h.module.applyStockPrice(wrong),false);
+  const flour={id:3,name:'Farinha',price:8,qty:1000,unit:'g',nutrition:{kcal:360}};
+  stock.push(flour);
+  h.setFail(true);
+  assert.equal(await h.module.applyStockPrice(flour),false);
+  assert.equal(saved().ingredients[0].source,'manual');
+  h.setFail(false);
+  await h.module.applyStockPrice(flour);
+  assert.equal(saved().ingredients[0].cost,2);
+  assert.equal(saved().ingredients[0].nutrition.kcal,360);
+  assert.equal(saved().ingredients[1].source,'manual');
+  h.module.viewRecipe(saved().id);
+  assert.match(h.element('recipe-detail-content').innerHTML,/Custo pendente/);
+  const sugar={id:4,name:'Açúcar',price:4,qty:1000,unit:'g'};
+  stock.push(sugar);
+  await h.module.applyStockPrice(sugar);
+  assert.equal(saved().totalCost,2.2);
+  assert.equal(saved().venda,3.3);
+  assert.equal(await h.module.applyStockPrice(sugar),false);
+  h.module.viewRecipe(saved().id);
+  assert.doesNotMatch(h.element('recipe-detail-content').innerHTML,/Custo pendente/);
+});

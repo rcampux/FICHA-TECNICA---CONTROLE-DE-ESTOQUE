@@ -223,7 +223,11 @@
       return `<div class="stock-bar-bg"><div class="stock-bar-fill ${stockColor(percent)}" style="width:${Math.min(percent,100).toFixed(1)}%"></div></div>`;
     }
 
-    function openPhysicalModal(id = null) {
+    let linkingIngredient=null;
+    let savingProduct=false;
+    function openPhysicalModal(id=null,ingredient=null) {
+      linkingIngredient=ingredient;
+      document.getElementById('pstock-name').readOnly=Boolean(ingredient);
       editingPhysicalId = id;
 
       if (id !== null) {
@@ -261,7 +265,12 @@
       document.getElementById("modal-pstock").classList.add("open");
     }
 
-    async function savePhysical() {
+    async function savePhysical(){
+      if(savingProduct)return;
+      savingProduct=true;
+      try {await persistProductForm();} finally {savingProduct=false;}
+    }
+    async function persistProductForm() {
       const name = document.getElementById("pstock-name").value.trim();
       const qty = parseFloat(document.getElementById("pstock-qty").value);
       const unit = document.getElementById("pstock-unit").value;
@@ -273,6 +282,9 @@
         return;
       }
 
+      if(linkingIngredient && (qty<=0 || (unit==='kg'?'g':unit) !== (linkingIngredient.unit==='kg'?'g':linkingIngredient.unit))) {
+        showToast('Informe a quantidade comprada em uma unidade compatível com a receita ('+linkingIngredient.unit+').');return;
+      }
       const category = ensureCategory ? ensureCategory(document.getElementById("pstock-category").value) : document.getElementById("pstock-category").value;
       const nutrition = readNutrition("physical");
       const previousPhysicalStock = getPhysicalStock();
@@ -341,6 +353,8 @@
       renderPhysicalCategoryFilters();
       renderRecipes(document.getElementById("recipe-search").value, getActiveIngredientFilter());
       showToast(editingPhysicalId ? "Atualizado!" : "Adicionado e sincronizado!");
+      const savedProduct=getStock().find(p=>String(p.id)===String(virtualLocalId)) || getStock().find(p=>p.name.toLowerCase()===name.toLowerCase());
+      await deps.applyStockPrice?.(savedProduct);
     }
 
     async function deletePhysical(id) {

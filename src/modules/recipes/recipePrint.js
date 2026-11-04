@@ -69,10 +69,10 @@
       <dl class="sale-prices">${facts(recipe.saleFacts)}</dl>
       <dl class="cost-facts">${facts(recipe.costFacts)}</dl>
       ${recipe.priceNote ? `<p class="price-note">${escape(recipe.priceNote)}</p>` : ''}
-      <section class="recipe-section nutrition"><h2>Informação nutricional</h2>
+      ${recipe.nutrients.length ? `<section class="recipe-section nutrition"><h2>Informação nutricional</h2>
         <p class="section-note">Estimativa por ${escape(recipe.nutritionWeight)} g da receita.</p>
         <table><thead><tr><th scope="col">Nutriente</th><th scope="col">Quantidade</th><th scope="col">% VD</th></tr></thead><tbody>${nutrients}</tbody></table>
-      </section>
+      </section>` : ''}
       <footer class="edition"><span>${escape(recipe.origin)}</span><span>Emitida em ${escape(recipe.issuedOn)}</span></footer>
     </article>
   </main>

@@ -417,6 +417,7 @@ Object.assign(window,{updateProductPrice:productDiscoveryModule.updateProductPri
 Object.assign(window,{closeProductSearch,formatNutritionMetric,generateNutrition,getNutritionPortionSize,handleProductSearchKeydown,openProductSearch,runProductSearch,scaleNutritionForPortion,selectProductResult,setProductSearchMode,updateNutritionPreview});
 
 const virtualStockModule=window.FichaTecVirtualStock.createVirtualStockModule({
+  applyStockPrice:recipeSheetModule.applyStockPrice,
   getCategoryStyle:categoryCatalogModule.getCategoryStyle,
   openCategoryModal,
   closeModal,
@@ -441,6 +442,7 @@ const {openStockModal,applyStockViewMode,setStockViewMode,renderStockCategoryFil
 Object.assign(window,{openStockModal,applyStockViewMode,setStockViewMode,renderStockCategoryFilters,toggleStockCategoryPanel,toggleStockCategoryFilter,clearStockCategoryFilters,saveStock,deleteStock,renderStock});
 
 const physicalStockModule=window.FichaTecPhysicalStock.createPhysicalStockModule({
+  applyStockPrice:recipeSheetModule.applyStockPrice,
   getCategoryStyle:categoryCatalogModule.getCategoryStyle,
   openCategoryModal,
   closeModal,

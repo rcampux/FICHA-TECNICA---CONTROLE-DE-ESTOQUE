@@ -493,7 +493,8 @@
       const packageInfo = inferPackage(result.title);
       const category = ensureCategory ? ensureCategory(inferCategory(result.title)) : inferCategory(result.title);
 
-      document.getElementById(config.nameId).value = result.title;
+      const nameField = document.getElementById(config.nameId);
+      if (!nameField.readOnly) nameField.value = result.title;
       document.getElementById(config.qtyId).value = packageInfo.quantity;
       document.getElementById(config.unitId).value = packageInfo.unit;
       document.getElementById(config.priceId).value = Number(result.price).toFixed(2);

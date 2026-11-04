@@ -505,3 +505,7 @@ Este arquivo e um inventario vivo das funcoes utilizadas no projeto. Toda nova f
 | `private.recipe_image_organization_id` | `supabase/migrations/20261017163649_recipe_images_storage.sql` | 50 | Extrai com seguranca o workspace do caminho da capa para as politicas privadas do Storage. |
 
 Calculadora de produção: `weightSummary` informa peso bruto, peso pronto, perda ou ganho e peso por peça. `calcFicha` atualiza o resumo; `viewRecipe` e `updateRecipeProductionGuide` dimensionam ingredientes e preços pela massa final solicitada ou, em fichas sem peso pronto, pela quantidade.
+
+## Anotação sem estoque
+- RecipeSheet: sameProductName, applyStockPrice (com linkIngredient), viewPendingRecipe. Reconciliam os ingredientes e apresentam o cadastro posterior de preços.
+- Estoques físico e virtual: persistProductForm executa o cadastro e chama a atualização das receitas após persistir o produto.
