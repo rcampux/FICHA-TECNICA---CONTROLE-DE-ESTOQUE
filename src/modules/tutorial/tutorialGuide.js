@@ -50,12 +50,12 @@
       current={...topic,progressId:source?.dataset.journeySource?topic.id+':source':topic.id};
       const empty=(stockKind==='virtual'&&getStock().length===0)||(stockKind==='fisico'&&getPhysical().length===0);
       content.innerHTML='<p class="tutorial-step">'+(isTour?'Conheça a plataforma · '+(step+1)+' de '+tour.length:topic.group+' · Guia de uso')+'</p><h2 id="tutorial-title" tabindex="-1">'+escape(empty?'Seu estoque ainda está vazio':topic.title)+'</h2><p>'+escape(topic.body)+'</p>'+(empty?'<div class="tutorial-note">Para usar esta origem, cadastre primeiro um produto com a quantidade comprada e o valor pago. Você também pode anotar a receita sem estoque e precificar depois.</div>':'');
-      if(isTour&&step===0)content.insertAdjacentHTML('beforeend','<div class="tutorial-note">O tour aparece nos três primeiros acessos. X encerra as dicas neste acesso; Não exibir novamente desativa as dicas automáticas. Você pode rever tudo em Tutoriais.</div>');
+      if(isTour&&step===0)content.insertAdjacentHTML('beforeend','<div class="tutorial-note">'+(progress.isExisting()?'Você já faz parte da cozinha! Este tour será apresentado automaticamente só desta vez. X encerra as dicas deste acesso; Não exibir novamente desativa as dicas automáticas. Depois, você pode rever tudo em Tutoriais.':'O tour aparece nos três primeiros acessos. X encerra as dicas neste acesso; Não exibir novamente desativa as dicas automáticas. Você pode rever tudo em Tutoriais.')+'</div>');
       footer.innerHTML=(isTour?(step?button('back','Voltar'):'')+button('next',step===tour.length-1?'Começar a usar':'Próximo',true):button('continue',continuation?'Entendi, continuar':'Voltar aos tutoriais',true))+(empty?button('stock','Cadastrar primeiro produto'):'')+button('disable','Não exibir novamente');
       if(target&&!dialog.open)target.scrollIntoView({block:'nearest',behavior:'instant'});
       show();
     }
-    function startTour() {step=0;continuation=null;renderTopic(topics.find(t=>t.id===tour[step]),null,true);}
+    function startTour() {step=0;continuation=null;renderTopic(topics.find(t=>t.id===tour[step]),null,true);progress.recordTourShown();}
     function library() {
       mode='library';target=null;continuation=null;
       content.innerHTML='<h2 id="tutorial-title" tabindex="-1">Aprenda no seu ritmo</h2><p>Da primeira receita à rotina da cozinha. Consulte qualquer função, mesmo com as dicas automáticas desativadas.</p><label class="tutorial-search-label">Buscar tutorial<input type="search" id="tutorial-search" placeholder="Ex.: estoque, markup, produção" autocomplete="off"></label><div class="tutorial-topic-list"></div>';

@@ -2,8 +2,10 @@
 
 ## Comportamento
 
-- Tour de seis etapas nas três primeiras sessões de acesso após a disponibilização do recurso. Recarregar a mesma aba não consome um acesso. Novo login ou nova sessão de aba conta como acesso.
-- O X e Escape encerram as dicas automáticas somente no acesso atual. Não exibir novamente desativa tanto o tour automático quanto as dicas contextuais permanentemente para aquela conta.
+- Novas contas: tour de seis etapas nas três primeiras sessões de acesso. Recarregar a mesma aba não consome um acesso. Novo login ou nova sessão de aba conta como acesso.
+- Contas existentes antes de `2026-11-05T20:14:25.139Z`: uma única apresentação automática a partir desta atualização, independente de quantas visitas tinham na versão anterior. A data de corte é fixa, obtida do servidor Supabase, e comparada com `user.created_at`. Não deve mudar em futuros deploys. A consulta de implantação encontrou 12 contas anteriores ao corte; nenhuma lista de e-mails ou IDs é enviada ao cliente.
+- O recibo `existingUserTourOffered` só é salvo quando o tour aparece de fato. Um popup que impeça sua abertura não consome a apresentação. O recibo é mesclado entre armazenamento local e metadados da conta, inclusive entre dispositivos. Dicas contextuais automáticas para contas antigas ficam disponíveis somente naquele acesso; nos seguintes, a central continua disponível por iniciativa do usuário.
+- O X e Escape encerram as dicas automáticas no acesso atual. Para contas antigas, o tour já apresentado não volta nos próximos acessos. Não exibir novamente desativa tanto o tour automático quanto as dicas contextuais permanentemente para aquela conta. Uma desativação anterior é preservada, inclusive para contas antigas.
 - Cada função tem uma orientação contextual na primeira utilização. Entendi, continuar registra a orientação consultada e executa a ação original uma única vez. Cancelar a orientação não executa a ação nem a marca como consultada.
 - O histórico é por função, não por receita/produto. Fechar, cancelar e navegar dentro de uma explicação não produzem novas dicas. Campos de digitação não são interceptados.
 - A central continua disponível mesmo após a desativação: Tutoriais na lateral do desktop e Tutoriais e funções no perfil no mobile. Permite buscar, rever qualquer função e repetir o tour.
@@ -17,6 +19,8 @@ O progresso local usa chaves isoladas pelo ID do usuário. A pausa dura a sessã
 
 `USER_UPDATED` atualiza a identidade em memória sem reidratar a cozinha ou limpar a ficha. Nenhuma política RLS, tabela de negócio ou configuração de autenticação foi modificada.
 
+O recibo da apresentação para contas antigas também fica em `user_metadata.fichatec_tutorial_existing_20261105`. Essa chave separada impede que abas ainda executando a versão 1 apaguem o recibo ao sobrescrever o objeto aninhado de preferências. Não há atualização em massa de contas; cada conta recebe a regra pela sua data de criação e registra o recibo ao ver o tour.
+
 ## Design e acessibilidade
 
 - Herda os tokens de CARD/Menu, incluindo cor, fundo, tipografia e cantos.
@@ -26,6 +30,8 @@ O progresso local usa chaves isoladas pelo ID do usuário. A pausa dura a sessã
 - A animação curta respeita prefers-reduced-motion.
 
 ## Validação
+
+A regra para contas existentes tem testes de fronteira da data, visitas da versão anterior, apresentação única, X, opt-out anterior/posterior, bloqueio por outro popup, sincronização entre dispositivos e preservação do recibo em merges. Contas novas continuam cobertas pelo teste dos três acessos.
 
 Testes de progresso cobrem limite de três acessos, reload, pausa, opção permanente, funções já consultadas, contas diferentes, sincronização com metadados e armazenamento indisponível. Verificação no navegador cobre tour, central pelo perfil, busca, continuação de ação, estoque vazio e preservação da ficha. Testes de viewport existentes cobrem redimensionamento, teclado e rolagem interna. A emulação responsiva não substitui uma conferência em aparelho iOS/Android real.
 
