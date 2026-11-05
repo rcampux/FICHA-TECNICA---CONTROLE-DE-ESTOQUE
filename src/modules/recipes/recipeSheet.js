@@ -512,7 +512,8 @@
 
         const id = card.dataset.recipeId;
         const actionElement = event.target.closest("[data-recipe-action]");
-        const action = actionElement?.dataset.recipeAction || "view";
+        const action = actionElement?.dataset.recipeAction;
+        if(!action)return;
         if (action === 'stock') {
           deps.openRecipeStockBatch(recipes.find(recipe => String(recipe.id) === String(id)));
           return;
@@ -543,6 +544,7 @@
           exportRecipePDF(id);
           return;
         }
+        if(action!=='plan')return;
         viewRecipe(id);
         if(action==='plan')requestAnimationFrame(()=>{
           const heading=document.getElementById('production-planner-title');
@@ -552,13 +554,7 @@
           heading.scrollIntoView({block:'start',behavior:'instant'});
         });
       };
-      listElement.onkeydown = (event) => {
-        if (!["Enter", " "].includes(event.key)) return;
-        const card = event.target.closest(".recipe-card");
-        if (!card || event.target !== card || !listElement.contains(card)) return;
-        event.preventDefault();
-        viewRecipe(card.dataset.recipeId);
-      };
+      listElement.onkeydown = null;
     }
 
     function bindRecipeFilterActions() {
@@ -661,7 +657,7 @@
         }
         report.hidden = false;
         shortcut.setAttribute('aria-expanded', 'true');
-        const headingId = event.currentTarget === shortcut ? 'recipe-detail-ingredients' : 'production-report-title';
+        const headingId = 'recipe-detail-ingredients';
         const heading = document.getElementById(headingId);
         heading.focus({preventScroll: true});
         heading.scrollIntoView({block: 'start', behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth'});
@@ -1329,13 +1325,17 @@
         const diff=totalCost-r.totalCost;
         const recipeId=escapeAttribute(r.id);
         const nutritionSummary=getRecipeNutritionSummary(r);
-        return`<div class="recipe-card" data-recipe-id="${recipeId}" tabindex="0" role="group" aria-label="Abrir detalhes da receita ${escapeAttribute(r.nome)}">
+        return`<div class="recipe-card" data-recipe-id="${recipeId}" role="group" aria-label="Receita ${escapeAttribute(r.nome)}">
           ${renderRecipeMedia(r,"card")}
           <div class="recipe-card-heading">
             <div class="recipe-card-title">${escapeHtml(r.nome)}${r.origem==='scan'?` <span class="scan-badge" style="font-size:10px"><span class="material-symbols-rounded" style="font-size:12px">document_scanner</span>Scan</span>`:''}</div>
             <div style="display:flex;gap:6px;align-items:center;flex-shrink:0">
               ${!pending && changed && Math.round(diff*100)!==0?`<span style="font-size:11px;background:${diff>0?'var(--r100)':'var(--g50)'};color:${diff>0?'var(--r400)':'var(--g600)'};padding:2px 8px;border-radius:var(--r-pill);font-weight:700">${diff>0?'▲':'▼'} ${fmtBRL(Math.abs(diff))}</span>`:''}
               ${pending?'<span class="pending-tag">Custo pendente</span>':`<span class="badge badge-green">Custo ${fmtBRL(totalCost)}</span>`}
+              <span class="recipe-card-actions">
+                <button class="btn btn-secondary btn-icon" data-recipe-action="edit" type="button" aria-label="Editar receita"><span class="material-symbols-rounded" aria-hidden="true">edit</span></button>
+                <button class="btn btn-danger btn-icon" data-recipe-action="delete" type="button" aria-label="Excluir receita"><span class="material-symbols-rounded" aria-hidden="true">delete</span></button>
+              </span>
             </div>
           </div>
           <div class="recipe-card-meta"><span class="material-symbols-rounded">fork_spoon</span>${r.ingredients.length} ingrediente(s) · ${formatRecipeYield(r.porcoes,r.yieldUnit)}${r.rendimento?' · '+formatBatchNumber(r.rendimento)+' g':''}${pending?'':' · Markup '+r.markup+'%'}</div>
@@ -1347,10 +1347,11 @@
             <button class="btn btn-secondary btn-xs recipe-ingredients-toggle" data-recipe-action="ingredients" type="button" aria-expanded="false" aria-controls="recipe-card-ingredients-${cardIndex}"><span data-ingredients-label>Ver ingredientes</span><span class="material-symbols-rounded" aria-hidden="true">expand_more</span></button>
             <button class="btn btn-secondary btn-xs recipe-ingredients-toggle" data-recipe-action="preparation" type="button" aria-expanded="false" aria-controls="recipe-card-preparation-${cardIndex}">Modo de preparo<span class="material-symbols-rounded" aria-hidden="true">expand_more</span></button>
             </div>
-            <button class="btn recipe-plan-action" data-recipe-action="plan" type="button">Planejar produção</button>
-          </div>
+
           <ul class="recipe-card-ingredients" id="recipe-card-ingredients-${cardIndex}" data-card-ingredients hidden aria-label="Ingredientes e quantidades da receita-base de ${escapeAttribute(r.nome)}">${r.ingredients.map(i=>`<li><span>${escapeHtml(i.name)}</span><strong class="recipe-card-ingredient-quantity">${formatProductionIngredientQuantity(i)}</strong></li>`).join('')}</ul>
           <div class="recipe-preparation-content" id="recipe-card-preparation-${cardIndex}" data-card-preparation hidden aria-label="Modo de preparo de ${escapeAttribute(r.nome)}">${r.modoPreparo?escapeHtml(r.modoPreparo):'Modo de preparo ainda não informado. Clique em Editar para adicioná-lo.'}</div>
+            <button class="btn recipe-plan-action" data-recipe-action="plan" type="button">Planejar produção</button>
+          </div>
         </div>`;
       }).join('');
       bindRecipeCardActions(el);
@@ -1483,6 +1484,21 @@
           </form>
         </section>
         <section id="production-report" aria-labelledby="production-report-title" hidden>
+          <div class="production-ingredients">
+          <h4 id="recipe-detail-ingredients" tabindex="-1">Ingredientes do lote</h4>
+        ${ingredients.map((i,ingredientIndex)=>{
+          const s=findStockItem(i.stockId,i.name);
+          const curPPG=s?getIngredientUnitPrice(i):0;
+          const ingChanged=i.savedPricePerG&&Math.abs(curPPG-i.savedPricePerG)>0.000001;
+          return`<div class="ingredient-row">
+            <div style="flex:1;min-width:0">
+              <div class="ing-name">${escapeHtml(i.name)}${ingChanged?` <span style="font-size:10px;font-weight:700;color:${curPPG>i.savedPricePerG?'var(--r400)':'var(--g500)'}">${curPPG>i.savedPricePerG?'▲':'▼'}</span>`:''}</div>
+              <div class="ing-qty production-ingredient-quantity" data-production-ingredient="${ingredientIndex}">${formatProductionIngredientQuantity(i)}</div>
+            </div>
+            <div class="ing-cost" style="${ingChanged?'color:'+(curPPG>i.savedPricePerG?'var(--r400)':'var(--g500)'):''}"> ${fmtBRL(i.cost)}</div>
+          </div>`;
+        }).join('')}
+          </div>
           <h3 id="production-report-title" tabindex="-1">Resultado do lote</h3>
           <dl class="production-facts">
             <div><dt>Ingredientes antes do preparo</dt><dd data-plan-value="raw">—</dd></div>
@@ -1499,26 +1515,13 @@
           </dl>
           <p class="production-footnote" id="production-weight-help"></p>
           <p class="production-footnote" id="production-rounding" hidden>O preço por peça é a média do lote arredondada para centavos.</p>
-          <h4 id="recipe-detail-ingredients" tabindex="-1">Ingredientes do lote</h4>
-        ${ingredients.map((i,ingredientIndex)=>{
-          const s=findStockItem(i.stockId,i.name);
-          const curPPG=s?getIngredientUnitPrice(i):0;
-          const ingChanged=i.savedPricePerG&&Math.abs(curPPG-i.savedPricePerG)>0.000001;
-          return`<div class="ingredient-row">
-            <div style="flex:1;min-width:0">
-              <div class="ing-name">${escapeHtml(i.name)}${ingChanged?` <span style="font-size:10px;font-weight:700;color:${curPPG>i.savedPricePerG?'var(--r400)':'var(--g500)'}">${curPPG>i.savedPricePerG?'▲':'▼'}</span>`:''}</div>
-              <div class="ing-qty production-ingredient-quantity" data-production-ingredient="${ingredientIndex}">${formatProductionIngredientQuantity(i)}</div>
-            </div>
-            <div class="ing-cost" style="${ingChanged?'color:'+(curPPG>i.savedPricePerG?'var(--r400)':'var(--g500)'):''}"> ${fmtBRL(i.cost)}</div>
-          </div>`;
-        }).join('')}
+
         </section>
-        <div style="font-size:11px;font-weight:700;color:var(--n600);text-transform:uppercase;letter-spacing:0.8px;margin-top:var(--s4);margin-bottom:var(--s2);display:flex;align-items:center;gap:4px">
-          <span class="material-symbols-rounded" style="font-size:14px">nutrition</span> Nutrição da receita-base por ${nutritionSummary.portion} g
-        </div>
+        <details class="production-nutrition"><summary><span class="material-symbols-rounded" aria-hidden="true">nutrition</span> Nutrição da receita-base por ${nutritionSummary.portion} g</summary>
         <table class="nutrition-table" style="margin-bottom:var(--s4)">
           <tbody>${renderNutritionRows(nutritionSummary.nutrition)}</tbody>
         </table>
+        </details>
         ${r.observacoes?`<div style="margin-top:var(--s3);font-size:12px;color:var(--n600);background:var(--warn-bg);border-radius:var(--r-md);padding:var(--s3) var(--s4);line-height:1.6">
           <strong>Obs:</strong> ${escapeHtml(r.observacoes).replace(/\n/g,'<br>')}</div>`:''}`;
       bindProductionPlanner(r);

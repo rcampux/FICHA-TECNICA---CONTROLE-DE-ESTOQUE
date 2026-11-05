@@ -9,6 +9,7 @@
 #recipes-list .recipe-card { align-self:stretch; display:flex; flex-direction:column; }
 #recipes-list .btn { border-radius:8px; }
 #recipes-list .recipe-card-footer { margin-top:auto; padding-top:18px; }
+#recipes-list .recipe-card { cursor:default; }
 #recipes-list .recipe-card-footer { display:flex; flex-direction:column; align-items:stretch; }
 #recipes-list .recipe-card-footer .recipe-section-actions { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); width:100%; }
 #recipes-list .recipe-plan-action { width:100%; min-height:44px; background:var(--r400); color:white; border:0; border-radius:8px; }
