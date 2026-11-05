@@ -146,6 +146,9 @@
 .production-money-highlights dt { color:#51453f; font-size:13px; font-weight:600; line-height:1.4; }
 .production-money-highlights dd { margin:6px 0 4px; color:var(--journey-accent); font-size:clamp(21px,3vw,28px); line-height:1.2; font-weight:700; font-variant-numeric:tabular-nums; overflow-wrap:anywhere; }
 .production-money-highlights small { display:block; color:#807268; font-size:11px; line-height:1.5; }
+.production-money-highlights [data-plan-value="sale"] { color:#187044; }
+.production-money-highlights [data-plan-value="profit"] { color:#245eb0; }
+.production-money-highlights [data-plan-value="markup"] { color:#916600; }
 .production-per-piece { grid-template-columns:repeat(2,minmax(0,1fr)); border-top:1px solid var(--journey-line,#e9dfd9); padding-top:8px; }
 .production-per-piece > div { border-bottom:0; }
 .production-price-breakdown { margin-top:14px; border-top:1px solid var(--journey-line,#e9dfd9); }

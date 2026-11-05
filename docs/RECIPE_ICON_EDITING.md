@@ -1,5 +1,7 @@
 # Revisão da jornada — 05/11/2026
 
+No destaque financeiro do planejamento, valor de venda usa verde (#187044), lucro bruto azul (#245eb0) e markup dourado escuro (#916600), com contraste nos fundos claros de CARD/Menu. Custo mantém a cor do estilo.
+
 O resultado planejado separa quantidades/rendimento/perda de Valores da produção. Custo de produção (ingredientes), venda do lote, lucro bruto e markup recebem destaque; valores por unidade/porção ficam logo abaixo, e a composição da venda fica recolhida. As folhas usam fluxo de layout sem posições absolutas para quantidades/preços: no mobile, nome na linha de cima e números abaixo. Textos, números extensos e palavras sem espaços quebram dentro da folha, mantendo o ritmo das pautas e sem cortar conteúdo. Aplica-se a CARD/Menu.
 
 No planejamento calculado, **Ver modo de preparo** fica entre a folha de ingredientes e Resultado do lote. Expande/recolhe o preparo registrado em outra folha com as mesmas pautas, fonte Kalam e borda rasgada. Começa fechado a cada abertura da receita, preserva quebras de linha e mostra orientação para Editar quando o preparo está vazio. CARD/Menu e mobile/desktop compartilham essa posição; os cálculos e a receita original não são alterados.
