@@ -176,7 +176,7 @@
 
     function renderRow(row, index) {
       const product = row.product;
-      const used = row.ingredients.map(item => (item.qtyOriginal ?? item.qtyG) + ' ' + item.unit).join(' + ');
+      const used = row.ingredients.map(item => Number(item.unit === 'kg' ? item.qtyG / 1000 : item.qtyG).toLocaleString('pt-BR', {maximumFractionDigits:4}) + ' ' + item.unit).join(' + ');
       return `<article class="batch-product" data-batch-row="${index}">
         <div class="batch-product-heading"><div><strong>${escape(product.name)}</strong><small>Na receita · ${escape(used)}</small><small>${row.existing ? 'Produto cadastrado — os dados serão atualizados ao salvar.' : 'Novo produto no catálogo'}</small><small data-batch-summary></small></div>
         <button class="btn btn-secondary" type="button" data-batch-edit aria-expanded="false"><span class="material-symbols-rounded" aria-hidden="true">edit</span>Editar</button></div>
