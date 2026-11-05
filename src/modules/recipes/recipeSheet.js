@@ -1046,7 +1046,7 @@
       return true;
     }
     function getJourneyState() {
-      return {source:ingSource,revision:journeyRevision,needsReprepare,scope:personalKey('temporarySupplies'),
+      return {source:ingSource,revision:journeyRevision,needsReprepare,editing:Boolean(editingRecipeId),scope:personalKey('temporarySupplies'),
         confirmed:currentIngredients.map(item=>({...item,category:ingredientCategory(item)})),
         pending:pendingIngredients.map(item=>({...item}))};
     }
@@ -1173,6 +1173,9 @@
       document.getElementById('page-ficha').classList.remove('editor-open');
       currentRecipeId=null;
       editingRecipeId=null;
+      draftScope=personalKey('temporarySupplies');
+      resetIngredientFields();
+      document.getElementById('ficha-peso-unidade').value='';
       yieldDriver='count';
       recipeImageDirty=false;
       currentRecipeImage=null;
@@ -1582,7 +1585,7 @@
       bindRecipeImageEditor();
       renderRecipeImageEditor();
       setIngSource(r.ingredients.some(i=>i.source==='manual')?'manual':'virtual');
-      renderIngredients();calcFicha();showPage('ficha','nav-ficha',true);
+      renderIngredients();calcFicha();showPage('ficha','nav-ficha',true,true);
     }
     
     function exportRecipePDF(id) {

@@ -22,6 +22,11 @@
 .ingredient-tile-quantity { font:400 12px/1.4 Roboto,sans-serif; color:#70615d; }
 .ingredient-tile[role="button"] { cursor:pointer; }
 .ingredient-tile[role="button"]:focus-visible { outline:3px solid #edc98c; outline-offset:3px; }
+.ingredient-selection-grid .ingredient-tile { padding:0; min-height:0; background:transparent; border:0; border-radius:0; justify-content:flex-start; color:white; gap:5px; }
+.ingredient-tile-image { position:relative; display:flex; align-items:center; justify-content:center; width:100%; aspect-ratio:1; flex:none; background:white; border-radius:8px; overflow:hidden; margin-bottom:4px; }
+.ingredient-selection-grid .ingredient-tile strong { font-weight:500; font-size:12px; }
+.ingredient-selection-grid .ingredient-tile-quantity { color:#ffe4dc; }
+.ingredient-selection-grid .ingredient-add-tile { align-self:start; aspect-ratio:1; min-height:0; box-sizing:border-box; }
 /* Placeholder hints are intentionally lighter than entered values in both themes. */
 body input::placeholder, body textarea::placeholder,
 body .recipe-base-card input::placeholder,

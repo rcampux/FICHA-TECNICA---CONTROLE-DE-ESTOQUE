@@ -20,13 +20,13 @@
         const icon=library?.resolve(item.name,item.category);
         const quantity=format(item.unit==='kg'?item.qtyG/1000:item.qtyG)+' '+(item.unit||'g');
         return '<article class="ingredient-tile'+(item.confirmed?' is-confirmed':'')+'" '+(item.confirmed?'role="button" tabindex="0" data-edit-tile="'+item.index+'" ':'')+'aria-label="'+escape((item.confirmed?'Editar quantidade de ':'')+item.name+', '+quantity)+'" title="'+escape(item.name+', '+quantity)+'">'+
-          (icon?'<img src="'+escape(icon.url)+'" alt="" width="80" height="80" decoding="async">':'<span class="ingredient-icon-loading" aria-hidden="true"></span>')+
-          '<strong>'+escape(item.name)+'</strong><span class="ingredient-tile-quantity">'+escape(quantity)+'</span>'+
-          (item.confirmed?'':'<button type="button" class="ingredient-tile-remove" data-remove-pending="'+escape(item.id)+'" aria-label="Retirar '+escape(item.name)+' da seleção">×</button>')+'</article>';
+          '<span class="ingredient-tile-image">'+(icon?'<img src="'+escape(icon.url)+'" alt="" width="80" height="80" decoding="async">':'<span class="ingredient-icon-loading" aria-hidden="true"></span>')+
+          (item.confirmed?'':'<button type="button" class="ingredient-tile-remove" data-remove-pending="'+escape(item.id)+'" aria-label="Retirar '+escape(item.name)+' da seleção">×</button>')+'</span>'+
+          '<strong>'+escape(item.name)+'</strong><span class="ingredient-tile-quantity">'+escape(quantity)+'</span></article>';
       }).join('');
       el('ingredient-selection-count').textContent=items.length?items.length+(items.length===1?' ingrediente':' ingredientes'):'';
       el('recipe-prepare-action').hidden=!state.pending.length&&!state.needsReprepare;
-      el('recipe-prepare-button').innerHTML='<span class="material-symbols-rounded" aria-hidden="true">soup_kitchen</span>'+(state.needsReprepare?'Refazer receita':'Preparar receita');
+      el('recipe-prepare-button').innerHTML='<span class="material-symbols-rounded" aria-hidden="true">soup_kitchen</span>'+((state.needsReprepare||state.editing)?'Refazer receita':'Preparar receita');
       el('recipe-prepare-button').disabled=busy;
       el('recipe-prepare-help').textContent=state.needsReprepare?'Quantidade alterada. Refaça a receita para conferir os cálculos.':state.confirmed.length
         ?'Confirme os novos ingredientes para atualizar a ficha.'

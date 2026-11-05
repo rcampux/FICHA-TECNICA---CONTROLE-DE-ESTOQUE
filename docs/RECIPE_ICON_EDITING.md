@@ -13,3 +13,8 @@ Placeholders passam a cinza claro, diferenciando dicas de valores digitados. Nen
 Ao expandir Ver ingredientes ou Modo de preparo no card, os painéis ficam entre a linha desses dois botões e Planejar produção, empurrando essa última ação para baixo. Vale para CARD/Menu, Lista/Blocos e mobile.
 
 Próximo passo: conferir as quantidades pelo ícone, refazer e salvar a receita para persistir a edição.
+
+## Refinamento e nova receita limpa
+Os ícones ficam em uma superfície quadrada; nome e quantidade são legendas externas abaixo dela. A lista dimensionada no planejamento usa divisórias sutis, tipografia contida e quantidades alinhadas à direita, sem caixas grandes ou etiquetas chamativas.
+
+Ao editar uma receita existente, a confirmação de novos ingredientes usa Refazer receita. Entrar pela Ficha, Criar receita ou Nova ficha limpa nome, foto, ingredientes pendentes/confirmados, rendimento, markup e preparo. Essa instrução substitui a restauração automática de insumos ao entrar pela navegação: o registro temporário não deve repovoar uma nova receita. Apenas a entrada explícita Editar preserva e carrega a receita escolhida. As receitas salvas permanecem intactas.
