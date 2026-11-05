@@ -492,6 +492,40 @@ test('anotação sem estoque recebe preços proporcionais e perde a pendência s
 });
 
 
+test('remoção pede recálculo, invalida preparo anterior e não altera a receita salva',async()=>{
+  const h=recipeHarness();
+  h.module.editRecipe('recipe-1');
+  const before=h.module.getJourneyState();
+  await h.module.removeIngredient(before.confirmed[0].id);
+  const removed=h.module.getJourneyState();
+  assert.equal(removed.needsReprepare,true);
+  assert.equal(removed.confirmed.length,1);
+  assert.equal(h.getRecipes()[0].ingredients.length,2);
+  assert.equal(h.module.prepareIngredients(before.revision,before.scope),false);
+  assert.equal(h.module.prepareIngredients(removed.revision,removed.scope),true);
+  assert.equal(h.module.getJourneyState().needsReprepare,false);
+  await h.module.removeIngredient(removed.confirmed[0].id);
+  const empty=h.module.getJourneyState();
+  assert.equal(empty.needsReprepare,true);
+  assert.equal(h.module.prepareIngredients(empty.revision,empty.scope),true);
+  assert.equal(h.module.getJourneyState().confirmed.length,0);
+});
+
+test('confirmar quantidade intacta, markup e preparo não solicitam recálculo de ingredientes',()=>{
+  const h=recipeHarness();
+  h.module.editRecipe('recipe-1');
+  const field=h.element('ingredient-edit-qty');
+  h.element('ingredient-editor').showModal=h.element('ingredient-editor').close=field.setCustomValidity=()=>{};
+  h.module.openIngredientEditor(0);
+  field.valueAsNumber=360;
+  h.element('ingredient-edit-form').onsubmit({preventDefault(){}});
+  assert.equal(h.module.getJourneyState().needsReprepare,false);
+  h.element('markup-pct').value=85;
+  h.element('ficha-modo-preparo').value='Misture e cozinhe.';
+  h.module.calcFicha();
+  assert.equal(h.module.getJourneyState().needsReprepare,false);
+});
+
 test('seleção só libera rendimento após preparar e salvar nunca ignora ingredientes pendentes',async()=>{
   const h=recipeHarness();
   h.module.restoreSupplies();

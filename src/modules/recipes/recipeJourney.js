@@ -19,17 +19,18 @@
       grid.innerHTML=items.map(item=>{
         const icon=library?.resolve(item.name,item.category);
         const quantity=format(item.unit==='kg'?item.qtyG/1000:item.qtyG)+' '+(item.unit||'g');
-        return '<article class="ingredient-tile'+(item.confirmed?' is-confirmed':'')+'" '+(item.confirmed?'role="button" tabindex="0" data-edit-tile="'+item.index+'" ':'')+'aria-label="'+escape((item.confirmed?'Editar quantidade de ':'')+item.name+', '+quantity)+'" title="'+escape(item.name+', '+quantity)+'">'+
-          '<span class="ingredient-tile-image">'+(icon?'<img src="'+escape(icon.url)+'" alt="" width="80" height="80" decoding="async">':'<span class="ingredient-icon-loading" aria-hidden="true"></span>')+
-          (item.confirmed?'':'<button type="button" class="ingredient-tile-remove" data-remove-pending="'+escape(item.id)+'" aria-label="Retirar '+escape(item.name)+' da seleção">×</button>')+'</span>'+
+        return '<article class="ingredient-tile'+(item.confirmed?' is-confirmed':'')+'" title="'+escape(item.name+', '+quantity)+'">'+
+          '<span class="ingredient-tile-image">'+(item.confirmed?'<button type="button" class="ingredient-tile-edit" data-edit-tile="'+item.index+'" aria-label="Editar quantidade de '+escape(item.name+', '+quantity)+'">':'')+
+          (icon?'<img src="'+escape(icon.url)+'" alt="" width="80" height="80" decoding="async">':'<span class="ingredient-icon-loading" aria-hidden="true"></span>')+(item.confirmed?'</button>':'')+
+          '<button type="button" class="ingredient-tile-remove" '+(item.confirmed?'data-remove-confirmed':'data-remove-pending')+'="'+escape(item.id)+'" aria-label="Remover '+escape(item.name)+'">×</button></span>'+
           '<strong>'+escape(item.name)+'</strong><span class="ingredient-tile-quantity">'+escape(quantity)+'</span></article>';
       }).join('');
       el('ingredient-selection-count').textContent=items.length?items.length+(items.length===1?' ingrediente':' ingredientes'):'';
       el('recipe-prepare-action').hidden=!state.pending.length&&!state.needsReprepare;
-      el('recipe-prepare-button').innerHTML='<span class="material-symbols-rounded" aria-hidden="true">soup_kitchen</span>'+((state.needsReprepare||state.editing)?'Refazer receita':'Preparar receita');
+      el('recipe-prepare-button').innerHTML='<span class="material-symbols-rounded" aria-hidden="true">soup_kitchen</span>'+((state.needsReprepare||state.editing||state.confirmed.length)?'Recalcular receita':'Preparar receita');
       el('recipe-prepare-button').disabled=busy;
-      el('recipe-prepare-help').textContent=state.needsReprepare?'Quantidade alterada. Refaça a receita para conferir os cálculos.':state.confirmed.length
-        ?'Confirme os novos ingredientes para atualizar a ficha.'
+      el('recipe-prepare-help').textContent=state.needsReprepare||state.confirmed.length||state.editing
+        ?'Ingredientes alterados. Recalcule para atualizar a receita.'
         :'Tudo separado? Confirme os ingredientes para continuar.';
       el('recipe-yield-section').hidden=!state.confirmed.length;
       if(lastRevision!==state.revision){status.textContent='';lastRevision=state.revision;}
@@ -132,17 +133,22 @@
         el('recipe-prepare-button').disabled=false;
       }
     });
-    grid.addEventListener('click',event=>{
+    grid.addEventListener('click',async event=>{
+      if(busy)return;
+      const remove=event.target.closest('[data-remove-confirmed],[data-remove-pending]');
+      if(remove){
+        busy=true;
+        try {
+          if(remove.hasAttribute('data-remove-confirmed'))await sheet.removeIngredient(remove.dataset.removeConfirmed);
+          else sheet.removeQueuedIngredient(remove.dataset.removePending);
+        } finally {
+          busy=false;refresh();
+          add.focus({preventScroll:true});
+        }
+        return;
+      }
       const tile=event.target.closest('[data-edit-tile]');
-      if(tile&&!busy){sheet.openIngredientEditor(Number(tile.dataset.editTile));return;}
-      const button=event.target.closest('[data-remove-pending]');
-      if(!button||busy)return;
-      sheet.removeQueuedIngredient(button.dataset.removePending);
-      add.focus({preventScroll:true});
-    });
-    grid.addEventListener('keydown',event=>{
-      const tile=event.target.closest('[data-edit-tile]');
-      if(tile&&!busy&&['Enter',' '].includes(event.key)){event.preventDefault();sheet.openIngredientEditor(Number(tile.dataset.editTile));}
+      if(tile)sheet.openIngredientEditor(Number(tile.dataset.editTile));
     });
     el('recipe-prepare-button').addEventListener('click',prepareRecipe);
     cooking.addEventListener('cancel',event=>event.preventDefault());

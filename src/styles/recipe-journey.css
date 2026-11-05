@@ -20,8 +20,8 @@
 .ingredient-tile img { display:block; width:80px; height:80px; max-width:100%; object-fit:contain; border-radius:10px; }
 .ingredient-tile strong { font:600 12px/1.4 Roboto,sans-serif; overflow-wrap:anywhere; }
 .ingredient-tile-quantity { font:400 12px/1.4 Roboto,sans-serif; color:#70615d; }
-.ingredient-tile[role="button"] { cursor:pointer; }
-.ingredient-tile[role="button"]:focus-visible { outline:3px solid #edc98c; outline-offset:3px; }
+.ingredient-tile-edit { display:grid; place-items:center; width:100%; height:100%; padding:0; border:0; background:transparent; cursor:pointer; }
+.ingredient-tile-edit:focus-visible { outline:3px solid #b91f2e; outline-offset:-4px; border-radius:8px; }
 .ingredient-selection-grid .ingredient-tile { padding:0; min-height:0; background:transparent; border:0; border-radius:0; justify-content:flex-start; color:white; gap:5px; }
 .ingredient-tile-image { position:relative; display:flex; align-items:center; justify-content:center; width:100%; aspect-ratio:1; flex:none; background:white; border-radius:8px; overflow:hidden; margin-bottom:4px; }
 .ingredient-selection-grid .ingredient-tile strong { font-weight:500; font-size:12px; }
@@ -35,13 +35,15 @@ body .search-bar input::placeholder,
 body #page-estoque input::placeholder, body #page-fisico input::placeholder {
   color:#a0a3a8; opacity:1; font-weight:400;
 }
-.ingredient-tile-remove { position:absolute; top:2px; right:2px; width:32px; height:32px; padding:0; display:grid; place-items:center; background:#fff; color:#755655; border:0; border-radius:50%; cursor:pointer; font:22px/1 Roboto,sans-serif; }
+.ingredient-tile-remove { position:absolute; top:0; right:0; width:40px; height:40px; padding:0; display:grid; place-items:center; background:transparent; color:#755655; border:0; border-radius:8px; cursor:pointer; font:24px/1 Roboto,sans-serif; }
+.ingredient-tile-remove:hover { background:#fff0ed; color:#b91f2e; }
+.ingredient-tile-remove:focus-visible { outline:2px solid #b91f2e; outline-offset:-3px; }
 .ingredient-icon-loading { width:80px; height:80px; border-radius:10px; background:#f4eeeb; }
 #ingredient-builder-toggle.ingredient-add-tile { color:#fff; background:rgb(255 255 255 / 7%); border:1px dashed rgb(255 255 255 / 65%); cursor:pointer; font:inherit; font-size:12px; font-weight:600; line-height:1.5; }
 .ingredient-add-tile > .material-symbols-rounded { display:grid; place-items:center; width:44px; height:44px; background:rgb(255 255 255 / 12%); border-radius:50%; font-size:26px; margin-bottom:4px; }
 #ingredient-builder-toggle.ingredient-add-tile:hover { background:rgb(255 255 255 / 17%); }
-.recipe-prepare-action { display:flex; align-items:center; justify-content:space-between; gap:16px; margin-top:20px; padding-top:16px; border-top:1px solid rgb(255 255 255 / 22%); }
-.recipe-prepare-action p { color:#ffe9e6; font-size:12px; line-height:1.6; max-width:240px; margin:0; }
+.recipe-prepare-action { display:flex; flex-direction:column; align-items:stretch; gap:10px; margin-top:20px; }
+.recipe-prepare-action p { color:#ffe9e6; font-size:12px; line-height:1.6; margin:0; }
 #recipe-prepare-button { background:#fff0d4; color:#654017; font-weight:700; border:1px solid #f2d5a3; border-radius:8px; min-height:48px; padding:12px 18px; box-shadow:none; white-space:nowrap; }
 #recipe-prepare-button:hover { background:#ffe3ad; }
 .recipe-journey-status { margin:12px 0 0; font-size:12px; color:#ffead2; line-height:1.5; }

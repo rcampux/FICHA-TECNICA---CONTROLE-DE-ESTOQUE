@@ -1066,7 +1066,11 @@
 
     async function removeIngredient(id){
       if(recipeSaveInFlight)return;
+      const revision=journeyRevision,scope=personalKey('temporarySupplies');
       if(!await confirmAction('Deseja remover este ingrediente da ficha tecnica?','Remover ingrediente'))return;
+      if(recipeSaveInFlight||revision!==journeyRevision||scope!==personalKey('temporarySupplies')||!currentIngredients.some(i=>String(i.id)===String(id)))return;
+      needsReprepare=true;
+      journeyRevision++;
       currentIngredients=currentIngredients.filter(i=>String(i.id)!==String(id));renderIngredients();calcFicha();
     }
     function reorderIngredient(from,to){
@@ -1747,8 +1751,10 @@
       }
       const draft = previewIngredientEdit();
       if (!draft) { if (!editQty.checkValidity()) editQty.reportValidity(); else equivalent.focus(); return; }
+      const changed=['unit','qtyG','qtyBruta'].some(key=>draft[key]!==editingItem[key]) ||
+        JSON.stringify(draft.nutrition?.recipeEquivalence)!==JSON.stringify(editingItem.nutrition?.recipeEquivalence);
       Object.assign(editingItem, draft);
-      needsReprepare=true;
+      needsReprepare=needsReprepare||changed;
       journeyRevision++;
       editor.close();
       renderIngredients();

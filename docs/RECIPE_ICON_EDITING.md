@@ -1,5 +1,7 @@
 # Revisão da jornada — 05/11/2026
 
+Revisão de recálculo: todos os ícones têm X para remover, separado do botão de editar a quantidade. Após inclusão, exclusão ou alteração de ingredientes/quantidades numa receita preparada, aparece **Recalcular receita** abaixo das legendas dos ícones e antes do texto informativo, em desktop e mobile. Ao recalcular, o botão desaparece até outra mudança. Markup, modo de preparo e confirmar uma quantidade sem alteração não acionam esse estado. A primeira confirmação de uma receita nova continua sendo **Preparar receita**. Os botões são nativos, com ações independentes por teclado e toque.
+
 Esta orientação substitui a solicitação anterior de tiles sem legenda: os ícones de ingredientes na Ficha mostram novamente nome e quantidade, em desktop e mobile. Ingredientes confirmados são acionáveis por clique, toque, Enter e espaço; abrem o editor existente de quantidade e medida.
 
 Ao confirmar a edição, a prévia recalcula e aparece Refazer receita. Essa ação usa a animação de dois segundos, recalcula a ficha e destaca a lista, sem duplicar os ingredientes ou baixar outra vez os itens já confirmados. Novos ingredientes pendentes continuam sendo confirmados pelo mesmo fluxo. Limpar a ficha, trocar de conta e abrir outra receita reiniciam o estado de refazer.
