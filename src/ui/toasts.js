@@ -54,10 +54,10 @@
       if(window.matchMedia?.('(prefers-reduced-motion: reduce)').matches)return;
       arrival=host.animate?.([
         {transform:'translateX(calc(100% + 40px))',offset:0},
-        {transform:'translateX(-10px)',offset:.70},
-        {transform:'translateX(3px)',offset:.88},
+        {transform:'translateX(-4px)',offset:.70},
+        {transform:'translateX(1px)',offset:.88},
         {transform:'translateX(0)',offset:1}
-      ],{duration:480,easing:'cubic-bezier(.22,.72,.26,1)'});
+      ],{duration:420,easing:'cubic-bezier(.22,.72,.26,1)'});
     }
     function show(message,options={}) {
       if(!message)return;
