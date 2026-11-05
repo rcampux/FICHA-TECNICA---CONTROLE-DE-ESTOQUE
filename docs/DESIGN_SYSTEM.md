@@ -132,7 +132,7 @@ Os tokens canônicos ficam em `src/styles/tokens.css`. Aliases legados existem a
 - Ao salvar um produto físico ou virtual, ingredientes pendentes de mesmo nome e medida compatível recebem o custo proporcional e a nutrição do catálogo virtual. A venda só aparece quando todos têm preço. O cadastro não registra consumo.
 
 ## Exibição e continuidade
-- Cards de receitas usam raio de 4 px e seus botões usam 8 px em desktop e mobile. Os controles Lista/Blocos ficam disponíveis a partir de 768 px. Editar/Excluir usam contorno vinho leve e alvo de toque de 44 px no celular.
+- Estilo CARD usa o arredondamento original responsivo e seu seletor ativo usa o vermelho primário da marca. Estilo Menu usa raio de 4 px nos cards. Os botões usam 8 px em desktop e mobile. Os controles Lista/Blocos ficam disponíveis a partir de 768 px. Editar/Excluir usam contorno vinho leve e alvo de toque de 44 px no celular.
 - O popup de detalhes acompanha a preferência Estilo Menu, inclusive ao reabrir a sessão, com papel claro, título serifado, botões vinho, ícones leves e planejamento em amarelo claro. Estilo CARD restaura a apresentação correspondente do popup.
 - Estilo Menu usa cartões de papel claro com título serifado, botões vinho #672c31, ícones leves e fotos com borda fina e cantos suaves. Lista e Blocos controlam a organização de ambos os estilos, com preferência independente salva por conta e cozinha no navegador.
 - Adicionar ao estoque abre a escolha Virtual/Físico e uma revisão de todos os insumos. Cada item permite editar quantidade comprada, unidade, valor total pago e categoria/tag sugerida. O nome mantém o vínculo com a receita. A tabela nutricional consulta a internet, mostra a referência e permite revisão manual e visualização por porção.

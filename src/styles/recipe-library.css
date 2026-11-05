@@ -4,8 +4,9 @@
 .recipe-layout-switch { margin-left:auto; }
 .recipe-view-toolbar .btn { background:transparent; color:#672c31; border:1px solid #d9c6c3; border-radius:8px; box-shadow:none; }
 .recipe-view-toolbar [aria-pressed="true"] { background:#672c31; color:#fff; border-color:#672c31; }
+#recipe-style-card[aria-pressed="true"] { background:var(--md-sys-color-primary); color:var(--md-sys-color-on-primary); border-color:var(--md-sys-color-primary); }
 #recipes-list { align-items:stretch; }
-#recipes-list .recipe-card { align-self:stretch; display:flex; flex-direction:column; border-radius:4px; }
+#recipes-list .recipe-card { align-self:stretch; display:flex; flex-direction:column; }
 #recipes-list .btn { border-radius:8px; }
 #recipes-list .recipe-card-footer { margin-top:auto; padding-top:18px; }
 #recipes-list.recipe-menu-view { display:grid; grid-template-columns:minmax(0,1fr); gap:24px; }
