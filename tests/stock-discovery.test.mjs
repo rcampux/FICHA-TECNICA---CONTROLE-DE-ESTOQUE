@@ -9,6 +9,21 @@ const context = {window:{}, document:{getElementById:id=>elements.get(id)}};
 vm.runInNewContext(readFileSync(new URL('../src/modules/stock/productDiscovery.js',import.meta.url),'utf8'),context);
 const discovery=context.window.FichaTecProductDiscovery.createProductDiscoveryModule({formatCurrency:value=>`R$ ${value}`});
 
+test('busca nutricional preenche inteiros e preserva campos desconhecidos e metadados', async () => {
+  const original={kcal:273.9726,carb:38.3561,prot:12.3287,fat:6.027,satFat:0.8219,transFat:null,fiber:7.123,sodium:1013.698,portionSize:32.5,sourceProduct:'Pão'};
+  context.AbortSignal=AbortSignal;
+  context.fetch=async () => ({ok:true,json:async()=>({nutrition:original})});
+  const found=await discovery.fetchNutrition('Pão');
+  assert.deepEqual([found.kcal,found.carb,found.prot,found.fat,found.satFat,found.fiber,found.sodium],[274,38,12,6,1,7,1014]);
+  assert.equal(found.transFat,null);
+  assert.equal(found.portionSize,32.5);
+  assert.equal(found.sourceProduct,'Pão');
+  assert.equal(original.carb,38.3561);
+  context.fetch=async () => ({ok:true,json:async()=>({nutrition:{kcal:'',carb:0,prot:'2.7'}})});
+  const partial=await discovery.fetchNutrition('Teste');
+  assert.equal(partial.kcal,null);assert.equal(partial.carb,0);assert.equal(partial.prot,3);assert.equal(partial.sodium,null);
+});
+
 test('500 g por 19,95 escala corretamente em gramas e quilogramas',()=>{
   const reference={quantity:500,unit:'g',price:19.95};
   assert.equal(discovery.calculateProductPrice(reference,1000,'g'),39.9);

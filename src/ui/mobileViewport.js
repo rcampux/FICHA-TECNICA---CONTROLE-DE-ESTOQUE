@@ -20,6 +20,27 @@
       return element.matches('input') && ['text', 'search', 'email', 'url', 'tel', 'number', 'password'].includes(element.type);
     }
 
+    function keepFocusedFieldVisible() {
+      const input = document.activeElement;
+      if (!keyboardOpen || !isTextEntry(input) || (viewport?.scale ?? 1) !== 1) return;
+      const dialog = input.closest?.('dialog[open], .modal-overlay.open');
+      if (!dialog) return; // The browser manages page fields; only scroll inside dialogs here.
+      for (let container = input.parentElement; container; container = container.parentElement) {
+        const overflow = window.getComputedStyle(container).overflowY;
+        if (/(auto|scroll)/.test(overflow) && container.scrollHeight > container.clientHeight && container.clientHeight > 0) {
+          const bounds = container.getBoundingClientRect();
+          const field = input.getBoundingClientRect();
+          const label = input.closest('label')?.getBoundingClientRect();
+          const top = Math.max(bounds.top, viewport?.offsetTop ?? 0) + 12;
+          const bottom = Math.min(bounds.bottom, (viewport?.offsetTop ?? 0) + (viewport?.height ?? window.innerHeight)) - 12;
+          const fieldTop = label && field.bottom - label.top < bottom - top ? label.top : field.top;
+          if (field.bottom > bottom) container.scrollTop += field.bottom - bottom;
+          else if (fieldTop < top) container.scrollTop -= top - fieldTop;
+        }
+        if (container === dialog) break;
+      }
+    }
+
     function syncViewport() {
       frame = 0;
       const height = viewport?.height ?? window.innerHeight;
@@ -37,6 +58,7 @@
       if (!keyboardOpen && !editing && scale === 1) restingHeight = window.innerHeight;
       document.documentElement.style.setProperty('--app-visual-height', height + 'px');
       document.documentElement.style.setProperty('--app-visual-top', (viewport?.offsetTop ?? 0) + 'px');
+      if (keyboardOpen && editing) window.requestAnimationFrame(keepFocusedFieldVisible);
     }
 
     function scheduleSync() {

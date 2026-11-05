@@ -118,6 +118,32 @@
       setTimeout(() => document.getElementById("category-name")?.focus(), 80);
     }
 
+    async function saveCategoryRecord(value, color, expectedOrganizationId = db.activeOrganizationId?.()) {
+      if (savingCategory) throw new Error("Aguarde o cadastro da categoria terminar.");
+      const name = normalizeCategoryName(value);
+      if (!name || name.length > 80) throw new Error("Informe um nome de categoria com até 80 caracteres.");
+      const savedName = getCategoryNames().find(category => category.toLowerCase() === name.toLowerCase()) || name;
+      const next = normalizeCategoryRecords([...(getCategories() || []), {name:savedName, color:normalizeHex(color) || getCategoryColor(savedName)}]);
+      savingCategory = true;
+      try {
+        let saved = next;
+        if (db.mode?.() === "supabase") {
+          if (!expectedOrganizationId || expectedOrganizationId !== db.activeOrganizationId?.()) throw new Error("A cozinha mudou. Abra o cadastro novamente.");
+          saved = await db.saveRemote(storageKeys.categories, next, expectedOrganizationId);
+          if (expectedOrganizationId !== db.activeOrganizationId?.()) throw new Error("A cozinha mudou. Abra o cadastro novamente.");
+        } else {
+          await db.save(storageKeys.categories, next);
+        }
+        setCategories(saved);
+        db.saveLocal?.(storageKeys.categories, saved);
+        renderStock();
+        renderPhysical();
+        return savedName;
+      } finally {
+        savingCategory = false;
+      }
+    }
+
     async function saveCategory() {
       if (savingCategory) return;
       const name = normalizeCategoryName(document.getElementById("category-name")?.value);
@@ -133,33 +159,18 @@
         return;
       }
       const existingName = getCategoryNames().find(category => category.toLowerCase() === name.toLowerCase());
-      const savedName = existingName || name;
-      const next = normalizeCategoryRecords([...(getCategories() || []), {name:savedName, color}]);
       const button = document.getElementById("category-save");
-      savingCategory = true;
       button.disabled = true;
       try {
-        let saved = next;
-        if (db.mode?.() === "supabase") {
-          const organizationId = db.activeOrganizationId?.();
-          if (!organizationId) throw new Error("Workspace indisponível");
-          saved = await db.saveRemote(storageKeys.categories, next, organizationId);
-        } else {
-          db.save(storageKeys.categories, next);
-        }
-        setCategories(saved);
-        db.saveLocal?.(storageKeys.categories, saved);
+        const savedName = await saveCategoryRecord(name, color);
         renderCategoryOptions("stock-category", savedName);
         renderCategoryOptions("pstock-category", savedName);
-        renderStock();
-        renderPhysical();
         closeModal("modal-category");
         showToast(existingName ? "Cor da categoria atualizada." : "Categoria cadastrada.");
       } catch (error) {
         console.error("Category color save failed", error);
         showToast("Não foi possível salvar a categoria. Tente novamente.");
       } finally {
-        savingCategory = false;
         button.disabled = false;
       }
     }
@@ -183,6 +194,7 @@
       persistCategories,
       renderCategoryOptions,
       saveCategory,
+      saveCategoryRecord,
     };
   }
 

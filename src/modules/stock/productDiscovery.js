@@ -257,6 +257,15 @@
         .some((key) => nutrition[key] != null && nutrition[key] !== "" && Number.isFinite(Number(nutrition[key])));
     }
 
+    function roundNutritionValues(nutrition) {
+      const rounded = {...nutrition};
+      for (const key of ['kcal', 'carb', 'prot', 'fat', 'satFat', 'transFat', 'fiber', 'sodium']) {
+        const value = nutrition[key];
+        rounded[key] = value == null || value === '' || !Number.isFinite(Number(value)) ? null : Math.round(Number(value));
+      }
+      return rounded;
+    }
+
     async function fetchNutrition(productName) {
       const response = await fetch(`/api/nutrition-search?q=${encodeURIComponent(productName)}`, {
         headers: {accept: 'application/json'},
@@ -264,7 +273,7 @@
       });
       const payload = await response.json().catch(() => ({}));
       if (!response.ok || !payload?.nutrition) throw new Error(payload?.error || 'Tabela não encontrada. Você pode preencher os valores manualmente.');
-      return payload.nutrition;
+      return roundNutritionValues(payload.nutrition);
     }
 
     async function generateNutrition(type = "virtual", productName = "", options = {}) {
@@ -296,7 +305,7 @@
         if (version !== editorVersions[stockType] || document.getElementById(config.nameId).value.trim() !== name) return null;
         const fallback = getNutrition?.(name) || {};
         if (fallback !== window.FichaTecNutrition?.defaultNutrition?.default && hasNutritionValues(fallback)) {
-          const nutrition = {...readNutrition(stockType), ...fallback, portionSize: getNutritionPortionSize(readNutrition(stockType)), source: "local-estimate"};
+          const nutrition = {...readNutrition(stockType), ...roundNutritionValues(fallback), portionSize: getNutritionPortionSize(readNutrition(stockType)), source: "local-estimate"};
           writeNutrition(stockType, nutrition);
           setNutritionMessage(stockType, "Estimativa inicial preenchida. Compare com o rótulo do produto antes de salvar.", "warning");
           if (!options.silent) showToast("Estimativa nutricional preenchida para revisão.");

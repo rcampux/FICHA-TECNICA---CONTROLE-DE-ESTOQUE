@@ -11,7 +11,7 @@
   const normalizeName = name => name.trim().toLocaleLowerCase('pt-BR');
   const unitFamily = unit => unit === 'kg' ? 'g' : unit;
 
-  function createRecipeStockBatch({db, getStock, getPhysicalStock, getCategoryNames,
+  function createRecipeStockBatch({db, getStock, getPhysicalStock, getCategoryNames, saveCategoryRecord,
     inferCategory, fetchNutrition, scaleNutritionForPortion, formatNutritionMetric,
     applyStockPrices, renderStocks, showToast}) {
     const dialog = document.getElementById('recipe-stock-batch');
@@ -21,9 +21,10 @@
     const saveButton = dialog.querySelector('[data-batch-save]');
     let rows = [], destination = null, recipe = null, scope = null, busy = false, generation = 0;
     let nutritionRequests = 0;
+    let categorySaving = false;
 
     function open(value) {
-      if (busy || !value) return;
+      if (busy || categorySaving || !value) return;
       recipe = value;
       scope = db.activeOrganizationId?.();
       rows = [];
@@ -37,6 +38,7 @@
         '<div class="batch-destinations"><button type="button" data-batch-destination="virtual"><span class="material-symbols-rounded">inventory_2</span><strong>Estoque virtual</strong><small>Catálogo, preços e nutrição</small></button>' +
         '<button type="button" data-batch-destination="physical"><span class="material-symbols-rounded">storefront</span><strong>Estoque físico</strong><small>Quantidades reais e catálogo virtual</small></button></div>';
       dialog.showModal();
+      body.scrollTop = 0;
     }
 
     function chooseDestination(value) {
@@ -63,12 +65,18 @@
         });
       }
       rows = [...unique.values()];
-      body.innerHTML = '<p>Informe a quantidade comprada e o valor pago por essa quantidade. O custo da receita será proporcional ao uso.</p>' +
+      body.innerHTML = '<p class="batch-intro">Informe a quantidade comprada e o valor pago por essa quantidade. O custo da receita será proporcional ao uso.</p>' +
         '<p class="batch-destination-label">' + (value === 'physical' ? 'Destino — físico e virtual' : 'Destino — virtual') + '</p>' +
-        '<datalist id="batch-categories">' + getCategoryNames().map(name => '<option value="' + escape(name) + '"></option>').join('') + '</datalist>' +
         rows.map(renderRow).join('');
+      body.scrollTop = 0;
       saveButton.hidden = false;
       status.textContent = 'Revise todos os ingredientes antes de salvar.';
+    }
+
+    function categoryOptions(selected) {
+      return [...new Set([...getCategoryNames(), selected].filter(Boolean))]
+        .sort((a,b) => a.localeCompare(b, 'pt-BR'))
+        .map(name => `<option value="${escape(name)}" ${name === selected ? 'selected' : ''}>${escape(name)}</option>`).join('');
     }
 
     function renderRow(row, index) {
@@ -78,22 +86,65 @@
         <div class="batch-product-heading"><div><strong>${escape(product.name)}</strong><small>Na receita · ${escape(used)}</small><small>${row.existing ? 'Produto cadastrado — os dados serão atualizados ao salvar.' : 'Novo produto no catálogo'}</small><small data-batch-summary></small></div>
         <button class="btn btn-secondary" type="button" data-batch-edit aria-expanded="false"><span class="material-symbols-rounded" aria-hidden="true">edit</span>Editar</button></div>
         <div class="batch-fields" hidden>
-          <label>Categoria / tag<input list="batch-categories" data-field="category" value="${escape(product.category)}" maxlength="80" placeholder="Categoria sugerida"></label>
+          <div class="batch-category-select"><label for="batch-category-${index}">Categoria / tag</label>
+            <div class="batch-category-controls"><select id="batch-category-${index}" data-field="category">${categoryOptions(product.category)}</select>
+              <button class="btn btn-secondary" type="button" data-batch-category-toggle aria-label="Criar categoria para ${escape(product.name)}" aria-expanded="false" aria-controls="batch-new-category-${index}"><span class="material-symbols-rounded" aria-hidden="true">add</span></button></div>
+          </div>
+          <div class="batch-category-create" id="batch-new-category-${index}" role="group" aria-label="Nova categoria" hidden>
+            <label>Nome da nova categoria<input data-new-category type="text" maxlength="80" autocomplete="off" placeholder="Ex.: Panificação"></label>
+            <div class="batch-category-actions"><button type="button" class="btn btn-secondary" data-batch-category-cancel>Cancelar</button><button type="button" class="btn btn-primary" data-batch-category-save>Criar categoria</button></div>
+            <p data-batch-category-status role="status"></p>
+          </div>
           <div class="batch-field-grid">
-            <label>Quantidade comprada<input data-field="qty" type="number" step="any" min="0.000001" required value="${product.qty}"></label>
+            <label>Quantidade comprada<input data-field="qty" type="number" inputmode="decimal" step="any" min="0.000001" required value="${product.qty}"></label>
             <label>Unidade<select data-field="unit">${[['g','Gramas'],['kg','Quilogramas'],['ml','Mililitros'],['un','Unidades']].map(([unit,label]) => `<option value="${unit}" ${unit === product.unit ? 'selected' : ''}>${label}</option>`).join('')}</select></label>
-            <label>Valor pago (R$)<input data-field="price" type="number" step="0.01" min="0" required value="${product.price}"></label>
-            ${destination === 'physical' ? `<label>Quantidade desejada<input data-field="desiredQty" type="number" step="any" min="0.000001" value="${row.desiredQty}" placeholder="Igual à comprada"></label>` : ''}
+            <label>Valor pago (R$)<input data-field="price" type="number" inputmode="decimal" step="0.01" min="0" required value="${product.price}"></label>
+            ${destination === 'physical' ? `<label>Quantidade desejada<input data-field="desiredQty" type="number" inputmode="decimal" step="any" min="0.000001" value="${row.desiredQty}" placeholder="Igual à comprada"></label>` : ''}
           </div>
           <button class="btn btn-primary batch-nutrition-button" type="button" data-batch-nutrition><span class="material-symbols-rounded" aria-hidden="true">nutrition</span>Tabela nutricional</button>
           <p class="batch-nutrition-status" role="status"></p>
           <details class="batch-nutrition"><summary>Revisar tabela nutricional</summary>
             <p>Valores por 100 g/ml. Confira a referência e ajuste conforme o rótulo.</p>
-            <div class="batch-field-grid">${nutrientFields.map(([key,label,unit]) => `<label>${label} (${unit})<input data-nutrient="${key}" type="number" min="0" step="any" value="${product.nutrition[key] ?? ''}"></label>`).join('')}</div>
-            <label>Porção para visualizar (g/ml)<input data-field="portionSize" type="number" min="0.1" step="any" value="${product.nutrition.portionSize}"></label>
+            <div class="batch-field-grid">${nutrientFields.map(([key,label,unit]) => `<label>${label} (${unit})<input data-nutrient="${key}" type="number" inputmode="decimal" min="0" step="any" value="${product.nutrition[key] ?? ''}"></label>`).join('')}</div>
+            <label>Porção para visualizar (g/ml)<input data-field="portionSize" type="number" inputmode="decimal" min="0.1" step="any" value="${product.nutrition.portionSize}"></label>
             <div class="batch-nutrition-preview"></div>
           </details>
         </div></article>`;
+    }
+
+    function toggleCategoryCreation(article, visible) {
+      const editor = article.querySelector('.batch-category-create');
+      editor.hidden = !visible;
+      article.querySelector('[data-batch-category-toggle]').setAttribute('aria-expanded', String(visible));
+      if (!visible) article.querySelector('[data-batch-category-toggle]').focus({preventScroll:true});
+      // Revealing a form does not request the keyboard. Only tapping its input does.
+    }
+
+    async function createCategory(article) {
+      if (categorySaving || busy) return;
+      const editor = article.querySelector('.batch-category-create');
+      const message = editor.querySelector('[data-batch-category-status]');
+      const row = readRow(article);
+      categorySaving = true;
+      editor.querySelectorAll('button,input').forEach(control => {control.disabled = true;});
+      message.textContent = 'Salvando categoria…';
+      try {
+        const name = await saveCategoryRecord(editor.querySelector('input').value, undefined, scope);
+        row.product.category = name;
+        body.querySelectorAll('[data-field="category"]').forEach(select => {
+          const selected = select.closest('[data-batch-row]') === article ? name : select.value;
+          select.innerHTML = categoryOptions(selected);
+        });
+        toggleCategoryCreation(article, false);
+        editor.querySelector('input').value = '';
+        message.textContent = '';
+        status.textContent = 'Categoria criada e selecionada. Salve os ingredientes quando terminar.';
+      } catch (error) {
+        message.textContent = error.message || 'Não foi possível criar a categoria. Tente novamente.';
+      } finally {
+        categorySaving = false;
+        editor.querySelectorAll('button,input').forEach(control => {control.disabled = false;});
+      }
     }
 
     function updatePreview(article, row) {
@@ -167,6 +218,11 @@
 
     async function save(event) {
       event.preventDefault();
+      if (categorySaving) return;
+      if (body.querySelector('.batch-category-create:not([hidden])')) {
+        status.textContent = 'Crie ou cancele a nova categoria antes de salvar os ingredientes.';
+        return;
+      }
       if (nutritionRequests) {
         status.textContent = 'Aguarde a busca nutricional terminar antes de salvar.';
         return;
@@ -216,14 +272,30 @@
         status.textContent = 'Os ingredientes serão registrados ao clicar em Salvar no estoque.';
       }
     });
-    dialog.addEventListener('cancel', event => {if (busy) event.preventDefault();});
+    body.addEventListener('change', event => {
+      const article = event.target.closest('[data-batch-row]');
+      if (article) readRow(article);
+    });
+    body.addEventListener('keydown', event => {
+      if (event.key === 'Enter' && event.target.matches('[data-new-category]')) {
+        event.preventDefault();
+        createCategory(event.target.closest('[data-batch-row]'));
+      }
+    });
+    dialog.addEventListener('cancel', event => {if (busy || categorySaving) event.preventDefault();});
     dialog.addEventListener('click', event => {
-      if (busy) return;
+      if (busy || categorySaving) return;
       if (event.target === dialog || event.target.closest('[data-batch-close]')) {dialog.close(); return;}
       const destinationButton = event.target.closest('[data-batch-destination]');
       if (destinationButton) {chooseDestination(destinationButton.dataset.batchDestination); return;}
       const article = event.target.closest('[data-batch-row]');
       if (!article) return;
+      if (event.target.closest('[data-batch-category-toggle]')) {
+        toggleCategoryCreation(article, article.querySelector('.batch-category-create').hidden);
+        return;
+      }
+      if (event.target.closest('[data-batch-category-cancel]')) {toggleCategoryCreation(article, false); return;}
+      if (event.target.closest('[data-batch-category-save]')) {createCategory(article); return;}
       const edit = event.target.closest('[data-batch-edit]');
       if (edit) {
         const fields = article.querySelector('.batch-fields');

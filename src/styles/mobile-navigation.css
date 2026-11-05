@@ -18,14 +18,28 @@
   #app-shell :is(input,select,textarea), .modal :is(input,select,textarea), dialog :is(input,select,textarea) { font-size:16px; }
   #app-shell :is(input,select,textarea) { scroll-margin-block:80px 24px; }
   body.mobile-keyboard-open .modal-overlay {
-    top:var(--app-visual-top, 0px); bottom:auto; height:var(--app-visual-height, 100dvh); padding-block:8px;
+    top:var(--app-visual-top, 0px); bottom:auto; height:var(--app-visual-height, 100dvh); padding-block:8px; box-sizing:border-box;
   }
   body.mobile-keyboard-open .modal { max-height:calc(var(--app-visual-height, 100dvh) - 16px) !important; }
   body.mobile-keyboard-open dialog[open] {
     position:fixed; top:calc(var(--app-visual-top, 0px) + 8px); bottom:auto; margin:0 auto;
     max-height:calc(var(--app-visual-height, 100dvh) - 16px); overflow-y:auto;
   }
-  body.mobile-keyboard-open #recipe-stock-batch form { max-height:calc(var(--app-visual-height, 100dvh) - 16px); }
+  body.mobile-keyboard-open #recipe-stock-batch { overflow:hidden; }
+  body.mobile-keyboard-open #recipe-stock-batch form {
+    height:calc(var(--app-visual-height, 100dvh) - 18px);
+    max-height:calc(var(--app-visual-height, 100dvh) - 18px);
+  }
+  body.mobile-keyboard-open #recipe-stock-batch header { padding:6px 12px; gap:8px; }
+  body.mobile-keyboard-open #recipe-stock-batch h2 { font-size:17px; }
+  body.mobile-keyboard-open #recipe-stock-batch [data-batch-body] {
+    flex:1 1 0; min-height:0; padding:8px 16px 20px; scroll-padding-block:12px;
+  }
+  body.mobile-keyboard-open #recipe-stock-batch :is(.batch-intro,.batch-destination-label) { display:none; }
+  body.mobile-keyboard-open #recipe-stock-batch footer { padding:8px 12px; }
+  body.mobile-keyboard-open #recipe-stock-batch [data-batch-status] {
+    font-size:12px; line-height:1.35; margin:0 0 6px; max-height:2.7em; overflow-y:auto;
+  }
   #ficha-editor-title:focus { outline:none; }
   .nav #nav-estoque { order:1; }
   .nav #nav-fisico { order:2; }

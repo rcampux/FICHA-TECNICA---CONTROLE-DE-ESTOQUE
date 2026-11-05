@@ -26,7 +26,7 @@ function harness({visual = true, width = 390} = {}) {
   win.FichaTecMobileViewport.initialize();
   function flush() {for (const [id, callback] of frames) {frames.delete(id);callback();}}
   return {
-    win, doc, viewport,
+    win, doc, viewport, flush,
     hidden:() => classes.has('mobile-keyboard-open'),
     focus(type = 'text') {
       doc.activeElement = {type, matches:selector => selector === 'input'};
@@ -47,6 +47,26 @@ test('iOS: menu recolhe antes do teclado e só volta depois da animação de fec
   h.resize(460);h.settle();assert.equal(h.hidden(),true);
   h.blur();assert.equal(h.hidden(),true);
   h.resize(844);assert.equal(h.hidden(),false);
+});
+
+test('campo permanece visível rolando apenas o conteúdo do popup durante o teclado', () => {
+  const h=harness();h.focus('number');
+  const dialog={parentElement:null};
+  const scroller={parentElement:dialog,scrollTop:0,scrollHeight:1000,clientHeight:280,
+    getBoundingClientRect:()=>({top:60,bottom:340})};
+  h.win.getComputedStyle=node=>({overflowY:node===scroller?'auto':'visible'});
+  const input=h.doc.activeElement;
+  input.parentElement=scroller;
+  input.closest=selector=>selector==='label'?null:dialog;
+  input.getBoundingClientRect=()=>({top:550-scroller.scrollTop,bottom:598-scroller.scrollTop});
+  h.resize(420);h.settle();
+  assert.equal(input.getBoundingClientRect().bottom,328);
+  const scrollTop=scroller.scrollTop;
+  h.resize(400);assert.equal(scroller.scrollTop,scrollTop);
+  scroller.scrollTop=600;h.resize(410);
+  assert.equal(input.getBoundingClientRect().top,72);
+  assert.equal(h.win.scrollY,undefined);
+  h.blur();h.resize(844);assert.equal(h.hidden(),false);
 });
 
 test('Android: preserva altura de referência mesmo quando ambos viewports encolhem', () => {

@@ -94,3 +94,26 @@ test('repositorio faz ida e volta de cores e nao sobrescreve cor de cliente lega
   assert.equal(loaded.find(row=>row.name==='Bebidas').color,'#123ABC');
   assert.ok(loaded.every(row=>row.organization_id===undefined));
 });
+
+test('cadastro direto de categoria preserva cores e exige a mesma cozinha até concluir', async () => {
+  let records=[{name:'Cereais',color:'#ABCDEF'}], organization='a', fail=false, switchDuringSave=false;
+  const catalog=context.window.FichaTecCategoryCatalog.createCategoryCatalogModule({
+    getCategories:()=>records,getStock:()=>[{category:'Panificação'}],getPhysicalStock:()=>[],setCategories:value=>{records=value;},
+    db:{mode:()=> 'supabase',activeOrganizationId:()=>organization,saveLocal(){},saveRemote:async(_key,value,scope)=>{
+      assert.equal(scope,'a');if(fail)throw Error('offline');if(switchDuringSave)organization='b';return value;
+    }},storageKeys:{categories:'categories'},renderStock(){},renderPhysical(){},
+  });
+  assert.ok(catalog.getCategoryNames().includes('Panificação'));
+  assert.equal(await catalog.saveCategoryRecord('  Sobremesas  ',undefined,'a'),'Sobremesas');
+  assert.equal(records.find(row=>row.name==='Cereais').color,'#ABCDEF');
+  const color=catalog.getCategoryColor('Sobremesas');
+  assert.equal(await catalog.saveCategoryRecord('sobremesas',undefined,'a'),'Sobremesas');
+  assert.equal(records.filter(row=>row.name==='Sobremesas').length,1);
+  assert.equal(catalog.getCategoryColor('Sobremesas'),color);
+  fail=true;await assert.rejects(catalog.saveCategoryRecord('Falhou',undefined,'a'),/offline/);
+  assert.ok(!catalog.getCategoryNames().includes('Falhou'));
+  fail=false;switchDuringSave=true;
+  await assert.rejects(catalog.saveCategoryRecord('Outra cozinha',undefined,'a'),/cozinha mudou/);
+  assert.ok(!catalog.getCategoryNames().includes('Outra cozinha'));
+  await assert.rejects(catalog.saveCategoryRecord('Bloqueada',undefined,'a'),/cozinha mudou/);
+});

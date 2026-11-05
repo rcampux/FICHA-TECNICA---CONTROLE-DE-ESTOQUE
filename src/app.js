@@ -459,6 +459,7 @@ const recipeStockBatch = window.FichaTecRecipeStockBatch.createRecipeStockBatch(
   getStock: () => stock,
   getPhysicalStock: () => physicalStock,
   getCategoryNames,
+  saveCategoryRecord: categoryCatalogModule.saveCategoryRecord,
   inferCategory: productDiscoveryModule.inferCategory,
   fetchNutrition: productDiscoveryModule.fetchNutrition,
   scaleNutritionForPortion,
