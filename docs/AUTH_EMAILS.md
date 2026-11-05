@@ -15,7 +15,15 @@
 
 Em 05/11/2026, o projeto ainda usava o serviço de envio padrão do Supabase e os logs registraram `over_email_send_rate_limit`. Alterar o modelo não remove esse limite e não comprova entrega na caixa de entrada.
 
-Próximo passo: registrar ou informar um domínio próprio, criar uma conta de envio (opção sugerida: Resend), verificar o domínio e configurar Custom SMTP no Supabase. Nome sugerido para o remetente: `FichaTec | NK Control`; o endereço depende do domínio escolhido pelo proprietário.
+Em 05/11/2026, o subdomínio `app.tscheers.com.br` foi cadastrado no Resend (São Paulo) e verificado. Foram adicionados na Hostinger somente o TXT `resend._domainkey.app` e os CNAMEs `rsend.app` e `send.app`, com os valores fornecidos pelo painel Resend. Os registros existentes de site e e-mail foram preservados.
+
+Configuração preparada, mas ainda não salva/ativada no Supabase:
+
+- Remetente: `FichaTec | NK Control <nao-responda@app.tscheers.com.br>`.
+- Servidor: `smtp.resend.com`; porta: `465`; usuário: `resend`.
+- Chave a criar: `FichaTec Supabase SMTP`, permissão `Sending access`, restrita a `app.tscheers.com.br`.
+- Pendente: proprietário gerar a chave, inseri-la diretamente no campo Password do Supabase e salvar. Nenhuma chave foi criada ou armazenada nesta etapa.
+- Próximo passo: conferir a ativação e testar o envio e a entrega. Domínio verificado não comprova funcionamento do SMTP nem entrega na caixa de entrada.
 
 - Não colocar senha SMTP ou chave privada no frontend, Git ou nesta documentação.
 - Desabilitar rastreamento de links no provedor para não reescrever URLs de autenticação.
