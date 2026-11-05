@@ -329,6 +329,7 @@ async function prepareRecipeImage({file}){
 }
 
 const recipeSheetModule=window.FichaTecRecipeSheet.createRecipeSheetModule({
+  openRecipeStockBatch: recipe => recipeStockBatch.open(recipe),
   closeModal,
   db:DB,
   formatCurrency:fmtBRL,
@@ -469,6 +470,20 @@ const physicalStockModule=window.FichaTecPhysicalStock.createPhysicalStockModule
 });
 const {stockColor,stockFlag,stockBar,applyPhysicalViewMode,setPhysicalViewMode,renderPhysicalCategoryFilters,togglePhysicalCategoryPanel,togglePhysicalCategoryFilter,clearPhysicalCategoryFilters,openPhysicalModal,savePhysical,deletePhysical,renderPhysical,openMove,setMoveType,confirmMove}=physicalStockModule;
 Object.assign(window,{stockColor,stockFlag,stockBar,applyPhysicalViewMode,setPhysicalViewMode,renderPhysicalCategoryFilters,togglePhysicalCategoryPanel,togglePhysicalCategoryFilter,clearPhysicalCategoryFilters,openPhysicalModal,savePhysical,deletePhysical,renderPhysical,openMove,setMoveType,confirmMove});
+
+const recipeStockBatch = window.FichaTecRecipeStockBatch.createRecipeStockBatch({
+  db: DB,
+  getStock: () => stock,
+  getPhysicalStock: () => physicalStock,
+  getCategoryNames,
+  inferCategory: productDiscoveryModule.inferCategory,
+  fetchNutrition: productDiscoveryModule.fetchNutrition,
+  scaleNutritionForPortion,
+  formatNutritionMetric,
+  applyStockPrices: recipeSheetModule.applyStockPrices,
+  renderStocks: () => { renderStock(); renderPhysical(); },
+  showToast,
+});
 
 const authSessionModule=window.FichaTecAuthSession.createAuthSessionModule({
   closeModal,

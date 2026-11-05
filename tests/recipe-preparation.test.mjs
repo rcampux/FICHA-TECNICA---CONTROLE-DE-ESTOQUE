@@ -4,6 +4,62 @@ import vm from 'node:vm';
 import {readFileSync} from 'node:fs';
 import {webcrypto} from 'node:crypto';
 
+test('lote vincula todos os ingredientes e refaz os custos numa única gravação', async () => {
+  const stock = [];
+  const h = recipeHarness(null, stock);
+  h.module.setIngSource('manual');
+  for (const [name, qty] of [['Farinha', 250], ['Açúcar', 50]]) {
+    h.element('ing-search').value = name;
+    h.element('ing-unit').value = 'g';
+    h.element('ing-qty').value = qty;
+    h.module.addIngredient();
+  }
+  h.element('ficha-nome').value = 'Lote';
+  h.element('ficha-porcoes').value = 1;
+  h.element('markup-pct').value = 50;
+  await h.module.saveRecipe();
+  stock.push({id:10,name:'Farinha',qty:1000,unit:'g',price:8}, {id:11,name:'Açúcar',qty:500,unit:'g',price:2});
+  h.setFail(true);
+  await assert.rejects(h.module.applyStockPrices(stock, {strict:true}));
+  assert.ok(h.getRecipes().find(r => r.nome === 'Lote').ingredients.every(i => i.source === 'manual'));
+  h.setFail(false);
+  await h.module.applyStockPrices(stock, {strict:true});
+  const saved = h.getRecipes().find(r => r.nome === 'Lote');
+  assert.equal(saved.totalCost, 2.2);
+  assert.equal(saved.venda, 3.3);
+  assert.ok(saved.ingredients.every(i => i.source === 'virtual'));
+});
+
+test('gravação aditiva de estoque mantém produtos alheios ao lote e permite retentativa', async () => {
+  const tables = {stock_items:new Map([['existing',{id:'existing'}]]), physical_stock_items:new Map()};
+  let failPhysical = true;
+  const client = {from(table) {
+    let payload;
+    const query = {
+      upsert(value) {payload=value;return query;},
+      select() {return query;},
+      single() {
+        if (table === 'physical_stock_items' && failPhysical) return Promise.resolve({error:new Error('offline')});
+        tables[table].set(payload.id, payload);
+        return Promise.resolve({data:payload,error:null});
+      },
+      update() {throw Error('Não deve excluir registros fora do lote');},
+    };
+    return query;
+  }};
+  const products = [{id:'batch-product',remoteId:'batch-product',name:'Farinha',qty:1,unit:'kg',price:8}];
+  const physical = [{id:'batch-physical',remoteId:'batch-physical',name:'Farinha',stockRemoteId:'batch-product',currentQty:1,desiredQty:2,unit:'kg'}];
+  await repo.saveStockItems(client,'org',products,{prune:false});
+  await assert.rejects(repo.savePhysicalStockItems(client,'org',physical,{prune:false}));
+  failPhysical = false;
+  await repo.saveStockItems(client,'org',products,{prune:false});
+  await repo.savePhysicalStockItems(client,'org',physical,{prune:false});
+  assert.equal(tables.stock_items.size, 2);
+  assert.equal(tables.physical_stock_items.size, 1);
+  assert.equal(tables.physical_stock_items.get('batch-physical').stock_item_id, 'batch-product');
+});
+
+
 const read=file=>readFileSync(new URL(`../src/${file}`,import.meta.url),'utf8');
 const modelContext={window:{FichaTecStorageKeys:{recipes:'recipes'}},crypto:webcrypto};
 vm.runInNewContext(read('modules/recipes/ingredientOrder.js'),modelContext);

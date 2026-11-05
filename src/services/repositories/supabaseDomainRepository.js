@@ -410,7 +410,7 @@
     return (data || []).map(mapStockFromRemote);
   }
 
-  async function saveStockItems(client, organizationId, items) {
+  async function saveStockItems(client, organizationId, items, {prune = true} = {}) {
     const saved = [];
 
     for (const item of items) {
@@ -425,7 +425,7 @@
       saved.push({...item, remoteId: data.id});
     }
 
-    await softDeleteMissingRows(client, "stock_items", organizationId, saved);
+    if (prune) await softDeleteMissingRows(client, "stock_items", organizationId, saved);
     return saved;
   }
 
@@ -441,7 +441,7 @@
     return (data || []).map(mapPhysicalFromRemote);
   }
 
-  async function savePhysicalStockItems(client, organizationId, items) {
+  async function savePhysicalStockItems(client, organizationId, items, {prune = true} = {}) {
     const saved = [];
 
     for (const item of items) {
@@ -455,7 +455,7 @@
       saved.push({...item, remoteId: data.id});
     }
 
-    await softDeleteMissingRows(client, "physical_stock_items", organizationId, saved);
+    if (prune) await softDeleteMissingRows(client, "physical_stock_items", organizationId, saved);
     return saved;
   }
 

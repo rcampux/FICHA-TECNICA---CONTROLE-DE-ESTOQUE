@@ -477,12 +477,26 @@
       <button type="button" class="btn btn-quiet" data-ingredient-filter="">Limpar filtro</button>
     </div>
   </div>
+  <div class="recipe-view-toolbar">
   <div class="recipe-style-switch" aria-label="Estilo das receitas">
     <button class="btn btn-secondary" type="button" id="recipe-style-card" aria-pressed="true">Estilo CARD</button>
     <button class="btn btn-secondary" type="button" id="recipe-style-menu" aria-pressed="false">Estilo Menu</button>
   </div>
+  <div class="recipe-layout-switch" aria-label="Organização das receitas">
+    <button class="btn btn-secondary" type="button" id="recipe-layout-list" aria-pressed="false"><span class="material-symbols-rounded" aria-hidden="true">view_list</span>Lista</button>
+    <button class="btn btn-secondary" type="button" id="recipe-layout-grid" aria-pressed="true"><span class="material-symbols-rounded" aria-hidden="true">grid_view</span>Blocos</button>
+  </div>
+  </div>
   <div id="recipes-list"></div>
 </div>
+
+<dialog id="recipe-stock-batch" aria-labelledby="recipe-stock-batch-title">
+  <form novalidate>
+    <header><h2 id="recipe-stock-batch-title" data-batch-title>Adicionar ao estoque</h2><button type="button" class="btn btn-icon" data-batch-close aria-label="Fechar cadastro"><span class="material-symbols-rounded" aria-hidden="true">close</span></button></header>
+    <div data-batch-body></div>
+    <footer><p data-batch-status role="status" aria-live="polite"></p><button type="submit" class="btn btn-primary" data-batch-save hidden>Salvar no estoque</button></footer>
+  </form>
+</dialog>
 
 <!-- PAGE: ESTOQUE FÍSICO -->
 <div class="page" id="page-fisico">
@@ -1143,6 +1157,7 @@
 <script src="../src/modules/recipes/ingredientOrder.js" defer></script>
 <script src="../src/modules/recipes/productionPlan.js" defer></script>
 <script src="../src/modules/recipes/recipePrint.js" defer></script>
+<script src="../src/modules/recipes/recipeStockBatch.js" defer></script>
 <script src="../src/modules/recipes/recipeSheet.js" defer></script>
 <script src="../src/modules/scanner/scannerRecipe.js" defer></script>
 <script src="../src/modules/stock/stockPricing.js" defer></script>

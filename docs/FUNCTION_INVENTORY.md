@@ -511,5 +511,9 @@ Calculadora de produção: `weightSummary` informa peso bruto, peso pronto, perd
 - Estoques físico e virtual: persistProductForm executa o cadastro e chama a atualização das receitas após persistir o produto.
 
 ## Preferências, registro temporário e quadro
+- RecipeSheet: bindRecipeStyles/applyLayout mantém a organização Lista/Blocos independente do estilo. applyStockPrices substitui o vínculo individual por uma gravação com todos os preços, mantendo applyStockPrice como entrada compatível. viewPendingRecipe abre a revisão em lote.
+- RecipeStockBatch: createRecipeStockBatch, open, chooseDestination, renderRow, updatePreview, readRow, loadNutrition, validateRows e save controlam a revisão, consulta nutricional, validação e confirmação do cadastro. escape, normalizeName e unitFamily normalizam a apresentação e o vínculo de insumos.
+- ProductDiscovery: fetchNutrition centraliza a consulta ao backend, compartilhada com generateNutrition. inferCategory contempla hortifruti, bebidas, confeitaria, proteínas e óleos.
+- HybridRepository: upsertStockBatch grava e sincroniza o lote com IDs estáveis. SupabaseDomainRepository.saveStockItems/savePhysicalStockItems aceitam prune=false para preservar os demais registros.
 - RecipeSheet: personalKey, restoreSupplies, rememberSupplies, bindRecipeStyles (apply), ingredientCategory.
 - Kanban: scrollDuringDrag e finishDrag controlam o deslocamento lateral e a limpeza do arraste.

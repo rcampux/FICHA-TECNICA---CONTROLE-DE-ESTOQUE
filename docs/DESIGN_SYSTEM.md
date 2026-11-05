@@ -132,6 +132,9 @@ Os tokens canônicos ficam em `src/styles/tokens.css`. Aliases legados existem a
 - Ao salvar um produto físico ou virtual, ingredientes pendentes de mesmo nome e medida compatível recebem o custo proporcional e a nutrição do catálogo virtual. A venda só aparece quando todos têm preço. O cadastro não registra consumo.
 
 ## Exibição e continuidade
+- Estilo Menu usa cartões de papel claro com título serifado, botões vinho #672c31, ícones leves e fotos com borda fina e cantos suaves. Lista e Blocos controlam a organização de ambos os estilos, com preferência independente salva por conta e cozinha no navegador.
+- Adicionar ao estoque abre a escolha Virtual/Físico e uma revisão de todos os insumos. Cada item permite editar quantidade comprada, unidade, valor total pago e categoria/tag sugerida. O nome mantém o vínculo com a receita. A tabela nutricional consulta a internet, mostra a referência e permite revisão manual e visualização por porção.
+- Salvar no estoque valida a lista, registra os produtos e recalcula os ingredientes pendentes proporcionalmente. O físico também grava no catálogo virtual. Produtos já cadastrados são identificados pelo nome e atualizados com os valores revisados. Retentativas reutilizam os IDs do lote. Falhas mantêm o formulário aberto para concluir as etapas pendentes.
 - Estilo CARD e Estilo Menu ficam salvos neste navegador por usuário e organização, inclusive entre sessões.
 - Categorias do filtro correspondem às categorias dos ingredientes cadastrados no estoque. Clicar novamente na opção ativa desmarca o filtro.
 - Registro temporário de insumos guarda apenas os ingredientes de estoque virtual/físico de uma nova ficha neste navegador. Restaurar não executa baixa de estoque. Salvar ou limpar a ficha encerra o registro. Receitas sem estoque ficam fora desse registro.

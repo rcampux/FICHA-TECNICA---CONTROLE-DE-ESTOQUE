@@ -257,6 +257,16 @@
         .some((key) => nutrition[key] != null && nutrition[key] !== "" && Number.isFinite(Number(nutrition[key])));
     }
 
+    async function fetchNutrition(productName) {
+      const response = await fetch(`/api/nutrition-search?q=${encodeURIComponent(productName)}`, {
+        headers: {accept: 'application/json'},
+        signal: AbortSignal.timeout(15000),
+      });
+      const payload = await response.json().catch(() => ({}));
+      if (!response.ok || !payload?.nutrition) throw new Error(payload?.error || 'Tabela não encontrada. Você pode preencher os valores manualmente.');
+      return payload.nutrition;
+    }
+
     async function generateNutrition(type = "virtual", productName = "", options = {}) {
       const stockType = normalizeStockType(type);
       const config = editorConfig[stockType];
@@ -270,12 +280,10 @@
       setNutritionMessage(stockType, "Buscando uma referência nutricional por 100 g…", "loading");
       const version = ++editorVersions[stockType];
       try {
-        const response = await fetch(`/api/nutrition-search?q=${encodeURIComponent(name)}`, {headers:{accept:"application/json"}});
-        const payload = await response.json().catch(() => ({}));
-        if (!response.ok || !payload?.nutrition) throw new Error(payload?.error || "Tabela não encontrada.");
+        const foundNutrition = await fetchNutrition(name);
 
         if (version !== editorVersions[stockType] || document.getElementById(config.nameId).value.trim() !== name) return null;
-        const nutrition = {...readNutrition(stockType), ...payload.nutrition, portionSize: getNutritionPortionSize(readNutrition(stockType))};
+        const nutrition = {...readNutrition(stockType), ...foundNutrition, portionSize: getNutritionPortionSize(readNutrition(stockType))};
         writeNutrition(stockType, nutrition);
         setNutritionMessage(
           stockType,
@@ -475,12 +483,18 @@
     function inferCategory(title) {
       const name = String(title || "").toLocaleLowerCase("pt-BR");
       const rules = [
+        ["Bebidas", /refrigerante|suco|água|agua|café|cafe|cerveja|vinho/],
+        ["Confeitaria", /chocolate|cacau|sorvete|gelatina|granulado/],
         ["Carnes", /carne|acém|acem|patinho|frango|peixe|linguiça|bovina|suína|suino/],
         ["Laticínios", /leite|queijo|manteiga|iogurte|creme de leite/],
         ["Farinhas", /farinha|trigo|polvilho|amido/],
-        ["Açúcares", /açúcar|acucar|mel|adoçante|adocante/],
-        ["Cereais", /arroz|aveia|milho|feijão|feijao|grão|grao/],
-        ["Temperos", /sal|pimenta|alho|cebola|tempero|vinagre|azeite|óleo|oleo/],
+        ["Açúcares", /açúcar|acucar|\bmel\b|adoçante|adocante/],
+        ["Leguminosas", /feijão|feijao|grão.de.bico|grao.de.bico|lentilha|ervilha|soja/],
+        ["Cereais", /arroz|aveia|milho|grão|grao/],
+        ["Óleos e Gorduras", /azeite|óleo|oleo|banha/],
+        ["Hortifruti", /banana|maçã|maca|morango|laranja|limão|limao|tomate|batata|cenoura|abobrinha|alface|fruta|legume|alcachofra/],
+        ["Proteinas", /whey|proteína|proteina|ovo/],
+        ["Temperos", /\bsal\b|pimenta|alho|cebola|tempero|vinagre/],
       ];
       return rules.find(([, pattern]) => pattern.test(name))?.[0] || "Outros";
     }
@@ -529,6 +543,7 @@
       closeProductSearch,
       formatNutritionMetric,
       generateNutrition,
+      fetchNutrition,
       getNutritionPortionSize,
       handleProductSearchKeydown,
       inferCategory,

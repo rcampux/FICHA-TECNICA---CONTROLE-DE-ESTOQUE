@@ -80,6 +80,21 @@
         apply(value);
         try{if(key)localStorage.setItem(key,JSON.stringify(value));}catch{showToast('Não foi possível salvar o estilo neste navegador.');}
       };
+      const layoutKey = personalKey('recipeLayout');
+      let layout = 'grid';
+      try { if (layoutKey) layout = JSON.parse(localStorage.getItem(layoutKey)) === 'list' ? 'list' : 'grid'; } catch {}
+      function applyLayout(value) {
+        document.getElementById('recipes-list').classList.toggle('recipe-list-view', value === 'list');
+        for (const option of ['list', 'grid']) {
+          document.getElementById('recipe-layout-' + option).setAttribute('aria-pressed', String(option === value));
+        }
+      }
+      applyLayout(layout);
+      for (const value of ['list', 'grid']) document.getElementById('recipe-layout-' + value).onclick = () => {
+        applyLayout(value);
+        try { if (layoutKey) localStorage.setItem(layoutKey, JSON.stringify(value)); }
+        catch { showToast('Não foi possível salvar a exibição neste navegador.'); }
+      };
     }
     function ingredientCategory(item) {
       return findStockItem(item.stockRemoteId||item.stockId,item.name)?.category || '';
@@ -484,6 +499,10 @@
         const id = card.dataset.recipeId;
         const actionElement = event.target.closest("[data-recipe-action]");
         const action = actionElement?.dataset.recipeAction || "view";
+        if (action === 'stock') {
+          deps.openRecipeStockBatch(recipes.find(recipe => String(recipe.id) === String(id)));
+          return;
+        }
         if (action === "ingredients") {
           const panel=card.querySelector('[data-card-ingredients]');
           panel.hidden=!panel.hidden;
@@ -1176,7 +1195,7 @@
             </div>
           </div>
           <div class="recipe-card-meta"><span class="material-symbols-rounded">fork_spoon</span>${r.ingredients.length} ingrediente(s) · ${formatRecipeYield(r.porcoes,r.yieldUnit)}${r.rendimento?' · '+formatBatchNumber(r.rendimento)+' g':''}${pending?'':' · Markup '+r.markup+'%'}</div>
-          ${pending?`<button class="btn btn-secondary btn-sm" data-recipe-action="view" type="button">Adicionar ao estoque</button>`:`<div class="recipe-card-prices"><div>Venda do lote<strong>${fmtBRL(venda)}</strong></div><div>Venda por ${r.yieldUnit === 'unit' ? 'unidade' : 'porção'}<strong>${fmtBRL(venda / (Number(r.porcoes) || 1))}</strong></div></div>
+          ${pending?`<button class="btn btn-secondary btn-sm" data-recipe-action="stock" type="button">Adicionar ao estoque</button>`:`<div class="recipe-card-prices"><div>Venda do lote<strong>${fmtBRL(venda)}</strong></div><div>Venda por ${r.yieldUnit === 'unit' ? 'unidade' : 'porção'}<strong>${fmtBRL(venda / (Number(r.porcoes) || 1))}</strong></div></div>
           <div class="recipe-card-meta" style="font-size:11px;color:var(--n500)"><span class="material-symbols-rounded" style="font-size:13px">nutrition</span> ${nutritionSummary.label}</div>`}
           ${!pending && changed?`<div class="recipe-card-meta" style="font-size:11px;color:var(--n400)"><span class="material-symbols-rounded" style="font-size:13px">sync</span> Preços atualizados</div>`:''}
           <div class="recipe-card-footer">
@@ -1200,8 +1219,12 @@
     }
 
     async function applyStockPrice(product) {
+      return applyStockPrices([product]);
+    }
+    async function applyStockPrices(products, {strict = false} = {}) {
       syncState();
-      if (!product || !(product.qty > 0)) return false;
+      products = products.filter(product => product && product.qty > 0);
+      if (!products.length) return false;
       let changed=false;
       const next=recipes.map(recipe=>{
         const items=recipe.ingredients.map(linkIngredient);
@@ -1214,7 +1237,9 @@
           nutritionPortion:calculateRecipeNutritionPortion(ingredients,recipe.porcaoSize,recipe.rendimento)};
       });
       function linkIngredient(item) {
-        if(item.source!=='manual' || !sameProductName(item.name,product.name) || conversionFor(product.unit,item.unit)) return item;
+        if (item.source !== 'manual') return item;
+        const product = products.find(product => sameProductName(item.name, product.name) && !conversionFor(product.unit, item.unit));
+        if (!product) return item;
         const rate=pricePerUnit(product);
         return {...item,source:'virtual',stockId:product.id,stockRemoteId:product.remoteId||null,
             nutrition:{...product.nutrition},savedPricePerG:rate,cost:rate*window.FichaTecProduction.grossQuantity(item)};
@@ -1230,44 +1255,27 @@
         renderRecipes();
         showToast('Preço vinculado. Receita atualizada!');
         return true;
-      } catch {
-        showToast('Produto salvo. Abra a receita e toque em Usar preço cadastrado para tentar novamente.');
+      } catch (error) {
+        if (strict) throw error;
+        showToast('Produto salvo. Abra Adicionar ao estoque na receita e salve a lista para concluir o vínculo.');
         return false;
       }
     }
 
     function viewPendingRecipe(recipe) {
       const content=document.getElementById('recipe-detail-content');
-      const findMatch=item=>stock.find(p=>sameProductName(p.name,item.name)&&p.qty>0&&!conversionFor(p.unit,item.unit));
       content.innerHTML=renderRecipeMedia(recipe,'modal')+`<h3>${escapeHtml(recipe.nome)}</h3>
         <span class="pending-tag">Custo pendente</span>
-        <p>Cadastre a quantidade comprada e o valor pago. O custo da receita será calculado quando todos os ingredientes tiverem preço.</p>
+        <p>Revise os ingredientes, informe as quantidades compradas e os valores pagos para calcular esta receita.</p>
+        <button type="button" class="btn btn-primary" data-add-recipe-stock>Adicionar ao estoque</button>
         <p>Rendimento: ${formatRecipeYield(recipe.porcoes,recipe.yieldUnit)}</p>
-        ${recipe.ingredients.map((item,index)=>`<div class="pending-ingredient">
-          <strong>${escapeHtml(item.name)}</strong> · ${formatProductionIngredientQuantity(item)}
-          ${item.source==='manual'?`<div class="recipe-section-actions">
-            ${findMatch(item)?`<button type="button" class="btn btn-primary btn-sm" data-dest="link" data-index="${index}">Usar preço cadastrado</button>`:`<button type="button" class="btn btn-secondary btn-sm" data-dest="virtual" data-index="${index}">Adicionar ao virtual</button>`}
-            <button type="button" class="btn btn-secondary btn-sm" data-dest="physical" data-index="${index}">Adicionar ao físico</button>
-          </div>`:` · ${fmtBRL(calcCosts([item]).totalCost)}`}</div>`).join('')}
+        ${recipe.ingredients.map(item=>`<div class="pending-ingredient"><strong>${escapeHtml(item.name)}</strong> · ${formatProductionIngredientQuantity(item)}</div>`).join('')}
         <details><summary>Modo de preparo</summary><p class="recipe-preparation-content">${escapeHtml(recipe.modoPreparo||'Ainda não informado.')}</p></details>`;
-      content.querySelectorAll('[data-dest]').forEach(button=>button.onclick=async()=>{
-        const item=recipe.ingredients[Number(button.dataset.index)];
-        const dest=button.dataset.dest;
-        if(dest==='link'){
-          button.disabled=true;
-          await applyStockPrice(findMatch(item));
-          viewRecipe(recipe.id);
-          return;
-        }
+      content.onclick = event => {
+        if (!event.target.closest('[data-add-recipe-stock]')) return;
         closeModal('modal-recipe');
-        const physical=dest==='physical';
-        const existing=(physical?physicalStock:stock).find(p=>sameProductName(p.name,item.name));
-        const prefix=physical?'pstock':'stock';
-        const open=physical?window.openPhysicalModal:window.openStockModal;
-        open(existing?.id??null,item);
-        document.getElementById(prefix+'-name').value=item.name;
-        if(!existing) document.getElementById(prefix+'-unit').value=item.unit;
-      });
+        deps.openRecipeStockBatch(recipe);
+      };
       document.getElementById('modal-recipe').classList.add('open');
     }
 
@@ -1576,6 +1584,7 @@
     return {
       restoreSupplies: runWithState(restoreSupplies),
       applyStockPrice,
+      applyStockPrices,
       findStockItem: runWithState(findStockItem, {commit:false}),
       calcCosts: runWithState(calcCosts, {commit:false}),
       setIngSource: runWithState(setIngSource),
