@@ -1,5 +1,7 @@
 # Revisão da jornada — 05/11/2026
 
+No planejamento calculado, **Ver modo de preparo** fica entre a folha de ingredientes e Resultado do lote. Expande/recolhe o preparo registrado em outra folha com as mesmas pautas, fonte Kalam e borda rasgada. Começa fechado a cada abertura da receita, preserva quebras de linha e mostra orientação para Editar quando o preparo está vazio. CARD/Menu e mobile/desktop compartilham essa posição; os cálculos e a receita original não são alterados.
+
 Revisão de recálculo: todos os ícones têm X para remover, separado do botão de editar a quantidade. Após inclusão, exclusão ou alteração de ingredientes/quantidades numa receita preparada, aparece **Recalcular receita** abaixo das legendas dos ícones e antes do texto informativo, em desktop e mobile. Ao recalcular, o botão desaparece até outra mudança. Markup, modo de preparo e confirmar uma quantidade sem alteração não acionam esse estado. A primeira confirmação de uma receita nova continua sendo **Preparar receita**. Os botões são nativos, com ações independentes por teclado e toque.
 
 Esta orientação substitui a solicitação anterior de tiles sem legenda: os ícones de ingredientes na Ficha mostram novamente nome e quantidade, em desktop e mobile. Ingredientes confirmados são acionáveis por clique, toque, Enter e espaço; abrem o editor existente de quantidade e medida.

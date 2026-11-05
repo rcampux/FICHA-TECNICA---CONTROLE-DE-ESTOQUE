@@ -1519,6 +1519,13 @@
           </div>`;
         }).join('')}
           </div>
+          <details class="production-preparation">
+            <summary class="btn btn-primary"><span class="material-symbols-rounded" aria-hidden="true">menu_book</span><span class="preparation-show-label">Ver modo de preparo</span><span class="preparation-hide-label">Ocultar modo de preparo</span><span class="material-symbols-rounded preparation-chevron" aria-hidden="true">expand_more</span></summary>
+            <div class="production-preparation-paper" role="region" aria-labelledby="production-preparation-title">
+              <h4 id="production-preparation-title">Modo de preparo</h4>
+              <p>${r.modoPreparo?escapeHtml(r.modoPreparo):'Modo de preparo ainda não informado. Clique em Editar para adicioná-lo.'}</p>
+            </div>
+          </details>
           <h3 id="production-report-title" tabindex="-1">Resultado do lote</h3>
           <dl class="production-facts">
             <div><dt>Ingredientes antes do preparo</dt><dd data-plan-value="raw">—</dd></div>

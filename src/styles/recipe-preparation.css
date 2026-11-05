@@ -145,7 +145,7 @@
 #production-report h4 { margin:16px 0 4px; font-size:15px; }
 @font-face { font-family:'Kalam'; src:url('../../assets/fonts/kalam/Kalam-Regular.ttf') format('truetype'); font-weight:400; font-display:swap; }
 @font-face { font-family:'Kalam'; src:url('../../assets/fonts/kalam/Kalam-Bold.ttf') format('truetype'); font-weight:700; font-display:swap; }
-#production-report .production-ingredients {
+#production-report :is(.production-ingredients,.production-preparation-paper) {
   --paper-line:32px; --paper-top:16px;
   position:relative; margin:18px 0 26px 7px; padding:var(--paper-top) 18px 16px 34px;
   border:1px solid #e5dccb; border-left:0; border-radius:0 6px 6px 0;
@@ -154,11 +154,20 @@
   background-position:0 0,0 var(--paper-top);
   box-shadow:2px 3px 12px rgb(64 46 23 / 6%);
 }
-#production-report .production-ingredients::before {
+#production-report :is(.production-ingredients,.production-preparation-paper)::before {
   content:''; position:absolute; pointer-events:none; top:-1px; bottom:-1px; left:-8px; width:9px; background:#fffdf5;
   clip-path:polygon(100% 0,100% 100%,30% 100%,55% 97%,10% 94%,40% 91%,0 88%,60% 85%,25% 82%,45% 79%,5% 76%,55% 73%,15% 70%,40% 67%,0 64%,50% 61%,20% 58%,65% 55%,10% 52%,40% 49%,0 46%,50% 43%,20% 40%,60% 37%,5% 34%,40% 31%,15% 28%,55% 25%,0 22%,40% 19%,10% 16%,55% 13%,20% 10%,60% 7%,0 4%,35% 0);
 }
-#production-report .production-ingredients h4 { margin:0 0 32px; font:400 24px/var(--paper-line) 'Kalam',cursive; color:#382e29; scroll-margin-block:16px; }
+#production-report :is(.production-ingredients,.production-preparation-paper) h4 { margin:0 0 32px; font:400 24px/var(--paper-line) 'Kalam',cursive; color:#382e29; scroll-margin-block:16px; }
+.production-preparation { margin:-10px 0 24px; }
+.production-preparation > summary { display:flex; width:100%; box-sizing:border-box; justify-content:center; gap:8px; min-height:44px; cursor:pointer; list-style:none; background:var(--journey-accent); color:#fff; border-radius:8px; }
+.production-preparation > summary::-webkit-details-marker { display:none; }
+.production-preparation > summary:focus-visible { outline:2px solid var(--journey-accent); outline-offset:3px; }
+.production-preparation .preparation-hide-label, .production-preparation[open] .preparation-show-label { display:none; }
+.production-preparation[open] .preparation-hide-label { display:inline; }
+.production-preparation[open] .preparation-chevron { transform:rotate(180deg); }
+#production-report .production-preparation-paper { margin-bottom:0; }
+#production-report .production-preparation-paper p { margin:0; color:#382e29; font:400 18px/var(--paper-line) 'Kalam',cursive; white-space:pre-wrap; overflow-wrap:anywhere; }
 #production-report .production-ingredients .ingredient-row { position:relative; display:block; min-height:64px; margin:0 0 32px; padding:0 100px 0 0; box-sizing:border-box; border:0; }
 #production-report .production-ingredients .ingredient-row:last-child { margin-bottom:0; }
 #production-report .production-ingredients .ingredient-row > div:first-child { display:contents; }
@@ -166,8 +175,8 @@
 #production-report .production-ingredients .production-ingredient-quantity { position:absolute; right:0; top:0; width:94px; margin:0; padding:0; background:none; color:var(--journey-accent); font:700 20px/var(--paper-line) 'Kalam',cursive; text-align:right; white-space:nowrap; font-variant-numeric:tabular-nums; }
 #production-report .production-ingredients .ing-cost { position:absolute; right:0; top:32px; width:94px; font:400 14px/var(--paper-line) 'Kalam',cursive; color:#76665b !important; text-align:right; }
 @media(max-width:480px) {
-  #production-report .production-ingredients { padding-right:12px; padding-left:26px; background-image:linear-gradient(to right,transparent 13px,#deb6b1 13px,#deb6b1 14px,transparent 14px),repeating-linear-gradient(to bottom,transparent 0,transparent 31px,#e5e9e3 31px,#e5e9e3 32px); }
-  #production-report .production-ingredients h4 { font-size:22px; }
+  #production-report :is(.production-ingredients,.production-preparation-paper) { padding-right:12px; padding-left:26px; background-image:linear-gradient(to right,transparent 13px,#deb6b1 13px,#deb6b1 14px,transparent 14px),repeating-linear-gradient(to bottom,transparent 0,transparent 31px,#e5e9e3 31px,#e5e9e3 32px); }
+  #production-report :is(.production-ingredients,.production-preparation-paper) h4 { font-size:22px; }
   #production-report .production-ingredients .ingredient-row { padding-right:88px; }
   #production-report .production-ingredients .production-ingredient-quantity, #production-report .production-ingredients .ing-cost { width:82px; }
   #production-report .production-ingredients .production-ingredient-quantity { font-size:18px; }
@@ -180,7 +189,7 @@
 }
 .production-nutrition summary { cursor:pointer; padding:16px 0; font-size:14px; font-weight:600; color:var(--journey-ink,#382c27); }
 .production-nutrition summary .material-symbols-rounded { font-size:18px; vertical-align:middle; }
-body[data-visual-style="menu"] #production-report .production-ingredients { border-radius:0 4px 4px 0; }
+body[data-visual-style="menu"] #production-report :is(.production-ingredients,.production-preparation-paper) { border-radius:0 4px 4px 0; }
 .recipe-preparation-view .recipe-section-actions { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); max-width:380px; }
 .recipe-preparation-view .btn { min-width:0; padding-inline:8px; white-space:normal; line-height:1.2; min-height:44px; }
 @media(max-width:480px) {
