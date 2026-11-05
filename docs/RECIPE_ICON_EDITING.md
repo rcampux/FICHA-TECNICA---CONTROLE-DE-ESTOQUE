@@ -19,4 +19,6 @@ Os ícones ficam em uma superfície quadrada; nome e quantidade são legendas ex
 
 Revisão visual seguinte: os ingredientes calculados ficam em um box de papel claro, pautas discretas e margem de caderno. As quantidades mantêm destaque contido. Calcular e Ver ingredientes rolam somente o conteúdo interno do popup até o topo desse box, aguardando o fechamento do teclado quando necessário; a navegação e a página de fundo não são roladas.
 
+O papel usa fonte manuscrita Kalam (arquivos locais e licença OFL em assets/fonts/kalam). Título, nomes, quantidades, preços e espaçamentos compartilham ritmo de 32 px alinhado às pautas, inclusive quando nomes quebram linha. A borda esquerda simula papel rasgado. Abaixo de 360 px, o nome ocupa a largura inteira e quantidade/preço vêm na linha seguinte para conservar legibilidade.
+
 Ao editar uma receita existente, a confirmação de novos ingredientes usa Refazer receita. Entrar pela Ficha, Criar receita ou Nova ficha limpa nome, foto, ingredientes pendentes/confirmados, rendimento, markup e preparo. Essa instrução substitui a restauração automática de insumos ao entrar pela navegação: o registro temporário não deve repovoar uma nova receita. Apenas a entrada explícita Editar preserva e carrega a receita escolhida. As receitas salvas permanecem intactas.
