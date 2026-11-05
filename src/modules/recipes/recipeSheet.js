@@ -28,6 +28,62 @@
     let currentRecipeId = null;
     let editingRecipeId = null;
     let activeIngFilter = null;
+    let categoryFilter = null;
+    let draftScope;
+
+    function personalKey(feature) {
+      if (DB.mode?.() !== 'supabase') return 'fichatec.local.' + feature;
+      const user = window.getAuthState?.().user?.id;
+      const org = DB.activeOrganizationId?.();
+      return user && org ? 'fichatec.' + user + '.' + org + '.' + feature : null;
+    }
+    function restoreSupplies() {
+      const key = personalKey('temporarySupplies');
+      if (key === draftScope) return;
+      currentIngredients = [];
+      editingRecipeId = null;
+      currentRecipeId = null;
+      draftScope = key;
+      try {
+        const saved = key ? JSON.parse(localStorage.getItem(key) || '[]') : [];
+        if (Array.isArray(saved)) {
+          currentIngredients = saved.filter(item => item &&
+            ['virtual', 'fisico'].includes(item.source) && typeof item.name === 'string' &&
+            Number.isFinite(item.qtyG) && item.qtyG > 0);
+        }
+      } catch {
+        showToast('Não foi possível recuperar o registro temporário de insumos.');
+      }
+      renderIngredients();
+      calcFicha();
+    }
+    function rememberSupplies() {
+      const key = personalKey('temporarySupplies');
+      if (!key || editingRecipeId !== null) return;
+      try {
+        const supplies = currentIngredients.filter(item => ['virtual', 'fisico'].includes(item.source));
+        localStorage.setItem(key, JSON.stringify(supplies));
+      } catch {
+        showToast('Não foi possível guardar o registro temporário de insumos neste navegador.');
+      }
+    }
+    function bindRecipeStyles() {
+      const key=personalKey('recipeStyle');
+      let style='card';
+      try {if(key)style=JSON.parse(localStorage.getItem(key))==='menu'?'menu':'card';}catch{}
+      function apply(value) {
+        document.getElementById('recipes-list').classList.toggle('recipe-menu-view',value==='menu');
+        for(const option of ['card','menu'])document.getElementById('recipe-style-'+option).setAttribute('aria-pressed',String(option===value));
+      }
+      apply(style);
+      for(const value of ['card','menu'])document.getElementById('recipe-style-'+value).onclick=()=>{
+        apply(value);
+        try{if(key)localStorage.setItem(key,JSON.stringify(value));}catch{showToast('Não foi possível salvar o estilo neste navegador.');}
+      };
+    }
+    function ingredientCategory(item) {
+      return findStockItem(item.stockRemoteId||item.stockId,item.name)?.category || '';
+    }
     let ingSource = 'virtual';
     let stock = getStock();
     let physicalStock = getPhysicalStock();
@@ -470,10 +526,13 @@
       const trigger = document.getElementById('recipe-filter-trigger');
       trigger.onclick = () => window.FichaTecCategoryPanels.toggle(panel.id);
       panel.onclick = (event) => {
+        const category=event.target.closest('[data-category-filter]');
+        if(category){categoryFilter=categoryFilter===category.dataset.categoryFilter?null:category.dataset.categoryFilter;renderRecipes();return;}
         const option = event.target.closest('[data-ingredient-filter]');
         if (!option || !panel.contains(option)) return;
-        setIngFilter(option.dataset.ingredientFilter || null);
-        window.FichaTecCategoryPanels.closePanel(panel, true);
+        const value=option.dataset.ingredientFilter;
+        if(!value)categoryFilter=null;
+        setIngFilter(value===activeIngFilter?null:value||null);
       };
     }
 
@@ -850,6 +909,7 @@
       document.getElementById('ingredient-order-status').textContent=`Ingrediente movido para a posição ${to+1}. Salve a receita para manter esta ordem.`;
     }
     function renderIngredients(){
+      rememberSupplies();
       const el=document.getElementById('ingredients-list');
       if(!currentIngredients.length){el.innerHTML='';return;}
       el.innerHTML=`<div class="card">
@@ -947,6 +1007,7 @@
       if(recipeSaveInFlight&&!options.force)return;
       if(currentIngredients.length&&!options.force&&!await confirmAction('Deseja limpar todos os dados desta ficha tecnica?','Limpar ficha','Sim, limpar'))return;
       currentIngredients=[];
+      try{const key=personalKey('temporarySupplies');if(key)localStorage.removeItem(key);}catch{}
       setIngSource('virtual');
       document.getElementById('page-ficha').classList.remove('editor-open');
       currentRecipeId=null;
@@ -1072,15 +1133,21 @@
       });
     }
     function renderRecipes(filter = document.getElementById('recipe-search').value, ingFilter = activeIngFilter) {
+      bindRecipeStyles();
+      const categories=[...new Set(recipes.flatMap(r=>r.ingredients.map(ingredientCategory)).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'pt-BR'));
+      if(!categories.includes(categoryFilter))categoryFilter=null;
+      document.getElementById('recipe-category-chips').innerHTML=categories.map(c=>`<button type="button" class="recipe-filter-choice" aria-pressed="${c===categoryFilter}" data-category-filter="${escapeAttribute(c)}">${escapeHtml(c)}</button>`).join('')||'<span>Sem categorias cadastradas.</span>';
       const allIngredients = [...new Set(recipes.flatMap(recipe => recipe.ingredients.map(item => item.name)))].sort((a,b) => a.localeCompare(b,'pt-BR'));
       activeIngFilter = allIngredients.includes(ingFilter) ? ingFilter : null;
       ingFilter = activeIngFilter;
-      document.getElementById('recipe-filter-count').hidden = !ingFilter;
+      document.getElementById('recipe-filter-count').hidden = !ingFilter&&!categoryFilter;
+      document.getElementById('recipe-filter-count').textContent=Number(Boolean(ingFilter))+Number(Boolean(categoryFilter));
       const filterElement = document.getElementById('ingredient-filter-chips');
       filterElement.innerHTML = allIngredients.map(name => `<button type="button" class="recipe-filter-choice" aria-pressed="${name === ingFilter}" data-ingredient-filter="${escapeAttribute(name)}">${escapeHtml(name)}</button>`).join('') || '<p>Nenhum ingrediente nas receitas.</p>';
       bindRecipeFilterActions();
       let f=recipes.filter(r=>r.nome.toLowerCase().includes((filter||'').toLowerCase()));
       if(ingFilter)f=f.filter(r=>r.ingredients.some(i=>i.name===ingFilter));
+      if(categoryFilter)f=f.filter(r=>r.ingredients.some(i=>ingredientCategory(i)===categoryFilter));
       const el=document.getElementById('recipes-list');
       if(!f.length){
         el.onclick = null;
@@ -1332,6 +1399,7 @@
       const r=recipes.find(x=>String(x.id)===String(currentRecipeId));if(!r)return;
       closeModal('modal-recipe');
       editingRecipeId=r.id;
+      draftScope=personalKey('temporarySupplies');
       currentIngredients=r.ingredients.map(item => ({...item}));
       recipeImageOperationId+=1;
       setRecipeImageProcessing(false);
@@ -1506,6 +1574,7 @@
     });
 
     return {
+      restoreSupplies: runWithState(restoreSupplies),
       applyStockPrice,
       findStockItem: runWithState(findStockItem, {commit:false}),
       calcCosts: runWithState(calcCosts, {commit:false}),

@@ -130,3 +130,9 @@ Os tokens canônicos ficam em `src/styles/tokens.css`. Aliases legados existem a
 - Ao tocar em Criar receita, a opção Anotar receita sem estoque aparece no início da ficha, antes do nome. Ativá-la abre a seção de ingredientes no celular.
 - O editor aceita ingredientes digitados com quantidade e unidade. Na lista, a etiqueta Custo pendente identifica as receitas com ingredientes sem vínculo.
 - Ao salvar um produto físico ou virtual, ingredientes pendentes de mesmo nome e medida compatível recebem o custo proporcional e a nutrição do catálogo virtual. A venda só aparece quando todos têm preço. O cadastro não registra consumo.
+
+## Exibição e continuidade
+- Estilo CARD e Estilo Menu ficam salvos neste navegador por usuário e organização, inclusive entre sessões.
+- Categorias do filtro correspondem às categorias dos ingredientes cadastrados no estoque. Clicar novamente na opção ativa desmarca o filtro.
+- Registro temporário de insumos guarda apenas os ingredientes de estoque virtual/físico de uma nova ficha neste navegador. Restaurar não executa baixa de estoque. Salvar ou limpar a ficha encerra o registro. Receitas sem estoque ficam fora desse registro.
+- O quadro da cozinha permite deslizar horizontalmente e arrastar pela alça; aproximar o cartão da borda desloca o quadro.

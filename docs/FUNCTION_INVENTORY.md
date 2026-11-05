@@ -509,3 +509,7 @@ Calculadora de produção: `weightSummary` informa peso bruto, peso pronto, perd
 ## Anotação sem estoque
 - RecipeSheet: sameProductName, applyStockPrice (com linkIngredient), viewPendingRecipe. Reconciliam os ingredientes e apresentam o cadastro posterior de preços.
 - Estoques físico e virtual: persistProductForm executa o cadastro e chama a atualização das receitas após persistir o produto.
+
+## Preferências, registro temporário e quadro
+- RecipeSheet: personalKey, restoreSupplies, rememberSupplies, bindRecipeStyles (apply), ingredientCategory.
+- Kanban: scrollDuringDrag e finishDrag controlam o deslocamento lateral e a limpeza do arraste.

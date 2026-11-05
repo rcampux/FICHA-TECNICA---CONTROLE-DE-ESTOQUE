@@ -470,9 +470,16 @@
     <button class="btn btn-secondary" id="recipe-filter-trigger" type="button" aria-label="Filtrar por ingrediente" aria-controls="recipe-filter-panel" aria-expanded="false"><span class="material-symbols-rounded" aria-hidden="true">filter_list</span> Filtro<span id="recipe-filter-count" hidden>1</span></button>
     <div class="category-filter-panel" id="recipe-filter-panel" role="region" aria-label="Filtro de ingredientes" hidden>
       <div class="category-filter-header"><strong>Filtrar por ingrediente</strong><button type="button" class="category-panel-close" data-close-category-panel aria-label="Fechar filtros"><span class="material-symbols-rounded" aria-hidden="true">close</span></button></div>
+      <strong>Categorias dos ingredientes</strong>
+      <div class="category-filter-options" id="recipe-category-chips"></div>
+      <strong>Ingredientes</strong>
       <div class="category-filter-options" id="ingredient-filter-chips"></div>
       <button type="button" class="btn btn-quiet" data-ingredient-filter="">Limpar filtro</button>
     </div>
+  </div>
+  <div class="recipe-style-switch" aria-label="Estilo das receitas">
+    <button class="btn btn-secondary" type="button" id="recipe-style-card" aria-pressed="true">Estilo CARD</button>
+    <button class="btn btn-secondary" type="button" id="recipe-style-menu" aria-pressed="false">Estilo Menu</button>
   </div>
   <div id="recipes-list"></div>
 </div>

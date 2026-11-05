@@ -131,6 +131,7 @@
       const date=task.due?new Date(`${task.due}T12:00:00`).toLocaleDateString("pt-BR",{day:"2-digit",month:"short"}):"";
       const overdue=M.isOverdue(board,task);
       return `<article class="kitchen-task" data-task-id="${esc(task.id)}" draggable="${writable()&&allowDrag&&!task.archived}">
+        ${writable()&&allowDrag&&!task.archived?'<button type="button" class="kitchen-drag-handle" aria-label="Arrastar tarefa entre etapas"><span class="material-symbols-rounded" aria-hidden="true">drag_indicator</span></button>':''}
         <div class="kitchen-task-labels"><span class="kitchen-type">${M.types[task.type]}</span><span class="kitchen-priority priority-${task.priority}">${M.priorities[task.priority]}</span></div>
         <button type="button" class="kitchen-task-title" data-action="edit" data-task="${esc(task.id)}" ${task.archived?"disabled":""}>${esc(task.title)}</button>
         ${task.description?`<p class="kitchen-task-description">${esc(task.description)}</p>`:""}
@@ -217,7 +218,7 @@
       if(action==="new")return openTask(null,button.dataset.column||activeColumn);
       if(action==="edit")return openTask(button.dataset.task);
       if(action==="settings")return openSettings();
-      if(action==="tab"){activeColumn=button.dataset.column;renderCards();return;}
+      if(action==="tab"){activeColumn=button.dataset.column;renderCards();const column=[...el("kitchen-board").children].find(c=>c.dataset.column===activeColumn);if(column)el("kitchen-board").scrollLeft=column.offsetLeft-el("kitchen-board").offsetLeft;return;}
       if(action==="archive-view"){filters.archived=!filters.archived;render();return;}
       if(action==="restore")return setArchived(button.dataset.task,false);
       if(action==="recipe"){
@@ -256,11 +257,59 @@
       const target=select.value;
       try{if(await persist(M.moveTask(board,select.dataset.moveTask,target))){activeColumn=target;renderCards();}}catch(error){showToast(error.message);render();}
     });
+    let dragging=null, pointerX=0, pointerY=0, scrollFrame=0, ghost=null;
+    const scroller=el("kitchen-board");
+    function scrollDuringDrag() {
+      if(!dragging)return;
+      const rect=scroller.getBoundingClientRect();
+      const left=Math.max(0,rect.left),right=Math.min(innerWidth,rect.right);
+      if(pointerY>=rect.top&&pointerY<=rect.bottom)scroller.scrollLeft+=pointerX<left+48?-10:pointerX>right-48?10:0;
+      scrollFrame=requestAnimationFrame(scrollDuringDrag);
+    }
+    function finishDrag() {
+      cancelAnimationFrame(scrollFrame);ghost?.remove();ghost=null;dragging=null;
+      scroller.style.scrollSnapType='';
+    }
+    scroller.addEventListener('scroll',()=>{
+      const rect=scroller.getBoundingClientRect();
+      const column=[...scroller.children].reduce((best,c)=>!best||Math.abs(c.getBoundingClientRect().left-rect.left)<Math.abs(best.getBoundingClientRect().left-rect.left)?c:best,null);
+      if(!column?.dataset.column)return;
+      activeColumn=column.dataset.column;
+      el('kitchen-column-tabs').querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.column===activeColumn)));
+    },{passive:true});
+    host.addEventListener('pointerdown',event=>{
+      const handle=event.target.closest('.kitchen-drag-handle');if(!handle||!writable()||event.button!==0)return;
+      event.preventDefault();handle.setPointerCapture(event.pointerId);
+      dragging=handle.closest('.kitchen-task').dataset.taskId;
+      pointerX=event.clientX;pointerY=event.clientY;
+      ghost=handle.closest('.kitchen-task').cloneNode(true);
+      ghost.classList.add('kitchen-drag-preview');ghost.setAttribute('aria-hidden','true');ghost.removeAttribute('data-task-id');
+      ghost.querySelectorAll('[id]').forEach(n=>n.removeAttribute('id'));
+      document.body.append(ghost);ghost.style.left=pointerX+'px';ghost.style.top=pointerY+'px';
+      scroller.style.scrollSnapType='none';scrollDuringDrag();
+    });
+    host.addEventListener('pointermove',event=>{
+      if(!ghost)return;pointerX=event.clientX;pointerY=event.clientY;
+      ghost.style.left=(pointerX-24)+'px';ghost.style.top=(pointerY-24)+'px';
+    });
+    host.addEventListener('pointerup',async event=>{
+      if(!ghost)return;
+      const target=document.elementFromPoint(event.clientX,event.clientY);
+      const column=target?.closest('.kitchen-column'),task=dragging;
+      finishDrag();
+      if(!column||!writable())return;
+      try{await persist(M.moveTask(board,task,column.dataset.column,target.closest('.kitchen-task')?.dataset.taskId));}catch(error){showToast(error.message);}
+    });
+    host.addEventListener('pointercancel',finishDrag);
+    host.addEventListener('lostpointercapture',()=>{if(ghost)finishDrag();});
     host.addEventListener("dragstart",event=>{
+      if(ghost){event.preventDefault();return;}
       const card=event.target.closest(".kitchen-task[draggable='true']");if(!card){event.preventDefault();return;}
       event.dataTransfer.setData("text/plain",card.dataset.taskId);event.dataTransfer.effectAllowed="move";
+      dragging=card.dataset.taskId;pointerX=event.clientX;pointerY=event.clientY;scrollDuringDrag();
     });
-    host.addEventListener("dragover",event=>{if(writable()&&event.target.closest(".kitchen-column")){event.preventDefault();event.dataTransfer.dropEffect="move";}});
+    host.addEventListener("dragover",event=>{pointerX=event.clientX;pointerY=event.clientY;if(writable()&&event.target.closest(".kitchen-column")){event.preventDefault();event.dataTransfer.dropEffect="move";}});
+    host.addEventListener('dragend',finishDrag);
     host.addEventListener("drop",async event=>{
       const column=event.target.closest(".kitchen-column");if(!column||!writable())return;
       event.preventDefault();const taskId=event.dataTransfer.getData("text/plain");

@@ -34,6 +34,7 @@ function showPage(page,navId,openEditor=false){
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
   document.getElementById('page-'+page).classList.add('active');
   document.getElementById(navId).classList.add('active');
+  if(page==='ficha') recipeSheetModule.restoreSupplies();
   if(page==='ficha') document.getElementById('page-ficha').classList.toggle('editor-open', openEditor);
   if(page==='ficha' && openEditor){
     const touchLayout = window.matchMedia('(max-width: 767px), (pointer: coarse)').matches;
