@@ -511,7 +511,7 @@ Calculadora de produção: `weightSummary` informa peso bruto, peso pronto, perd
 - Estoques físico e virtual: persistProductForm executa o cadastro e chama a atualização das receitas após persistir o produto.
 
 ## Preferências, registro temporário e quadro
-- Markup e abertura nutricional no lote: `RecipeStockBatch.renderMarkup` apresenta o percentual da receita desde a escolha do estoque, mantendo o valor entre etapas. `save` valida o percentual e repassa `recipePricing` para `RecipeSheet.applyStockPrices`, que persiste o markup apenas da receita escolhida junto do vínculo dos produtos. `loadNutrition` abre a tabela e sinaliza carregamento antes da consulta, com uma única busca e rolagem interna sem abrir teclado.
+- Markup posterior ao estoque: RecipeStockBatch.renderMarkup é usado somente depois de save concluir a gravação do estoque; saveMarkup chama applyStockPrices com recipePricing só para a receita escolhida. loadNutrition mantém a abertura imediata com indicador de consulta.
 - Revisão do cadastro de insumos (05/11/2026): `RecipeStockBatch.categoryOptions` lista todas as categorias, `toggleCategoryCreation` abre o cadastro inline sem solicitar teclado e `createCategory` persiste e seleciona a categoria sem perder o formulário. `CategoryCatalog.saveCategoryRecord` compartilha a persistência entre os cadastros, preservando as cores e conferindo a cozinha antes e depois da gravação. `ProductDiscovery.roundNutritionValues` arredonda apenas nutrientes consultados/estimados, mantendo ausências e metadados. `MobileViewport.keepFocusedFieldVisible` rola o conteúdo interno dos popups após o redimensionamento do teclado, sem mover a navegação ou a página de fundo.
 - MobileViewport: `exposeMobileViewport`, `initialize`, `isTextEntry`, `syncViewport`, `scheduleSync`, `onFocusIn` e `onFocusOut` substituem `syncRecipeKeyboard` de app.js. Detectam teclado em todos os formulários, acompanham a área visível sem reposicionar a navegação no scroll e recolhem o scanner quando a ação de salvar fica visível.
 - RecipeSheet: `bindRecipeStyles` também exposta como `syncAppearance`, atualiza `body[data-visual-style]` ao navegar, restaurar a sessão e trocar de cozinha. Popups e páginas herdam o mesmo estilo em `journey-theme.css`.
@@ -521,3 +521,14 @@ Calculadora de produção: `weightSummary` informa peso bruto, peso pronto, perd
 - HybridRepository: upsertStockBatch grava e sincroniza o lote com IDs estáveis. SupabaseDomainRepository.saveStockItems/savePhysicalStockItems aceitam prune=false para preservar os demais registros.
 - RecipeSheet: personalKey, restoreSupplies, rememberSupplies, bindRecipeStyles (apply), ingredientCategory.
 - Kanban: scrollDuringDrag e finishDrag controlam o deslocamento lateral e a limpeza do arraste.
+
+
+## Biblioteca de ícones alimentares (05/11/2026)
+- scripts/build-food-icon-catalog.py: package_icons valida a completude, preserva originais e prepara WebP e manifestos; write_pdf compõe o catálogo por coleção; render_pdf renderiza todas as páginas para conferência visual; payload prepara lotes com os bytes de imagem para persistência no banco. Essas rotinas não alteram a interface nem atribuem ícones às categorias.
+
+## Seleção visual, preparo e preço (05/11/2026)
+- FoodIcons: exposeFoodIcons, normalize, createResolver (match, resolveIngredientIcon) e loadLibrary carregam o manifesto original e escolhem a imagem específica ou por categoria.
+- RecipeJourney: exposeRecipeJourney, createRecipeJourney, escape, format, reduced, refresh, selectSource, openIngredientDialog, closeIngredientDialog e prepareRecipe controlam a grade, popup acessível, confirmação de 2 segundos e foco/rolagem responsivos.
+- RecipeSheet: physicalIngredientProduct preserva referência de preço; ingredientInputError, readIngredientDraft, resetIngredientFields, commitIngredientDrafts, queueIngredient, removeQueuedIngredient, prepareIngredients e getJourneyState separam seleção e confirmação. addIngredient usa a mesma validação/commit como entrada compatível; restoreSupplies/rememberSupplies guardam filas por conta; renderIngredients/calcFicha/clearFicha/loadRecipeToFicha/saveRecipe sincronizam a jornada e bloqueiam salvamento incompleto. ingredientCategory usa a categoria escolhida, persistida por mapRecipeIngredientToRemote/mapRecipeIngredientFromRemote.
+- RecipeStockBatch: focusBatchHeading, showMarkupStep, showFinancialSummary (number, money, row), saveMarkup e closeBatch apresentam preço somente depois da persistência dos insumos, exibem totais e retornam às receitas. open/chooseDestination/save/input/cancel/click adaptados às fases destination → ingredients → markup → summary.
+- ProductDiscovery.inferCategory ampliado para os vegetais/frutas da biblioteca.

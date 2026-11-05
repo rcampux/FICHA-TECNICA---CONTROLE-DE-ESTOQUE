@@ -501,7 +501,7 @@
         ["Leguminosas", /feijão|feijao|grão.de.bico|grao.de.bico|lentilha|ervilha|soja/],
         ["Cereais", /arroz|aveia|milho|grão|grao/],
         ["Óleos e Gorduras", /azeite|óleo|oleo|banha/],
-        ["Hortifruti", /banana|maçã|maca|morango|laranja|limão|limao|tomate|batata|cenoura|abobrinha|alface|fruta|legume|alcachofra/],
+        ["Hortifruti", /banana|maçã|maca|morango|laranja|limão|limao|tomate|batata|cenoura|abobrinha|alface|fruta|legume|alcachofra|brócolis|brocolis|couve|berinjela|pimentão|pimentao|abacate|abacaxi|manga|coco|melancia|melão|melao|kiwi|mirtilo|pepino/],
         ["Proteinas", /whey|proteína|proteina|ovo/],
         ["Temperos", /\bsal\b|pimenta|alho|cebola|tempero|vinagre/],
       ];

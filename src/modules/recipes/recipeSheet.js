@@ -24,6 +24,9 @@
     } = deps;
 
     let currentIngredients = [];
+    let pendingIngredients = [];
+    let journeyRevision = 0;
+    let ingredientSequence = 0;
     let selectedIngredient = null;
     let currentRecipeId = null;
     let editingRecipeId = null;
@@ -41,15 +44,20 @@
       const key = personalKey('temporarySupplies');
       if (key === draftScope) return;
       currentIngredients = [];
+      pendingIngredients = [];
+      journeyRevision++;
       editingRecipeId = null;
       currentRecipeId = null;
       draftScope = key;
       try {
         const saved = key ? JSON.parse(localStorage.getItem(key) || '[]') : [];
         if (Array.isArray(saved)) {
-          currentIngredients = saved.filter(item => item &&
+          const supplies = saved.filter(item => item &&
             ['virtual', 'fisico'].includes(item.source) && typeof item.name === 'string' &&
             Number.isFinite(item.qtyG) && item.qtyG > 0);
+          currentIngredients = supplies.filter(item => !item.preparationPending);
+          pendingIngredients = supplies.filter(item => item.preparationPending)
+            .map(({preparationPending, ...item}) => item);
         }
       } catch {
         showToast('Não foi possível recuperar o registro temporário de insumos.');
@@ -61,7 +69,8 @@
       const key = personalKey('temporarySupplies');
       if (!key || editingRecipeId !== null) return;
       try {
-        const supplies = currentIngredients.filter(item => ['virtual', 'fisico'].includes(item.source));
+        const supplies = [...currentIngredients, ...pendingIngredients.map(item => ({...item,preparationPending:true}))]
+          .filter(item => ['virtual', 'fisico'].includes(item.source));
         localStorage.setItem(key, JSON.stringify(supplies));
       } catch {
         showToast('Não foi possível guardar o registro temporário de insumos neste navegador.');
@@ -99,7 +108,7 @@
       };
     }
     function ingredientCategory(item) {
-      return findStockItem(item.stockRemoteId||item.stockId,item.name)?.category || '';
+      return item.category || findStockItem(item.stockRemoteId||item.stockId,item.name)?.category || '';
     }
     let ingSource = 'virtual';
     let stock = getStock();
@@ -806,10 +815,10 @@
     }
     /* ══ FICHA ══ */
     function setIngSource(src){
+      if(!['manual','virtual','fisico'].includes(src))return;
       ingSource=src;
       const manual=src==='manual';
       document.getElementById('recipe-note-mode').setAttribute('aria-pressed',String(manual));
-      if(manual)document.getElementById('ingredient-builder-toggle').setAttribute('aria-expanded','true');
       document.getElementById('src-btn-manual').classList.toggle('active',manual);
       document.getElementById('ing-search').placeholder=manual?'Ex.: Farinha de trigo':'Buscar ingrediente...';
       document.getElementById('ing-source-help').textContent=manual?'Digite o nome. Você poderá cadastrar este produto no estoque depois.':'Pesquise pelo nome e selecione um produto cadastrado.';
@@ -820,21 +829,28 @@
       document.getElementById('ing-selected-info').style.display='none';
       document.getElementById('ing-cost-preview').style.display='none';
       selectedIngredient=null;
+      deps.renderIngredientCategories?.('');
+      deps.onJourneyChange?.();
     }
     function searchIngredient(){
+      if(selectedIngredient && document.getElementById('ing-search').value !== selectedIngredient.name){
+        selectedIngredient=null;
+        document.getElementById('ing-selected-info').style.display='none';
+        document.getElementById('ing-cost-preview').style.display='none';
+      }
       const q=document.getElementById('ing-search').value.toLowerCase().trim();
       const dd=document.getElementById('ing-dropdown');
       if(ingSource==='manual'||!q){dd.classList.remove('open');return;}
       const matches=ingSource==='fisico'
-        ?physicalStock.filter(p=>p.name.toLowerCase().includes(q)&&p.currentQty>0).slice(0,8).map(p=>({id:'pf_'+p.id,name:p.name,unit:p.unit,price:p.price,qty:p.currentQty,_physicalId:p.id,nutrition:getNutrition(p.name)}))
+        ?physicalStock.filter(p=>p.name.toLowerCase().includes(q)&&p.currentQty>0).slice(0,8).map(physicalIngredientProduct)
         :stock.filter(s=>s.name.toLowerCase().includes(q)).slice(0,8);
-      if(!matches.length){dd.innerHTML=`<div class="autocomplete-item" style="color:var(--n400)">Nenhum ingrediente encontrado</div>`;}
+      if(!matches.length){dd.innerHTML=`<div class="autocomplete-item" style="color:var(--n400)">Nenhum ingrediente encontrado</button>`;}
       else{
         dd.innerHTML=matches.map(s=>{
           const ppg=pricePerUnit(s);
           const sub=s.unit==='ml'?fmtBRL(ppg*1000)+'/L':s.unit==='un'?fmtBRL(ppg)+'/un':fmtBRL(ppg*1000)+'/kg';
-          return`<div class="autocomplete-item" onclick="selectIngredient('${s.id}')">
-            <div>${escapeHtml(s.name)}${ingSource==='fisico'?` <span style="font-size:11px;color:var(--g500);font-weight:700">${fmtQty(s.qty,s.unit)} disp.</span>`:''}</div>
+          return`<button type="button" class="autocomplete-item" onclick="selectIngredient('${s.id}')">
+            <div>${escapeHtml(s.name)}${ingSource==='fisico'?` <span style="font-size:11px;color:var(--g500);font-weight:700">${fmtQty(s.availableQty,s.unit)} disp.</span>`:''}</div>
             <div class="sub">${s.qty}${s.unit} · ${fmtBRL(s.price)} · ${sub}</div>
           </div>`;
         }).join('');
@@ -847,7 +863,7 @@
         const numericId=Number(rawId);
         const pid=Number.isFinite(numericId)&&String(numericId)===rawId?numericId:rawId;
         const p=physicalStock.find(x=>x.id===pid);if(!p)return;
-        selectedIngredient={id:'pf_'+p.id,name:p.name,unit:p.unit,price:p.price,qty:p.currentQty,_physicalId:p.id,nutrition:getNutrition(p.name)};
+        selectedIngredient=physicalIngredientProduct(p);
       }else{selectedIngredient=stock.find(s=>s.id===parseInt(id)||s.id===id);}
       if(!selectedIngredient)return;
       document.getElementById('ing-unit').value = selectedIngredient.unit || 'g';
@@ -857,6 +873,7 @@
       document.getElementById('ing-sel-name').textContent=selectedIngredient.name;
       document.getElementById('ing-sel-price').textContent=u==='ml'?`${fmtBRL(ppg*1000)}/L · ${fmtBRL(ppg*100)}/100ml`:u==='un'?`${fmtBRL(ppg)}/unidade`:`${fmtBRL(ppg*1000)}/kg · ${fmtBRL(ppg*100)}/100g`;
       document.getElementById('ing-selected-info').style.display='block';
+      deps.renderIngredientCategories?.(selectedIngredient.category || deps.inferIngredientCategory?.(selectedIngredient.name) || '');
       calcIngCost();
     }
     function calcIngCost(){
@@ -878,45 +895,112 @@
       if(qty>0){el.style.display='block';el.textContent=`Custo estimado: ${fmtBRL(cost)}`;}
       else el.style.display='none';
     }
-    function addIngredient(){
+    function physicalIngredientProduct(product) {
+      const catalog = stock.find(item => String(item.id) === String(product.stockId)
+        || (product.stockRemoteId && item.remoteId === product.stockRemoteId)
+        || item.name.toLocaleLowerCase('pt-BR') === product.name.toLocaleLowerCase('pt-BR'));
+      return {...product, id:'pf_'+product.id, _physicalId:product.id,
+        qty:catalog?.qty || (Number(product.currentQty)+Number(product.usedTotal||0)),
+        price:catalog?.price ?? product.price, availableQty:product.currentQty,
+        nutrition:product.nutrition || catalog?.nutrition || getNutrition(product.name)};
+    }
+    function ingredientInputError(message) {
+      const error = document.getElementById('ingredient-dialog-error');
+      if(error){error.hidden=false;error.textContent=message;}
+      showToast(message);
+      return false;
+    }
+    function readIngredientDraft() {
       const manual=ingSource==='manual';
       const product=manual?{name:document.getElementById('ing-search').value.trim()}:selectedIngredient;
-      if(!product?.name){showToast(manual?'Digite o nome do ingrediente.':'Selecione um ingrediente.');return;}
-      const qty=parseFloat(document.getElementById('ing-qty').value);
+      if(!product?.name){ingredientInputError(manual?'Digite o nome do ingrediente.':'Selecione um ingrediente da lista.');return null;}
+      const qty=Number(document.getElementById('ing-qty').value);
       const unit=document.getElementById('ing-unit').value;
       const rend=Number(document.getElementById('ing-rendimento').value || 100);
-      if(!Number.isFinite(rend)||rend<=0||rend>100){showToast('Informe um rendimento maior que zero e até 100%.');return;}
+      if(!['g','kg','ml','un'].includes(unit)){ingredientInputError('Selecione uma unidade de medida.');return null;}
+      if(!Number.isFinite(rend)||rend<=0||rend>100){ingredientInputError('Informe um rendimento maior que zero e até 100%.');return null;}
       const conversion = !manual && conversionFor(product.unit,unit);
-      const equivalent = conversion && knownEquivalence(selectedIngredient,selectedIngredient,conversion);
-      if(conversion && (!equivalent || ingSource==='fisico')){showToast('Adicione na unidade do estoque. Depois, use o lápis para converter.');return;}
+      const equivalent = conversion && knownEquivalence(product,product,conversion);
+      if(conversion && (!equivalent || ingSource==='fisico')){ingredientInputError('Adicione na unidade do estoque. Depois, use o lápis para informar a equivalência.');return null;}
+      if(!Number.isFinite(qty)||qty<=0||qty>999999999){ingredientInputError('Informe uma quantidade maior que zero.');return null;}
       const rate = manual ? 0 : pricePerUnit(product) * (!conversion ? 1 : conversion.divide ? 1/equivalent : equivalent);
-      if(!Number.isFinite(qty)||!qty||qty<=0){showToast('Informe a quantidade.');return;}
-      const isUn=unit==='un';
-      const qtyG=isUn?qty:(unit==='kg'?qty*1000:qty);
-      const qtyBruta=isUn?qty:qtyG/(rend/100);
-      currentIngredients.push({
-        id:Date.now(),stockId:product.id||null,physicalId:product._physicalId||null,
+      if(!Number.isFinite(rate)||rate<0){ingredientInputError('Revise o preço e a quantidade desse produto no estoque.');return null;}
+      const qtyG=unit==='kg'?qty*1000:qty;
+      const qtyBruta=unit==='un'?qty:qtyG/(rend/100);
+      return {
+        id:window.crypto?.randomUUID?.() || Date.now()+ingredientSequence++,
+        stockId:product.id||null,physicalId:product._physicalId||null,
         source:ingSource,name:product.name,qtyG,qtyBruta,unit,rendimento:rend,
-        cost:rate*qtyBruta,savedPricePerG:rate,
-        nutrition:manual?{}:product.nutrition||getNutrition(product.name)
-      });
-      if(ingSource==='fisico'&&selectedIngredient._physicalId){
-        const pid=selectedIngredient._physicalId;
-        physicalStock=physicalStock.map(p=>{
-          if(p.id!==pid)return p;
-          return{...p,currentQty:Math.max(parseFloat((p.currentQty-qtyBruta).toFixed(6)),0),usedTotal:(p.usedTotal||0)+qtyBruta,history:[...(p.history||[]),{type:'saida',qty:qtyBruta,date:new Date().toISOString()}]};
-        });
-        DB.save(STORAGE_KEYS.physicalStock,physicalStock);
-        const vn=selectedIngredient.name.toLowerCase();
-        stock=stock.map(s=>s.name.toLowerCase()===vn?{...s,qty:Math.max(parseFloat((s.qty-qtyBruta).toFixed(6)),0)}:s);
-        DB.save(STORAGE_KEYS.stock,stock);
-      }
-      ['ing-search','ing-qty','ing-rendimento'].forEach(f=>document.getElementById(f).value='');
+        category:document.getElementById('ing-category')?.value || product.category || deps.inferIngredientCategory?.(product.name) || '',
+        cost:rate*qtyBruta,savedPricePerG:rate,nutrition:manual?{}:product.nutrition||getNutrition(product.name)
+      };
+    }
+    function resetIngredientFields() {
+      ['ing-search','ing-qty','ing-rendimento'].forEach(id=>document.getElementById(id).value='');
       document.getElementById('ing-selected-info').style.display='none';
       document.getElementById('ing-cost-preview').style.display='none';
+      document.getElementById('ing-dropdown').classList.remove('open');
       selectedIngredient=null;
-      renderIngredients();calcFicha();
     }
+    function commitIngredientDrafts(items) {
+      // Check the entire batch before deducting anything. The virtual catalog
+      // retains its purchase quantity/price so its unit price never changes.
+      let nextPhysical=physicalStock;
+      for(const item of items.filter(item=>item.source==='fisico')){
+        const product=nextPhysical.find(product=>String(product.id)===String(item.physicalId));
+        const amount=product?.unit==='kg'?item.qtyBruta/1000:item.qtyBruta;
+        if(!product || !(amount>0) || amount>Number(product.currentQty)+0.000001)
+          return ingredientInputError('Estoque insuficiente para '+item.name+'. Revise a seleção antes de preparar.');
+        nextPhysical=nextPhysical.map(p=>p!==product?p:{...p,
+          currentQty:Number((p.currentQty-amount).toFixed(6)),usedTotal:Number(p.usedTotal||0)+amount,
+          history:[...(p.history||[]),{type:'saida',qty:amount,date:new Date().toISOString()}]});
+      }
+      if(nextPhysical!==physicalStock){
+        DB.save(STORAGE_KEYS.physicalStock,nextPhysical);
+        physicalStock=nextPhysical;
+      }
+      currentIngredients.push(...items);
+      return true;
+    }
+    function addIngredient() {
+      if(recipeSaveInFlight)return false;
+      const item=readIngredientDraft();
+      if(!item || !commitIngredientDrafts([item]))return false;
+      resetIngredientFields();
+      renderIngredients();calcFicha();
+      return true;
+    }
+    function queueIngredient() {
+      if(recipeSaveInFlight)return false;
+      const item=readIngredientDraft();
+      if(!item)return false;
+      pendingIngredients.push(item);
+      journeyRevision++;
+      resetIngredientFields();
+      rememberSupplies();
+      deps.onJourneyChange?.();
+      return true;
+    }
+    function removeQueuedIngredient(id) {
+      pendingIngredients=pendingIngredients.filter(item=>String(item.id)!==String(id));
+      journeyRevision++;
+      rememberSupplies();
+      deps.onJourneyChange?.();
+    }
+    function prepareIngredients(revision,scope=personalKey('temporarySupplies')) {
+      if(scope!==personalKey('temporarySupplies') || recipeSaveInFlight || revision!==journeyRevision || !pendingIngredients.length)return false;
+      if(!commitIngredientDrafts(pendingIngredients))return false;
+      pendingIngredients=[];
+      journeyRevision++;
+      renderIngredients();calcFicha();
+      return true;
+    }
+    function getJourneyState() {
+      return {source:ingSource,revision:journeyRevision,scope:personalKey('temporarySupplies'),
+        confirmed:currentIngredients.map(item=>({...item,category:ingredientCategory(item)})),
+        pending:pendingIngredients.map(item=>({...item}))};
+    }
+
     async function removeIngredient(id){
       if(recipeSaveInFlight)return;
       if(!await confirmAction('Deseja remover este ingrediente da ficha tecnica?','Remover ingrediente'))return;
@@ -931,6 +1015,7 @@
     }
     function renderIngredients(){
       rememberSupplies();
+      deps.onJourneyChange?.();
       const el=document.getElementById('ingredients-list');
       if(!currentIngredients.length){el.innerHTML='';return;}
       el.innerHTML=`<div class="card">
@@ -993,6 +1078,8 @@
     }
 
     function calcFicha(changedField){
+      const yieldSection=document.getElementById('recipe-yield-section');
+      if(yieldSection)yieldSection.hidden=!currentIngredients.length;
       const pending = currentIngredients.some(i=>i.source==='manual');
       document.getElementById('ficha-totals').classList.toggle('cost-pending',pending);
       document.getElementById('pending-cost-notice').hidden=!pending;
@@ -1026,8 +1113,10 @@
     }
     async function clearFicha(options = {}){
       if(recipeSaveInFlight&&!options.force)return;
-      if(currentIngredients.length&&!options.force&&!await confirmAction('Deseja limpar todos os dados desta ficha tecnica?','Limpar ficha','Sim, limpar'))return;
+      if((currentIngredients.length||pendingIngredients.length)&&!options.force&&!await confirmAction('Deseja limpar todos os dados desta ficha tecnica?','Limpar ficha','Sim, limpar'))return;
       currentIngredients=[];
+      pendingIngredients=[];
+      journeyRevision++;
       try{const key=personalKey('temporarySupplies');if(key)localStorage.removeItem(key);}catch{}
       setIngSource('virtual');
       document.getElementById('page-ficha').classList.remove('editor-open');
@@ -1053,6 +1142,7 @@
       if(!options.silent)showToast('Ficha limpa.');
     }
     async function saveRecipe(){
+      if(pendingIngredients.length){showToast('Clique em Preparar receita para confirmar os ingredientes selecionados antes de salvar.');return;}
       if(recipeImageProcessing){showToast('Aguarde a imagem terminar de ser otimizada.');return;}
       if(recipeSaveInFlight)return;
       setRecipeSaveBusy(true);
@@ -1418,6 +1508,8 @@
       editingRecipeId=r.id;
       draftScope=personalKey('temporarySupplies');
       currentIngredients=r.ingredients.map(item => ({...item}));
+      pendingIngredients=[];
+      journeyRevision++;
       recipeImageOperationId+=1;
       setRecipeImageProcessing(false);
       document.getElementById('ficha-nome').value=r.nome;
@@ -1602,6 +1694,10 @@
       selectIngredient: runWithState(selectIngredient),
       calcIngCost: runWithState(calcIngCost),
       addIngredient: runWithState(addIngredient),
+      queueIngredient: runWithState(queueIngredient),
+      removeQueuedIngredient: runWithState(removeQueuedIngredient),
+      prepareIngredients: runWithState(prepareIngredients),
+      getJourneyState,
       removeIngredient: runWithState(removeIngredient),
       renderIngredients: runWithState(renderIngredients),
       calcFicha: runWithState(calcFicha),

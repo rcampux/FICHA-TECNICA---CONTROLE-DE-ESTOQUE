@@ -13,7 +13,7 @@
 
   function createRecipeStockBatch({db, getStock, getPhysicalStock, getCategoryNames, saveCategoryRecord,
     inferCategory, fetchNutrition, scaleNutritionForPortion, formatNutritionMetric,
-    applyStockPrices, renderStocks, showToast}) {
+    applyStockPrices, renderStocks, showToast, getRecipe, calcCosts, showRecipes}) {
     const dialog = document.getElementById('recipe-stock-batch');
     const body = dialog.querySelector('[data-batch-body]');
     const form = dialog.querySelector('form');
@@ -23,6 +23,7 @@
     let nutritionRequests = 0;
     let categorySaving = false;
     let draftMarkup = '0';
+    let phase = 'destination', savedProducts = [];
 
     function open(value) {
       if (busy || categorySaving || !value) return;
@@ -31,12 +32,16 @@
       scope = db.activeOrganizationId?.();
       rows = [];
       destination = null;
+      phase = 'destination';
+      savedProducts = [];
+      dialog.dataset.batchPhase=phase;
       generation++;
       nutritionRequests = 0;
       status.textContent = '';
       saveButton.hidden = true;
+      saveButton.textContent='Salvar no estoque';
       dialog.querySelector('[data-batch-title]').textContent = 'Adicionar ao estoque';
-      body.innerHTML = '<p>Escolha onde cadastrar os ingredientes de <strong>' + escape(recipe.nome) + '</strong>.</p>' + renderMarkup() +
+      body.innerHTML = '<p>Escolha onde cadastrar os ingredientes de <strong>' + escape(recipe.nome) + '</strong>.</p>' +
         '<div class="batch-destinations"><button type="button" data-batch-destination="virtual"><span class="material-symbols-rounded">inventory_2</span><strong>Estoque virtual</strong><small>Catálogo, preços e nutrição</small></button>' +
         '<button type="button" data-batch-destination="physical"><span class="material-symbols-rounded">storefront</span><strong>Estoque físico</strong><small>Quantidades reais e catálogo virtual</small></button></div>';
       dialog.showModal();
@@ -45,6 +50,8 @@
 
     function chooseDestination(value) {
       destination = value;
+      phase = 'ingredients';
+      dialog.dataset.batchPhase=phase;
       const unique = new Map();
       for (const ingredient of recipe.ingredients) {
         const key = normalizeName(ingredient.name);
@@ -59,7 +66,7 @@
           product: {...existing, id:existing?.id || crypto.randomUUID(),
             name:ingredient.name, qty:existing?.qty ?? '', price:existing?.price ?? '',
             unit:existing?.unit || ingredient.unit || 'g',
-            category:existing?.category || inferCategory(ingredient.name),
+            category:existing?.category || ingredient.category || inferCategory(ingredient.name),
             nutrition:{...(existing?.nutrition || {}), portionSize:existing?.nutrition?.portionSize || 100}},
           physical: physical || {id:crypto.randomUUID()},
           desiredQty: physical?.desiredQty || '',
@@ -69,7 +76,7 @@
       rows = [...unique.values()];
       body.innerHTML = '<p class="batch-intro">Informe a quantidade comprada e o valor pago por essa quantidade. O custo da receita será proporcional ao uso.</p>' +
         '<p class="batch-destination-label">' + (value === 'physical' ? 'Destino — físico e virtual' : 'Destino — virtual') + '</p>' +
-        renderMarkup() + rows.map(renderRow).join('');
+        rows.map(renderRow).join('');
       body.scrollTop = 0;
       saveButton.hidden = false;
       status.textContent = 'Revise todos os ingredientes antes de salvar.';
@@ -81,8 +88,84 @@
           <label for="batch-markup"><span class="visually-hidden">Markup da receita em porcentagem</span><span class="batch-markup-input"><input id="batch-markup" data-batch-markup type="number" inputmode="decimal" min="0" step="any" required value="${escape(draftMarkup)}" aria-describedby="batch-markup-help"><span aria-hidden="true">%</span></span></label>
         </div>
         <p id="batch-markup-help">Percentual acrescentado ao custo da receita para definir o preço de venda.</p>
-        <small>Será aplicado a esta receita ao salvar no estoque.</small>
+        <small>Os ingredientes já estão no estoque. Salve para atualizar o preço desta receita.</small>
       </section>`;
+    }
+
+    function focusBatchHeading() {
+      document.activeElement?.blur();
+      const heading=dialog.querySelector('[data-batch-title]');
+      heading.tabIndex=-1;
+      heading.focus({preventScroll:true});
+      body.scrollTop=0;
+    }
+    function showMarkupStep() {
+      phase='markup';dialog.dataset.batchPhase=phase;
+      dialog.querySelector('[data-batch-title]').textContent='Definir preço de venda';
+      body.innerHTML='<p class="batch-step-intro">Ingredientes cadastrados para <strong>'+escape(recipe.nome)+'</strong>. Agora escolha o percentual que deseja acrescentar ao custo.</p>'+renderMarkup();
+      saveButton.textContent='Salvar';
+      saveButton.hidden=false;
+      status.textContent='';
+      focusBatchHeading();
+    }
+    function showFinancialSummary() {
+      const updated=getRecipe(recipe.id);
+      if(updated)recipe=updated;
+      const values=calcCosts(recipe.ingredients,recipe.markup,recipe.rendimento);
+      const number=value=>Number(value).toLocaleString('pt-BR',{maximumFractionDigits:2});
+      const money=value=>Number(value).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
+      const count=Number(recipe.porcoes)||1;
+      const unit=recipe.yieldUnit==='unit'?'unidade':'porção';
+      const loss=values.lossPercent===null?'Sem pesagem completa':money(values.lossPremium);
+      const lossLabel=values.lossPercent===null?'Adicional pela perda':'Adicional pela perda ('+number(Math.max(0,values.lossPercent))+'%)';
+      const row=(label,value)=>'<div><dt>'+label+'</dt><dd>'+value+'</dd></div>';
+      phase='summary';dialog.dataset.batchPhase=phase;
+      dialog.querySelector('[data-batch-title]').textContent='Receita atualizada';
+      body.innerHTML='<p class="batch-success-message" role="status">Custos e preço de venda atualizados.</p>'+
+        '<h3 class="batch-summary-name">'+escape(recipe.nome)+'</h3>'+
+        '<div class="batch-markup batch-markup-result"><span>Markup</span><strong>'+number(recipe.markup)+'%</strong></div>'+
+        '<section class="batch-financial-summary" aria-label="Resumo financeiro da receita"><dl class="batch-summary-totals">'+
+        row('Custo total',money(values.totalCost))+row('Venda do lote',money(values.venda))+
+        row('Venda por '+unit,money(values.venda/count))+row('Custo por kg',recipe.rendimento>0?money(values.totalCost/(recipe.rendimento/1000)):'—')+
+        '</dl><dl class="batch-summary-details">'+row('Venda com markup',money(values.saleBeforeLoss))+
+        row(lossLabel,loss)+row('Lucro bruto do lote',money(values.grossProfit))+
+        row('Lucro bruto por '+unit,money(values.grossProfit/count))+'</dl>'+
+        '<p>A perda acrescenta ao lucro a mesma porcentagem sobre a venda com markup.</p></section>';
+      saveButton.hidden=true;
+      status.textContent='Feche no X para voltar às suas receitas.';
+      focusBatchHeading();
+    }
+    async function saveMarkup() {
+      const input=body.querySelector('[data-batch-markup]');
+      const markup=input.valueAsNumber;
+      if(!Number.isFinite(markup)||markup<0){
+        status.textContent='Informe um markup maior ou igual a zero.';
+        input.reportValidity();return;
+      }
+      if(db.mode?.()==='supabase'&&(!scope||scope!==db.activeOrganizationId())){
+        status.textContent='A cozinha mudou. Feche e abra novamente a receita.';return;
+      }
+      busy=true;
+      form.querySelectorAll('button,input,select').forEach(control=>{control.disabled=true;});
+      status.textContent='Atualizando custos e preço de venda…';
+      try {
+        await applyStockPrices(savedProducts,{strict:true,recipePricing:{id:recipe.id,markup}});
+        renderStocks();
+        showFinancialSummary();
+        showToast('Custos e preço de venda atualizados.');
+      } catch(error) {
+        console.error('Recipe markup save failed',error);
+        status.textContent='Os ingredientes já estão no estoque. Não foi possível salvar o markup; tente novamente.';
+      } finally {
+        busy=false;
+        form.querySelectorAll('button,input,select').forEach(control=>{control.disabled=false;});
+      }
+    }
+    function closeBatch() {
+      if(busy||categorySaving)return;
+      document.activeElement?.blur();
+      dialog.close();
+      if(phase==='markup'||phase==='summary')showRecipes();
     }
 
     function categoryOptions(selected) {
@@ -247,7 +330,9 @@
 
     async function save(event) {
       event.preventDefault();
-      if (busy || !destination) return;
+      if (busy) return;
+      if (phase === 'markup') { await saveMarkup(); return; }
+      if (phase !== 'ingredients' || !destination) return;
       if (categorySaving) return;
       if (body.querySelector('.batch-category-create:not([hidden])')) {
         status.textContent = 'Crie ou cancele a nova categoria antes de salvar os ingredientes.';
@@ -255,13 +340,6 @@
       }
       if (nutritionRequests) {
         status.textContent = 'Aguarde a busca nutricional terminar antes de salvar.';
-        return;
-      }
-      const markupInput = body.querySelector('[data-batch-markup]');
-      const markup = markupInput.valueAsNumber;
-      if (!Number.isFinite(markup) || markup < 0) {
-        status.textContent = 'Informe um markup maior ou igual a zero.';
-        markupInput.reportValidity();
         return;
       }
       if (!validateRows()) return;
@@ -288,10 +366,11 @@
         }) : [];
         await db.upsertStockBatch(products, physicalItems, scope);
         if (db.mode?.() === 'supabase' && scope !== db.activeOrganizationId()) throw new Error('A cozinha mudou durante o salvamento.');
-        await applyStockPrices(products, {strict:true, recipePricing:{id:recipe.id, markup}});
+        await applyStockPrices(products, {strict:true});
+        savedProducts=products;
         renderStocks();
-        dialog.close();
-        showToast('Ingredientes salvos. Os valores da receita foram atualizados.');
+        showMarkupStep();
+        showToast('Ingredientes salvos no estoque. Agora defina o markup.');
       } catch (error) {
         console.error('Recipe stock batch failed', error);
         status.textContent = 'Não foi possível concluir todas as etapas. Os dados preenchidos foram mantidos. Clique em Salvar novamente para concluir.';
@@ -305,7 +384,7 @@
     body.addEventListener('input', event => {
       if (event.target.matches('[data-batch-markup]')) {
         draftMarkup = event.target.value;
-        status.textContent = 'O markup será aplicado à receita ao salvar no estoque.';
+        status.textContent = 'Clique em Salvar para atualizar o preço da receita.';
         return;
       }
       const article = event.target.closest('[data-batch-row]');
@@ -324,10 +403,10 @@
         createCategory(event.target.closest('[data-batch-row]'));
       }
     });
-    dialog.addEventListener('cancel', event => {if (busy || categorySaving) event.preventDefault();});
+    dialog.addEventListener('cancel', event => {event.preventDefault();closeBatch();});
     dialog.addEventListener('click', event => {
       if (busy || categorySaving) return;
-      if (event.target === dialog || event.target.closest('[data-batch-close]')) {dialog.close(); return;}
+      if (event.target === dialog || event.target.closest('[data-batch-close]')) {closeBatch(); return;}
       const destinationButton = event.target.closest('[data-batch-destination]');
       if (destinationButton) {chooseDestination(destinationButton.dataset.batchDestination); return;}
       const article = event.target.closest('[data-batch-row]');

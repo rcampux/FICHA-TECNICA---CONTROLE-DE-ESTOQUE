@@ -195,11 +195,15 @@
     </figure>
   </section>
   <div class="card recipe-base-card">
-    <button type="button" id="recipe-note-mode" aria-pressed="false" onclick="setIngSource(this.getAttribute('aria-pressed')==='true'?'virtual':'manual')">
+    <div class="recipe-origin-picker" role="group" aria-label="Origem dos ingredientes">
+    <button type="button" id="recipe-note-mode" data-journey-source="manual" aria-pressed="false">
       <span class="material-symbols-rounded" aria-hidden="true">edit_note</span>
       <span><strong>Anotar receita sem estoque</strong><small>Digite os ingredientes agora e cadastre os preços depois.</small></span>
       <span class="note-mode-indicator" aria-hidden="true"><span class="material-symbols-rounded">check</span></span>
     </button>
+    <button type="button" class="recipe-origin" data-journey-source="virtual" aria-pressed="true"><span class="material-symbols-rounded" aria-hidden="true">inventory_2</span><span>Estoque virtual<small>Catálogo e preços</small></span></button>
+    <button type="button" class="recipe-origin" data-journey-source="fisico" aria-pressed="false"><span class="material-symbols-rounded" aria-hidden="true">storefront</span><span>Estoque físico<small>Insumos disponíveis</small></span></button>
+    </div>
     <div class="input-group">
       <label class="input-label">Nome da Receita *</label>
       <input type="text" id="ficha-nome" placeholder="Ex: Bolo de banana, Esfiha de carne...">
@@ -226,6 +230,20 @@
         <small id="recipe-image-message" role="status" aria-live="polite">JPG, PNG ou WebP. A imagem será otimizada antes de salvar.</small>
       </div>
     </div>
+    <section class="recipe-ingredient-selection" aria-labelledby="ingredient-selection-title">
+      <div class="ingredient-selection-heading"><h2 id="ingredient-selection-title">Separe os ingredientes</h2><span id="ingredient-selection-count" aria-live="polite"></span></div>
+      <p class="ingredient-selection-help">Adicione os ingredientes e as quantidades que entram na receita.</p>
+      <div class="ingredient-selection-grid">
+        <div id="ingredient-tiles" class="ingredient-tiles"></div>
+        <button type="button" id="ingredient-builder-toggle" class="ingredient-add-tile" aria-haspopup="dialog"><span class="material-symbols-rounded" aria-hidden="true">add</span><span>Adicionar ingrediente</span></button>
+      </div>
+      <div class="recipe-prepare-action" id="recipe-prepare-action" hidden>
+        <p id="recipe-prepare-help">Tudo separado? Confirme os ingredientes para continuar.</p>
+        <button type="button" class="btn" id="recipe-prepare-button"><span class="material-symbols-rounded" aria-hidden="true">soup_kitchen</span>Preparar receita</button>
+      </div>
+      <p id="recipe-journey-status" class="recipe-journey-status" role="status" aria-live="polite"></p>
+    </section>
+    <section id="recipe-yield-section" hidden aria-label="Rendimento da receita">
     <div class="recipe-yield-header">
       <div>
         <strong>Rendimento da receita</strong>
@@ -262,86 +280,11 @@
     </div>
     <p class="recipe-yield-helper" id="batch-divide-help">Com o peso pronto, informe a quantidade ou o peso de cada porção. A ficha calcula o outro campo.</p>
     <div class="weight-note" id="weight-summary" role="status">Adicione ingredientes para calcular a perda.</div>
-  </div>
-
-  <div class="section-label">Adicionar Ingrediente</div>
-  <button class="mobile-fold" id="ingredient-builder-toggle" type="button" aria-expanded="false" aria-controls="ingredient-builder" onclick="this.setAttribute('aria-expanded',this.getAttribute('aria-expanded')!=='true')">Adicionar ingredientes</button>
-  <div id="ingredient-builder" class="card ingredient-builder-card">
-    <div class="builder-step">
-      <div class="builder-step-header">
-        <span class="builder-step-number">1</span>
-        <div>
-          <div class="builder-step-title">Origem do ingrediente</div>
-          <div class="builder-step-sub">Escolha de onde o produto entra na ficha.</div>
-        </div>
-      </div>
-      <div class="source-toggle ingredient-source-toggle">
-        <button class="source-btn" type="button" id="src-btn-manual" onclick="setIngSource('manual')">Sem estoque<br><small>digitar ingrediente</small></button>
-        <button class="source-btn active" id="src-btn-virtual" onclick="setIngSource('virtual')">
-          <span class="material-symbols-rounded icon-xs" style="vertical-align:middle">inventory_2</span> Virtual<br>
-          <span style="font-size:9px;font-weight:400;opacity:0.8">fichas & precificação</span>
-        </button>
-        <button class="source-btn" id="src-btn-fisico" onclick="setIngSource('fisico')">
-          <span class="material-symbols-rounded icon-xs" style="vertical-align:middle">storefront</span> Físico<br>
-          <span style="font-size:9px;font-weight:400;opacity:0.8">desconta estoque real</span>
-        </button>
-      </div>
-    </div>
-    <div class="builder-step">
-      <div class="builder-step-header">
-        <span class="builder-step-number">2</span>
-        <div>
-          <div class="builder-step-title">Ingrediente</div>
-          <div class="builder-step-sub" id="ing-source-help">Pesquise pelo nome e selecione um produto cadastrado.</div>
-        </div>
-      </div>
-      <div class="ingredient-search-shell" id="ing-search-wrap">
-        <label class="input-label" for="ing-search">Ingrediente</label>
-        <div class="ingredient-search-field">
-          <span class="material-symbols-rounded search-icon">search</span>
-          <input type="text" id="ing-search" placeholder="Buscar ingrediente..." oninput="searchIngredient()" autocomplete="off"
-            style="background:var(--g50);border:none;border-radius:var(--r-pill);padding:13px var(--s4) 13px 44px;width:100%;font-family:'Roboto',sans-serif;font-size:14px;outline:none">
-          <div class="autocomplete-dropdown" id="ing-dropdown"></div>
-        </div>
-      </div>
-      <div id="ing-selected-info"><div id="ing-sel-name"></div><div id="ing-sel-price"></div></div>
-    </div>
-    <div class="builder-step builder-step-final">
-      <div class="builder-step-header">
-        <span class="builder-step-number">3</span>
-        <div>
-          <div class="builder-step-title">Quantidade e rendimento</div>
-          <div class="builder-step-sub">Informe uso, unidade e perda de preparo.</div>
-        </div>
-      </div>
-      <div class="input-row cols-2">
-        <div class="input-group" style="margin-bottom:0">
-          <label class="input-label">Quantidade usada</label>
-          <input type="number" id="ing-qty" placeholder="Ex: 200" oninput="calcIngCost()">
-        </div>
-        <div class="input-group" style="margin-bottom:0">
-          <label class="input-label">Unidade</label>
-          <select id="ing-unit" onchange="calcIngCost()">
-            <option value="g">Gramas (g)</option>
-            <option value="kg">Quilograma (kg)</option>
-            <option value="ml">Mililitros (ml)</option>
-            <option value="un">Unidade (un)</option>
-          </select>
-        </div>
-      </div>
-      <div id="ing-cost-preview"></div>
-      <div class="input-group" style="margin-top:var(--s3);margin-bottom:0">
-        <label class="input-label">Rendimento do ingrediente % <span style="font-weight:400;color:var(--n400)">(padrão 100%)</span></label>
-        <input type="number" id="ing-rendimento" placeholder="Ex: 85 para 15% de perda" min="1" max="100">
-      </div>
-      <button class="btn btn-primary btn-full" style="margin-top:var(--s4)" onclick="addIngredient()">
-        <span class="material-symbols-rounded">add</span> Adicionar Ingrediente
-      </button>
-    </div>
+    </section>
   </div>
 
   <div id="recipe-composition">
-  <div id="ingredients-list"></div>
+  <div id="ingredients-list" tabindex="-1" aria-label="Ingredientes confirmados"></div>
 
   <button class="mobile-fold" type="button" aria-expanded="false" aria-controls="recipe-preparation-editor" onclick="this.setAttribute('aria-expanded',this.getAttribute('aria-expanded')!=='true')">Modo de preparo</button>
   <section class="card recipe-preparation-editor" id="recipe-preparation-editor" aria-labelledby="preparation-label">
@@ -1142,6 +1085,40 @@
   </div>
 </div>
 
+
+<dialog id="recipe-ingredient-dialog" aria-labelledby="ingredient-dialog-title">
+<form id="ingredient-builder" novalidate>
+<header class="ingredient-dialog-header"><h2 id="ingredient-dialog-title" tabindex="-1" autofocus>Adicionar ingrediente</h2><button type="button" class="ingredient-dialog-close" data-close-ingredient aria-label="Fechar">×</button></header>
+<div class="ingredient-dialog-body">
+<fieldset class="ingredient-source-fieldset"><legend>Origem do ingrediente</legend>
+<div class="source-toggle ingredient-source-toggle">
+<button type="button" class="source-btn" id="src-btn-manual" data-journey-source="manual" aria-pressed="false">Sem estoque</button>
+<button type="button" class="source-btn active" id="src-btn-virtual" data-journey-source="virtual" aria-pressed="true">Virtual</button>
+<button type="button" class="source-btn" id="src-btn-fisico" data-journey-source="fisico" aria-pressed="false">Físico</button>
+</div></fieldset>
+<p id="ing-source-help" class="ingredient-dialog-help">Pesquise pelo nome e selecione um produto cadastrado.</p>
+<div class="ingredient-search-shell" id="ing-search-wrap">
+<label class="input-label" for="ing-search">Ingrediente</label>
+<div class="ingredient-search-field"><input type="text" id="ing-search" placeholder="Buscar ingrediente..." oninput="searchIngredient()" autocomplete="off" maxlength="160"><div class="autocomplete-dropdown" id="ing-dropdown" aria-label="Produtos encontrados"></div></div>
+</div>
+<div id="ing-selected-info"><div id="ing-sel-name"></div><div id="ing-sel-price"></div></div>
+<div class="input-group"><label class="input-label" for="ing-category">Categoria</label><select id="ing-category"><option value="">Sem categoria</option></select></div>
+<div class="ingredient-amount-fields">
+<div class="input-group"><label class="input-label" for="ing-qty">Quantidade na receita</label><input type="number" id="ing-qty" min="0.0001" max="999999999" step="any" inputmode="decimal" placeholder="Ex.: 200" oninput="calcIngCost()" required></div>
+<div class="input-group"><label class="input-label" for="ing-unit">Unidade de medida</label><select id="ing-unit" onchange="calcIngCost()"><option value="g">Gramas (g)</option><option value="kg">Quilograma (kg)</option><option value="ml">Mililitros (ml)</option><option value="un">Unidade (un)</option></select></div>
+</div>
+<div id="ing-cost-preview" role="status"></div>
+<details class="ingredient-yield-option"><summary>Rendimento do ingrediente</summary>
+<label class="input-label" for="ing-rendimento">Quanto é aproveitado? (%)</label><input type="number" id="ing-rendimento" min="0.01" max="100" step="any" inputmode="decimal" placeholder="100" oninput="calcIngCost()">
+<p>Use 100% quando não há descarte. Ex.: 85% se 15% forem cascas ou aparas.</p></details>
+<p id="ingredient-dialog-error" role="alert" hidden></p>
+</div>
+<footer class="ingredient-dialog-footer"><button type="button" class="btn btn-secondary" data-close-ingredient>Cancelar</button><button type="submit" class="btn btn-primary">Adicionar ingrediente</button></footer>
+</form></dialog>
+<dialog id="recipe-cooking-dialog" aria-labelledby="recipe-cooking-title" aria-describedby="recipe-cooking-copy">
+<div class="cooking-scene" aria-hidden="true"><div class="cooking-steam"><i></i><i></i><i></i></div><div class="cooking-spoon"></div><div class="cooking-pot"><div class="cooking-soup"></div></div><div class="cooking-shadow"></div></div>
+<h2 id="recipe-cooking-title" tabindex="-1" autofocus>Preparando sua receita</h2><p id="recipe-cooking-copy">Reunindo ingredientes, quantidades e custos.</p></dialog>
+
 <script src="../src/config/env.js" defer></script>
 <script src="../src/config/supabase.js" defer></script>
 <script src="../src/config/storageKeys.js" defer></script>
@@ -1158,6 +1135,8 @@
 <script src="../src/modules/recipes/productionPlan.js" defer></script>
 <script src="../src/modules/recipes/recipePrint.js" defer></script>
 <script src="../src/modules/recipes/recipeStockBatch.js" defer></script>
+<script src="../src/modules/recipes/foodIcons.js" defer></script>
+<script src="../src/modules/recipes/recipeJourney.js" defer></script>
 <script src="../src/modules/recipes/recipeSheet.js" defer></script>
 <script src="../src/modules/scanner/scannerRecipe.js" defer></script>
 <script src="../src/modules/stock/stockPricing.js" defer></script>

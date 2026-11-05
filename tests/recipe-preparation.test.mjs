@@ -138,9 +138,10 @@ test('salvar e reordenar na mesma sessão reutiliza IDs e não duplica ingredien
   assert.equal(loaded.ingredients.map(i=>i.name).join(','),'B,A');
 });
 
-function recipeHarness(preview = null, stockOverride = null){
+function recipeHarness(preview = null, stockOverride = null, physicalOverride = []){
   const elements=new Map(),routes=[],messages=[];
-  let reorder,fail=false;
+  let reorder,fail=false,physical=physicalOverride;
+  const local=new Map();let user="test-user";
   const element=id=>{
     if(id.startsWith('recipe-image-'))return null;
     if(!elements.has(id))elements.set(id,{value:'',innerHTML:'',textContent:'',dataset:{},style:{},hidden:false,classList:{add(){},remove(){},toggle(){}},setAttribute(){},getAttribute(){return null;},addEventListener(name,handler){this['on'+name]=handler;},querySelector(){return null;},querySelectorAll(){return [];}});
@@ -149,18 +150,18 @@ function recipeHarness(preview = null, stockOverride = null){
   const ingredients=[{id:'uuid-a',stockId:1,name:'Leite',qtyG:360,qtyBruta:360,unit:'g',rendimento:100,cost:3,nutrition:{}},{id:'uuid-b',stockId:2,name:'Manteiga',qtyG:20,qtyBruta:20,unit:'g',rendimento:100,cost:1,nutrition:{}}];
   let recipes=[{id:'recipe-1',nome:'Brigadeiro',ingredients,modoPreparo:'Texto anterior',observacoes:'Manter refrigerado',origem:'scan',porcoes:20,yieldUnit:'unit',markup:0,createdAt:'2026-11-02',totalCost:4}];
   const baseURI='https://example.test/public/index.html';
-  const context={URL,window:{location:{href:baseURI},open:()=>preview,FichaTecIngredientOrder:{...order,bindIngredientOrder:(_el,options)=>{reorder=options.onMove;}},requestAnimationFrame(){},setTimeout(){}},document:{body:{dataset:{}},baseURI,getElementById:element,querySelector(){return null;}},console:{error(){},warn(){}}};
+  const context={URL,localStorage:{getItem:key=>local.get(key),setItem:(key,value)=>local.set(key,value),removeItem:key=>local.delete(key)},window:{getAuthState:()=>({user:{id:user}}),location:{href:baseURI},open:()=>preview,FichaTecIngredientOrder:{...order,bindIngredientOrder:(_el,options)=>{reorder=options.onMove;}},requestAnimationFrame(){},setTimeout(){}},document:{body:{dataset:{}},baseURI,getElementById:element,querySelector(){return null;}},console:{error(){},warn(){}}};
   vm.runInNewContext(read('modules/recipes/productionPlan.js'),context);
   vm.runInNewContext(read('modules/recipes/recipePrint.js'),context);
   vm.runInNewContext(read('modules/recipes/recipeSheet.js'),context);
   const module=context.window.FichaTecRecipeSheet.createRecipeSheetModule({
     closeModal(){},confirmAction:async()=>true,
-    db:{mode:()=>'supabase',activeOrganizationId:()=>'org',saveLocal(){},saveRemote:async(_key,value)=>{if(fail)throw Error('network');return value;}},
+    db:{mode:()=>'supabase',activeOrganizationId:()=>'org',save(key,value){if(fail)throw Error("network");local.set(key,JSON.stringify(value));},saveLocal(){},saveRemote:async(_key,value)=>{if(fail)throw Error('network');return value;}},
     formatCurrency:n=>String(n),formatQuantity:n=>String(n),getNutrition:()=>({}),
-    getPhysicalStock:()=>[],getStock:()=>stockOverride || ingredients.map(i=>({id:i.stockId,name:i.name,price:.01,qty:1,unit:'g'})),getRecipes:()=>recipes,
-    pricePerUnit:s=>s.price/s.qty,setPhysicalStock(){},setStock(){},setRecipes:value=>{recipes=value;},showPage:page=>routes.push(page),showToast:m=>messages.push(m),storageKeys:{recipes:'recipes'},
+    getPhysicalStock:()=>physical,getStock:()=>stockOverride || ingredients.map(i=>({id:i.stockId,name:i.name,price:.01,qty:1,unit:'g'})),getRecipes:()=>recipes,
+    pricePerUnit:s=>s.price/(s.qty*(s.unit==='kg'?1000:1)),setPhysicalStock:value=>{physical=value;},setStock(){},setRecipes:value=>{recipes=value;},showPage:page=>routes.push(page),showToast:m=>messages.push(m),storageKeys:{recipes:'recipes'},
   });
-  return {module,element,routes,getRecipes:()=>recipes,reorder:(a,b)=>reorder(a,b),setFail:value=>{fail=value;}};
+  return {module,element,routes,local,getPhysical:()=>physical,setUser:value=>{user=value;},getRecipes:()=>recipes,reorder:(a,b)=>reorder(a,b),setFail:value=>{fail=value;}};
 }
 test('salvar edição mantém preparo, ordem e metadados e abre receitas apenas após sucesso',async()=>{
   const h=recipeHarness();h.module.editRecipe('recipe-1');
@@ -479,4 +480,94 @@ test('anotação sem estoque recebe preços proporcionais e perde a pendência s
   assert.equal(await h.module.applyStockPrice(sugar),false);
   h.module.viewRecipe(saved().id);
   assert.doesNotMatch(h.element('recipe-detail-content').innerHTML,/Custo pendente/);
+});
+
+
+test('seleção só libera rendimento após preparar e salvar nunca ignora ingredientes pendentes',async()=>{
+  const h=recipeHarness();
+  h.module.restoreSupplies();
+  h.module.setIngSource('manual');
+  h.element('ing-search').value='Farinha da Tasmânia';
+  h.element('ing-category').value='Farinhas';
+  h.element('ing-qty').value=100;
+  h.element('ing-unit').value='g';
+  assert.equal(h.module.queueIngredient(),true);
+  const state=h.module.getJourneyState();
+  assert.equal(state.pending.length,1);
+  assert.equal(state.confirmed.length,0);
+  assert.equal(h.element('recipe-yield-section').hidden,true);
+  h.element('ficha-nome').value='Nova receita';
+  await h.module.saveRecipe();
+  assert.equal(h.getRecipes().length,1);
+  assert.equal(h.module.prepareIngredients(state.revision,state.scope),true);
+  assert.equal(h.element('recipe-yield-section').hidden,false);
+  assert.equal(h.module.getJourneyState().confirmed[0].category,'Farinhas');
+  assert.equal(h.module.prepareIngredients(state.revision,state.scope),false);
+  h.element('ficha-porcoes').value=1;
+  await h.module.saveRecipe();
+  assert.equal(h.getRecipes().find(r=>r.nome==='Nova receita').ingredients.length,1);
+  assert.equal(h.element('recipe-yield-section').hidden,true);
+});
+
+test('preparação física valida todo o lote, baixa uma vez e preserva preço por grama',()=>{
+  const stock=[{id:1,name:'Farinha',qty:2,unit:'kg',price:20}];
+  const h=recipeHarness(null,stock,[{id:2,stockId:1,name:'Farinha',currentQty:2,unit:'kg',price:20}]);
+  h.module.restoreSupplies();
+  h.module.setIngSource('fisico');
+  const add=qty=>{
+    h.module.selectIngredient('pf_2');
+    h.element('ing-unit').value='g';h.element('ing-qty').value=qty;
+    return h.module.queueIngredient();
+  };
+  assert.equal(add(1000),true);assert.equal(add(1500),true);
+  let state=h.module.getJourneyState();
+  assert.equal(h.getPhysical()[0].currentQty,2);
+  assert.equal(h.module.prepareIngredients(state.revision),false);
+  assert.equal(h.getPhysical()[0].currentQty,2);
+  assert.equal(h.module.getJourneyState().confirmed.length,0);
+  h.module.removeQueuedIngredient(state.pending[1].id);
+  state=h.module.getJourneyState();
+  h.setFail(true);
+  assert.throws(()=>h.module.prepareIngredients(state.revision));
+  assert.equal(h.module.getJourneyState().pending.length,1);
+  assert.equal(h.getPhysical()[0].currentQty,2);
+  h.setFail(false);
+  assert.equal(h.module.prepareIngredients(state.revision),true);
+  assert.equal(h.getPhysical()[0].currentQty,1);
+  assert.equal(h.module.getJourneyState().confirmed[0].cost,10);
+  assert.equal(stock[0].qty,2);
+  assert.equal(stock[0].price,20);
+  assert.equal(h.module.prepareIngredients(state.revision),false);
+  assert.equal(h.getPhysical()[0].history.length,1);
+});
+
+test('registro temporário guarda apenas insumos de estoque e rejeita preparo de outra sessão',()=>{
+  const h=recipeHarness(null,[{id:1,name:'Arroz',qty:1000,unit:'g',price:10}]);
+  h.module.restoreSupplies();
+  h.module.setIngSource('virtual');h.module.selectIngredient(1);
+  h.element('ing-unit').value='g';h.element('ing-qty').value=100;
+  h.module.queueIngredient();
+  h.module.setIngSource('manual');h.element('ing-search').value='Sem estoque';
+  h.element('ing-qty').value=20;h.module.queueIngredient();
+  const key='fichatec.test-user.org.temporarySupplies';
+  const stored=JSON.parse(h.local.get(key));
+  assert.equal(stored.length,1);assert.equal(stored[0].preparationPending,true);
+  const state=h.module.getJourneyState();
+  h.setUser('outra-conta');
+  assert.equal(h.module.prepareIngredients(state.revision,state.scope),false);
+  h.module.restoreSupplies();
+  assert.equal(h.module.getJourneyState().pending.length,0);
+  h.setUser('test-user');h.module.restoreSupplies();
+  assert.equal(h.module.getJourneyState().pending.length,1);
+  assert.equal(h.module.getJourneyState().confirmed.length,0);
+  assert.equal(h.element('recipe-yield-section').hidden,true);
+});
+
+test('categoria do ingrediente sobrevive ao banco e segue para o cadastro de estoque',()=>{
+  const item={id:1,source:'manual',name:'Farinha da Tasmânia',category:'Farinhas',qtyG:10,nutrition:{}};
+  const remote=repo.mapRecipeIngredientToRemote(item,'recipe','org');
+  assert.equal(remote.nutrition_snapshot.ingredientCategory,'Farinhas');
+  const loaded=repo.mapRecipeIngredientFromRemote(remote);
+  assert.equal(loaded.category,'Farinhas');
+  assert.equal(loaded.source,'manual');
 });
