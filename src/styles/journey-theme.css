@@ -1,0 +1,80 @@
+/* One appearance follows the signed-in journey, including dialogs outside the
+   app shell. Geometry of the navigation is deliberately not part of a theme. */
+:root {
+  --journey-accent:#b4232f;
+  --journey-paper:#fff;
+  --journey-ink:#302626;
+  --journey-muted:#756765;
+  --journey-line:#eee5e3;
+  --journey-tint:#fff3f1;
+  --journey-dialog-radius:22px;
+  --stock-action-fill:#fff0d4;
+  --stock-action-ink:#71460d;
+  --stock-action-line:#e6c78f;
+  --stock-action-hover:#ffe6b7;
+}
+body[data-visual-style="menu"] {
+  --journey-accent:#672c31;
+  --journey-paper:#faf7f0;
+  --journey-ink:#302921;
+  --journey-muted:#76665b;
+  --journey-line:#e6dfd4;
+  --journey-tint:#f4ece3;
+  --journey-dialog-radius:4px;
+  --stock-action-fill:#f3e8d5;
+  --stock-action-ink:#70512c;
+  --stock-action-line:#cbb48e;
+  --stock-action-hover:#ecddc3;
+}
+body[data-visual-style="menu"] :is(.page, .modal-overlay:not(.auth-gate), dialog) {
+  --md-sys-color-primary:#672c31;
+  --md-sys-color-primary-container:#efe0da;
+  --md-sys-color-on-primary-container:#512128;
+  --md-sys-color-outline-variant:#e6dfd4;
+  --md-sys-color-surface:#faf7f0;
+}
+body[data-visual-style="menu"] .page :is(.card,.item-card,.pstock-card,.stock-category-card,.kitchen-summary,.kitchen-task),
+body[data-visual-style="menu"] .modal-overlay:not(.auth-gate) .modal,
+body[data-visual-style="menu"] :is(#ingredient-editor,#recipe-stock-batch,#recipe-print-preview) {
+  background:var(--journey-paper); color:var(--journey-ink);
+  border:1px solid var(--journey-line); border-radius:4px;
+}
+body[data-visual-style="menu"] :is(.page,.modal-overlay:not(.auth-gate),dialog) :is(.btn,input,select,textarea,.category-inline-add) { border-radius:8px; }
+body[data-visual-style="menu"] :is(.page,.modal-overlay:not(.auth-gate),dialog) .btn-primary {
+  background:var(--journey-accent); color:#fff; box-shadow:none;
+}
+body[data-visual-style="menu"] :is(.page,.modal-overlay:not(.auth-gate),dialog) :is(.btn-secondary,.btn-outlined):not([aria-pressed]) {
+  background:var(--journey-tint); color:var(--journey-accent); box-shadow:none;
+}
+body[data-visual-style="menu"] :is(.page,.modal-overlay:not(.auth-gate),dialog) .material-symbols-rounded {
+  font-variation-settings:'FILL' 0,'wght' 300,'GRAD' 0,'opsz' 20;
+}
+body[data-visual-style="menu"] .modal-overlay:not(.auth-gate) .modal-title,
+body[data-visual-style="menu"] :is(#ingredient-editor,#recipe-stock-batch) h2,
+body[data-visual-style="menu"] :is(.workspace-page-heading,.kitchen-heading) h1 {
+  font-family:Georgia,serif; font-weight:400;
+}
+body[data-visual-style="menu"] #page-ficha .recipe-base-card,
+body[data-visual-style="menu"] #ficha-totals .total-box { background:#672c31; color:#fff; }
+body[data-visual-style="menu"] .product-search-hero { background:#672c31; }
+body[data-visual-style="menu"] .product-search-hero h2 { font-family:Georgia,serif; font-weight:400; }
+body[data-visual-style="menu"] :is(.category-filter-panel,.product-search-body,.product-result) { background:var(--journey-paper); }
+body[data-visual-style="menu"] :is(.category-filter-panel,.product-result,.kitchen-column) { border-radius:4px; }
+body[data-visual-style="menu"] :is(.product-search-tabs,.product-search-tabs button,.product-search-field,.product-search-field > button,.category-panel-close) { border-radius:8px; }
+body[data-visual-style="menu"] .recipe-filter-choice { background:var(--journey-tint); color:var(--journey-ink); }
+body[data-visual-style="menu"] .recipe-filter-choice[aria-pressed="true"] { background:#672c31; color:#fff; }
+
+#recipes-list .recipe-stock-action,
+#recipes-list.recipe-menu-view .recipe-stock-action,
+#modal-recipe .recipe-stock-action,
+#modal-recipe.recipe-menu-theme .recipe-stock-action {
+  min-height:44px; gap:8px; margin-top:8px; padding:10px 14px;
+  background:var(--stock-action-fill); color:var(--stock-action-ink);
+  border:1px solid var(--stock-action-line); border-radius:8px;
+  box-shadow:none; font-weight:600; line-height:1.35; white-space:normal;
+}
+#recipes-list .recipe-stock-action:hover,
+#recipes-list.recipe-menu-view .recipe-stock-action:hover,
+#modal-recipe .recipe-stock-action:hover,
+#modal-recipe.recipe-menu-theme .recipe-stock-action:hover { background:var(--stock-action-hover); }
+.recipe-stock-action .material-symbols-rounded { font-size:18px; flex:none; }

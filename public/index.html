@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-visual">
 <meta name="theme-color" content="#B4232F">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -391,8 +391,8 @@
         <tbody id="nutrition-body"></tbody>
       </table>
     </div>
-    <div style="display:flex;gap:var(--s2);margin-bottom:var(--s4)">
-      <button class="btn btn-warn btn-sm" style="flex:0 0 auto" onclick="clearFicha()">
+    <div class="ficha-save-actions">
+      <button class="btn btn-warn btn-sm" onclick="clearFicha()">
         <span class="material-symbols-rounded">delete_sweep</span> Limpar
       </button>
       <button class="btn btn-primary btn-full" id="recipe-save-button" onclick="saveRecipe()" type="button">
@@ -1170,6 +1170,7 @@
 <script src="../src/services/repositories/kitchenRepository.js" defer></script>
 <script src="../src/modules/kitchen/kanbanBoard.js" defer></script>
 <script src="../src/pwa/registerServiceWorker.js" defer></script>
+<script src="../src/ui/mobileViewport.js" defer></script>
 <script src="../src/app.js" defer></script>
 </body>
 </html>

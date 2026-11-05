@@ -22,6 +22,7 @@ Atue como dev full-stack senior especialista em aplicativos SaaS/PWA B2B, com fo
 - Splash, service worker, cache ou inicializacao de autenticacao nunca podem bloquear a interface principal indefinidamente; todo fluxo de boot precisa ter timeout/failsafe e manter o app recuperavel apos F5, hard refresh e token expirado.
 - Produtos gravados no estoque fisico devem existir e permanecer sincronizados no estoque virtual; produtos criados apenas no virtual nunca devem criar automaticamente um item fisico.
 - Integracoes de pesquisa de mercado e nutricao devem passar por endpoints de backend, manter chaves fora do navegador e solicitar geolocalizacao somente apos acao explicita do usuario.
+- Alteracoes visuais devem preservar CARD/Menu ao longo da navegacao e validar o rodape mobile durante rolagem, abertura/fechamento do teclado e retorno de popups. Nao aplicar transform, filter ou contain ao ancestral da navegacao fixa.
 
 ## Direcao de produto
 

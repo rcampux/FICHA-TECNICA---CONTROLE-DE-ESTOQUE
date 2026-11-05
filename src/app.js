@@ -30,6 +30,7 @@ function openFichaFromNavigation(){
 }
 function showPage(page,navId,openEditor=false){
   window.FichaTecCategoryPanels.closeAll();
+  recipeSheetModule.syncAppearance();
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
   document.getElementById('page-'+page).classList.add('active');
@@ -48,25 +49,7 @@ function showPage(page,navId,openEditor=false){
 }
 function closeModal(id){document.getElementById(id)?.classList.remove('open');}
 
-// Hide the fixed controls only while the software keyboard occupies the recipe view.
-let recipeViewportHeight = window.innerHeight;
-let recipeViewportWidth = window.innerWidth;
-function syncRecipeKeyboard(){
-  const viewport = window.visualViewport;
-  const field = document.activeElement;
-  const editing = field?.matches('#page-ficha.active input:not([readonly]):not([type=file]), #page-ficha.active textarea, #ingredient-editor[open] input');
-  if (window.innerWidth !== recipeViewportWidth || !editing) {
-    recipeViewportWidth = window.innerWidth;
-    recipeViewportHeight = window.innerHeight;
-  }
-  const available = viewport?.height ?? window.innerHeight;
-  document.body.classList.toggle('recipe-keyboard-open', Boolean(editing && (viewport?.scale ?? 1) === 1 &&
-    Math.max(recipeViewportHeight,window.innerHeight) - available > 120));
-}
-window.visualViewport?.addEventListener('resize',syncRecipeKeyboard);
-window.addEventListener('resize',syncRecipeKeyboard);
-document.addEventListener('focusin',syncRecipeKeyboard);
-document.addEventListener('focusout',() => requestAnimationFrame(syncRecipeKeyboard));
+window.FichaTecMobileViewport.initialize();
 
 const modalReturnFocus=new WeakMap();
 let activeModal=null;
@@ -508,6 +491,7 @@ window.addEventListener('fichatec:workspace-change',()=>kitchenBoard.load());
 window.addEventListener('fichatec:auth-signed-out',()=>kitchenBoard.reset());
 
 async function hydrateWorkspaceData(event){
+  recipeSheetModule.syncAppearance();
   const organizationId=event?.detail?.organizationId || DB.activeOrganizationId?.();
   if(DB.mode()!=='supabase'||!organizationId)return;
 

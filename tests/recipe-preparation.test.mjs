@@ -124,7 +124,7 @@ function recipeHarness(preview = null, stockOverride = null){
   const ingredients=[{id:'uuid-a',stockId:1,name:'Leite',qtyG:360,qtyBruta:360,unit:'g',rendimento:100,cost:3,nutrition:{}},{id:'uuid-b',stockId:2,name:'Manteiga',qtyG:20,qtyBruta:20,unit:'g',rendimento:100,cost:1,nutrition:{}}];
   let recipes=[{id:'recipe-1',nome:'Brigadeiro',ingredients,modoPreparo:'Texto anterior',observacoes:'Manter refrigerado',origem:'scan',porcoes:20,yieldUnit:'unit',markup:0,createdAt:'2026-11-02',totalCost:4}];
   const baseURI='https://example.test/public/index.html';
-  const context={URL,window:{location:{href:baseURI},open:()=>preview,FichaTecIngredientOrder:{...order,bindIngredientOrder:(_el,options)=>{reorder=options.onMove;}},requestAnimationFrame(){},setTimeout(){}},document:{baseURI,getElementById:element,querySelector(){return null;}},console:{error(){},warn(){}}};
+  const context={URL,window:{location:{href:baseURI},open:()=>preview,FichaTecIngredientOrder:{...order,bindIngredientOrder:(_el,options)=>{reorder=options.onMove;}},requestAnimationFrame(){},setTimeout(){}},document:{body:{dataset:{}},baseURI,getElementById:element,querySelector(){return null;}},console:{error(){},warn(){}}};
   vm.runInNewContext(read('modules/recipes/productionPlan.js'),context);
   vm.runInNewContext(read('modules/recipes/recipePrint.js'),context);
   vm.runInNewContext(read('modules/recipes/recipeSheet.js'),context);

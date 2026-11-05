@@ -511,6 +511,8 @@ Calculadora de produção: `weightSummary` informa peso bruto, peso pronto, perd
 - Estoques físico e virtual: persistProductForm executa o cadastro e chama a atualização das receitas após persistir o produto.
 
 ## Preferências, registro temporário e quadro
+- MobileViewport: `exposeMobileViewport`, `initialize`, `isTextEntry`, `syncViewport`, `scheduleSync`, `onFocusIn` e `onFocusOut` substituem `syncRecipeKeyboard` de app.js. Detectam teclado em todos os formulários, acompanham a área visível sem reposicionar a navegação no scroll e recolhem o scanner quando a ação de salvar fica visível.
+- RecipeSheet: `bindRecipeStyles` também exposta como `syncAppearance`, atualiza `body[data-visual-style]` ao navegar, restaurar a sessão e trocar de cozinha. Popups e páginas herdam o mesmo estilo em `journey-theme.css`.
 - RecipeSheet: bindRecipeStyles/applyLayout mantém a organização Lista/Blocos independente do estilo. applyStockPrices substitui o vínculo individual por uma gravação com todos os preços, mantendo applyStockPrice como entrada compatível. viewPendingRecipe abre a revisão em lote.
 - RecipeStockBatch: createRecipeStockBatch, open, chooseDestination, renderRow, updatePreview, readRow, loadNutrition, validateRows e save controlam a revisão, consulta nutricional, validação e confirmação do cadastro. escape, normalizeName e unitFamily normalizam a apresentação e o vínculo de insumos.
 - ProductDiscovery: fetchNutrition centraliza a consulta ao backend, compartilhada com generateNutrition. inferCategory contempla hortifruti, bebidas, confeitaria, proteínas e óleos.

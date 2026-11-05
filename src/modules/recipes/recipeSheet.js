@@ -72,6 +72,7 @@
       let style='card';
       try {if(key)style=JSON.parse(localStorage.getItem(key))==='menu'?'menu':'card';}catch{}
       function apply(value) {
+        document.body.dataset.visualStyle=value;
         document.getElementById('recipes-list').classList.toggle('recipe-menu-view',value==='menu');
         document.getElementById('modal-recipe').classList.toggle('recipe-menu-theme',value==='menu');
         for(const option of ['card','menu'])document.getElementById('recipe-style-'+option).setAttribute('aria-pressed',String(option===value));
@@ -1196,7 +1197,7 @@
             </div>
           </div>
           <div class="recipe-card-meta"><span class="material-symbols-rounded">fork_spoon</span>${r.ingredients.length} ingrediente(s) · ${formatRecipeYield(r.porcoes,r.yieldUnit)}${r.rendimento?' · '+formatBatchNumber(r.rendimento)+' g':''}${pending?'':' · Markup '+r.markup+'%'}</div>
-          ${pending?`<button class="btn btn-secondary btn-sm" data-recipe-action="stock" type="button">Adicionar ao estoque</button>`:`<div class="recipe-card-prices"><div>Venda do lote<strong>${fmtBRL(venda)}</strong></div><div>Venda por ${r.yieldUnit === 'unit' ? 'unidade' : 'porção'}<strong>${fmtBRL(venda / (Number(r.porcoes) || 1))}</strong></div></div>
+          ${pending?`<button class="btn btn-secondary btn-sm recipe-stock-action" data-recipe-action="stock" type="button"><span class="material-symbols-rounded" aria-hidden="true">inventory_2</span>Adicionar ao estoque</button>`:`<div class="recipe-card-prices"><div>Venda do lote<strong>${fmtBRL(venda)}</strong></div><div>Venda por ${r.yieldUnit === 'unit' ? 'unidade' : 'porção'}<strong>${fmtBRL(venda / (Number(r.porcoes) || 1))}</strong></div></div>
           <div class="recipe-card-meta" style="font-size:11px;color:var(--n500)"><span class="material-symbols-rounded" style="font-size:13px">nutrition</span> ${nutritionSummary.label}</div>`}
           ${!pending && changed?`<div class="recipe-card-meta" style="font-size:11px;color:var(--n400)"><span class="material-symbols-rounded" style="font-size:13px">sync</span> Preços atualizados</div>`:''}
           <div class="recipe-card-footer">
@@ -1268,7 +1269,7 @@
       content.innerHTML=renderRecipeMedia(recipe,'modal')+`<h3>${escapeHtml(recipe.nome)}</h3>
         <span class="pending-tag">Custo pendente</span>
         <p>Revise os ingredientes, informe as quantidades compradas e os valores pagos para calcular esta receita.</p>
-        <button type="button" class="btn btn-primary" data-add-recipe-stock>Adicionar ao estoque</button>
+        <button type="button" class="btn recipe-stock-action" data-add-recipe-stock><span class="material-symbols-rounded" aria-hidden="true">inventory_2</span>Adicionar ao estoque</button>
         <p>Rendimento: ${formatRecipeYield(recipe.porcoes,recipe.yieldUnit)}</p>
         ${recipe.ingredients.map(item=>`<div class="pending-ingredient"><strong>${escapeHtml(item.name)}</strong> · ${formatProductionIngredientQuantity(item)}</div>`).join('')}
         <details><summary>Modo de preparo</summary><p class="recipe-preparation-content">${escapeHtml(recipe.modoPreparo||'Ainda não informado.')}</p></details>`;
@@ -1584,6 +1585,7 @@
     });
 
     return {
+      syncAppearance: bindRecipeStyles,
       restoreSupplies: runWithState(restoreSupplies),
       applyStockPrice,
       applyStockPrices,
