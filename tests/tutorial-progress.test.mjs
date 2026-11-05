@@ -2,7 +2,7 @@ import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import vm from 'node:vm';
-const sandbox={window:{}};
+const sandbox={window:{},setTimeout,clearTimeout};
 vm.runInNewContext(readFileSync(new URL('../src/modules/tutorial/tutorialProgress.js',import.meta.url),'utf8'),sandbox);
 const {createProgress,isExistingUser,EXISTING_USERS_BEFORE}=sandbox.window.FichaTecTutorialProgress;
 const storage=()=>{const m=new Map();return {getItem:k=>m.get(k),setItem:(k,v)=>m.set(k,v),removeItem:k=>m.delete(k)};};
@@ -119,4 +119,21 @@ test('paused old session waits for next access without spending the one-time tou
   const f=fixture(existingUser());f.session.setItem('fichatec:tutorial-session:existing',JSON.stringify({paused:true}));
   const p=f.create();assert.equal(p.begin(),false);assert.equal(p.get().existingUserTourOffered,false);
   p.resetSession();assert.equal(p.begin(),true);
+});
+
+test('a stale signed-in browser checks the server receipt before showing the tour again',async()=>{
+  const cached=existingUser(),remote={...cached,user_metadata:{fichatec_tutorial_existing_20261105:true}};
+  const p=createProgress({getAuth:()=>({user:cached}),createClient:async()=>({auth:{getUser:async()=>({data:{user:remote}})}}),local:storage(),session:storage()});
+  assert.equal(p.begin(),true);assert.equal(await p.canPresentExistingTour(),false);
+  assert.equal(p.get().existingUserTourOffered,true);
+});
+
+test('server opt-out blocks a stale browser and offline checks defer without consuming',async()=>{
+  const user=existingUser();
+  const create=getUser=>createProgress({getAuth:()=>({user}),createClient:async()=>({auth:{getUser}}),local:storage(),session:storage()});
+  const p=create(async()=>({data:{user:existingUser({disabled:true})}}));
+  p.begin();assert.equal(await p.canPresentExistingTour(),false);assert.equal(p.get().disabled,true);
+  const offline=create(async()=>{throw Error('offline');});
+  offline.begin();assert.equal(await offline.canPresentExistingTour(),false);assert.equal(offline.get().existingUserTourOffered,false);
+  const eligible=create(async()=>({data:{user}}));eligible.begin();assert.equal(await eligible.canPresentExistingTour(),true);
 });

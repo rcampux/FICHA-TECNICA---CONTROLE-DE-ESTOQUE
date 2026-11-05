@@ -71,6 +71,7 @@
         // An account change or clearing/editing another recipe invalidates this selection.
         if(!sheet.prepareIngredients(snapshot.revision,snapshot.scope)) {
           status.textContent='A seleção não foi confirmada. Revise os ingredientes e tente novamente.';
+          showToast(status.textContent,{tone:'warning'});
           return;
         }
         cooking.close();

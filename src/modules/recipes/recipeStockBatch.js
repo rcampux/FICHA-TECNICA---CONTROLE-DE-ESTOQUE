@@ -140,10 +140,11 @@
       const markup=input.valueAsNumber;
       if(!Number.isFinite(markup)||markup<0){
         status.textContent='Informe um markup maior ou igual a zero.';
+        showToast(status.textContent,{tone:'warning'});
         input.reportValidity();return;
       }
       if(db.mode?.()==='supabase'&&(!scope||scope!==db.activeOrganizationId())){
-        status.textContent='A cozinha mudou. Feche e abra novamente a receita.';return;
+        status.textContent='A cozinha mudou. Feche e abra novamente a receita.';showToast(status.textContent,{tone:'warning'});return;
       }
       busy=true;
       form.querySelectorAll('button,input,select').forEach(control=>{control.disabled=true;});
@@ -156,6 +157,7 @@
       } catch(error) {
         console.error('Recipe markup save failed',error);
         status.textContent='Os ingredientes já estão no estoque. Não foi possível salvar o markup; tente novamente.';
+        showToast(status.textContent,{tone:'error'});
       } finally {
         busy=false;
         form.querySelectorAll('button,input,select').forEach(control=>{control.disabled=false;});
@@ -234,8 +236,10 @@
         editor.querySelector('input').value = '';
         message.textContent = '';
         status.textContent = 'Categoria criada e selecionada. Salve os ingredientes quando terminar.';
+        showToast(status.textContent,{tone:'success'});
       } catch (error) {
         message.textContent = error.message || 'Não foi possível criar a categoria. Tente novamente.';
+        showToast(message.textContent,{tone:'error'});
       } finally {
         categorySaving = false;
         editor.querySelectorAll('button,input').forEach(control => {control.disabled = false;});
@@ -300,6 +304,7 @@
       } catch (error) {
         if (version !== generation) return;
         message.textContent = error.message;
+        showToast(message.textContent||'Não foi possível buscar a tabela nutricional.',{tone:'error'});
       } finally {
         button.disabled = false;
         button.innerHTML = buttonContent;
@@ -323,6 +328,7 @@
           article.scrollIntoView({block:'center', behavior:'smooth'});
           if (invalid) invalid.reportValidity();
           status.textContent = tooSmall ? 'A quantidade mínima é 0,1 mg, 0,0001 g ou 0,0001 ml.' : incompatible ? 'Use uma unidade compatível com a receita para ' + product.name + '.' : 'Preencha quantidade e valor de ' + product.name + '.';
+          showToast(status.textContent,{tone:'warning'});
           return false;
         }
         product.category = product.category.trim() || inferCategory(product.name);
@@ -338,15 +344,18 @@
       if (categorySaving) return;
       if (body.querySelector('.batch-category-create:not([hidden])')) {
         status.textContent = 'Crie ou cancele a nova categoria antes de salvar os ingredientes.';
+        showToast(status.textContent,{tone:'warning'});
         return;
       }
       if (nutritionRequests) {
         status.textContent = 'Aguarde a busca nutricional terminar antes de salvar.';
+        showToast(status.textContent,{tone:'info'});
         return;
       }
       if (!validateRows()) return;
       if (db.mode?.() === 'supabase' && (!scope || scope !== db.activeOrganizationId())) {
         status.textContent = 'A cozinha mudou. Feche e abra novamente este cadastro.';
+        showToast(status.textContent,{tone:'warning'});
         return;
       }
       busy = true;
@@ -377,6 +386,7 @@
       } catch (error) {
         console.error('Recipe stock batch failed', error);
         status.textContent = 'Não foi possível concluir todas as etapas. Os dados preenchidos foram mantidos. Clique em Salvar novamente para concluir.';
+        showToast(status.textContent,{tone:'error'});
       } finally {
         busy = false;
         form.querySelectorAll('button, input, select').forEach(control => {control.disabled = false;});

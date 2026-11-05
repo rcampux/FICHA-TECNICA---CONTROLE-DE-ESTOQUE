@@ -21,6 +21,8 @@ O progresso local usa chaves isoladas pelo ID do usuário. A pausa dura a sessã
 
 O recibo da apresentação para contas antigas também fica em `user_metadata.fichatec_tutorial_existing_20261105`. Essa chave separada impede que abas ainda executando a versão 1 apaguem o recibo ao sobrescrever o objeto aninhado de preferências. Não há atualização em massa de contas; cada conta recebe a regra pela sua data de criação e registra o recibo ao ver o tour.
 
+Antes da apresentação automática para uma conta antiga, o cliente consulta os metadados atuais do próprio usuário para evitar repetição causada por sessão antiga em outro dispositivo. A consulta tem limite de quatro segundos e não bloqueia a interface. Se a rede falhar, a apresentação é adiada, sem consumir o direito ao tour. Recibos locais pendentes de sincronização são reenviados no próximo acesso.
+
 ## Design e acessibilidade
 
 - Herda os tokens de CARD/Menu, incluindo cor, fundo, tipografia e cantos.

@@ -77,6 +77,7 @@
     }
 
     function setScanStatus(type, msg) {
+      if(type==='error'||type==='success')showToast(msg,{tone:type});
       const icons = {loading:"hourglass_top",success:"check_circle",error:"error"};
       const safeType = Object.hasOwn(icons, type) ? type : "error";
       document.getElementById("scan-status-area").innerHTML =
@@ -140,13 +141,11 @@
       document.getElementById("scan-obs-wrap").style.display = "none";
       if (!ALLOWED_SCAN_IMAGE_TYPES.has(file.type)) {
         setScanStatus("error", "Use uma imagem JPG, PNG ou WebP.");
-        showToast("Formato de imagem nao suportado.");
         input.value = "";
         return;
       }
       if (file.size > MAX_SCAN_IMAGE_BYTES) {
         setScanStatus("error", "A imagem deve ter no maximo 10 MB.");
-        showToast("Escolha uma imagem de ate 10 MB.");
         input.value = "";
         return;
       }

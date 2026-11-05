@@ -1,10 +1,16 @@
 # FichaTec - Inventario de Funcoes
 
+## Comunicação global por toast (05/11/2026)
+
+- `src/ui/toasts.js`: `exposeToasts`, `createToasts` e `inferTone` centralizam os avisos. `show`, `dismiss`, `startTimer` e `pauseTimer` controlam mensagem, substituição e tempo de leitura. `position`, `schedulePosition` e `place` mantêm o aviso no viewport e acima de dialogs. Handlers de invalid/input, foco e ponteiro tratam validação acessível e pausa. `showToast` em `src/app.js` passa mensagem e opções ao controlador.
+- `saveRecipe` e `bindProductionPlanner` passam avisos de validação claros; handlers de autenticação, `setScanStatus`, `setSearchStatus`, `generateNutrition`, `prepareRecipe`, `submitTask`, `submitSettings` e operações de `recipeStockBatch` usam o mesmo canal de erro/sucesso sem substituir informações contextuais.
+- `tests/toasts.test.mjs`: `fixture`, `node` e `advance` simulam DOM e relógio para verificar avisos consecutivos, pausa/fechamento e dialog sem roubo de foco.
+
 ## Tutoriais e primeiro uso (05/11/2026)
 
 - TutorialCatalog: `exposeTutorialCatalog` descreve funções reais, seus seletores e as seis etapas do tour.
 - TutorialProgress: `exposeTutorialProgress`, `fresh`, `merge`, `browserStorage`, `createProgress`, `read`, `write`, `persist`, `begin`, `pause`, `allowed`, `mark`, `resetSession` e `get` mantêm progresso por conta, contagem de acessos, pausa por sessão e preferência permanente. `isExistingUser`/`isExisting` classificam contas pelo corte fixo de implantação; `recordTourShown` registra a apresentação única para contas existentes somente depois de visível. Escritas no Supabase são serializadas e verificam a identidade ativa; o merge preserva o recibo e a desativação anteriores.
-- TutorialGuide: `exposeTutorialGuide`, `createGuide`, `escape`, `button`, `visibleTarget`, `position`, `schedulePosition`, `show`, `close`, `renderTopic`, `startTour`, `library`, `renderLibrary` (com `norm`), `intercept` e `begin` implementam orientação em foco, central pesquisável, retomada da ação e orientação de estoque vazio. Callbacks de clique, input, cancel e sign-out mantêm a navegação e encerramento; `continuation`/`selectOrigin` retomam apenas a ação explicitamente iniciada.
+- TutorialGuide: `exposeTutorialGuide`, `createGuide`, `escape`, `button`, `visibleTarget`, `position`, `schedulePosition`, `show`, `close`, `renderTopic`, `startTour`, `library`, `renderLibrary` (com `norm`), `intercept` e `begin` implementam orientação em foco, central pesquisável, retomada da ação e orientação de estoque vazio. Callbacks de clique, input, cancel e sign-out mantêm a navegação e encerramento; `continuation`/`selectOrigin` retomam apenas a ação explicitamente iniciada. `TutorialProgress.canPresentExistingTour` consulta o recibo atual no servidor antes do tour automático, com timeout e validação da conta, evitando repetição entre sessões antigas de dispositivos diferentes.
 - App: `enterAppExperience` inicia o contador idempotente; `openTutorialLibrary` abre a central. O handler de teclado de modais cede Escape/Tab ao dialog nativo de tutorial.
 - AuthSession: callback `onAuthStateChange` trata `USER_UPDATED` sem recarregar dados da cozinha, preservando receitas em edição ao salvar preferências de tutorial.
 - `tests/tutorial-progress.test.mjs`: `storage`, `fixture` e os casos de teste verificam os três acessos, isolamento, sincronização, pausa e armazenamento indisponível.

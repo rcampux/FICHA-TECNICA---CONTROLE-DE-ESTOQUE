@@ -729,7 +729,7 @@
         console.error(error);
         state.authMessage = formatAuthError(error, "Nao foi possivel sair desta recuperacao. Tente novamente.");
         state.authMessageTone = "error";
-        showToast(state.authMessage);
+        showToast(state.authMessage,{tone:state.authMessageTone});
         return false;
       } finally {
         setAuthBusy(false);
@@ -808,7 +808,7 @@
         clearAuthInputs();
         state.authMessage = formatAuthError(error, "Nao foi possivel acessar sua conta.");
         state.authMessageTone = "error";
-        showToast(state.authMessage);
+        showToast(state.authMessage,{tone:state.authMessageTone});
       } finally {
         setAuthBusy(false);
       }
@@ -853,7 +853,7 @@
         console.error(error);
         state.authMessage = formatAuthError(error, "Nao foi possivel enviar o link agora. Tente novamente.");
         state.authMessageTone = "error";
-        showToast(state.authMessage);
+        showToast(state.authMessage,{tone:state.authMessageTone});
         return false;
       } finally {
         setAuthBusy(false);
@@ -881,14 +881,14 @@
       if (!isStrongPassword(password)) {
         state.authMessage = "Use 10+ caracteres com maiuscula, minuscula, numero e simbolo.";
         state.authMessageTone = "error";
-        showToast(state.authMessage);
+        showToast(state.authMessage,{tone:state.authMessageTone});
         renderAuthState();
         return false;
       }
       if (!confirmation || password !== confirmation) {
         state.authMessage = "As duas senhas precisam ser iguais.";
         state.authMessageTone = "error";
-        showToast(state.authMessage);
+        showToast(state.authMessage,{tone:state.authMessageTone});
         renderAuthState();
         return false;
       }
@@ -935,7 +935,7 @@
         state.authMessage = formatAuthError(error, "Nao foi possivel atualizar a senha. Solicite um novo link.");
         state.authMessageTone = "error";
         clearAuthInputs();
-        showToast(state.authMessage);
+        showToast(state.authMessage,{tone:state.authMessageTone});
         return false;
       } finally {
         setAuthBusy(false);
@@ -975,12 +975,12 @@
 
         state.authMessage = "E-mail de confirmacao reenviado.";
         state.authMessageTone = "success";
-        showToast(state.authMessage);
+        showToast(state.authMessage,{tone:state.authMessageTone});
       } catch (error) {
         console.error(error);
         state.authMessage = formatAuthError(error, "Nao foi possivel reenviar a confirmacao.");
         state.authMessageTone = "error";
-        showToast(state.authMessage);
+        showToast(state.authMessage,{tone:state.authMessageTone});
       } finally {
         setAuthBusy(false);
       }

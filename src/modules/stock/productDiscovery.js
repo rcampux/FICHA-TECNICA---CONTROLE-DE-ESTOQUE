@@ -308,7 +308,7 @@
           const nutrition = {...readNutrition(stockType), ...roundNutritionValues(fallback), portionSize: getNutritionPortionSize(readNutrition(stockType)), source: "local-estimate"};
           writeNutrition(stockType, nutrition);
           setNutritionMessage(stockType, "Estimativa inicial preenchida. Compare com o rótulo do produto antes de salvar.", "warning");
-          if (!options.silent) showToast("Estimativa nutricional preenchida para revisão.");
+          if (!options.silent) showToast("Estimativa nutricional preenchida. Confira com o rótulo antes de salvar.",{tone:'warning'});
           return nutrition;
         }
         setNutritionMessage(stockType, error?.message || "Não foi possível gerar a tabela. Preencha os valores manualmente.", "error");
@@ -323,6 +323,7 @@
       status.textContent = message;
       status.dataset.tone = tone;
       status.hidden = !message;
+      if(message&&tone==='error')showToast(message,{tone:'error'});
     }
 
     function setSearchBusy(isBusy) {

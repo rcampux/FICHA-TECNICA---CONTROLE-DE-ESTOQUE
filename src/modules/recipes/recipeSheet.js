@@ -653,6 +653,7 @@
         event.preventDefault();
         if (!form.reportValidity()) return;
         if (!refresh()) {
+          showToast(document.getElementById('production-status').textContent,{tone:'warning',title:'Revise a produção'});
           document.getElementById('production-status').focus();
           return;
         }
@@ -1221,7 +1222,11 @@
       setRecipeSaveBusy(true);
       try{
       const nome=document.getElementById('ficha-nome').value.trim();
-      if(!nome){showToast('Informe o nome da receita.');return;}
+      if(!nome){
+        document.getElementById('ficha-nome').setAttribute('aria-invalid','true');
+        showToast('Dê um nome à receita no campo “Nome da receita” e tente salvar novamente.',{tone:'warning',title:'Falta o nome da receita'});
+        return;
+      }
       if(!currentIngredients.length){showToast('Adicione pelo menos um ingrediente.');return;}
       const markup=parseFloat(document.getElementById('markup-pct').value)||0;
       if (markup < 0) { showToast('Informe um markup maior ou igual a zero.'); return; }

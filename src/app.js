@@ -15,7 +15,8 @@ let recipes=DB.mode?.()==='supabase'?[]:DB.load(STORAGE_KEYS.recipes);
 let categories=DB.load(STORAGE_KEYS.categories);
 
 const {getNutrition}=window.FichaTecNutrition;
-function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
+const toastController=window.FichaTecToasts.createToasts();
+function showToast(message,options){toastController.show(message,options);}
 let pendingConfirmResolve=null;
 function confirmAction(message,title='Confirmar exclusao',yesLabel='Sim, excluir'){
   const modal=document.getElementById('modal-confirm');

@@ -181,7 +181,7 @@
         input.id=editingTask;
         input.checklist=[...el("kitchen-checklist").children].map(row=>({id:row.dataset.checkId,text:row.querySelector('input[type="text"]').value,done:row.querySelector('input[type="checkbox"]').checked}));
         if(await persist(M.saveTask(board,input))){activeColumn=input.columnId;renderCards();closeModal("modal-kitchen-task");showToast("Tarefa salva.");}
-      }catch(error){form.querySelector(".kitchen-form-error").textContent=error.message;}
+      }catch(error){form.querySelector(".kitchen-form-error").textContent=error.message;showToast(error.message,{tone:'error'});}
     }
 
     function columnRow(column) {
@@ -202,7 +202,7 @@
       try {
         const columns=[...el("kitchen-settings-columns").children].map(row=>({id:row.dataset.columnId,name:row.querySelector('input[type="text"]').value,color:row.querySelector('input[type="color"]').value,done:row.querySelector('input[type="checkbox"]').checked}));
         if(await persist(M.updateColumns(board,form.elements.boardName.value,columns))){closeModal("modal-kitchen-settings");showToast("Quadro atualizado.");}
-      }catch(error){form.querySelector(".kitchen-form-error").textContent=error.message;}
+      }catch(error){form.querySelector(".kitchen-form-error").textContent=error.message;showToast(error.message,{tone:'error'});}
     }
 
     async function setArchived(taskId, archived) {
@@ -255,7 +255,7 @@
     host.addEventListener("change",async event=>{
       const select=event.target.closest("[data-move-task]");if(!select||!writable())return;
       const target=select.value;
-      try{if(await persist(M.moveTask(board,select.dataset.moveTask,target))){activeColumn=target;renderCards();}}catch(error){showToast(error.message);render();}
+      try{if(await persist(M.moveTask(board,select.dataset.moveTask,target))){activeColumn=target;renderCards();}}catch(error){showToast(error.message,{tone:'error'});render();}
     });
     let dragging=null, pointerX=0, pointerY=0, scrollFrame=0, ghost=null;
     const scroller=el("kitchen-board");
@@ -298,7 +298,7 @@
       const column=target?.closest('.kitchen-column'),task=dragging;
       finishDrag();
       if(!column||!writable())return;
-      try{await persist(M.moveTask(board,task,column.dataset.column,target.closest('.kitchen-task')?.dataset.taskId));}catch(error){showToast(error.message);}
+      try{await persist(M.moveTask(board,task,column.dataset.column,target.closest('.kitchen-task')?.dataset.taskId));}catch(error){showToast(error.message,{tone:'error'});}
     });
     host.addEventListener('pointercancel',finishDrag);
     host.addEventListener('lostpointercapture',()=>{if(ghost)finishDrag();});
@@ -315,7 +315,7 @@
       event.preventDefault();const taskId=event.dataTransfer.getData("text/plain");
       if(!board.tasks.some(t=>t.id===taskId))return;
       const before=event.target.closest(".kitchen-task")?.dataset.taskId;
-      try{await persist(M.moveTask(board,taskId,column.dataset.column,before));}catch(error){showToast(error.message);}
+      try{await persist(M.moveTask(board,taskId,column.dataset.column,before));}catch(error){showToast(error.message,{tone:'error'});}
     });
     el("kitchen-task-form").addEventListener("submit",submitTask);
     el("kitchen-settings-form").addEventListener("submit",submitSettings);

@@ -117,7 +117,7 @@
     function begin() {
       if(!progress.begin())return;
       clearTimeout(beginTimer);
-      beginTimer=setTimeout(()=>{if(!document.getElementById('app-shell')?.hidden&&!dialog.open&&!document.querySelector('dialog[open],.modal-overlay.open'))startTour();},550);
+      beginTimer=setTimeout(async()=>{if(await progress.canPresentExistingTour()&&!document.getElementById('app-shell')?.hidden&&!dialog.open&&!document.querySelector('dialog[open],.modal-overlay.open'))startTour();},550);
     }
     return {begin,library,startTour,progress};
   }

@@ -53,11 +53,29 @@
       existingAccess=Boolean(previous?.existingUserTour);
       if(existing){
         // Previous v1 visits do not consume this one-time introduction. Opt-out does.
-        if(value.disabled||paused||value.existingUserTourOffered)return false;
+        if(value.disabled||value.existingUserTourOffered){persist();return false;}
+        if(paused)return false;
         return true;
       }
       if(!previous){const offer=value.visits<3;value.visits=Math.min(3,value.visits+1);write(session,sessionKey,{paused:false});persist();return !value.disabled&&offer;}
       return false;
+    }
+    async function canPresentExistingTour() {
+      if(!existing)return true;
+      const owner=userId;
+      let timer;
+      try {
+        const result=await Promise.race([
+          (async()=>{const client=await createClient();return client?client.auth.getUser():null;})(),
+          new Promise(resolve=>{timer=setTimeout(()=>resolve(null),4000);})
+        ]);
+        if(!result||result.error||result.data?.user?.id!==owner||getAuth()?.user?.id!==owner||userId!==owner)return false;
+        const metadata=result.data.user.user_metadata;
+        value=merge(value,metadata?.fichatec_tutorial);
+        value.existingUserTourOffered ||= metadata?.[EXISTING_TOUR_RECEIPT]===true;
+        write(local,'fichatec:tutorial:'+owner,value);
+        return !value.disabled&&!paused&&!value.existingUserTourOffered;
+      }catch{return false;}finally{clearTimeout(timer);}
     }
     function recordTourShown() {
       if(!userId||!existing||value.disabled||value.existingUserTourOffered)return;
@@ -76,7 +94,7 @@
     function allowed(id) {return Boolean(userId)&&(!existing||existingAccess)&&!value.disabled&&!paused&&!read(session,'fichatec:tutorial-session:'+userId)?.paused&&!value.seen.includes(id);}
     function mark(id) {if(!value.seen.includes(id)){value.seen.push(id);persist();}}
     function resetSession() {if(userId){try{session.removeItem('fichatec:tutorial-session:'+userId);}catch{}}userId=null;paused=false;existing=false;existingAccess=false;value=fresh();}
-    return {begin,recordTourShown,pause,allowed,mark,resetSession,isExisting:()=>existing,get:()=>merge(value)};
+    return {begin,canPresentExistingTour,recordTourShown,pause,allowed,mark,resetSession,isExisting:()=>existing,get:()=>merge(value)};
   }
   window.FichaTecTutorialProgress={EXISTING_USERS_BEFORE,fresh,isExistingUser,merge,createProgress};
 })();
