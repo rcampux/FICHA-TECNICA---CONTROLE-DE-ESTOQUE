@@ -11,19 +11,20 @@
 - Este arquivo é uma cópia versionada; o deploy da Vercel não configura o modelo automaticamente. A aplicação ocorre em Authentication > Emails > Confirm sign up, no projeto `gzyecgwpaooyaqmzxvwv`.
 - Aplicado no Supabase em 05/11/2026 e conferido na prévia do painel. Não foi enviado e-mail de teste nesta etapa.
 
-## Envio de produção — pendente
+## Envio de produção — SMTP ativo
 
 Em 05/11/2026, o projeto ainda usava o serviço de envio padrão do Supabase e os logs registraram `over_email_send_rate_limit`. Alterar o modelo não remove esse limite e não comprova entrega na caixa de entrada.
 
 Em 05/11/2026, o subdomínio `app.tscheers.com.br` foi cadastrado no Resend (São Paulo) e verificado. Foram adicionados na Hostinger somente o TXT `resend._domainkey.app` e os CNAMEs `rsend.app` e `send.app`, com os valores fornecidos pelo painel Resend. Os registros existentes de site e e-mail foram preservados.
 
-Configuração preparada, mas ainda não salva/ativada no Supabase:
+Configuração salva pelo proprietário e conferida no Supabase em 05/11/2026:
 
 - Remetente: `FichaTec | NK Control <nao-responda@app.tscheers.com.br>`.
 - Servidor: `smtp.resend.com`; porta: `465`; usuário: `resend`.
-- Chave a criar: `FichaTec Supabase SMTP`, permissão `Sending access`, restrita a `app.tscheers.com.br`.
-- Pendente: proprietário gerar a chave, inseri-la diretamente no campo Password do Supabase e salvar. Nenhuma chave foi criada ou armazenada nesta etapa.
-- Próximo passo: conferir a ativação e testar o envio e a entrega. Domínio verificado não comprova funcionamento do SMTP nem entrega na caixa de entrada.
+- Chave preparada com nome `FichaTec Supabase SMTP`, permissão `Sending access`, restrita a `app.tscheers.com.br`; credencial inserida diretamente pelo proprietário no painel.
+- Verificação: SMTP habilitado, servidor e remetente persistidos, senha armazenada e oculta pelo Supabase.
+- Teste de recuperação para o endereço autorizado `r.camposarch@gmail.com`: Resend registrou `Delivered`, mensagem `01a1acfe-8969-7171-8188-18235d1ffc63`. A senha não foi alterada. O assunto de recuperação ainda é o padrão `Reset your password`; a personalização aplicada refere-se à confirmação de cadastro.
+- Próximo passo: validar cadastro e confirmação com endereço ainda não cadastrado. O endereço usado no teste de recuperação já estava confirmado; esse teste comprova envio SMTP e aceitação pelo servidor de destino, não a conclusão de um novo cadastro nem a pasta de destino no Gmail.
 
 - Não colocar senha SMTP ou chave privada no frontend, Git ou nesta documentação.
 - Desabilitar rastreamento de links no provedor para não reescrever URLs de autenticação.
