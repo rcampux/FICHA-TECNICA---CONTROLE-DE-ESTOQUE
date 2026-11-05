@@ -78,3 +78,9 @@ body[data-visual-style="menu"] .recipe-filter-choice[aria-pressed="true"] { back
 #modal-recipe .recipe-stock-action:hover,
 #modal-recipe.recipe-menu-theme .recipe-stock-action:hover { background:var(--stock-action-hover); }
 .recipe-stock-action .material-symbols-rounded { font-size:18px; flex:none; }
+
+#page-receitas .page-header-cta {
+  background:#fff;
+  color:var(--journey-accent);
+  font-weight:700;
+}
