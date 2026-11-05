@@ -1223,18 +1223,23 @@
     async function applyStockPrice(product) {
       return applyStockPrices([product]);
     }
-    async function applyStockPrices(products, {strict = false} = {}) {
+    async function applyStockPrices(products, {strict = false, recipePricing = null} = {}) {
       syncState();
+      if (recipePricing && (!Number.isFinite(recipePricing.markup) || recipePricing.markup < 0 ||
+          !recipes.some(recipe => String(recipe.id) === String(recipePricing.id)))) {
+        throw new Error('Receita ou markup inválido. Abra o cadastro novamente.');
+      }
       products = products.filter(product => product && product.qty > 0);
       if (!products.length) return false;
       let changed=false;
       const next=recipes.map(recipe=>{
         const items=recipe.ingredients.map(linkIngredient);
-        if(!items.some((item,index)=>item!==recipe.ingredients[index]))return recipe;
+        const markup = recipePricing && String(recipe.id) === String(recipePricing.id) ? recipePricing.markup : recipe.markup;
+        if(markup === recipe.markup && !items.some((item,index)=>item!==recipe.ingredients[index]))return recipe;
         changed=true;
-        const price=calcCosts(items,recipe.markup,recipe.rendimento);
+        const price=calcCosts(items,markup,recipe.rendimento);
         const ingredients=price.ingredients.map(({currentPricePerG,...item})=>({...item,savedPricePerG:currentPricePerG}));
-        return {...recipe,ingredients,totalCost:price.totalCost,venda:price.venda,updatedAt:new Date().toISOString(),
+        return {...recipe,markup,ingredients,totalCost:price.totalCost,venda:price.venda,updatedAt:new Date().toISOString(),
           nutritionTotals:calculateRecipeNutritionTotals(ingredients),
           nutritionPortion:calculateRecipeNutritionPortion(ingredients,recipe.porcaoSize,recipe.rendimento)};
       });
@@ -1251,6 +1256,7 @@
         await persistRecipesSnapshot(next);
         if(editingRecipeId!==null){
           currentIngredients=currentIngredients.map(linkIngredient);
+          if (recipePricing && String(editingRecipeId) === String(recipePricing.id)) document.getElementById('markup-pct').value = recipePricing.markup;
           renderIngredients();
           calcFicha();
         }

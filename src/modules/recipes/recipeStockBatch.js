@@ -22,10 +22,12 @@
     let rows = [], destination = null, recipe = null, scope = null, busy = false, generation = 0;
     let nutritionRequests = 0;
     let categorySaving = false;
+    let draftMarkup = '0';
 
     function open(value) {
       if (busy || categorySaving || !value) return;
       recipe = value;
+      draftMarkup = String(Number.isFinite(Number(recipe.markup)) && Number(recipe.markup) >= 0 ? Number(recipe.markup) : 0);
       scope = db.activeOrganizationId?.();
       rows = [];
       destination = null;
@@ -34,7 +36,7 @@
       status.textContent = '';
       saveButton.hidden = true;
       dialog.querySelector('[data-batch-title]').textContent = 'Adicionar ao estoque';
-      body.innerHTML = '<p>Escolha onde cadastrar os ingredientes de <strong>' + escape(recipe.nome) + '</strong>.</p>' +
+      body.innerHTML = '<p>Escolha onde cadastrar os ingredientes de <strong>' + escape(recipe.nome) + '</strong>.</p>' + renderMarkup() +
         '<div class="batch-destinations"><button type="button" data-batch-destination="virtual"><span class="material-symbols-rounded">inventory_2</span><strong>Estoque virtual</strong><small>Catálogo, preços e nutrição</small></button>' +
         '<button type="button" data-batch-destination="physical"><span class="material-symbols-rounded">storefront</span><strong>Estoque físico</strong><small>Quantidades reais e catálogo virtual</small></button></div>';
       dialog.showModal();
@@ -67,10 +69,20 @@
       rows = [...unique.values()];
       body.innerHTML = '<p class="batch-intro">Informe a quantidade comprada e o valor pago por essa quantidade. O custo da receita será proporcional ao uso.</p>' +
         '<p class="batch-destination-label">' + (value === 'physical' ? 'Destino — físico e virtual' : 'Destino — virtual') + '</p>' +
-        rows.map(renderRow).join('');
+        renderMarkup() + rows.map(renderRow).join('');
       body.scrollTop = 0;
       saveButton.hidden = false;
       status.textContent = 'Revise todos os ingredientes antes de salvar.';
+    }
+
+    function renderMarkup() {
+      return `<section class="batch-markup" aria-labelledby="batch-markup-title">
+        <div class="batch-markup-heading"><span id="batch-markup-title"><span class="material-symbols-rounded" aria-hidden="true">trending_up</span>Adicionar markup</span>
+          <label for="batch-markup"><span class="visually-hidden">Markup da receita em porcentagem</span><span class="batch-markup-input"><input id="batch-markup" data-batch-markup type="number" inputmode="decimal" min="0" step="any" required value="${escape(draftMarkup)}" aria-describedby="batch-markup-help"><span aria-hidden="true">%</span></span></label>
+        </div>
+        <p id="batch-markup-help">Percentual acrescentado ao custo da receita para definir o preço de venda.</p>
+        <small>Será aplicado a esta receita ao salvar no estoque.</small>
+      </section>`;
     }
 
     function categoryOptions(selected) {
@@ -102,8 +114,8 @@
             ${destination === 'physical' ? `<label>Quantidade desejada<input data-field="desiredQty" type="number" inputmode="decimal" step="any" min="0.000001" value="${row.desiredQty}" placeholder="Igual à comprada"></label>` : ''}
           </div>
           <button class="btn btn-primary batch-nutrition-button" type="button" data-batch-nutrition><span class="material-symbols-rounded" aria-hidden="true">nutrition</span>Tabela nutricional</button>
-          <p class="batch-nutrition-status" role="status"></p>
           <details class="batch-nutrition"><summary>Revisar tabela nutricional</summary>
+            <p class="batch-nutrition-status" role="status"></p>
             <p>Valores por 100 g/ml. Confira a referência e ajuste conforme o rótulo.</p>
             <div class="batch-field-grid">${nutrientFields.map(([key,label,unit]) => `<label>${label} (${unit})<input data-nutrient="${key}" type="number" inputmode="decimal" min="0" step="any" value="${product.nutrition[key] ?? ''}"></label>`).join('')}</div>
             <label>Porção para visualizar (g/ml)<input data-field="portionSize" type="number" inputmode="decimal" min="0.1" step="any" value="${product.nutrition.portionSize}"></label>
@@ -173,26 +185,43 @@
     }
 
     async function loadNutrition(article, button) {
+      if (button.disabled) return;
+      const focused = document.activeElement;
+      if (dialog.contains(focused) && focused.matches('input, textarea')) focused.blur();
       const row = readRow(article);
       const version = generation;
       const message = article.querySelector('.batch-nutrition-status');
+      const details = article.querySelector('.batch-nutrition');
+      const buttonContent = button.innerHTML;
       nutritionRequests++;
       button.disabled = true;
+      button.textContent = 'Buscando tabela…';
+      details.open = true;
+      details.setAttribute('aria-busy', 'true');
+      details.querySelectorAll('[data-nutrient]').forEach(input => {input.disabled = true;});
       message.textContent = 'Buscando referência nutricional na internet…';
+      window.requestAnimationFrame(() => {
+        if (!dialog.open || generation !== version || !details.open) return;
+        // Scroll only this dialog; opening the table never requests the keyboard.
+        const top = details.getBoundingClientRect().top;
+        const bounds = body.getBoundingClientRect();
+        body.scrollTop += top - bounds.top - 12;
+      });
       try {
         const nutrition = await fetchNutrition(row.product.name);
         if (version !== generation || !dialog.open) return;
         row.product.nutrition = {...row.product.nutrition, ...nutrition, portionSize:row.product.nutrition.portionSize};
         for (const [key] of nutrientFields) article.querySelector('[data-nutrient="' + key + '"]').value = nutrition[key] ?? '';
-        article.querySelector('details').open = true;
         message.textContent = 'Referência encontrada — ' + (nutrition.sourceProduct || row.product.name) + '. Confira com o rótulo.';
         updatePreview(article, row);
       } catch (error) {
         if (version !== generation) return;
         message.textContent = error.message;
-        article.querySelector('details').open = true;
       } finally {
         button.disabled = false;
+        button.innerHTML = buttonContent;
+        details.setAttribute('aria-busy', 'false');
+        details.querySelectorAll('[data-nutrient]').forEach(input => {input.disabled = false;});
         if (version === generation) nutritionRequests--;
       }
     }
@@ -218,6 +247,7 @@
 
     async function save(event) {
       event.preventDefault();
+      if (busy || !destination) return;
       if (categorySaving) return;
       if (body.querySelector('.batch-category-create:not([hidden])')) {
         status.textContent = 'Crie ou cancele a nova categoria antes de salvar os ingredientes.';
@@ -227,7 +257,14 @@
         status.textContent = 'Aguarde a busca nutricional terminar antes de salvar.';
         return;
       }
-      if (busy || !destination || !validateRows()) return;
+      const markupInput = body.querySelector('[data-batch-markup]');
+      const markup = markupInput.valueAsNumber;
+      if (!Number.isFinite(markup) || markup < 0) {
+        status.textContent = 'Informe um markup maior ou igual a zero.';
+        markupInput.reportValidity();
+        return;
+      }
+      if (!validateRows()) return;
       if (db.mode?.() === 'supabase' && (!scope || scope !== db.activeOrganizationId())) {
         status.textContent = 'A cozinha mudou. Feche e abra novamente este cadastro.';
         return;
@@ -251,7 +288,7 @@
         }) : [];
         await db.upsertStockBatch(products, physicalItems, scope);
         if (db.mode?.() === 'supabase' && scope !== db.activeOrganizationId()) throw new Error('A cozinha mudou durante o salvamento.');
-        await applyStockPrices(products, {strict:true});
+        await applyStockPrices(products, {strict:true, recipePricing:{id:recipe.id, markup}});
         renderStocks();
         dialog.close();
         showToast('Ingredientes salvos. Os valores da receita foram atualizados.');
@@ -266,6 +303,11 @@
 
     form.addEventListener('submit', save);
     body.addEventListener('input', event => {
+      if (event.target.matches('[data-batch-markup]')) {
+        draftMarkup = event.target.value;
+        status.textContent = 'O markup será aplicado à receita ao salvar no estoque.';
+        return;
+      }
       const article = event.target.closest('[data-batch-row]');
       if (article) {
         readRow(article);

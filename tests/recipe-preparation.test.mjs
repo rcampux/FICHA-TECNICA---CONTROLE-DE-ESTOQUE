@@ -59,6 +59,31 @@ test('gravação aditiva de estoque mantém produtos alheios ao lote e permite r
   assert.equal(tables.physical_stock_items.get('batch-physical').stock_item_id, 'batch-product');
 });
 
+test('markup do cadastro aplica somente à receita escolhida, preserva falhas e aceita reenvio', async () => {
+  const stock=[{id:1,name:'Leite',qty:1000,unit:'g',price:10},{id:2,name:'Manteiga',qty:100,unit:'g',price:1}];
+  const h=recipeHarness(null,stock);
+  const target=h.getRecipes()[0];
+  target.markup=10;
+  target.ingredients.forEach(item=>{item.source='manual';});
+  h.getRecipes().push({...structuredClone(target),id:'other',nome:'Outra receita',markup:25});
+  const snapshot=JSON.stringify(h.getRecipes());
+  h.setFail(true);
+  await assert.rejects(h.module.applyStockPrices(stock,{strict:true,recipePricing:{id:target.id,markup:50}}));
+  assert.equal(JSON.stringify(h.getRecipes()),snapshot);
+  h.setFail(false);
+  await h.module.applyStockPrices(stock,{strict:true,recipePricing:{id:target.id,markup:50}});
+  const [saved,other]=h.getRecipes();
+  assert.equal(saved.markup,50);assert.equal(saved.totalCost,3.8);assert.equal(saved.venda,5.7);
+  assert.equal(other.markup,25);assert.equal(other.venda,4.75);
+  // Reapplying after the stock links exist must still persist a new markup, including zero.
+  await h.module.applyStockPrices(stock,{strict:true,recipePricing:{id:target.id,markup:0}});
+  assert.equal(h.getRecipes()[0].markup,0);assert.equal(h.getRecipes()[0].venda,3.8);
+  const linked=JSON.stringify(h.getRecipes());
+  for(const markup of [-1,NaN,Infinity]) await assert.rejects(h.module.applyStockPrices(stock,{strict:true,recipePricing:{id:target.id,markup}}));
+  await assert.rejects(h.module.applyStockPrices(stock,{strict:true,recipePricing:{id:'missing',markup:50}}));
+  assert.equal(JSON.stringify(h.getRecipes()),linked);
+});
+
 
 const read=file=>readFileSync(new URL(`../src/${file}`,import.meta.url),'utf8');
 const modelContext={window:{FichaTecStorageKeys:{recipes:'recipes'}},crypto:webcrypto};

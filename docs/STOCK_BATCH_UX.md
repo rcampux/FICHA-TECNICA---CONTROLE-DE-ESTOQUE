@@ -6,6 +6,8 @@
 - Nutrientes preenchidos pela busca ou estimativa são arredondados para inteiros. Dados ausentes continuam vazios. Quantidades compradas, valores, pesos e porções continuam aceitando decimais; valores manuais do rótulo não são arredondados automaticamente.
 - Com o teclado aberto, o popup acompanha a área visível. Cabeçalho e ação de salvar permanecem acessíveis; o conteúdo tem sua própria rolagem e mantém visível o campo em edição. Instruções auxiliares são recolhidas para dar espaço à edição. A navegação inferior fica recolhida durante o teclado e os popups e retorna à borda inferior ao fechar.
 - CARD e Menu mantêm suas cores, superfícies e cantos em toda essa jornada.
+- O primeiro clique em Tabela nutricional já abre os campos, mostra a busca em andamento e posiciona a tabela na área visível do popup. O botão fica indisponível durante a consulta para evitar buscas duplicadas. Em caso de falha, a tabela permanece aberta para preenchimento manual.
+- Adicionar markup aparece ao entrar no cadastro e permanece na revisão dos ingredientes. O valor inicial vem da receita; zero é permitido. A explicação informa que é um percentual acrescentado ao custo para formar o preço de venda. Ao confirmar, o percentual é salvo apenas nessa receita e seus preços são recalculados junto do vínculo dos produtos. Cancelar não modifica o markup registrado.
 
 ## Verificação desta correção
 

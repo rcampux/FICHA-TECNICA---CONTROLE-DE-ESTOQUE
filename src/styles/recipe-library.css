@@ -100,6 +100,17 @@ body:has(#recipe-stock-batch[open]) { overflow:hidden; }
 .batch-destinations { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin:24px 0; }
 .batch-destinations button { display:flex; flex-direction:column; align-items:flex-start; gap:10px; text-align:left; padding:24px; border:1px solid var(--journey-line); border-radius:8px; background:var(--journey-tint); color:var(--journey-accent); font:inherit; cursor:pointer; }
 .batch-destinations small { line-height:1.5; }
+.batch-markup { margin:18px 0; padding:16px; border:1px solid #cfdfd3; border-radius:8px; background:#edf6ef; color:#22563d; }
+.batch-markup-heading { display:flex; align-items:center; justify-content:space-between; gap:12px; }
+.batch-markup-heading > span { display:flex; align-items:center; gap:7px; font-weight:600; font-size:14px; }
+.batch-markup-heading .material-symbols-rounded { font-size:20px; }
+#recipe-stock-batch .batch-markup-heading label { flex:0 0 104px; margin:0; }
+.batch-markup-input { position:relative; display:block; }
+#recipe-stock-batch .batch-markup-input input { padding-right:28px; color:#22563d; border-color:#c8ddce; }
+.batch-markup-input > span { position:absolute; right:12px; top:50%; transform:translateY(-50%); pointer-events:none; }
+#recipe-stock-batch .batch-markup p { font-size:13px; line-height:1.45; margin:10px 0 6px; }
+.batch-markup small { display:block; font-size:12px; line-height:1.4; }
+body[data-visual-style="menu"] .batch-markup { background:#eef1e8; border-color:#d6dece; border-radius:4px; color:#3d573c; }
 .batch-product { padding:18px 0; border-top:1px solid var(--journey-line); }
 .batch-product-heading { display:flex; align-items:center; gap:16px; justify-content:space-between; }
 .batch-product-heading strong, .batch-product-heading small { display:block; }
@@ -121,7 +132,12 @@ body:has(#recipe-stock-batch[open]) { overflow:hidden; }
 .batch-category-actions { display:flex; flex-wrap:wrap; gap:8px; justify-content:flex-end; }
 #recipe-stock-batch [data-batch-category-status] { margin:8px 0 0; font-size:13px; color:var(--journey-accent); }
 #recipe-stock-batch [data-batch-category-status]:empty { display:none; }
+.batch-nutrition { margin-top:12px; }
 .batch-nutrition summary { padding:12px 0; cursor:pointer; font-weight:600; }
+.batch-nutrition-status:empty { display:none; }
+.batch-nutrition[aria-busy="true"] .batch-nutrition-status::before { content:''; display:inline-block; width:12px; height:12px; margin-right:8px; border:2px solid var(--journey-line); border-top-color:var(--journey-accent); border-radius:50%; vertical-align:middle; animation:batch-nutrition-loading .8s linear infinite; }
+@keyframes batch-nutrition-loading { to { transform:rotate(360deg); } }
+@media (prefers-reduced-motion:reduce) { .batch-nutrition[aria-busy="true"] .batch-nutrition-status::before { animation:none; } }
 .batch-nutrition-preview { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; padding:12px; background:#eaf4ee; border-radius:12px; }
 .batch-nutrition-preview small, .batch-nutrition-preview strong { display:block; overflow-wrap:anywhere; }
 .batch-nutrition-preview small { font-size:11px; }
