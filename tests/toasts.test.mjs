@@ -23,16 +23,14 @@ function fixture(){
   return {controller:window.FichaTecToasts.createToasts(),host,parts,document,input,advance,openDialog(){const dialog=node();dialogs.push(dialog);observer();return dialog;}};
 }
 test('a new warning keeps its full reading time after replacing a success',()=>{
-  const f=fixture();f.controller.show('Receita salva.',{tone:'success'});f.advance(4500);
+  const f=fixture();f.controller.show('Receita salva.',{tone:'success'});f.advance(2500);
   f.controller.show('Informe o nome da receita.',{tone:'warning',title:'Falta o nome da receita'});
   f.advance(500);assert.equal(f.host.hidden,false);assert.equal(f.parts.title.textContent,'Falta o nome da receita');
-  assert.equal(f.parts.copy.attrs.role,'alert');f.advance(7499);assert.equal(f.host.hidden,false);
+  assert.equal(f.parts.copy.attrs.role,'alert');f.advance(2499);assert.equal(f.host.hidden,false);
   f.advance(1);assert.equal(f.host.hidden,true);
 });
-test('hover pauses dismissal and the close button dismisses without refocusing an input',()=>{
+test('the close button dismisses early without refocusing an input',()=>{
   const f=fixture();f.controller.show('Revise os dados.',{tone:'warning'});f.advance(2000);
-  f.host.listeners.pointerenter({pointerType:'mouse'});f.advance(20000);assert.equal(f.host.hidden,false);
-  f.host.listeners.pointerleave();f.advance(5999);assert.equal(f.host.hidden,false);
   f.document.activeElement=f.parts.close;f.parts.close.listeners.click();
   assert.equal(f.host.hidden,true);assert.equal(f.host.popped,false);assert.equal(f.document.activeElement,f.document.body);
 });

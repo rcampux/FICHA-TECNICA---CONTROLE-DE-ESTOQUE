@@ -802,7 +802,7 @@
         syncSupabaseSession(data.session);
         await loadOrganizations();
         showInitialUserScreen();
-        showToast(state.authMode === "login" ? "Login realizado." : "Conta criada e login realizado.");
+        if(state.authMode !== "login")showToast("Conta criada com sucesso.",{tone:'success'});
       } catch (error) {
         console.error(error);
         clearAuthInputs();
@@ -1014,7 +1014,6 @@
       state.activeOrganizationId = id;
       renderAuthState();
       dispatchWorkspaceChange();
-      showToast("Workspace selecionado.");
     }
 
     return {

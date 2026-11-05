@@ -1,9 +1,9 @@
 (function exposeToasts() {
   const tones={
-    warning:{title:'Atenção',icon:'!',duration:8000},
-    error:{title:'Não foi possível concluir',icon:'!',duration:10000},
-    success:{title:'Tudo certo',icon:'✓',duration:5000},
-    info:{title:'Informação',icon:'i',duration:7000}
+    warning:{title:'Atenção',icon:'!'},
+    error:{title:'Não foi possível concluir',icon:'!'},
+    success:{title:'Tudo certo',icon:'✓'},
+    info:{title:'Informação',icon:'i'}
   };
   function inferTone(message) {
     const text=String(message).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
@@ -14,7 +14,7 @@
   }
   function createToasts() {
     const host=document.getElementById('toast');
-    let timer=0,frame=0,expires=0,remaining=0,open=false,hovered=false,focused=false;
+    let timer=0,frame=0,open=false,arrival=null;
     host.className='app-toast';host.hidden=true;
     if(typeof host.showPopover==='function')host.setAttribute('popover','manual');
     host.innerHTML='<span class="app-toast-icon" aria-hidden="true"></span><div class="app-toast-copy" aria-atomic="true"><strong class="app-toast-title"></strong><p class="app-toast-message"></p></div><button type="button" class="app-toast-close" aria-label="Fechar aviso">×</button>';
@@ -43,14 +43,22 @@
       clearTimeout(timer);timer=0;open=false;
       if(host.contains(document.activeElement))document.activeElement.blur();
       if(typeof host.hidePopover==='function'){try{host.hidePopover();}catch{}}
-      host.hidden=true;focused=false;hovered=false;
+      arrival?.cancel();arrival=null;host.hidden=true;
     }
     function startTimer() {
       clearTimeout(timer);timer=0;
-      if(!open||hovered||focused)return;
-      expires=Date.now()+remaining;timer=setTimeout(dismiss,remaining);
+      if(open)timer=setTimeout(dismiss,3000);
     }
-    function pauseTimer(){if(timer){remaining=Math.max(0,expires-Date.now());clearTimeout(timer);timer=0;}}
+    function animateArrival(){
+      arrival?.cancel();arrival=null;
+      if(window.matchMedia?.('(prefers-reduced-motion: reduce)').matches)return;
+      arrival=host.animate?.([
+        {transform:'translateX(calc(100% + 40px))',offset:0},
+        {transform:'translateX(-10px)',offset:.70},
+        {transform:'translateX(3px)',offset:.88},
+        {transform:'translateX(0)',offset:1}
+      ],{duration:480,easing:'cubic-bezier(.22,.72,.26,1)'});
+    }
     function show(message,options={}) {
       if(!message)return;
       if(typeof options==='string')options={tone:options};
@@ -62,14 +70,9 @@
       host.querySelector('.app-toast-icon').textContent=config.icon;
       host.querySelector('.app-toast-title').textContent=options.title||config.title;
       host.querySelector('.app-toast-message').textContent=String(message);
-      remaining=Math.max(config.duration,Math.min(18000,String(message).length*55));
-      open=true;host.hidden=false;place();startTimer();
+      open=true;host.hidden=false;place();animateArrival();startTimer();
     }
     host.querySelector('.app-toast-close').addEventListener('click',dismiss);
-    host.addEventListener('pointerenter',event=>{if(event.pointerType!=='touch'){hovered=true;pauseTimer();}});
-    host.addEventListener('pointerleave',()=>{hovered=false;startTimer();});
-    host.addEventListener('focusin',()=>{focused=true;pauseTimer();});
-    host.addEventListener('focusout',()=>{focused=false;startTimer();});
     new MutationObserver(()=>{if(open)place();}).observe(document.body,{subtree:true,childList:true,attributes:true,attributeFilter:['open']});
     window.addEventListener('resize',schedulePosition,{passive:true});
     window.visualViewport?.addEventListener('resize',schedulePosition,{passive:true});

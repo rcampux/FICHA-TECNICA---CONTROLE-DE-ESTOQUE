@@ -540,7 +540,6 @@ async function hydrateWorkspaceData(event){
 
     renderStock();renderPhysical();renderRecipes();
     kitchenBoard.render();
-    showToast('Workspace sincronizado.');
   }catch(error){
     console.error(error);
     showToast('Nao foi possivel sincronizar o workspace.');

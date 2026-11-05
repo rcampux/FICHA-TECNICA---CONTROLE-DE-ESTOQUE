@@ -1224,7 +1224,7 @@
       const nome=document.getElementById('ficha-nome').value.trim();
       if(!nome){
         document.getElementById('ficha-nome').setAttribute('aria-invalid','true');
-        showToast('Dê um nome à receita no campo “Nome da receita” e tente salvar novamente.',{tone:'warning',title:'Falta o nome da receita'});
+        showToast('Preencha “Nome da receita” antes de salvar.',{tone:'warning',title:'Falta o nome da receita'});
         return;
       }
       if(!currentIngredients.length){showToast('Adicione pelo menos um ingrediente.');return;}
