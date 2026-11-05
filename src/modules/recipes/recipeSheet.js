@@ -73,6 +73,7 @@
       try {if(key)style=JSON.parse(localStorage.getItem(key))==='menu'?'menu':'card';}catch{}
       function apply(value) {
         document.getElementById('recipes-list').classList.toggle('recipe-menu-view',value==='menu');
+        document.getElementById('modal-recipe').classList.toggle('recipe-menu-theme',value==='menu');
         for(const option of ['card','menu'])document.getElementById('recipe-style-'+option).setAttribute('aria-pressed',String(option===value));
       }
       apply(style);
@@ -1281,6 +1282,7 @@
 
     function viewRecipe(id){
       const r=recipes.find(x=>String(x.id)===String(id));if(!r)return;
+      bindRecipeStyles();
       currentRecipeId=id;
       if(r.ingredients.some(i=>i.source==='manual')){viewPendingRecipe(r);return;}
       const {ingredients,totalCost,venda}=calcCosts(r.ingredients,r.markup,r.rendimento);
@@ -1294,7 +1296,7 @@
 
       document.getElementById('recipe-detail-content').innerHTML=`
         ${renderRecipeMedia(r,"modal")}
-        <div style="font-size:20px;font-weight:800;margin-bottom:4px;letter-spacing:-0.4px">${escapeHtml(r.nome)}${r.origem==='scan'?` <span class="scan-badge" style="font-size:10px"><span class="material-symbols-rounded" style="font-size:12px">document_scanner</span>Scan</span>`:''}</div>
+        <div class="recipe-detail-name">${escapeHtml(r.nome)}${r.origem==='scan'?` <span class="scan-badge" style="font-size:10px"><span class="material-symbols-rounded" style="font-size:12px">document_scanner</span>Scan</span>`:''}</div>
         <div style="font-size:12px;color:var(--n600);margin-bottom:${changed?'12px':'20px'};font-weight:500;display:flex;align-items:center;gap:4px">
           <span class="material-symbols-rounded" style="font-size:14px">calendar_today</span>
           Criada em ${new Date(r.createdAt).toLocaleDateString('pt-BR')} · ${r.ingredients.length} ingrediente(s)
