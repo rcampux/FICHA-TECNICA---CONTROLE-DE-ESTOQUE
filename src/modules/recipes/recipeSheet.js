@@ -612,6 +612,7 @@
       const amounts = valid ? {
         cost: fmtBRL(plan.totalCost), sale: fmtBRL(plan.venda), piece: fmtBRL(plan.salePerPiece),
         markup: number(plan.markup) + '%', raw: grams(plan.rawWeight), ready: grams(plan.finalWeight),
+        yield: formatRecipeYield(plan.count, plan.unit), pieceWeight: grams(plan.finalWeight === null ? null : plan.finalWeight / plan.count),
         beforeLoss: fmtBRL(plan.saleBeforeLoss), premium: plan.lossPercent === null ? 'Sem pesagem completa' : fmtBRL(plan.lossPremium),
         profit: fmtBRL(plan.grossProfit), pieceProfit: fmtBRL(plan.grossProfit / plan.count)
       } : {};
@@ -1511,11 +1512,11 @@
           const curPPG=s?getIngredientUnitPrice(i):0;
           const ingChanged=i.savedPricePerG&&Math.abs(curPPG-i.savedPricePerG)>0.000001;
           return`<div class="ingredient-row">
-            <div style="flex:1;min-width:0">
-              <div class="ing-name">${escapeHtml(i.name)}${ingChanged?` <span style="font-size:10px;font-weight:700;color:${curPPG>i.savedPricePerG?'var(--r400)':'var(--g500)'}">${curPPG>i.savedPricePerG?'▲':'▼'}</span>`:''}</div>
+            <div class="ing-name">${escapeHtml(i.name)}${ingChanged?` <span style="font-size:10px;font-weight:700;color:${curPPG>i.savedPricePerG?'var(--r400)':'var(--g500)'}">${curPPG>i.savedPricePerG?'▲':'▼'}</span>`:''}</div>
+            <div class="production-ingredient-amounts">
               <div class="ing-qty production-ingredient-quantity" data-production-ingredient="${ingredientIndex}">${formatProductionIngredientQuantity(i)}</div>
+              <div class="ing-cost" style="${ingChanged?'color:'+(curPPG>i.savedPricePerG?'var(--r400)':'var(--g500)'):''}"> ${fmtBRL(i.cost)}</div>
             </div>
-            <div class="ing-cost" style="${ingChanged?'color:'+(curPPG>i.savedPricePerG?'var(--r400)':'var(--g500)'):''}"> ${fmtBRL(i.cost)}</div>
           </div>`;
         }).join('')}
           </div>
@@ -1527,21 +1528,36 @@
             </div>
           </details>
           <h3 id="production-report-title" tabindex="-1">Resultado do lote</h3>
-          <dl class="production-facts">
+          <p class="production-section-intro">Quantidades e rendimento da produção planejada.</p>
+          <dl class="production-facts production-quantities">
+            <div><dt>Rendimento planejado</dt><dd data-plan-value="yield">—</dd></div>
+            <div><dt>Peso por unidade / porção</dt><dd data-plan-value="pieceWeight">—</dd></div>
             <div><dt>Ingredientes antes do preparo</dt><dd data-plan-value="raw">—</dd></div>
             <div><dt>Peso pronto</dt><dd data-plan-value="ready">—</dd></div>
             <div><dt id="production-loss-label">Perda de peso</dt><dd id="production-loss">—</dd></div>
-            <div><dt>Markup aplicado</dt><dd data-plan-value="markup">—</dd></div>
-            <div><dt>Custo dos ingredientes</dt><dd data-plan-value="cost">—</dd></div>
-            <div><dt>Venda com markup</dt><dd data-plan-value="beforeLoss">—</dd></div>
-            <div><dt>Adicional pela perda</dt><dd data-plan-value="premium">—</dd></div>
-            <div><dt>Venda total do lote</dt><dd data-plan-value="sale">—</dd></div>
-            <div><dt>Venda média por peça</dt><dd data-plan-value="piece">—</dd></div>
-            <div><dt>Lucro bruto do lote</dt><dd data-plan-value="profit">—</dd></div>
-            <div><dt>Lucro bruto por peça</dt><dd data-plan-value="pieceProfit">—</dd></div>
           </dl>
           <p class="production-footnote" id="production-weight-help"></p>
-          <p class="production-footnote" id="production-rounding" hidden>O preço por peça é a média do lote arredondada para centavos.</p>
+          <section class="production-financials" aria-labelledby="production-financial-title">
+            <h3 id="production-financial-title">Valores da produção</h3>
+            <p class="production-section-intro">Totais do lote planejado.</p>
+            <dl class="production-money-highlights">
+              <div><dt>Custo de produção</dt><dd data-plan-value="cost">—</dd><small>Ingredientes utilizados</small></div>
+              <div><dt>Valor de venda</dt><dd data-plan-value="sale">—</dd><small>Lote completo</small></div>
+              <div><dt>Lucro bruto</dt><dd data-plan-value="profit">—</dd><small>Venda menos custo dos ingredientes</small></div>
+              <div><dt>Markup aplicado</dt><dd data-plan-value="markup">—</dd><small>Acréscimo sobre o custo</small></div>
+            </dl>
+            <dl class="production-facts production-per-piece">
+              <div><dt>Venda por unidade / porção</dt><dd data-plan-value="piece">—</dd></div>
+              <div><dt>Lucro bruto por unidade / porção</dt><dd data-plan-value="pieceProfit">—</dd></div>
+            </dl>
+            <details class="production-price-breakdown"><summary>Como o valor de venda foi calculado</summary>
+              <dl class="production-facts">
+                <div><dt>Venda com markup</dt><dd data-plan-value="beforeLoss">—</dd></div>
+                <div><dt>Adicional pela perda</dt><dd data-plan-value="premium">—</dd></div>
+              </dl>
+            </details>
+            <p class="production-footnote" id="production-rounding" hidden>O preço por peça é a média do lote arredondada para centavos.</p>
+          </section>
 
         </section>
         <details class="production-nutrition"><summary><span class="material-symbols-rounded" aria-hidden="true">nutrition</span> Nutrição da receita-base por ${nutritionSummary.portion} g</summary>
