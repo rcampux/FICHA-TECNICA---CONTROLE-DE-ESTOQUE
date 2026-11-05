@@ -1,24 +1,75 @@
-/* Glass notifications are isolated from the fixed navigation and dialog layout. */
-/* Explicit intrinsic sizing prevents a popover inside a flex dialog from stretching
-   to the dialog/viewport height. Long messages still wrap. */
-#toast.app-toast{height:max-content;block-size:max-content;min-height:76px;min-block-size:76px;flex:0 0 auto;align-self:start;justify-self:end;align-content:center;grid-auto-rows:max-content;}
-#toast.app-toast{--toast-accent:#78baff;--toast-glass:rgba(27,44,65,.94);position:fixed;inset:auto;top:calc(var(--toast-vv-top,0px) + max(20px,env(safe-area-inset-top)));right:calc(var(--toast-vv-right,0px) + max(20px,env(safe-area-inset-right)));bottom:auto;left:auto;z-index:2147483647;box-sizing:border-box;display:grid;grid-template-columns:22px minmax(0,1fr) 30px;gap:10px;align-items:center;width:min(380px,calc(var(--toast-vv-width,100vw) - 40px));max-width:none;max-height:calc(var(--toast-vv-height,100dvh) - 40px);margin:0;padding:10px 10px 10px 13px;overflow:auto;border:1px solid rgba(255,255,255,.22);border-radius:13px;background:linear-gradient(125deg,rgba(255,255,255,.09),transparent 42%,rgba(255,255,255,.025)),var(--toast-glass);color:#fff;box-shadow:inset 0 1px 0 rgba(255,255,255,.12),0 6px 20px #21151624;font:400 15px/1.45 Roboto,sans-serif;text-align:left;white-space:normal;opacity:1;transform:none;transition:none;pointer-events:auto;overscroll-behavior:contain;}
-@supports ((backdrop-filter:blur(20px)) or (-webkit-backdrop-filter:blur(20px))){#toast.app-toast{backdrop-filter:blur(22px) saturate(150%);-webkit-backdrop-filter:blur(22px) saturate(150%);--toast-glass:rgba(27,44,65,.88);}}
+/* The top-layer host only positions the notification. It never paints or animates. */
+#toast.app-toast {
+  --toast-accent:#168bff;
+  --toast-tint:rgba(22,139,255,.13);
+  position:fixed; inset:auto;
+  top:calc(var(--toast-vv-top,0px) + max(30px,env(safe-area-inset-top)));
+  right:calc(var(--toast-vv-right,0px) + max(20px,env(safe-area-inset-right)));
+  bottom:auto; left:auto; z-index:2147483647;
+  display:block; box-sizing:border-box;
+  width:min(380px,calc(var(--toast-vv-width,100vw) - 40px));
+  height:auto; min-height:0; max-height:none; max-width:none;
+  margin:0; padding:0; border:0; background:transparent;
+  overflow:visible; color:#fff; opacity:1; visibility:visible;
+  transform:none; filter:none; backdrop-filter:none; -webkit-backdrop-filter:none;
+  box-shadow:none; transition:none; pointer-events:auto;
+  font:400 13px/1.4 Roboto,sans-serif; text-align:left;
+}
 #toast.app-toast[hidden]{display:none!important;}
 #toast.app-toast::backdrop{background:transparent;pointer-events:none;}
-#toast.app-toast[data-tone="warning"]{--toast-accent:#ffb65d;--toast-glass:rgba(69,43,26,.94);}
-#toast.app-toast[data-tone="error"]{--toast-accent:#ff6975;--toast-glass:rgba(67,31,38,.94);}
-#toast.app-toast[data-tone="success"]{--toast-accent:#91e7ac;--toast-glass:rgba(28,55,40,.94);}
-@supports ((backdrop-filter:blur(20px)) or (-webkit-backdrop-filter:blur(20px))){#toast.app-toast[data-tone="warning"]{--toast-glass:rgba(69,43,26,.88);}#toast.app-toast[data-tone="error"]{--toast-glass:rgba(67,31,38,.88);}#toast.app-toast[data-tone="success"]{--toast-glass:rgba(28,55,40,.88);}}
-#toast.app-toast .app-toast-icon{display:grid;place-items:center;width:22px;height:22px;box-sizing:border-box;border-radius:50%;background:var(--toast-accent);color:#202623;font:600 15px/1 Roboto,sans-serif;box-shadow:0 2px 10px #0002;}
+#toast.app-toast[data-tone="warning"]{--toast-accent:#ff9500;--toast-tint:rgba(255,149,0,.13);}
+#toast.app-toast[data-tone="error"]{--toast-accent:#ff343b;--toast-tint:rgba(255,52,59,.13);}
+#toast.app-toast[data-tone="success"]{--toast-accent:#20d661;--toast-tint:rgba(32,214,97,.13);}
+#toast.app-toast .app-toast-surface {
+  position:relative; isolation:isolate; display:flex; align-items:center; gap:11px;
+  box-sizing:border-box; width:100%; height:auto; min-height:76px;
+  max-height:calc(var(--toast-vv-height,100dvh) - 60px);
+  margin:0; padding:12px 12px 12px 14px; overflow:auto;
+  border:1px solid rgba(255,255,255,.30); border-radius:13px;
+  background:#26272d; color:#fff;
+  box-shadow:inset 0 1px 0 #ffffff30,0 8px 26px #15121b30;
+  overscroll-behavior:contain;
+}
+/* Blur the glass only; text, icon and X remain on their own foreground layer. */
+#toast.app-toast .app-toast-surface::before {
+  content:""; position:absolute; inset:0; z-index:0; border-radius:inherit;
+  background:linear-gradient(120deg,rgba(255,255,255,.14),transparent 45%,var(--toast-tint));
+  pointer-events:none;
+}
+@supports ((backdrop-filter:blur(20px)) or (-webkit-backdrop-filter:blur(20px))) {
+  #toast.app-toast .app-toast-surface{background:transparent;}
+  #toast.app-toast .app-toast-surface::before {
+    background:linear-gradient(120deg,rgba(255,255,255,.12),transparent 45%,var(--toast-tint)),rgba(31,33,40,.86);
+    backdrop-filter:blur(22px) saturate(145%); -webkit-backdrop-filter:blur(22px) saturate(145%);
+  }
+}
+#toast.app-toast .app-toast-surface > *{position:relative;z-index:1;visibility:visible;opacity:1;}
+#toast.app-toast .app-toast-icon {
+  display:flex; align-items:center; justify-content:center; flex:0 0 24px;
+  width:24px; height:24px; box-sizing:border-box; border-radius:50%;
+  background:var(--toast-accent); color:#101820; -webkit-text-fill-color:#101820;
+  font:700 17px/1 Roboto,sans-serif;
+}
 #toast.app-toast[data-tone="error"] .app-toast-icon{border-radius:7px;}
-#toast.app-toast .app-toast-copy{min-width:0;overflow-wrap:anywhere;}
-#toast.app-toast .app-toast-title{display:block;color:#fff;font:600 13px/1.25 Roboto,sans-serif;margin:0 0 2px;letter-spacing:-.2px;}
-#toast.app-toast .app-toast-message{margin:0;padding:0;font:400 12px/1.4 Roboto,sans-serif;color:#f2eae7;white-space:pre-line;}
-#toast.app-toast .app-toast-close{display:grid;place-items:center;position:relative;align-self:center;width:30px;height:30px;margin:0;padding:0;background:rgba(255,255,255,.055);border:0;border-radius:7px;box-shadow:inset 0 1px 0 #ffffff08;color:#fff;font:400 19px/1 Roboto,sans-serif;cursor:pointer;}
-#toast.app-toast .app-toast-close:hover{background:rgba(255,255,255,.18);}
-#toast.app-toast .app-toast-close:focus-visible{outline:2px solid var(--toast-accent);outline-offset:2px;}
-body[data-visual-style="menu"] #toast.app-toast{border-radius:10px;}
+#toast.app-toast .app-toast-copy{display:block;flex:1 1 0%;min-width:0;overflow-wrap:anywhere;}
+#toast.app-toast .app-toast-title{display:block;color:#fff;-webkit-text-fill-color:#fff;font:600 13px/1.25 Roboto,sans-serif;margin:0 0 3px;padding:0;letter-spacing:-.1px;}
+#toast.app-toast .app-toast-message{display:block;margin:0;padding:0;font:400 12px/1.4 Roboto,sans-serif;color:#fff;-webkit-text-fill-color:#fff;white-space:pre-line;}
+#toast.app-toast .app-toast-close {
+  display:flex; align-items:center; justify-content:center; flex:0 0 30px;
+  width:30px; height:30px; min-height:0; margin:0; padding:0;
+  background:rgba(255,255,255,.10); border:1px solid #ffffff0d; border-radius:7px;
+  box-shadow:none; color:#fff; -webkit-text-fill-color:#fff;
+  font:400 21px/1 Roboto,sans-serif; cursor:pointer;
+}
 #toast.app-toast .app-toast-close::after{content:"";position:absolute;inset:-7px;}
-@media(max-width:767px){#toast.app-toast{top:calc(var(--toast-vv-top,0px) + max(12px,env(safe-area-inset-top)));right:calc(var(--toast-vv-right,0px) + max(16px,env(safe-area-inset-right)));width:min(330px,calc(var(--toast-vv-width,100vw) - 32px));max-height:calc(var(--toast-vv-height,100dvh) - 24px);grid-template-columns:20px minmax(0,1fr) 28px;gap:9px;padding:9px 9px 9px 11px;}#toast.app-toast .app-toast-icon{width:20px;height:20px;}#toast.app-toast .app-toast-close{width:28px;height:28px;}}
-@media(prefers-reduced-transparency:reduce){#toast.app-toast{backdrop-filter:none;-webkit-backdrop-filter:none;background:#1b2c41;}#toast.app-toast[data-tone="warning"]{background:#452b1a;}#toast.app-toast[data-tone="error"]{background:#431f26;}#toast.app-toast[data-tone="success"]{background:#1c3728;}}
+#toast.app-toast .app-toast-close:hover{background:rgba(255,255,255,.20);}
+#toast.app-toast .app-toast-close:focus-visible{outline:2px solid var(--toast-accent);outline-offset:2px;}
+body[data-visual-style="menu"] #toast.app-toast .app-toast-surface{border-radius:10px;}
+@media(max-width:767px){
+  #toast.app-toast{right:calc(var(--toast-vv-right,0px) + max(16px,env(safe-area-inset-right)));width:min(330px,calc(var(--toast-vv-width,100vw) - 32px));}
+  #toast.app-toast .app-toast-surface{gap:10px;padding:11px;}
+}
+@media(prefers-reduced-transparency:reduce){
+  #toast.app-toast .app-toast-surface{background:#26272d;}
+  #toast.app-toast .app-toast-surface::before{background:none;backdrop-filter:none;-webkit-backdrop-filter:none;}
+}

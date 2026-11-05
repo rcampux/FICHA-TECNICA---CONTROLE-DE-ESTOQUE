@@ -11,4 +11,8 @@ Alertas e confirmações necessárias aparecem no canto superior direito no desk
 
 Validar temporização, substituição de mensagem, X, mobile/desktop, dialog nativo e preferência de movimento reduzido.
 
-Revisão visual: formato de fita compacta, 380 px no desktop e no máximo 330 px no mobile, alinhada à direita. Ícone de 20–22 px, tipografia de 12–13 px, padding vertical de 9–10 px e X discreto com área de toque ampliada. Textos continuam completos, sem cortes; mensagens usuais ocupam 76 px de altura mínima. Altura intrínseca explícita (`max-content`) evita esticar no popup; mensagens longas crescem conforme as linhas, sem corte. Validação com o CSS completo dentro do dialog: 76 px no mobile/desktop, 122 px para mensagem longa de teste.
+Revisão visual: fita compacta de 380 px no desktop e no máximo 330 px no mobile, a 30 px do topo visível (respeitando a área segura). Altura mínima de 76 px e crescimento natural para mensagens longas. Texto inteiramente branco; ícones em verde #20d661, laranja #ff9500, azul #168bff e vermelho #ff343b. Fundo neutro escuro, vidro translúcido e reflexo sutil, sem faixa marrom saturada.
+
+O host do popover apenas posiciona: não recebe blur nem animação. A superfície interna usa flex e animação; o vidro fica em uma camada própria atrás do texto, ícone e X. Isso desacopla a composição visual do top layer dos dialogs. Sem alterações nos ancestrais da navegação fixa.
+
+Verificação desta revisão: testes de duração, substituição, fechamento e todas as naturezas; visualização com CSS completo e dialog nativo em viewport mobile/desktop. Em Chrome, mensagem curta ~77 px e longa ~127 px, sem extravasamento. O comportamento em iPhone físico ainda precisa de confirmação no dispositivo após publicação.

@@ -2,7 +2,7 @@
 
 ## Comunicação global por toast (05/11/2026)
 
-- `src/ui/toasts.js`: `exposeToasts`, `createToasts` e `inferTone` centralizam os avisos. `show`, `dismiss`, `startTimer` e `animateArrival` controlam mensagem, substituição e tempo de leitura. `position`, `schedulePosition` e `place` mantêm o aviso no viewport e acima de dialogs. Handlers de invalid/input tratam validação acessível; `animateArrival` faz slide lateral de 420 ms com bounce discreto e respeita movimento reduzido. Avisos duram 3 segundos. `showToast` em `src/app.js` passa mensagem e opções ao controlador.
+- `src/ui/toasts.js`: `exposeToasts`, `createToasts` e `inferTone` centralizam os avisos. `show`, `dismiss`, `startTimer` e `animateArrival` controlam mensagem, substituição e tempo de leitura. `position`, `schedulePosition` e `place` mantêm o aviso no viewport e acima de dialogs. Handlers de invalid/input tratam validação acessível; `createToasts` separa host, superfície e conteúdo; `animateArrival` anima somente a superfície interna, mantendo o host do popover sem transformação. Faz slide lateral de 420 ms com bounce discreto e respeita movimento reduzido. Avisos duram 3 segundos. `showToast` em `src/app.js` passa mensagem e opções ao controlador.
 - `saveRecipe` e `bindProductionPlanner` passam avisos de validação claros; handlers de autenticação, `setScanStatus`, `setSearchStatus`, `generateNutrition`, `prepareRecipe`, `submitTask`, `submitSettings` e operações de `recipeStockBatch` usam o mesmo canal de erro/sucesso sem substituir informações contextuais.
 - `tests/toasts.test.mjs`: `fixture`, `node` e `advance` simulam DOM e relógio para verificar avisos consecutivos, fechamento em 3 segundos/X e dialog sem roubo de foco.
 

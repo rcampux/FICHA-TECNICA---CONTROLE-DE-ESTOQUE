@@ -17,7 +17,10 @@
     let timer=0,frame=0,open=false,arrival=null;
     host.className='app-toast';host.hidden=true;
     if(typeof host.showPopover==='function')host.setAttribute('popover','manual');
-    host.innerHTML='<span class="app-toast-icon" aria-hidden="true"></span><div class="app-toast-copy" aria-atomic="true"><strong class="app-toast-title"></strong><p class="app-toast-message"></p></div><button type="button" class="app-toast-close" aria-label="Fechar aviso">×</button>';
+    // Keep the top-layer host unfiltered and untransformed. The glass and motion
+    // belong to an inner surface, separate from the foreground text and controls.
+    host.innerHTML='<div class="app-toast-surface"><span class="app-toast-icon" aria-hidden="true"></span><div class="app-toast-copy" aria-atomic="true"><strong class="app-toast-title"></strong><p class="app-toast-message"></p></div><button type="button" class="app-toast-close" aria-label="Fechar aviso">×</button></div>';
+    const surface=host.querySelector('.app-toast-surface');
     const copy=host.querySelector('.app-toast-copy');
     function position() {
       frame=0;
@@ -52,7 +55,7 @@
     function animateArrival(){
       arrival?.cancel();arrival=null;
       if(window.matchMedia?.('(prefers-reduced-motion: reduce)').matches)return;
-      arrival=host.animate?.([
+      arrival=surface.animate?.([
         {transform:'translateX(calc(100% + 40px))',offset:0},
         {transform:'translateX(-4px)',offset:.70},
         {transform:'translateX(1px)',offset:.88},

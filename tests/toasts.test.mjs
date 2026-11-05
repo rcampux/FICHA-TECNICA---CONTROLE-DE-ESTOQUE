@@ -10,7 +10,8 @@ function fixture(){
   function node(){return {hidden:false,dataset:{},attrs:{},listeners:{},textContent:'',style:{setProperty(){}},
     setAttribute(key,value){this.attrs[key]=value;},getAttribute(key){return this.attrs[key];},removeAttribute(key){delete this.attrs[key];},
     addEventListener(name,fn){this.listeners[name]=fn;},append(child){child.parentNode=this;}};}
-  const host=node(),body=node(),input=node(),parts=Object.fromEntries(['copy','icon','title','message','close'].map(key=>[key,node()]));
+  const host=node(),body=node(),input=node(),parts=Object.fromEntries(['surface','copy','icon','title','message','close'].map(key=>[key,node()]));
+  parts.surface.animate=frames=>{parts.surface.frames=frames;return {cancel(){}};};
   host.parentNode=body;host.querySelector=selector=>parts[selector.replace('.app-toast-','')];
   host.contains=el=>Object.values(parts).includes(el);host.showPopover=()=>{host.popped=true;};host.hidePopover=()=>{host.popped=false;};host.matches=()=>host.popped;
   const document={body,activeElement:input,getElementById:()=>host,querySelectorAll:()=>dialogs,addEventListener(){}};
@@ -41,4 +42,17 @@ test('messages remain plain text and follow native dialogs without stealing inpu
   assert.equal(f.parts.message.textContent,message);assert.equal(f.document.activeElement,f.input);
   assert.equal(f.parts.copy.attrs['aria-live'],'assertive');
   f.controller.show('Produto salvo.',{tone:'success'});assert.equal(f.parts.copy.attrs.role,'status');assert.equal(f.parts.copy.attrs['aria-live'],'polite');
+});
+
+test('all message tones render foreground content and animate only the inner surface',()=>{
+  const f=fixture();
+  for(const [tone,icon] of [['warning','!'],['error','!'],['success','✓'],['info','i']]){
+    f.controller.show('Mensagem de '+tone,{tone});
+    assert.equal(f.parts.icon.textContent,icon);
+    assert.equal(f.parts.message.textContent,'Mensagem de '+tone);
+    assert.ok(f.parts.title.textContent);
+    assert.equal(f.host.dataset.tone,tone);
+    assert.equal(f.parts.surface.frames.at(-1).transform,'translateX(0)');
+    assert.equal(f.host.frames,undefined);
+  }
 });
