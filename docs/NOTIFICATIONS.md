@@ -11,4 +11,4 @@ Alertas e confirmações necessárias aparecem no canto superior direito no desk
 
 Validar temporização, substituição de mensagem, X, mobile/desktop, dialog nativo e preferência de movimento reduzido.
 
-Revisão visual: formato de fita compacta, 380 px no desktop e no máximo 330 px no mobile, alinhada à direita. Ícone de 20–22 px, tipografia de 12–13 px, padding vertical de 9–10 px e X discreto com área de toque ampliada. Textos continuam completos, sem cortes; mensagens usuais ocupam cerca de 55–70 px de altura.
+Revisão visual: formato de fita compacta, 380 px no desktop e no máximo 330 px no mobile, alinhada à direita. Ícone de 20–22 px, tipografia de 12–13 px, padding vertical de 9–10 px e X discreto com área de toque ampliada. Textos continuam completos, sem cortes; mensagens usuais ocupam 76 px de altura mínima. Altura intrínseca explícita (`max-content`) evita esticar no popup; mensagens longas crescem conforme as linhas, sem corte. Validação com o CSS completo dentro do dialog: 76 px no mobile/desktop, 122 px para mensagem longa de teste.
