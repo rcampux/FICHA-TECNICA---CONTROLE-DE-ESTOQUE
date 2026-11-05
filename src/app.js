@@ -194,6 +194,7 @@ function enterAppExperience(){
   document.getElementById('modal-auth')?.classList.remove('open');
   setAppShellVisible(true);
   showPage('ficha','nav-ficha');
+  window.FichaTecTutorial?.begin();
 }
 
 async function exitToStartExperience(){
@@ -495,6 +496,15 @@ const authSessionModule=window.FichaTecAuthSession.createAuthSessionModule({
 const {backToAuthForm,clearAuthInputs,getAuthRedirectUrl,getAuthState,getPasswordValidation,handleAuthBack,handleAuthKeydown,handlePasswordRecovery,initAuthSession,isStrongPassword,loadOrganizations,openAuthModal,renderAuthState,renderPasswordFeedback,requestPasswordReset,resendConfirmationEmail,selectOrganization,setAuthMode,signOutAuth,submitAuthForm,syncSupabaseSession,togglePasswordConfirmationVisibility,togglePasswordVisibility,updatePassword}=authSessionModule;
 Object.assign(window,{backToAuthForm,clearAuthInputs,getAuthRedirectUrl,getAuthState,getPasswordValidation,handleAuthBack,handleAuthKeydown,handlePasswordRecovery,initAuthSession,isStrongPassword,loadOrganizations,openAuthModal,renderAuthState,renderPasswordFeedback,requestPasswordReset,resendConfirmationEmail,selectOrganization,setAuthMode,signOutAuth,submitAuthForm,syncSupabaseSession,togglePasswordConfirmationVisibility,togglePasswordVisibility,updatePassword,openStartLogin,showBootSplash,showStartScreen,enterAppExperience,exitToStartExperience});
 
+window.FichaTecTutorial=window.FichaTecTutorialGuide.createGuide({
+  getAuth:getAuthState,
+  createClient:window.FichaTecSupabaseClientService.createClient,
+  getStock:()=>stock,
+  getPhysical:()=>physicalStock,
+  openProduct:kind=>kind==='physical'?openPhysicalModal():openStockModal(),
+});
+window.openTutorialLibrary=()=>window.FichaTecTutorial.library();
+
 const kitchenRepository=window.FichaTecKitchenRepository.createKitchenRepository({db:DB,createClient:window.FichaTecSupabaseClientService.createClient});
 const kitchenBoard=window.FichaTecKitchenBoard.createKitchenBoard({
   repository:kitchenRepository,
@@ -589,7 +599,7 @@ document.querySelectorAll('.modal-overlay').forEach(m=>{
 syncModalAccessibility();
 
 document.addEventListener('keydown',event=>{
-  if (document.getElementById('recipe-print-preview')?.open) return;
+  if (document.getElementById('recipe-print-preview')?.open || document.getElementById('tutorial-guide')?.open) return;
   if(!activeModal)return;
   if(event.key==='Escape'){
     if(activeModal.id==='modal-auth'&&activeModal.classList.contains('auth-gate'))return;

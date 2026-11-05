@@ -1,5 +1,14 @@
 # FichaTec - Inventario de Funcoes
 
+## Tutoriais e primeiro uso (05/11/2026)
+
+- TutorialCatalog: `exposeTutorialCatalog` descreve funções reais, seus seletores e as seis etapas do tour.
+- TutorialProgress: `exposeTutorialProgress`, `fresh`, `merge`, `browserStorage`, `createProgress`, `read`, `write`, `persist`, `begin`, `pause`, `allowed`, `mark`, `resetSession` e `get` mantêm progresso por conta, contagem de acessos, pausa por sessão e preferência permanente. Escritas no Supabase são serializadas e verificam a identidade ativa.
+- TutorialGuide: `exposeTutorialGuide`, `createGuide`, `escape`, `button`, `visibleTarget`, `position`, `schedulePosition`, `show`, `close`, `renderTopic`, `startTour`, `library`, `renderLibrary` (com `norm`), `intercept` e `begin` implementam orientação em foco, central pesquisável, retomada da ação e orientação de estoque vazio. Callbacks de clique, input, cancel e sign-out mantêm a navegação e encerramento; `continuation`/`selectOrigin` retomam apenas a ação explicitamente iniciada.
+- App: `enterAppExperience` inicia o contador idempotente; `openTutorialLibrary` abre a central. O handler de teclado de modais cede Escape/Tab ao dialog nativo de tutorial.
+- AuthSession: callback `onAuthStateChange` trata `USER_UPDATED` sem recarregar dados da cozinha, preservando receitas em edição ao salvar preferências de tutorial.
+- `tests/tutorial-progress.test.mjs`: `storage`, `fixture` e os casos de teste verificam os três acessos, isolamento, sincronização, pausa e armazenamento indisponível.
+
 `syncRecipeKeyboard` em `src/app.js` acompanha a área visível durante a digitação na ficha e restaura a navegação quando o teclado fecha.
 
 `openFichaFromNavigation` em `src/app.js` retorna aos cards da Ficha a cada toque no menu mobile e preserva o rascunho.

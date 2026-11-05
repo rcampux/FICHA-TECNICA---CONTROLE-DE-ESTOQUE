@@ -513,6 +513,7 @@
   <button class="nav-btn" id="nav-cozinha" onclick="showPage('cozinha','nav-cozinha')">
     <span class="material-symbols-rounded">view_kanban</span><span>Cozinha</span>
   </button>
+  <button class="tutorial-desktop-entry" type="button" onclick="openTutorialLibrary()"><span class="material-symbols-rounded" aria-hidden="true">help</span><span>Tutoriais</span></button>
   <div class="desktop-nav-spacer"></div>
   <button class="desktop-scan-action" onclick="openScanModal()" type="button">
     <span class="material-symbols-rounded" aria-hidden="true">document_scanner</span>
@@ -1053,6 +1054,7 @@
         <div class="section-label" style="margin-top:0">Workspace ativo</div>
         <div id="auth-workspace-list"></div>
         <div class="auth-action-stack">
+          <button class="btn btn-secondary btn-full" type="button" onclick="closeModal('modal-auth');openTutorialLibrary()"><span class="material-symbols-rounded" aria-hidden="true">help</span> Tutoriais e funções</button>
           <button class="btn btn-secondary btn-full" onclick="signOutAuth()" type="button">
             <span class="material-symbols-rounded">logout</span> Sair
           </button>
@@ -1060,6 +1062,7 @@
       </div>
 
       <div id="auth-local-wrap" style="display:none">
+        <button class="btn btn-secondary btn-full" type="button" onclick="closeModal('modal-auth');openTutorialLibrary()">Tutoriais e funções</button>
         <div class="auth-local-card">
           <span class="material-symbols-rounded">offline_bolt</span>
           <div><strong>Modo local ativo</strong><p>Seus dados ficam neste navegador. Você pode continuar usando o app normalmente.</p></div>
@@ -1152,6 +1155,9 @@
 <script src="../src/modules/kitchen/kanbanBoard.js" defer></script>
 <script src="../src/pwa/registerServiceWorker.js" defer></script>
 <script src="../src/ui/mobileViewport.js" defer></script>
+<script src="../src/modules/tutorial/tutorialCatalog.js" defer></script>
+<script src="../src/modules/tutorial/tutorialProgress.js" defer></script>
+<script src="../src/modules/tutorial/tutorialGuide.js" defer></script>
 <script src="../src/app.js" defer></script>
 </body>
 </html>

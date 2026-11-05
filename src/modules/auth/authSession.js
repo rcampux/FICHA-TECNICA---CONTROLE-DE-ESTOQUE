@@ -297,6 +297,13 @@
 
         state.client = await ensureSupabaseClient();
         const {data: listenerData} = state.client.auth.onAuthStateChange((event, session) => {
+          // Saving tutorial preferences must not reload the workspace or clear an open recipe.
+          if (event === "USER_UPDATED") {
+            state.session = session || state.session;
+            state.user = session?.user || state.user;
+            renderAuthState();
+            return;
+          }
           if (event === "PASSWORD_RECOVERY") {
             handlePasswordRecovery(session);
             return;

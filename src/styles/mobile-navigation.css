@@ -13,7 +13,7 @@
   }
   .scan-fab { bottom:calc(var(--mobile-nav-space) + 16px); }
   body.mobile-keyboard-open :is(.nav,.scan-fab),
-  body:has(.modal-overlay.open, dialog[open]) :is(.nav,.scan-fab),
+  body:has(.modal-overlay.open, dialog[open]:not(#tutorial-guide)) :is(.nav,.scan-fab),
   body.recipe-save-visible .scan-fab { visibility:hidden; pointer-events:none; }
   #app-shell :is(input,select,textarea), .modal :is(input,select,textarea), dialog :is(input,select,textarea) { font-size:16px; }
   #app-shell :is(input,select,textarea) { scroll-margin-block:80px 24px; }
