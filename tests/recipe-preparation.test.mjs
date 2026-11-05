@@ -236,6 +236,12 @@ test('editar quantidade recalcula a ficha e só modifica a receita registrada ao
   h.element('ingredient-edit-form').onsubmit({preventDefault(){}});
   assert.equal(recipe.ingredients[0].qtyG, 360);
   assert.equal(h.element('total-custo').textContent, '1.2');
+  const state=h.module.getJourneyState();
+  assert.equal(state.needsReprepare,true);
+  assert.equal(h.module.prepareIngredients(state.revision,state.scope),true);
+  assert.equal(h.module.getJourneyState().needsReprepare,false);
+  assert.equal(h.module.getJourneyState().confirmed.length,2);
+  assert.equal(h.module.prepareIngredients(state.revision,state.scope),false);
   await h.module.saveRecipe();
   const saved = h.getRecipes()[0].ingredients[0];
   assert.equal(saved.qtyG, 80);

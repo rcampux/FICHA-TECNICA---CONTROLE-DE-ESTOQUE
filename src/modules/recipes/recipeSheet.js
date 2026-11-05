@@ -27,6 +27,7 @@
     let currentIngredients = [];
     let pendingIngredients = [];
     let journeyRevision = 0;
+    let needsReprepare = false;
     let ingredientSequence = 0;
     let selectedIngredient = null;
     let currentRecipeId = null;
@@ -46,6 +47,7 @@
       if (key === draftScope) return;
       currentIngredients = [];
       pendingIngredients = [];
+      needsReprepare=false;
       journeyRevision++;
       editingRecipeId = null;
       currentRecipeId = null;
@@ -542,6 +544,13 @@
           return;
         }
         viewRecipe(id);
+        if(action==='plan')requestAnimationFrame(()=>{
+          const heading=document.getElementById('production-planner-title');
+          if(!heading)return;
+          heading.setAttribute('tabindex','-1');
+          heading.focus({preventScroll:true});
+          heading.scrollIntoView({block:'start',behavior:'instant'});
+        });
       };
       listElement.onkeydown = (event) => {
         if (!["Enter", " "].includes(event.key)) return;
@@ -1032,15 +1041,16 @@
       deps.onJourneyChange?.();
     }
     function prepareIngredients(revision,scope=personalKey('temporarySupplies')) {
-      if(scope!==personalKey('temporarySupplies') || recipeSaveInFlight || revision!==journeyRevision || !pendingIngredients.length)return false;
-      if(!commitIngredientDrafts(pendingIngredients))return false;
+      if(scope!==personalKey('temporarySupplies') || recipeSaveInFlight || revision!==journeyRevision || (!pendingIngredients.length&&!needsReprepare))return false;
+      if(pendingIngredients.length&&!commitIngredientDrafts(pendingIngredients))return false;
       pendingIngredients=[];
+      needsReprepare=false;
       journeyRevision++;
       renderIngredients();calcFicha();
       return true;
     }
     function getJourneyState() {
-      return {source:ingSource,revision:journeyRevision,scope:personalKey('temporarySupplies'),
+      return {source:ingSource,revision:journeyRevision,needsReprepare,scope:personalKey('temporarySupplies'),
         confirmed:currentIngredients.map(item=>({...item,category:ingredientCategory(item)})),
         pending:pendingIngredients.map(item=>({...item}))};
     }
@@ -1160,6 +1170,7 @@
       if((currentIngredients.length||pendingIngredients.length)&&!options.force&&!await confirmAction('Deseja limpar todos os dados desta ficha tecnica?','Limpar ficha','Sim, limpar'))return;
       currentIngredients=[];
       pendingIngredients=[];
+      needsReprepare=false;
       journeyRevision++;
       try{const key=personalKey('temporarySupplies');if(key)localStorage.removeItem(key);}catch{}
       setIngSource('virtual');
@@ -1325,10 +1336,6 @@
             <div style="display:flex;gap:6px;align-items:center;flex-shrink:0">
               ${!pending && changed && Math.round(diff*100)!==0?`<span style="font-size:11px;background:${diff>0?'var(--r100)':'var(--g50)'};color:${diff>0?'var(--r400)':'var(--g600)'};padding:2px 8px;border-radius:var(--r-pill);font-weight:700">${diff>0?'▲':'▼'} ${fmtBRL(Math.abs(diff))}</span>`:''}
               ${pending?'<span class="pending-tag">Custo pendente</span>':`<span class="badge badge-green">Custo ${fmtBRL(totalCost)}</span>`}
-              <span class="recipe-card-actions">
-                <button class="btn btn-secondary btn-icon" data-recipe-action="edit" type="button" aria-label="Editar ${escapeAttribute(r.nome)}"><span class="material-symbols-rounded" aria-hidden="true">edit</span></button>
-                <button class="btn btn-danger btn-icon" data-recipe-action="delete" type="button" aria-label="Excluir ${escapeAttribute(r.nome)}"><span class="material-symbols-rounded" aria-hidden="true">delete</span></button>
-              </span>
             </div>
           </div>
           <div class="recipe-card-meta"><span class="material-symbols-rounded">fork_spoon</span>${r.ingredients.length} ingrediente(s) · ${formatRecipeYield(r.porcoes,r.yieldUnit)}${r.rendimento?' · '+formatBatchNumber(r.rendimento)+' g':''}${pending?'':' · Markup '+r.markup+'%'}</div>
@@ -1340,9 +1347,7 @@
             <button class="btn btn-secondary btn-xs recipe-ingredients-toggle" data-recipe-action="ingredients" type="button" aria-expanded="false" aria-controls="recipe-card-ingredients-${cardIndex}"><span data-ingredients-label>Ver ingredientes</span><span class="material-symbols-rounded" aria-hidden="true">expand_more</span></button>
             <button class="btn btn-secondary btn-xs recipe-ingredients-toggle" data-recipe-action="preparation" type="button" aria-expanded="false" aria-controls="recipe-card-preparation-${cardIndex}">Modo de preparo<span class="material-symbols-rounded" aria-hidden="true">expand_more</span></button>
             </div>
-            <button class="btn btn-outlined btn-xs" data-recipe-action="pdf" type="button">
-              <span class="material-symbols-rounded" style="font-size:14px">picture_as_pdf</span> PDF
-            </button>
+            <button class="btn recipe-plan-action" data-recipe-action="plan" type="button">Planejar produção</button>
           </div>
           <ul class="recipe-card-ingredients" id="recipe-card-ingredients-${cardIndex}" data-card-ingredients hidden aria-label="Ingredientes e quantidades da receita-base de ${escapeAttribute(r.nome)}">${r.ingredients.map(i=>`<li><span>${escapeHtml(i.name)}</span><strong class="recipe-card-ingredient-quantity">${formatProductionIngredientQuantity(i)}</strong></li>`).join('')}</ul>
           <div class="recipe-preparation-content" id="recipe-card-preparation-${cardIndex}" data-card-preparation hidden aria-label="Modo de preparo de ${escapeAttribute(r.nome)}">${r.modoPreparo?escapeHtml(r.modoPreparo):'Modo de preparo ainda não informado. Clique em Editar para adicioná-lo.'}</div>
@@ -1554,6 +1559,7 @@
       draftScope=personalKey('temporarySupplies');
       currentIngredients=r.ingredients.map(item => measures.normalizeIngredient({...item},findStockItem(item.stockId,item.name)));
       pendingIngredients=[];
+      needsReprepare=false;
       journeyRevision++;
       recipeImageOperationId+=1;
       setRecipeImageProcessing(false);
@@ -1723,6 +1729,8 @@
       const draft = previewIngredientEdit();
       if (!draft) { if (!editQty.checkValidity()) editQty.reportValidity(); else equivalent.focus(); return; }
       Object.assign(editingItem, draft);
+      needsReprepare=true;
+      journeyRevision++;
       editor.close();
       renderIngredients();
       calcFicha();
@@ -1737,6 +1745,7 @@
     });
 
     return {
+      openIngredientEditor: runWithState(openIngredientEditor, {commit:false}),
       resolveSelectedMeasure,
       syncAppearance: bindRecipeStyles,
       restoreSupplies: runWithState(restoreSupplies),

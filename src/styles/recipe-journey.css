@@ -18,6 +18,18 @@
 .ingredient-tiles { display:contents; }
 .ingredient-tile, .ingredient-add-tile { position:relative; min-width:0; min-height:116px; padding:12px 8px; border:0; border-radius:14px; background:#fff; color:#352a28; display:flex; flex-direction:column; align-items:center; text-align:center; justify-content:center; gap:6px; }
 .ingredient-tile img { display:block; width:80px; height:80px; max-width:100%; object-fit:contain; border-radius:10px; }
+.ingredient-tile strong { font:600 12px/1.4 Roboto,sans-serif; overflow-wrap:anywhere; }
+.ingredient-tile-quantity { font:400 12px/1.4 Roboto,sans-serif; color:#70615d; }
+.ingredient-tile[role="button"] { cursor:pointer; }
+.ingredient-tile[role="button"]:focus-visible { outline:3px solid #edc98c; outline-offset:3px; }
+/* Placeholder hints are intentionally lighter than entered values in both themes. */
+body input::placeholder, body textarea::placeholder,
+body .recipe-base-card input::placeholder,
+body .recipe-base-card #ficha-peso-unidade:disabled::placeholder,
+body .search-bar input::placeholder,
+body #page-estoque input::placeholder, body #page-fisico input::placeholder {
+  color:#a0a3a8; opacity:1; font-weight:400;
+}
 .ingredient-tile-remove { position:absolute; top:2px; right:2px; width:32px; height:32px; padding:0; display:grid; place-items:center; background:#fff; color:#755655; border:0; border-radius:50%; cursor:pointer; font:22px/1 Roboto,sans-serif; }
 .ingredient-icon-loading { width:80px; height:80px; border-radius:10px; background:#f4eeeb; }
 #ingredient-builder-toggle.ingredient-add-tile { color:#fff; background:rgb(255 255 255 / 7%); border:1px dashed rgb(255 255 255 / 65%); cursor:pointer; font:inherit; font-size:12px; font-weight:600; line-height:1.5; }
