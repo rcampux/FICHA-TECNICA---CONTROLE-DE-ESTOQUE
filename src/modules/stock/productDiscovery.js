@@ -40,7 +40,7 @@
     const editorVersions = {virtual:0, physical:0};
 
     function calculateProductPrice(reference, quantity, unit) {
-      const units = {kg:{family:"mass",factor:1000},g:{family:"mass",factor:1},ml:{family:"volume",factor:1},un:{family:"count",factor:1}};
+      const units = {kg:{family:"mass",factor:1000},mg:{family:"mass",factor:0.001},g:{family:"mass",factor:1},ml:{family:"volume",factor:1},un:{family:"count",factor:1}};
       const from = units[reference?.unit];
       const to = units[unit];
       if (!from || !to || from.family !== to.family || !(reference.quantity > 0) || !(quantity > 0)) return null;
@@ -471,22 +471,7 @@
     }
 
     function inferPackage(title) {
-      const normalized = String(title || "").replace(/,/g, ".");
-      const multipack = normalized.match(/(\d+)\s*[xX]\s*(\d+(?:\.\d+)?)\s*(kg|g|ml|l|un(?:idades?)?)/i);
-      const single = normalized.match(/(\d+(?:\.\d+)?)\s*(kg|g|ml|l|un(?:idades?)?)(?![a-z])/i);
-      const match = multipack || single;
-      if (!match) return {quantity:1, unit:"un"};
-
-      const multiplier = multipack ? Number(match[1]) : 1;
-      let quantity = Number(multipack ? match[2] : match[1]) * multiplier;
-      let unit = String(multipack ? match[3] : match[2]).toLocaleLowerCase("pt-BR");
-      if (unit === "l") {
-        quantity *= 1000;
-        unit = "ml";
-      } else if (unit.startsWith("un")) {
-        unit = "un";
-      }
-      return {quantity:Number(quantity.toFixed(3)), unit};
+      return window.FichaTecMeasurements.packageSize(title) || {quantity:'',unit:'g'};
     }
 
     function inferCategory(title) {
@@ -528,12 +513,12 @@
       closeProductSearch();
       writeNutrition(type, {
         portionSize:100,
-        priceReference:{quantity:packageInfo.quantity,unit:packageInfo.unit,price:result.price},
+        ...(packageInfo.quantity>0?{priceReference:{quantity:packageInfo.quantity,unit:packageInfo.unit,price:result.price}}:{}),
         sourceMarket:result.market,sourcePrice:result.price,sourceLink:result.link,
       });
       setNutritionMessage(type, "Produto selecionado. Preenchendo a tabela nutricional…", "loading");
       await generateNutrition(type, result.title, {silent:true});
-      showToast("Produto selecionado e formulário preenchido.");
+      showToast(packageInfo.quantity>0?"Produto selecionado e formulário preenchido.":"Informe o peso ou volume da embalagem para concluir o cadastro.");
     }
 
     function handleProductSearchKeydown(event) {

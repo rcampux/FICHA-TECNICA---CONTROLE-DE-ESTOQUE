@@ -6,6 +6,7 @@ import {distanceInKm,filterNearbyStores,matchNearbyOffers} from '../api/product-
 
 const elements = new Map();
 const context = {window:{}, document:{getElementById:id=>elements.get(id)}};
+vm.runInNewContext(readFileSync(new URL('../src/utils/measurements.js',import.meta.url),'utf8'),context);
 vm.runInNewContext(readFileSync(new URL('../src/modules/stock/productDiscovery.js',import.meta.url),'utf8'),context);
 const discovery=context.window.FichaTecProductDiscovery.createProductDiscoveryModule({formatCurrency:value=>`R$ ${value}`});
 

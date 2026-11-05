@@ -551,7 +551,7 @@
     <div class="input-row cols-2">
       <div class="input-group"><label class="input-label">Quantidade *</label><input type="number" id="stock-qty" placeholder="Ex: 1" step="0.001" oninput="updateProductPrice('virtual')"></div>
       <div class="input-group"><label class="input-label">Unidade</label>
-        <select id="stock-unit" onchange="changeProductUnit('virtual')"><option value="kg">KG</option><option value="g">Gramas</option><option value="ml">Mililitros</option><option value="un">Unidade</option></select>
+        <select id="stock-unit" onchange="changeProductUnit('virtual')"><option value="g">Gramas (g)</option><option value="mg">Miligramas (mg)</option><option value="ml">Mililitros (ml)</option></select>
       </div>
     </div>
     <div class="input-group"><label class="input-label">Valor Pago (R$) *</label><input type="number" id="stock-price" placeholder="Ex: 10.00" step="0.01" oninput="updateProductPrice('virtual',true)"><small class="product-price-hint" id="stock-price-hint" aria-live="polite"></small></div>
@@ -668,7 +668,7 @@
     <div class="input-row cols-2">
       <div class="input-group"><label class="input-label">Quantidade *</label><input type="number" id="pstock-qty" placeholder="Ex: 5" step="0.001" oninput="updateProductPrice('physical')"></div>
       <div class="input-group"><label class="input-label">Unidade</label>
-        <select id="pstock-unit" onchange="changeProductUnit('physical')"><option value="kg">KG</option><option value="g">Gramas</option><option value="ml">Mililitros</option><option value="un">Unidade</option></select>
+        <select id="pstock-unit" onchange="changeProductUnit('physical')"><option value="g">Gramas (g)</option><option value="mg">Miligramas (mg)</option><option value="ml">Mililitros (ml)</option></select>
       </div>
     </div>
     <div class="input-group"><label class="input-label">Valor Pago (R$) *</label><input type="number" id="pstock-price" placeholder="Ex: 10.00" step="0.01" oninput="updateProductPrice('physical',true)"><small class="product-price-hint" id="pstock-price-hint" aria-live="polite"></small></div>
@@ -1105,9 +1105,10 @@
 <div class="input-group"><label class="input-label" for="ing-category">Categoria</label><select id="ing-category"><option value="">Sem categoria</option></select></div>
 <div class="ingredient-amount-fields">
 <div class="input-group"><label class="input-label" for="ing-qty">Quantidade na receita</label><input type="number" id="ing-qty" min="0.0001" max="999999999" step="any" inputmode="decimal" placeholder="Ex.: 200" oninput="calcIngCost()" required></div>
-<div class="input-group"><label class="input-label" for="ing-unit">Unidade de medida</label><select id="ing-unit" onchange="calcIngCost()"><option value="g">Gramas (g)</option><option value="kg">Quilograma (kg)</option><option value="ml">Mililitros (ml)</option><option value="un">Unidade (un)</option></select></div>
+<div class="input-group"><label class="input-label" for="ing-unit">Unidade de medida</label><select id="ing-unit" onchange="calcIngCost()"><option value="g">Gramas (g)</option><option value="mg">Miligramas (mg)</option><option value="ml">Mililitros (ml)</option></select></div>
 </div>
 <div id="ing-cost-preview" role="status"></div>
+<div id="ing-equivalence-group" class="ingredient-measurement" hidden><label class="input-label" id="ing-equivalence-label" for="ing-equivalence"></label><input id="ing-equivalence" type="number" inputmode="decimal" min="0.000001" step="any" oninput="calcIngCost()"><p id="ing-equivalence-help">Informe o conteúdo indicado na embalagem para calcular a quantidade e o custo corretamente.</p></div>
 <details class="ingredient-yield-option"><summary>Rendimento do ingrediente</summary>
 <label class="input-label" for="ing-rendimento">Quanto é aproveitado? (%)</label><input type="number" id="ing-rendimento" min="0.01" max="100" step="any" inputmode="decimal" placeholder="100" oninput="calcIngCost()">
 <p>Use 100% quando não há descarte. Ex.: 85% se 15% forem cascas ou aparas.</p></details>
@@ -1122,6 +1123,7 @@
 <script src="../src/config/env.js" defer></script>
 <script src="../src/config/supabase.js" defer></script>
 <script src="../src/config/storageKeys.js" defer></script>
+<script src="../src/utils/measurements.js" defer></script>
 <script src="../src/utils/formatters.js" defer></script>
 <script src="../src/modules/stock/categoryColors.js" defer></script>
 <script src="../src/services/repositories/localStorageRepository.js" defer></script>

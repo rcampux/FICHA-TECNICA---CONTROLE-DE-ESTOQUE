@@ -23,6 +23,7 @@
       clearRecipeImage: clearRecipeImageView,
     } = deps;
 
+    const measures = window.FichaTecMeasurements;
     let currentIngredients = [];
     let pendingIngredients = [];
     let journeyRevision = 0;
@@ -54,7 +55,7 @@
         if (Array.isArray(saved)) {
           const supplies = saved.filter(item => item &&
             ['virtual', 'fisico'].includes(item.source) && typeof item.name === 'string' &&
-            Number.isFinite(item.qtyG) && item.qtyG > 0);
+            Number.isFinite(item.qtyG) && item.qtyG > 0).map(item=>measures.normalizeIngredient(item,findStockItem(item.stockId,item.name)));
           currentIngredients = supplies.filter(item => !item.preparationPending);
           pendingIngredients = supplies.filter(item => item.preparationPending)
             .map(({preparationPending, ...item}) => item);
@@ -773,7 +774,7 @@
       return stock.find(x=>x.name.toLowerCase()===name.toLowerCase())||null;
     }
     function conversionFor(sourceUnit, unit) {
-      const base = u => u === 'kg' ? 'g' : u;
+      const base = measures.baseUnit;
       const a = base(sourceUnit), b = base(unit);
       if (a === b) return null;
       const denominator = [a,b].includes('un') ? 'un' : 'ml';
@@ -788,7 +789,9 @@
       if (product?.key === conversion.key && product.value > 0) return product.value;
       const pack = source?.nutrition?.priceReference;
       if (source?.unit === 'un' && pack && conversionFor('un',pack.unit)?.key === conversion.key)
-        return Number(pack.quantity) * (pack.unit === 'kg' ? 1000 : 1);
+        return measures.toBase(pack.quantity,pack.unit);
+      const measured=measures.countMeasure(source);
+      if(measured && conversion.key===measured.unit+'/un')return measured.quantity;
       return 0;
     }
     function getIngredientUnitPrice(item) {
@@ -829,6 +832,7 @@
       document.getElementById('ing-selected-info').style.display='none';
       document.getElementById('ing-cost-preview').style.display='none';
       selectedIngredient=null;
+      draftMeasurement();
       deps.renderIngredientCategories?.('');
       deps.onJourneyChange?.();
     }
@@ -844,15 +848,15 @@
       const matches=ingSource==='fisico'
         ?physicalStock.filter(p=>p.name.toLowerCase().includes(q)&&p.currentQty>0).slice(0,8).map(physicalIngredientProduct)
         :stock.filter(s=>s.name.toLowerCase().includes(q)).slice(0,8);
-      if(!matches.length){dd.innerHTML=`<div class="autocomplete-item" style="color:var(--n400)">Nenhum ingrediente encontrado</button>`;}
+      if(!matches.length){dd.innerHTML=`<div class="autocomplete-item" style="color:var(--n400)">Nenhum ingrediente encontrado</div>`;}
       else{
         dd.innerHTML=matches.map(s=>{
           const ppg=pricePerUnit(s);
-          const sub=s.unit==='ml'?fmtBRL(ppg*1000)+'/L':s.unit==='un'?fmtBRL(ppg)+'/un':fmtBRL(ppg*1000)+'/kg';
+          const sub=s.unit==='ml'?fmtBRL(ppg*1000)+'/L':s.unit==='un'?'Peso ou volume pendente':fmtBRL(ppg*1000)+'/kg';
           return`<button type="button" class="autocomplete-item" onclick="selectIngredient('${s.id}')">
             <div>${escapeHtml(s.name)}${ingSource==='fisico'?` <span style="font-size:11px;color:var(--g500);font-weight:700">${fmtQty(s.availableQty,s.unit)} disp.</span>`:''}</div>
-            <div class="sub">${s.qty}${s.unit} · ${fmtBRL(s.price)} · ${sub}</div>
-          </div>`;
+            <div class="sub">${s.unit==='un'?'Embalagem':fmtQty(s.qty,s.unit)} · ${fmtBRL(s.price)} · ${sub}</div>
+          </button>`;
         }).join('');
       }
       dd.classList.add('open');
@@ -866,34 +870,71 @@
         selectedIngredient=physicalIngredientProduct(p);
       }else{selectedIngredient=stock.find(s=>s.id===parseInt(id)||s.id===id);}
       if(!selectedIngredient)return;
-      document.getElementById('ing-unit').value = selectedIngredient.unit || 'g';
+      document.getElementById('ing-unit').value = measures.isMetric(selectedIngredient.unit) ? measures.baseUnit(selectedIngredient.unit) : measures.countMeasure(selectedIngredient)?.unit || 'g';
+      document.getElementById('ing-equivalence').value='';
+      document.getElementById('ing-equivalence').dataset.key='';
       document.getElementById('ing-search').value=selectedIngredient.name;
       document.getElementById('ing-dropdown').classList.remove('open');
       const ppg=pricePerUnit(selectedIngredient),u=selectedIngredient.unit;
       document.getElementById('ing-sel-name').textContent=selectedIngredient.name;
-      document.getElementById('ing-sel-price').textContent=u==='ml'?`${fmtBRL(ppg*1000)}/L · ${fmtBRL(ppg*100)}/100ml`:u==='un'?`${fmtBRL(ppg)}/unidade`:`${fmtBRL(ppg*1000)}/kg · ${fmtBRL(ppg*100)}/100g`;
+      document.getElementById('ing-sel-price').textContent=u==='ml'?`${fmtBRL(ppg*1000)}/L · ${fmtBRL(ppg*100)}/100ml`:u==='un'?`${fmtBRL(ppg)} por embalagem · informe o conteúdo abaixo`:`${fmtBRL(ppg*1000)}/kg · ${fmtBRL(ppg*100)}/100g`;
       document.getElementById('ing-selected-info').style.display='block';
       deps.renderIngredientCategories?.(selectedIngredient.category || deps.inferIngredientCategory?.(selectedIngredient.name) || '');
       calcIngCost();
     }
+    function draftMeasurement() {
+      const conversion=selectedIngredient && conversionFor(selectedIngredient.unit,document.getElementById('ing-unit').value);
+      const field=document.getElementById('ing-equivalence');
+      const group=document.getElementById('ing-equivalence-group');
+      if(!conversion){group.hidden=true;field.disabled=true;field.required=false;return {conversion:null,value:0};}
+      const known=knownEquivalence(selectedIngredient,selectedIngredient,conversion);
+      if(field.dataset.key!==conversion.key){field.value=known||'';field.dataset.key=conversion.key;}
+      group.hidden=Boolean(known);
+      field.disabled=Boolean(known);field.required=!known;
+      document.getElementById('ing-equivalence-label').textContent=conversion.label.replace('uma unidade','cada embalagem ou peça');
+      return {conversion,value:known||Number(field.value)};
+    }
     function calcIngCost(){
+      const {conversion,value}=draftMeasurement();
       if(!selectedIngredient)return;
-      const qty=parseFloat(document.getElementById('ing-qty').value)||0;
+      const qty=Number(document.getElementById('ing-qty').value)||0;
       const unit=document.getElementById('ing-unit').value;
-      const qtyG=unit==='kg'?qty*1000:qty;
-      const conversion = conversionFor(selectedIngredient.unit,unit);
-      const equivalent = conversion && knownEquivalence(selectedIngredient,selectedIngredient,conversion);
-      if(conversion && (!equivalent || ingSource==='fisico')){
-        const hint=document.getElementById('ing-cost-preview');
-        hint.style.display='block';hint.textContent='Adicione na unidade do estoque e use o lápis para informar a equivalência.';
-        return;
+      const hint=document.getElementById('ing-cost-preview');
+      if(conversion && !(value>0)){
+        hint.style.display='block';hint.textContent='Informe o peso ou volume da embalagem para calcular o custo.';return;
       }
-      const rate = pricePerUnit(selectedIngredient) * (!conversion ? 1 : conversion.divide ? 1/equivalent : equivalent);
-      const yieldPercent = Number(document.getElementById('ing-rendimento').value) || 100;
-      const cost=rate*qtyG/(unit==='un'?1:yieldPercent/100);
-      const el=document.getElementById('ing-cost-preview');
-      if(qty>0){el.style.display='block';el.textContent=`Custo estimado: ${fmtBRL(cost)}`;}
-      else el.style.display='none';
+      const rate=pricePerUnit(selectedIngredient)*(!conversion?1:conversion.divide?1/value:value);
+      const yieldPercent=Number(document.getElementById('ing-rendimento').value)||100;
+      hint.style.display=qty>0?'block':'none';
+      hint.textContent='Custo estimado: '+fmtBRL(rate*measures.toBase(qty,unit)/(yieldPercent/100));
+    }
+    async function resolveSelectedMeasure() {
+      syncState();
+      const draft=readIngredientDraft();
+      if(!draft)return false;
+      if(!selectedIngredient || selectedIngredient.unit!=='un')return true;
+      const scope=personalKey('temporarySupplies'), selected=selectedIngredient;
+      const catalog=findStockItem(selected.id,selected.name);
+      if(!catalog)return ingredientInputError('Produto não encontrado. Selecione novamente.');
+      const equivalent=draft.nutrition.recipeEquivalence;
+      const product=measures.normalizeStock({...catalog,nutrition:{...catalog.nutrition,recipeEquivalence:equivalent}});
+      if(product.unit==='un')return ingredientInputError('Informe o conteúdo de cada embalagem.');
+      const physical=physicalStock.filter(item=>String(item.stockId)===String(catalog.id)
+        || (catalog.remoteId && item.stockRemoteId===catalog.remoteId) || item.name.toLowerCase()===catalog.name.toLowerCase())
+        .map(item=>measures.normalizePhysical(item,product));
+      try {
+        await DB.upsertStockBatch([product],physical,DB.activeOrganizationId?.());
+        if(scope!==personalKey('temporarySupplies'))return false;
+        stock=getStock().map(item=>String(item.id)===String(product.id)?product:item);
+        physicalStock=getPhysicalStock().map(item=>physical.find(p=>String(p.id)===String(item.id))||item);
+        commitState();
+        selectedIngredient=ingSource==='fisico'?physicalIngredientProduct(physicalStock.find(item=>String(item.id)===String(selected._physicalId))):product;
+        calcIngCost();
+        return true;
+      } catch(error) {
+        console.error('Stock measurement save failed',error);
+        return ingredientInputError('Não foi possível salvar o peso ou volume. Seus dados foram mantidos; tente novamente.');
+      }
     }
     function physicalIngredientProduct(product) {
       const catalog = stock.find(item => String(item.id) === String(product.stockId)
@@ -917,22 +958,22 @@
       const qty=Number(document.getElementById('ing-qty').value);
       const unit=document.getElementById('ing-unit').value;
       const rend=Number(document.getElementById('ing-rendimento').value || 100);
-      if(!['g','kg','ml','un'].includes(unit)){ingredientInputError('Selecione uma unidade de medida.');return null;}
+      if(!['g','mg','kg','ml'].includes(unit)){ingredientInputError('Selecione uma unidade de medida.');return null;}
       if(!Number.isFinite(rend)||rend<=0||rend>100){ingredientInputError('Informe um rendimento maior que zero e até 100%.');return null;}
-      const conversion = !manual && conversionFor(product.unit,unit);
-      const equivalent = conversion && knownEquivalence(product,product,conversion);
-      if(conversion && (!equivalent || ingSource==='fisico')){ingredientInputError('Adicione na unidade do estoque. Depois, use o lápis para informar a equivalência.');return null;}
+      const {conversion,value:equivalent}=manual?{conversion:null,value:0}:draftMeasurement();
+      if(conversion && !(equivalent>0)){ingredientInputError('Informe o peso ou volume de cada embalagem no campo acima.');return null;}
       if(!Number.isFinite(qty)||qty<=0||qty>999999999){ingredientInputError('Informe uma quantidade maior que zero.');return null;}
       const rate = manual ? 0 : pricePerUnit(product) * (!conversion ? 1 : conversion.divide ? 1/equivalent : equivalent);
       if(!Number.isFinite(rate)||rate<0){ingredientInputError('Revise o preço e a quantidade desse produto no estoque.');return null;}
-      const qtyG=unit==='kg'?qty*1000:qty;
-      const qtyBruta=unit==='un'?qty:qtyG/(rend/100);
+      const qtyG=measures.toBase(qty,unit);
+      if(qtyG<0.0001){ingredientInputError('A quantidade mínima é 0,1 mg, 0,0001 g ou 0,0001 ml.');return null;}
+      const qtyBruta=qtyG/(rend/100);
       return {
         id:window.crypto?.randomUUID?.() || Date.now()+ingredientSequence++,
         stockId:product.id||null,physicalId:product._physicalId||null,
-        source:ingSource,name:product.name,qtyG,qtyBruta,unit,rendimento:rend,
+        source:ingSource,name:product.name,qtyG,qtyBruta,unit:measures.baseUnit(unit),rendimento:rend,
         category:document.getElementById('ing-category')?.value || product.category || deps.inferIngredientCategory?.(product.name) || '',
-        cost:rate*qtyBruta,savedPricePerG:rate,nutrition:manual?{}:product.nutrition||getNutrition(product.name)
+        cost:rate*qtyBruta,savedPricePerG:rate,nutrition:manual?{}:{...(product.nutrition||getNutrition(product.name)),...(conversion?{recipeEquivalence:{key:conversion.key,value:equivalent}}:{})}
       };
     }
     function resetIngredientFields() {
@@ -948,7 +989,10 @@
       let nextPhysical=physicalStock;
       for(const item of items.filter(item=>item.source==='fisico')){
         const product=nextPhysical.find(product=>String(product.id)===String(item.physicalId));
-        const amount=product?.unit==='kg'?item.qtyBruta/1000:item.qtyBruta;
+        const conversion=product && conversionFor(product.unit,item.unit);
+        const equivalent=conversion && knownEquivalence(item,physicalIngredientProduct(product),conversion);
+        const baseAmount=!conversion?item.qtyBruta:equivalent>0?(conversion.divide?item.qtyBruta/equivalent:item.qtyBruta*equivalent):NaN;
+        const amount=measures.fromBase(baseAmount,product?.unit);
         if(!product || !(amount>0) || amount>Number(product.currentQty)+0.000001)
           return ingredientInputError('Estoque insuficiente para '+item.name+'. Revise a seleção antes de preparar.');
         nextPhysical=nextPhysical.map(p=>p!==product?p:{...p,
@@ -1142,6 +1186,7 @@
       if(!options.silent)showToast('Ficha limpa.');
     }
     async function saveRecipe(){
+      if(currentIngredients.some(item=>item.unit==='un')){showToast('Use o lápis para informar o peso ou volume dos ingredientes antigos antes de salvar.');return;}
       if(pendingIngredients.length){showToast('Clique em Preparar receita para confirmar os ingredientes selecionados antes de salvar.');return;}
       if(recipeImageProcessing){showToast('Aguarde a imagem terminar de ser otimizada.');return;}
       if(recipeSaveInFlight)return;
@@ -1507,7 +1552,7 @@
       closeModal('modal-recipe');
       editingRecipeId=r.id;
       draftScope=personalKey('temporarySupplies');
-      currentIngredients=r.ingredients.map(item => ({...item}));
+      currentIngredients=r.ingredients.map(item => measures.normalizeIngredient({...item},findStockItem(item.stockId,item.name)));
       pendingIngredients=[];
       journeyRevision++;
       recipeImageOperationId+=1;
@@ -1628,17 +1673,24 @@
       const amount = editQty.valueAsNumber;
       const value = Number(equivalent.value);
       const output = document.getElementById('ingredient-live-cost');
+      editQty.setCustomValidity('');
       if (!(amount > 0) || (c && !(value > 0))) {
         output.textContent = c && !(value > 0) ? 'Informe a equivalência para calcular o custo.' : 'Informe uma quantidade maior que zero.';
         return null;
       }
       const base = source && source.qty > 0 ? pricePerUnit(source) : getIngredientUnitPrice(editingItem);
       const rate = editingItem.source==='manual'?0:!c ? base : c.divide ? base/value : base*value;
-      const qtyG = unit==='kg' ? amount*1000 : amount;
+      const qtyG = measures.toBase(amount,unit);
+      if (qtyG < 0.0001) {
+        const message = 'A quantidade mínima é 0,1 mg, 0,0001 g ou 0,0001 ml.';
+        output.textContent = message;
+        editQty.setCustomValidity(message);
+        return null;
+      }
       const qtyBruta = unit==='un' ? qtyG : qtyG/((editingItem.rendimento || 100)/100);
       const cost = rate*qtyBruta;
       output.textContent = editingItem.source==='manual'?'Custo pendente': 'Custo do ingrediente: '+fmtBRL(Math.round((cost+Number.EPSILON)*100)/100);
-      return {unit,qtyG,qtyBruta,cost,savedPricePerG:rate,nutrition:c
+      return {unit:measures.baseUnit(unit),qtyG,qtyBruta,cost,savedPricePerG:rate,nutrition:c
         ? {...editingItem.nutrition,recipeEquivalence:{key:c.key,value}} : editingItem.nutrition};
     }
     function openIngredientEditor(index) {
@@ -1646,12 +1698,14 @@
       if (!editingItem || recipeSaveInFlight) return;
       document.getElementById('ingredient-edit-name').textContent = editingItem.name;
       editUnit.innerHTML = document.getElementById('ing-unit').innerHTML;
-      editUnit.value = editingItem.unit || 'g';
-      editQty.value = editUnit.value === 'kg' ? editingItem.qtyG / 1000 : editingItem.qtyG;
+      const normalized=measures.normalizeIngredient(editingItem,findStockItem(editingItem.stockId,editingItem.name));
+      editUnit.value = measures.isMetric(normalized.unit)?measures.baseUnit(normalized.unit):'g';
+      editQty.value = normalized.unit==='un'?'':normalized.qtyG;
       editQty.setCustomValidity('');
       previewIngredientEdit(true);
       editor.showModal();
-      editQty.focus();
+      document.getElementById('ingredient-edit-name').setAttribute('tabindex','-1');
+      document.getElementById('ingredient-edit-name').focus({preventScroll:true});
     }
     editQty.addEventListener('input', () => { editQty.setCustomValidity(''); previewIngredientEdit(); });
     editUnit.addEventListener('change', () => previewIngredientEdit(true));
@@ -1667,7 +1721,7 @@
         return;
       }
       const draft = previewIngredientEdit();
-      if (!draft) { equivalent.focus(); return; }
+      if (!draft) { if (!editQty.checkValidity()) editQty.reportValidity(); else equivalent.focus(); return; }
       Object.assign(editingItem, draft);
       editor.close();
       renderIngredients();
@@ -1683,6 +1737,7 @@
     });
 
     return {
+      resolveSelectedMeasure,
       syncAppearance: bindRecipeStyles,
       restoreSupplies: runWithState(restoreSupplies),
       applyStockPrice,

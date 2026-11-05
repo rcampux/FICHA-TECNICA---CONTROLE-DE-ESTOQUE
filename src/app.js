@@ -5,6 +5,12 @@ const {pricePerUnit}=window.FichaTecStockPricing;
 
 let stock=DB.mode?.()==='supabase'?[]:DB.load(STORAGE_KEYS.stock);
 let physicalStock=DB.mode?.()==='supabase'?[]:DB.load(STORAGE_KEYS.physicalStock);
+function normalizeInventoryMeasures() {
+  stock=stock.map(window.FichaTecMeasurements.normalizeStock);
+  physicalStock=physicalStock.map(item=>window.FichaTecMeasurements.normalizePhysical(item,stock.find(product=>
+    String(product.id)===String(item.stockId)||(item.stockRemoteId&&product.remoteId===item.stockRemoteId)||product.name.toLowerCase()===item.name.toLowerCase())));
+}
+normalizeInventoryMeasures();
 let recipes=DB.mode?.()==='supabase'?[]:DB.load(STORAGE_KEYS.recipes);
 let categories=DB.load(STORAGE_KEYS.categories);
 
@@ -338,9 +344,9 @@ const recipeSheetModule=window.FichaTecRecipeSheet.createRecipeSheetModule({
     const message=document.getElementById('recipe-image-message');
     if(message)message.textContent='JPG, PNG ou WebP. A imagem será otimizada antes de salvar.';
   },
-  setPhysicalStock:value=>{physicalStock=value;},
+  setPhysicalStock:value=>{physicalStock=value;normalizeInventoryMeasures();},
   setRecipes:value=>{recipes=value;},
-  setStock:value=>{stock=value;},
+  setStock:value=>{stock=value;normalizeInventoryMeasures();},
   showPage,
   showToast,
   confirmAction,
@@ -420,7 +426,7 @@ const virtualStockModule=window.FichaTecVirtualStock.createVirtualStockModule({
   readNutrition:productDiscoveryModule.readNutrition,
   renderRecipes,
   renderCategoryOptions,
-  setStock:value=>{stock=value;},
+  setStock:value=>{stock=value;normalizeInventoryMeasures();},
   showToast,
   confirmAction,
   storageKeys:STORAGE_KEYS,
@@ -447,8 +453,8 @@ const physicalStockModule=window.FichaTecPhysicalStock.createPhysicalStockModule
   readNutrition:productDiscoveryModule.readNutrition,
   renderCategoryOptions,
   renderRecipes,
-  setPhysicalStock:value=>{physicalStock=value;},
-  setStock:value=>{stock=value;},
+  setPhysicalStock:value=>{physicalStock=value;normalizeInventoryMeasures();},
+  setStock:value=>{stock=value;normalizeInventoryMeasures();},
   showToast,
   confirmAction,
   storageKeys:STORAGE_KEYS,
@@ -517,6 +523,7 @@ async function hydrateWorkspaceData(event){
     if(organizationId!==DB.activeOrganizationId())return;
     if(Array.isArray(remoteStock)){stock=remoteStock;DB.saveLocal?.(STORAGE_KEYS.stock,stock);}
     if(Array.isArray(remotePhysicalStock)){physicalStock=remotePhysicalStock;DB.saveLocal?.(STORAGE_KEYS.physicalStock,physicalStock);}
+    normalizeInventoryMeasures();
     if(Array.isArray(remoteRecipes)){recipes=remoteRecipes;DB.saveLocal?.(STORAGE_KEYS.recipes,recipes);}
     if(Array.isArray(remoteCategories)){categories=remoteCategories;DB.saveLocal?.(STORAGE_KEYS.categories,categories);}
 
@@ -536,6 +543,7 @@ function applyRemoteSave(event){
   if(!Array.isArray(value))return;
   if(key===STORAGE_KEYS.stock)stock=value;
   if(key===STORAGE_KEYS.physicalStock)physicalStock=value;
+  normalizeInventoryMeasures();
   if(key===STORAGE_KEYS.recipes)recipes=value;
   if(key===STORAGE_KEYS.categories)categories=value;
 }

@@ -321,7 +321,7 @@
       const porcoes = Math.max(parseFloat(document.getElementById("scan-porcoes").value) || 1, 1);
       const mapped = scannedIngredients.map((ingredient) => {
         const isUnit = ingredient.unit === "un";
-        const qtyG = isUnit ? ingredient.quantity : (ingredient.unit === "kg" ? ingredient.quantity * 1000 : ingredient.quantity);
+        let qtyG = window.FichaTecMeasurements.toBase(ingredient.quantity,ingredient.unit);
         const ingredientSearchName = ingredient.name.toLocaleLowerCase("pt-BR");
         const stockItem = stock.find((item) => {
           const stockName = String(item?.name || "").toLocaleLowerCase("pt-BR");
@@ -330,16 +330,23 @@
             || ingredientSearchName.includes(stockName);
         }
         ) || null;
-        const pricePerGram = stockItem ? pricePerUnit(stockItem) : 0;
+        let unit=window.FichaTecMeasurements.baseUnit(ingredient.unit);
+        if(isUnit){
+          const measure=window.FichaTecMeasurements.countMeasure(stockItem||ingredient);
+          if(!measure)return null;
+          unit=measure.unit;qtyG*=measure.quantity;
+        }
+        const compatible=stockItem && window.FichaTecMeasurements.baseUnit(stockItem.unit)===unit;
+        const pricePerGram = compatible ? pricePerUnit(stockItem) : 0;
         return {
           id: Date.now() + Math.random(),
           stockId: stockItem ? stockItem.id : null,
           physicalId: null,
-          source: "virtual",
+          source: compatible ? "virtual" : "manual",
           name: ingredient.name,
           qtyG,
           qtyBruta: qtyG,
-          unit: ingredient.unit,
+          unit,
           rendimento: 100,
           cost: pricePerGram * qtyG,
           nutrition: stockItem?.nutrition || getNutrition(ingredient.name),
@@ -347,6 +354,9 @@
         };
       });
 
+      if(mapped.some(item=>!item || !['g','ml'].includes(item.unit))){
+        showToast('A receita digitalizada contém medidas sem peso ou volume. Anote esses ingredientes na Ficha em g, mg ou ml.');return;
+      }
       const {totalCost, venda} = calcCosts(mapped, 0, rendimento);
       const modoPreparo = document.getElementById("scan-modo-preparo").value.trim() || null;
       const observacoes = document.getElementById("scan-obs").value.trim() || null;

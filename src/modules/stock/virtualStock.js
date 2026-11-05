@@ -183,13 +183,14 @@
       document.getElementById('stock-name').readOnly=Boolean(ingredient);
       editingStockId=id;
       if(id!==null){
-        const s=getStock().find(x=>String(x.id)===String(id));
+        const s=window.FichaTecMeasurements.normalizeStock(getStock().find(x=>String(x.id)===String(id)));
         if(!s){showToast('Produto nao encontrado.');return;}
         renderCategoryOptions?.('stock-category',s.category||'');
         document.getElementById('modal-stock-title').textContent='Editar Produto';
         document.getElementById('stock-name').value=s.name;
-        document.getElementById('stock-qty').value=s.qty;
-        document.getElementById('stock-unit').value=s.unit;
+        document.getElementById('stock-qty').value=s.unit==='un'?'':s.qty;
+        document.getElementById('stock-qty').placeholder=s.unit==='un'?'Peso ou volume total das embalagens':'Ex.: 500';
+        document.getElementById('stock-unit').value=s.unit==='un'?'g':s.unit;
         document.getElementById('stock-price').value=s.price;
         document.getElementById('stock-category').value=s.category||'';
         writeNutrition("virtual",s.nutrition||{});
@@ -198,7 +199,7 @@
         document.getElementById('modal-stock-title').textContent='Novo Produto';
         ['stock-name','stock-qty','stock-price'].forEach(f=>document.getElementById(f).value='');
         writeNutrition("virtual",{portionSize: 100});
-        document.getElementById('stock-unit').value='kg';
+        document.getElementById('stock-unit').value='g';
         document.getElementById('stock-category').value='';
       }
       updateNutritionPreview("virtual");
@@ -211,16 +212,20 @@
     }
     async function persistProductForm(){
       const name=document.getElementById('stock-name').value.trim();
-      const qty=parseFloat(document.getElementById('stock-qty').value);
+      const selectedUnit=document.getElementById('stock-unit').value;
+      if(!['g','mg','ml'].includes(selectedUnit)){showToast('Selecione gramas, miligramas ou mililitros.');return;}
+      const qty=window.FichaTecMeasurements.toBase(document.getElementById('stock-qty').value,selectedUnit);
       const price=parseFloat(document.getElementById('stock-price').value);
-      if(!name||isNaN(qty)||qty<=0||isNaN(price)||price<0){showToast('Preencha nome, quantidade e valor.');return;}
-      if(linkingIngredient && (qty<=0 || (document.getElementById('stock-unit').value==='kg'?'g':document.getElementById('stock-unit').value) !== (linkingIngredient.unit==='kg'?'g':linkingIngredient.unit))) {
+      if(!name||!Number.isFinite(qty)||qty<0.0001||isNaN(price)||price<0){showToast('Preencha nome, quantidade e valor.');return;}
+      if(linkingIngredient && (qty<=0 || window.FichaTecMeasurements.baseUnit(selectedUnit) !== (linkingIngredient.unit==='kg'?'g':linkingIngredient.unit))) {
         showToast('Informe a quantidade comprada em uma unidade compatível com a receita ('+linkingIngredient.unit+').');return;
       }
       const nutrition=readNutrition("virtual");
       const category = ensureCategory ? ensureCategory(document.getElementById('stock-category').value) : document.getElementById('stock-category').value;
       const existing=editingStockId!==null?getStock().find(s=>String(s.id)===String(editingStockId)):null;
-      const item={...(existing||{}),id:existing?.id||editingStockId||Date.now(),name,qty,unit:document.getElementById('stock-unit').value,price,category,nutrition,updatedAt:new Date().toISOString()};
+      const unit=window.FichaTecMeasurements.baseUnit(selectedUnit);
+      if(existing?.unit==='un' && existing.qty>0)nutrition.recipeEquivalence={key:unit+'/un',value:qty/existing.qty};
+      const item={...(existing||{}),id:existing?.id||editingStockId||Date.now(),name,qty,unit,price,category,nutrition,updatedAt:new Date().toISOString()};
       const previousStock=getStock();
       const nextStock=editingStockId!==null?previousStock.map(s=>String(s.id)===String(editingStockId)?item:s):[...getStock(),item];
       try{await persistStockSnapshot(nextStock);}
@@ -265,12 +270,12 @@
       const rows=f.map(s=>{
         const ppg=pricePerUnit(s);
         const stockId=escapeAttribute(s.id);
-        const ps=s.unit==='ml'?formatCurrency(ppg*1000)+'/L · '+formatCurrency(ppg*100)+'/100ml':s.unit==='un'?formatCurrency(ppg)+'/un':formatCurrency(ppg*1000)+'/kg · '+formatCurrency(ppg*100)+'/100g';
+        const ps=s.unit==='ml'?formatCurrency(ppg*1000)+'/L · '+formatCurrency(ppg*100)+'/100ml':s.unit==='un'?'Definir peso ou volume':formatCurrency(ppg*1000)+'/kg · '+formatCurrency(ppg*100)+'/100g';
         const name=escapeAttribute(s.name);
         const category=s.category?` <span class="tag stock-list-category category-colored-tag" style="${getCategoryStyle(s.category)}">${escapeAttribute(s.category)}</span>`:'';
         if(stockViewMode==='list'){
           return`<div class="stock-list-item item-card">
-            <div class="stock-list-product"><div class="item-name">${name}${category}</div><div class="item-meta">${escapeAttribute(s.qty)} ${escapeAttribute(s.unit)}</div></div>
+            <div class="stock-list-product"><div class="item-name">${name}${category}</div><div class="item-meta">${s.unit==='un'?'Peso ou volume pendente':escapeAttribute(s.qty)+' '+escapeAttribute(s.unit)}</div></div>
             <div class="stock-list-unit"><div class="item-price">${ps}</div></div>
             <div class="stock-list-total"><strong>${formatCurrency(s.price)}</strong><div class="item-actions">
               <button class="btn btn-secondary btn-icon" data-stock-action="edit" data-stock-id="${stockId}" type="button" aria-label="Editar ${name}"><span class="material-symbols-rounded">edit</span></button>
@@ -281,7 +286,7 @@
         return`<div class="item-card">
           <div style="flex:1;min-width:0">
             <div class="item-name">${name}${category}</div>
-            <div class="item-meta">${escapeAttribute(s.qty)} ${escapeAttribute(s.unit)} · ${formatCurrency(s.price)}</div>
+            <div class="item-meta">${s.unit==='un'?'Peso ou volume pendente':escapeAttribute(s.qty)+' '+escapeAttribute(s.unit)} · ${formatCurrency(s.price)}</div>
             <div class="item-price">${ps}</div>
           </div>
           <div class="item-actions">

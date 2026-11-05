@@ -239,10 +239,11 @@
         renderCategoryOptions?.("pstock-category", item.category || "");
         document.getElementById("modal-pstock-title").textContent = "Editar Produto";
         document.getElementById("pstock-name").value = item.name;
-        document.getElementById("pstock-qty").value = item.currentQty;
-        document.getElementById("pstock-unit").value = item.unit;
+        document.getElementById("pstock-qty").value = item.unit==='un'?'':item.currentQty;
+        document.getElementById("pstock-qty").placeholder=item.unit==='un'?'Peso ou volume total em estoque':'Ex.: 500';
+        document.getElementById("pstock-unit").value = item.unit==='un'?'g':item.unit;
         document.getElementById("pstock-price").value = item.price;
-        document.getElementById("pstock-desired").value = item.desiredQty;
+        document.getElementById("pstock-desired").value = item.unit==='un'?'':item.desiredQty;
         document.getElementById("pstock-category").value = item.category || "";
         const virtualItem = getStock().find((entry) =>
           (item.stockRemoteId && entry.remoteId === item.stockRemoteId)
@@ -256,7 +257,7 @@
         ["pstock-name", "pstock-qty", "pstock-price", "pstock-desired"].forEach((field) => {
           document.getElementById(field).value = "";
         });
-        document.getElementById("pstock-unit").value = "kg";
+        document.getElementById("pstock-unit").value = "g";
         document.getElementById("pstock-category").value = "";
         writeNutrition("physical", {portionSize:100});
       }
@@ -272,12 +273,14 @@
     }
     async function persistProductForm() {
       const name = document.getElementById("pstock-name").value.trim();
-      const qty = parseFloat(document.getElementById("pstock-qty").value);
-      const unit = document.getElementById("pstock-unit").value;
+      const selectedUnit = document.getElementById("pstock-unit").value;
+      if(!['g','mg','ml'].includes(selectedUnit)){showToast('Selecione gramas, miligramas ou mililitros.');return;}
+      const unit=window.FichaTecMeasurements.baseUnit(selectedUnit);
+      const qty=window.FichaTecMeasurements.toBase(document.getElementById("pstock-qty").value,selectedUnit);
       const price = parseFloat(document.getElementById("pstock-price").value);
-      const desired = parseFloat(document.getElementById("pstock-desired").value);
+      const desired = window.FichaTecMeasurements.toBase(document.getElementById("pstock-desired").value,selectedUnit);
 
-      if (!name || isNaN(qty) || qty < 0 || isNaN(price) || price < 0 || isNaN(desired) || desired <= 0) {
+      if (!name || !Number.isFinite(qty) || qty < 0.0001 || isNaN(price) || price < 0 || !Number.isFinite(desired) || desired < 0.0001) {
         showToast("Preencha todos os campos.");
         return;
       }
@@ -298,6 +301,8 @@
         || item.name.toLowerCase() === String(existingPhysical?.name || name).toLowerCase()
         || item.name.toLowerCase() === name.toLowerCase()
       );
+      if(existingPhysical?.unit==='un'&&existingPhysical.currentQty>0)nutrition.recipeEquivalence={key:unit+'/un',value:qty/existingPhysical.currentQty};
+      const measuredPhysical=window.FichaTecMeasurements.normalizePhysical(existingPhysical,{nutrition,name});
       const virtualLocalId = existingVirtual?.id || Date.now();
       const virtualItem = {
         ...(existingVirtual || {}),
@@ -324,8 +329,8 @@
           category,
           nutrition,
           stockId:virtualLocalId,
-          usedTotal: existingPhysical?.usedTotal || 0,
-          history: existingPhysical?.history || [{type:"entrada",qty,date:new Date().toISOString()}],
+          usedTotal: measuredPhysical?.usedTotal || 0,
+          history: measuredPhysical?.history || [{type:"entrada",qty,date:new Date().toISOString()}],
         };
 
       try {
@@ -442,6 +447,7 @@
       const item = getPhysicalStock().find((entry) => String(entry.id) === String(id));
       if (!item) return;
 
+      if(item.unit==='un'){openPhysicalModal(id);showToast('Informe o peso ou volume total antes de movimentar o produto.');return;}
       setMoveType("usar");
       document.getElementById("modal-move-title").textContent = item.name;
       document.getElementById("move-unit-display").textContent = item.unit;
@@ -491,14 +497,9 @@
       });
 
       const movedItem = nextPhysicalStock.find((entry) => String(entry.id) === String(movingPhysicalId));
-      const normalizedName = movedItem.name.toLowerCase();
-      const nextStock = getStock().map((stockItem) => stockItem.name.toLowerCase() === normalizedName
-        ? {...stockItem,qty:Math.max(parseFloat((stockItem.qty+delta).toFixed(6)),0)}
-        : stockItem);
 
       try {
         await persistPhysicalSnapshot(nextPhysicalStock);
-        await persistVirtualStockSnapshot(nextStock);
       } catch (error) {
         console.error(error);
         showToast("Nao foi possivel atualizar o estoque no Supabase.");

@@ -19,10 +19,9 @@
       grid.innerHTML=items.map(item=>{
         const icon=library?.resolve(item.name,item.category);
         const quantity=format(item.unit==='kg'?item.qtyG/1000:item.qtyG)+' '+(item.unit||'g');
-        return '<article class="ingredient-tile'+(item.confirmed?' is-confirmed':'')+'">'+
+        return '<article class="ingredient-tile'+(item.confirmed?' is-confirmed':'')+'" aria-label="'+escape(item.name+', '+quantity)+'" title="'+escape(item.name+', '+quantity)+'">'+
           (icon?'<img src="'+escape(icon.url)+'" alt="" width="80" height="80" decoding="async">':'<span class="ingredient-icon-loading" aria-hidden="true"></span>')+
-          '<strong title="'+escape(item.name)+'">'+escape(item.name)+'</strong><span class="ingredient-tile-quantity">'+escape(quantity)+'</span>'+
-          (item.confirmed?'<small>Na ficha</small>':'<button type="button" class="ingredient-tile-remove" data-remove-pending="'+escape(item.id)+'" aria-label="Retirar '+escape(item.name)+' da seleção">×</button>')+'</article>';
+          (item.confirmed?'':'<button type="button" class="ingredient-tile-remove" data-remove-pending="'+escape(item.id)+'" aria-label="Retirar '+escape(item.name)+' da seleção">×</button>')+'</article>';
       }).join('');
       el('ingredient-selection-count').textContent=items.length?items.length+(items.length===1?' ingrediente':' ingredientes'):'';
       el('recipe-prepare-action').hidden=!state.pending.length;
@@ -49,7 +48,8 @@
       el('ingredient-dialog-title').focus({preventScroll:true});
       dialog.querySelector('.ingredient-dialog-body').scrollTop=0;
     }
-    function closeIngredientDialog() {
+    function closeIngredientDialog(force=false) {
+      if(busy&&!force)return;
       document.activeElement?.blur();
       dialog.close();
       add.focus({preventScroll:true});
@@ -96,7 +96,7 @@
     document.querySelectorAll('[data-journey-source]').forEach(button=>
       button.addEventListener('click',()=>{if(!busy)selectSource(button.dataset.journeySource);}));
     add.addEventListener('click',openIngredientDialog);
-    dialog.querySelectorAll('[data-close-ingredient]').forEach(button=>button.addEventListener('click',closeIngredientDialog));
+    dialog.querySelectorAll('[data-close-ingredient]').forEach(button=>button.addEventListener('click',()=>closeIngredientDialog()));
     dialog.addEventListener('cancel',event=>{event.preventDefault();closeIngredientDialog();});
     let outside=false;
     dialog.addEventListener('pointerdown',event=>{outside=event.target===dialog;});
@@ -113,11 +113,22 @@
         renderCategoryOptions('ing-category',inferCategory(el('ing-search').value));
     });
     form.addEventListener('input',()=>{el('ingredient-dialog-error').hidden=true;});
-    form.addEventListener('submit',event=>{
+    form.addEventListener('submit',async event=>{
       event.preventDefault();
-      if(!sheet.queueIngredient())return;
-      closeIngredientDialog();
-      status.textContent='Ingrediente adicionado à seleção.';
+      if(busy)return;
+      busy=true;
+      const controls=[...form.querySelectorAll('button,input,select')].map(control=>({control,disabled:control.disabled}));
+      controls.forEach(({control})=>control.disabled=true);
+      try {
+        if(!await sheet.resolveSelectedMeasure())return;
+        if(!sheet.queueIngredient())return;
+        closeIngredientDialog(true);
+        status.textContent='Ingrediente adicionado à seleção.';
+      } finally {
+        busy=false;controls.forEach(({control,disabled})=>control.disabled=disabled);
+        sheet.calcIngCost();
+        el('recipe-prepare-button').disabled=false;
+      }
     });
     grid.addEventListener('click',event=>{
       const button=event.target.closest('[data-remove-pending]');
@@ -129,7 +140,7 @@
     cooking.addEventListener('cancel',event=>event.preventDefault());
     el('ingredients-list').addEventListener('animationend',()=>el('ingredients-list').classList.remove('ingredients-focus'));
     window.FichaTecFoodIcons.loadLibrary().then(value=>{library=value;refresh();}).catch(()=>{
-      status.textContent='As ilustrações estão indisponíveis. Você pode continuar usando os nomes dos ingredientes.';
+      status.textContent='As ilustrações estão indisponíveis. Seus ingredientes estão guardados; você pode continuar.';
     });
     refresh();
     return {refresh,openIngredientDialog,prepareRecipe};

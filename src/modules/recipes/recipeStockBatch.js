@@ -9,7 +9,7 @@
     '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;',
   }[char]));
   const normalizeName = name => name.trim().toLocaleLowerCase('pt-BR');
-  const unitFamily = unit => unit === 'kg' ? 'g' : unit;
+  const unitFamily = unit => window.FichaTecMeasurements.baseUnit(unit);
 
   function createRecipeStockBatch({db, getStock, getPhysicalStock, getCategoryNames, saveCategoryRecord,
     inferCategory, fetchNutrition, scaleNutritionForPortion, formatNutritionMetric,
@@ -59,18 +59,18 @@
           unique.get(key).ingredients.push(ingredient);
           continue;
         }
-        const existing = getStock().find(item => normalizeName(item.name) === key);
+        const existing = window.FichaTecMeasurements.normalizeStock(getStock().find(item => normalizeName(item.name) === key));
         const physical = getPhysicalStock().find(item => normalizeName(item.name) === key);
         unique.set(key, {
           ingredients: [ingredient],
           product: {...existing, id:existing?.id || crypto.randomUUID(),
-            name:ingredient.name, qty:existing?.qty ?? '', price:existing?.price ?? '',
-            unit:existing?.unit || ingredient.unit || 'g',
+            name:ingredient.name, qty:existing?.unit==='un'?'':existing?.qty ?? '', price:existing?.price ?? '',
+            unit:window.FichaTecMeasurements.isMetric(existing?.unit||ingredient.unit)?unitFamily(existing?.unit||ingredient.unit):'g',
             category:existing?.category || ingredient.category || inferCategory(ingredient.name),
             nutrition:{...(existing?.nutrition || {}), portionSize:existing?.nutrition?.portionSize || 100}},
           physical: physical || {id:crypto.randomUUID()},
           desiredQty: physical?.desiredQty || '',
-          existing: Boolean(existing),
+          existing: Boolean(existing), legacyCount:existing?.unit==='un'?existing.qty:0,
         });
       }
       rows = [...unique.values()];
@@ -192,7 +192,7 @@
           </div>
           <div class="batch-field-grid">
             <label>Quantidade comprada<input data-field="qty" type="number" inputmode="decimal" step="any" min="0.000001" required value="${product.qty}"></label>
-            <label>Unidade<select data-field="unit">${[['g','Gramas'],['kg','Quilogramas'],['ml','Mililitros'],['un','Unidades']].map(([unit,label]) => `<option value="${unit}" ${unit === product.unit ? 'selected' : ''}>${label}</option>`).join('')}</select></label>
+            <label>Unidade<select data-field="unit">${[['g','Gramas'],['mg','Miligramas'],['ml','Mililitros']].map(([unit,label]) => `<option value="${unit}" ${unit === product.unit ? 'selected' : ''}>${label}</option>`).join('')}</select></label>
             <label>Valor pago (R$)<input data-field="price" type="number" inputmode="decimal" step="0.01" min="0" required value="${product.price}"></label>
             ${destination === 'physical' ? `<label>Quantidade desejada<input data-field="desiredQty" type="number" inputmode="decimal" step="any" min="0.000001" value="${row.desiredQty}" placeholder="Igual à comprada"></label>` : ''}
           </div>
@@ -314,13 +314,15 @@
         const row = readRow(article);
         const product = row.product;
         const invalid = article.querySelector('input:invalid');
+        const tooSmall = window.FichaTecMeasurements.toBase(product.qty, product.unit) < 0.0001
+          || (destination === 'physical' && row.desiredQty > 0 && window.FichaTecMeasurements.toBase(row.desiredQty, product.unit) < 0.0001);
         const incompatible = row.ingredients.some(item => unitFamily(item.unit) !== unitFamily(product.unit));
-        if (invalid || incompatible) {
+        if (invalid || incompatible || tooSmall) {
           article.querySelector('.batch-fields').hidden = false;
           article.querySelector('[data-batch-edit]').setAttribute('aria-expanded', 'true');
           article.scrollIntoView({block:'center', behavior:'smooth'});
           if (invalid) invalid.reportValidity();
-          status.textContent = incompatible ? 'Use uma unidade compatível com a receita para ' + product.name + '.' : 'Preencha quantidade e valor de ' + product.name + '.';
+          status.textContent = tooSmall ? 'A quantidade mínima é 0,1 mg, 0,0001 g ou 0,0001 ml.' : incompatible ? 'Use uma unidade compatível com a receita para ' + product.name + '.' : 'Preencha quantidade e valor de ' + product.name + '.';
           return false;
         }
         product.category = product.category.trim() || inferCategory(product.name);
@@ -352,7 +354,8 @@
       status.textContent = 'Salvando os ingredientes e calculando a receita…';
       try {
         const products = rows.map(row => {
-          const product = row.product;
+          let product = window.FichaTecMeasurements.normalizeStock(row.product);
+          if(row.legacyCount>0)product={...product,nutrition:{...product.nutrition,recipeEquivalence:{key:product.unit+'/un',value:product.qty/row.legacyCount}}};
           if (db.mode?.() === 'supabase' && !product.remoteId) product.remoteId = crypto.randomUUID();
           return {...product, nutrition:{...product.nutrition, priceReference:{quantity:product.qty, unit:product.unit, price:product.price}}, updatedAt:new Date().toISOString()};
         });
@@ -361,7 +364,7 @@
           const product = products[index];
           return {...row.physical, name:product.name, category:product.category, unit:product.unit,
             price:product.price, nutrition:product.nutrition, currentQty:product.qty,
-            desiredQty:row.desiredQty || product.qty, stockId:product.id,
+            desiredQty:window.FichaTecMeasurements.toBase(row.desiredQty,row.product.unit) || product.qty, stockId:product.id,
             stockRemoteId:product.remoteId || null, usedTotal:row.physical.usedTotal || 0};
         }) : [];
         await db.upsertStockBatch(products, physicalItems, scope);

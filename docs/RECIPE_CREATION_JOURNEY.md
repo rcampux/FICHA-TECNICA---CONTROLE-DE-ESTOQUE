@@ -5,7 +5,7 @@ A Ficha mantém a entrada Caderno de receitas. Ao abrir o editor, a pessoa escol
 
 As origens Sem estoque, Virtual e Físico podem ser usadas na mesma receita. A origem no topo é a seleção inicial do popup, que também permite trocá-la. Escolher um produto de estoque é obrigatório nos modos Virtual/Físico; nomes avulsos são exclusivos de Sem estoque.
 
-A biblioteca original de 78 WebPs é usada **somente na área de seleção da Ficha**, após adicionar o ingrediente. Não aparece na busca, no popup nem na lista confirmada. Nome e quantidade acompanham cada imagem. Correspondências específicas têm precedência (leite condensado, não leite). Ausências recorrem ao tipo/categoria, com alternativa Sem categoria/Outros. Arquivos não foram redesenhados.
+A biblioteca original de 78 WebPs é usada **somente na área de seleção da Ficha**, após adicionar o ingrediente. Não aparece na busca, no popup nem na lista confirmada. Os tiles mostram somente as imagens; nome e quantidade ficam na descrição acessível e no título ao passar o mouse, sem legendas visíveis, tanto no desktop quanto no mobile. Correspondências específicas têm precedência (leite condensado, não leite). Ausências recorrem ao tipo/categoria, com alternativa Sem categoria/Outros. Arquivos não foram redesenhados.
 
 No celular, Sem estoque ocupa a primeira linha; Virtual/Físico dividem a segunda. A grade tem três colunas. Desktop mantém o painel de identidade/seleção à esquerda e composição à direita. Preparar receita rola até a lista no mobile e destaca a lista no desktop. Respeitar redução de movimento.
 

@@ -87,6 +87,7 @@ test('markup do cadastro aplica somente à receita escolhida, preserva falhas e 
 
 const read=file=>readFileSync(new URL(`../src/${file}`,import.meta.url),'utf8');
 const modelContext={window:{FichaTecStorageKeys:{recipes:'recipes'}},crypto:webcrypto};
+vm.runInNewContext(read('utils/measurements.js'),modelContext);
 vm.runInNewContext(read('modules/recipes/ingredientOrder.js'),modelContext);
 vm.runInNewContext(read('modules/recipes/productionPlan.js'),modelContext);
 vm.runInNewContext(read('services/repositories/supabaseDomainRepository.js'),modelContext);
@@ -144,24 +145,26 @@ function recipeHarness(preview = null, stockOverride = null, physicalOverride = 
   const local=new Map();let user="test-user";
   const element=id=>{
     if(id.startsWith('recipe-image-'))return null;
-    if(!elements.has(id))elements.set(id,{value:'',innerHTML:'',textContent:'',dataset:{},style:{},hidden:false,classList:{add(){},remove(){},toggle(){}},setAttribute(){},getAttribute(){return null;},addEventListener(name,handler){this['on'+name]=handler;},querySelector(){return null;},querySelectorAll(){return [];}});
+    if(!elements.has(id))elements.set(id,{value:'',innerHTML:'',textContent:'',dataset:{},style:{},hidden:false,focus(){},classList:{add(){},remove(){},toggle(){}},setAttribute(){},getAttribute(){return null;},addEventListener(name,handler){this['on'+name]=handler;},querySelector(){return null;},querySelectorAll(){return [];}});
     return elements.get(id);
   };
   const ingredients=[{id:'uuid-a',stockId:1,name:'Leite',qtyG:360,qtyBruta:360,unit:'g',rendimento:100,cost:3,nutrition:{}},{id:'uuid-b',stockId:2,name:'Manteiga',qtyG:20,qtyBruta:20,unit:'g',rendimento:100,cost:1,nutrition:{}}];
   let recipes=[{id:'recipe-1',nome:'Brigadeiro',ingredients,modoPreparo:'Texto anterior',observacoes:'Manter refrigerado',origem:'scan',porcoes:20,yieldUnit:'unit',markup:0,createdAt:'2026-11-02',totalCost:4}];
   const baseURI='https://example.test/public/index.html';
   const context={URL,localStorage:{getItem:key=>local.get(key),setItem:(key,value)=>local.set(key,value),removeItem:key=>local.delete(key)},window:{getAuthState:()=>({user:{id:user}}),location:{href:baseURI},open:()=>preview,FichaTecIngredientOrder:{...order,bindIngredientOrder:(_el,options)=>{reorder=options.onMove;}},requestAnimationFrame(){},setTimeout(){}},document:{body:{dataset:{}},baseURI,getElementById:element,querySelector(){return null;}},console:{error(){},warn(){}}};
+  vm.runInNewContext(read('utils/measurements.js'),context);
+  vm.runInNewContext(read('modules/stock/stockPricing.js'),context);
   vm.runInNewContext(read('modules/recipes/productionPlan.js'),context);
   vm.runInNewContext(read('modules/recipes/recipePrint.js'),context);
   vm.runInNewContext(read('modules/recipes/recipeSheet.js'),context);
   const module=context.window.FichaTecRecipeSheet.createRecipeSheetModule({
     closeModal(){},confirmAction:async()=>true,
-    db:{mode:()=>'supabase',activeOrganizationId:()=>'org',save(key,value){if(fail)throw Error("network");local.set(key,JSON.stringify(value));},saveLocal(){},saveRemote:async(_key,value)=>{if(fail)throw Error('network');return value;}},
+    db:{upsertStockBatch:async()=>{if(fail)throw Error('network');},mode:()=>'supabase',activeOrganizationId:()=>'org',save(key,value){if(fail)throw Error("network");local.set(key,JSON.stringify(value));},saveLocal(){},saveRemote:async(_key,value)=>{if(fail)throw Error('network');return value;}},
     formatCurrency:n=>String(n),formatQuantity:n=>String(n),getNutrition:()=>({}),
     getPhysicalStock:()=>physical,getStock:()=>stockOverride || ingredients.map(i=>({id:i.stockId,name:i.name,price:.01,qty:1,unit:'g'})),getRecipes:()=>recipes,
-    pricePerUnit:s=>s.price/(s.qty*(s.unit==='kg'?1000:1)),setPhysicalStock:value=>{physical=value;},setStock(){},setRecipes:value=>{recipes=value;},showPage:page=>routes.push(page),showToast:m=>messages.push(m),storageKeys:{recipes:'recipes'},
+    pricePerUnit:context.window.FichaTecStockPricing.pricePerUnit,setPhysicalStock:value=>{physical=value;},setStock:value=>{stockOverride=value;},setRecipes:value=>{recipes=value;},showPage:page=>routes.push(page),showToast:m=>messages.push(m),storageKeys:{recipes:'recipes'},
   });
-  return {module,element,routes,local,getPhysical:()=>physical,setUser:value=>{user=value;},getRecipes:()=>recipes,reorder:(a,b)=>reorder(a,b),setFail:value=>{fail=value;}};
+  return {module,element,routes,local,getPhysical:()=>physical,getStock:()=>stockOverride,messages,setUser:value=>{user=value;},getRecipes:()=>recipes,reorder:(a,b)=>reorder(a,b),setFail:value=>{fail=value;}};
 }
 test('salvar edição mantém preparo, ordem e metadados e abre receitas apenas após sucesso',async()=>{
   const h=recipeHarness();h.module.editRecipe('recipe-1');
@@ -236,7 +239,7 @@ test('editar quantidade recalcula a ficha e só modifica a receita registrada ao
   await h.module.saveRecipe();
   const saved = h.getRecipes()[0].ingredients[0];
   assert.equal(saved.qtyG, 80);
-  assert.equal(saved.unit, 'kg');
+  assert.equal(saved.unit, 'g');
   assert.equal(saved.qtyBruta, 100);
 });
 
@@ -570,4 +573,60 @@ test('categoria do ingrediente sobrevive ao banco e segue para o cadastro de est
   const loaded=repo.mapRecipeIngredientFromRemote(remote);
   assert.equal(loaded.category,'Farinhas');
   assert.equal(loaded.source,'manual');
+});
+
+
+test('arroz antigo por embalagem aceita gramas no primeiro popup e guarda o peso informado', async()=>{
+  const h=recipeHarness(null,[{id:5,name:'Arroz Branco O Piemonte',qty:1,unit:'un',price:4.18}]);
+  h.module.selectIngredient(5);h.element('ing-qty').value=250;
+  h.module.calcIngCost();
+  assert.equal(h.element('ing-equivalence-group').hidden,false);
+  assert.equal(h.module.queueIngredient(),false);
+  h.element('ing-equivalence').value=1000;h.module.calcIngCost();
+  assert.match(h.element('ing-cost-preview').textContent,/1.045/);
+  h.setFail(true);assert.equal(await h.module.resolveSelectedMeasure(),false);
+  assert.equal(h.getStock()[0].unit,'un');assert.equal(h.module.getJourneyState().pending.length,0);
+  h.setFail(false);assert.equal(await h.module.resolveSelectedMeasure(),true);
+  assert.equal(h.getStock()[0].unit,'g');assert.equal(h.getStock()[0].qty,1000);
+  assert.equal(h.getStock()[0].price,4.18);
+  assert.equal(h.module.queueIngredient(),true);
+  const item=h.module.getJourneyState().pending[0];
+  assert.equal(item.unit,'g');assert.equal(item.qtyG,250);
+  assert.equal(h.module.calcCosts([item]).totalCost,1.05);
+  h.module.selectIngredient(5);h.element('ing-qty').value=500;h.module.calcIngCost();
+  assert.equal(h.element('ing-equivalence-group').hidden,true);
+  assert.match(h.element('ing-cost-preview').textContent,/2.09/);
+});
+
+test('medida física convertida mantém embalagem virtual e baixa somente os gramas utilizados', async()=>{
+  const catalog=[{id:7,name:'Arroz 500 g',qty:1,unit:'un',price:5}];
+  const h=recipeHarness(null,catalog,[{id:8,stockId:7,name:'Arroz 500 g',unit:'un',currentQty:3,desiredQty:4,usedTotal:1}]);
+  h.module.setIngSource('fisico');h.module.selectIngredient('pf_8');h.element('ing-qty').value=250;
+  assert.equal(await h.module.resolveSelectedMeasure(),true);
+  assert.deepEqual([h.getPhysical()[0].unit,h.getPhysical()[0].currentQty,h.getPhysical()[0].desiredQty,h.getPhysical()[0].usedTotal],['g',1500,2000,500]);
+  assert.equal(h.module.queueIngredient(),true);
+  const snapshot=h.module.getJourneyState();assert.equal(h.module.prepareIngredients(snapshot.revision),true);
+  assert.equal(h.getPhysical()[0].currentQty,1250);assert.equal(h.getStock()[0].qty,500);
+  assert.equal(h.module.calcCosts(h.module.getJourneyState().confirmed).totalCost,2.5);
+});
+
+test('miligramas são convertidos em gramas para custo, massa, nutrição e persistência', async()=>{
+  const h=recipeHarness(null,[{id:7,name:'Tempero',qty:100,unit:'g',price:100,nutrition:{kcal:200}}]);
+  h.module.selectIngredient(7);h.element('ing-unit').value='mg';h.element('ing-qty').value=250;
+  assert.equal(h.module.queueIngredient(),true);
+  const state=h.module.getJourneyState();assert.equal(h.module.prepareIngredients(state.revision),true);
+  const [item]=h.module.getJourneyState().confirmed;
+  assert.equal(item.unit,'g');assert.equal(item.qtyG,0.25);assert.equal(item.cost,0.25);
+  assert.equal(modelContext.window.FichaTecProduction.ingredientMass([item]),0.25);
+  const restored=repo.mapRecipeIngredientFromRemote(repo.mapRecipeIngredientToRemote(item,'recipe','org'));
+  assert.equal(restored.unit,'g');assert.equal(restored.qtyG,0.25);assert.equal(restored.cost,0.25);
+});
+
+test('volume não é confundido com massa e novos ingredientes não aceitam contagem',()=>{
+  const h=recipeHarness(null,[{id:7,name:'Leite',qty:1000,unit:'ml',price:6}]);
+  h.module.selectIngredient(7);h.element('ing-qty').value=250;
+  assert.equal(h.module.queueIngredient(),true);
+  const item=h.module.getJourneyState().pending[0];assert.equal(item.unit,'ml');assert.equal(item.cost,1.5);
+  h.module.setIngSource('manual');h.element('ing-search').value='Ovo';h.element('ing-qty').value=2;h.element('ing-unit').value='un';
+  assert.equal(h.module.queueIngredient(),false);
 });
