@@ -17,4 +17,6 @@ Próximo passo: conferir as quantidades pelo ícone, refazer e salvar a receita 
 ## Refinamento e nova receita limpa
 Os ícones ficam em uma superfície quadrada; nome e quantidade são legendas externas abaixo dela. A lista dimensionada no planejamento usa divisórias sutis, tipografia contida e quantidades alinhadas à direita, sem caixas grandes ou etiquetas chamativas.
 
+Revisão visual seguinte: os ingredientes calculados ficam em um box de papel claro, pautas discretas e margem de caderno. As quantidades mantêm destaque contido. Calcular e Ver ingredientes rolam somente o conteúdo interno do popup até o topo desse box, aguardando o fechamento do teclado quando necessário; a navegação e a página de fundo não são roladas.
+
 Ao editar uma receita existente, a confirmação de novos ingredientes usa Refazer receita. Entrar pela Ficha, Criar receita ou Nova ficha limpa nome, foto, ingredientes pendentes/confirmados, rendimento, markup e preparo. Essa instrução substitui a restauração automática de insumos ao entrar pela navegação: o registro temporário não deve repovoar uma nova receita. Apenas a entrada explícita Editar preserva e carrega a receita escolhida. As receitas salvas permanecem intactas.

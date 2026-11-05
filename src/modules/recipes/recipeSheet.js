@@ -659,8 +659,21 @@
         shortcut.setAttribute('aria-expanded', 'true');
         const headingId = 'recipe-detail-ingredients';
         const heading = document.getElementById(headingId);
+        const keyboardWasOpen=document.body.classList.contains('mobile-keyboard-open');
         heading.focus({preventScroll: true});
-        heading.scrollIntoView({block: 'start', behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth'});
+        const scrollToIngredients=()=>{
+          if(!document.getElementById('modal-recipe').classList.contains('open'))return;
+          const content=document.getElementById('recipe-detail-content');
+          const box=content.querySelector('.production-ingredients');
+          if(!box)return;
+          content.scrollTo({
+            top:content.scrollTop+box.getBoundingClientRect().top-content.getBoundingClientRect().top-12,
+            behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth'
+          });
+        };
+        // Scroll only the modal, after the mobile keyboard has finished closing.
+        if(keyboardWasOpen)setTimeout(()=>requestAnimationFrame(scrollToIngredients),350);
+        else requestAnimationFrame(scrollToIngredients);
       }
       form.oninput = refresh;
       form.onchange = refresh;
@@ -1487,7 +1500,7 @@
           </form>
         </section>
         <section id="production-report" aria-labelledby="production-report-title" hidden>
-          <div class="production-ingredients">
+          <div class="production-ingredients" role="region" aria-labelledby="recipe-detail-ingredients">
           <h4 id="recipe-detail-ingredients" tabindex="-1">Ingredientes do lote</h4>
         ${ingredients.map((i,ingredientIndex)=>{
           const s=findStockItem(i.stockId,i.name);
