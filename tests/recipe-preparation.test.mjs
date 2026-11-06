@@ -670,3 +670,34 @@ test('volume não é confundido com massa e novos ingredientes não aceitam cont
   h.module.setIngSource('manual');h.element('ing-search').value='Ovo';h.element('ing-qty').value=2;h.element('ing-unit').value='un';
   assert.equal(h.module.queueIngredient(),false);
 });
+
+test('editar seleção pendente troca produto e quantidade sem duplicar ingredientes',()=>{
+  const h=recipeHarness(null,[{id:1,name:'Arroz',qty:1000,unit:'g',price:10},{id:2,name:'Farinha',qty:1000,unit:'g',price:20}]);
+  h.module.setIngSource('virtual');h.module.selectIngredient(1);h.element('ing-qty').value=100;
+  assert.equal(h.module.queueIngredient(),true);
+  const before=h.module.getJourneyState();
+  h.module.selectIngredient(2);h.element('ing-qty').value=250;
+  assert.equal(h.module.queueIngredient({id:before.pending[0].id,confirmed:false,revision:before.revision}),true);
+  const after=h.module.getJourneyState();
+  assert.equal(after.pending.length,1);assert.equal(after.confirmed.length,0);
+  assert.equal(after.pending[0].id,before.pending[0].id);
+  assert.equal(after.pending[0].name,'Farinha');assert.equal(after.pending[0].qtyG,250);
+  assert.equal(after.pending[0].cost,5);
+  assert.equal(h.module.prepareIngredients(after.revision),true);
+  assert.equal(h.module.getJourneyState().confirmed.length,1);
+});
+
+test('editar ícone manual mantém posição e pede recálculo somente quando muda',()=>{
+  const h=recipeHarness();h.module.setIngSource('manual');
+  h.element('ing-search').value='Cacau';h.element('ing-qty').value=20;h.element('ing-unit').value='g';
+  assert.equal(h.module.queueIngredient(),true);
+  let state=h.module.getJourneyState();h.module.prepareIngredients(state.revision);
+  state=h.module.getJourneyState();
+  h.element('ing-search').value='Cacau';h.element('ing-qty').value=20;
+  assert.equal(h.module.queueIngredient({id:state.confirmed[0].id,confirmed:true,revision:state.revision}),true);
+  assert.equal(h.module.getJourneyState().needsReprepare,false);
+  state=h.module.getJourneyState();h.element('ing-search').value='Chocolate';h.element('ing-qty').value=30;
+  assert.equal(h.module.queueIngredient({id:state.confirmed[0].id,confirmed:true,revision:state.revision}),true);
+  state=h.module.getJourneyState();assert.equal(state.confirmed.length,1);assert.equal(state.needsReprepare,true);
+  assert.equal(state.confirmed[0].name,'Chocolate');assert.equal(state.confirmed[0].qtyG,30);
+});

@@ -1038,11 +1038,20 @@
       renderIngredients();calcFicha();
       return true;
     }
-    function queueIngredient() {
+    function queueIngredient(edit=null) {
       if(recipeSaveInFlight)return false;
       const item=readIngredientDraft();
       if(!item)return false;
-      pendingIngredients.push(item);
+      if(edit){
+        if(edit.revision!==journeyRevision)return ingredientInputError('A seleção mudou. Feche e abra o ingrediente novamente.');
+        const list=edit.confirmed?currentIngredients:pendingIngredients;
+        const index=list.findIndex(i=>String(i.id)===String(edit.id));
+        if(index<0)return false;
+        const previous=list[index];
+        const changed=['source','stockId','physicalId','name','category','qtyG','qtyBruta','unit','rendimento'].some(key=>previous[key]!==item[key]);
+        if(changed)list[index]={...item,id:previous.id,remoteId:previous.remoteId};
+        if(edit.confirmed&&changed)needsReprepare=true;
+      }else pendingIngredients.push(item);
       journeyRevision++;
       resetIngredientFields();
       rememberSupplies();

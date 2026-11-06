@@ -569,3 +569,6 @@ Atualização posterior: os tiles voltaram a mostrar nome e quantidade a pedido 
 Revisão 06/11: persistRecipesSnapshot atualiza vínculos virtuais pelo catálogo carregado antes de gravar; readIngredientDraft conserva stockRemoteId; saveRecipe distingue ingrediente indisponível e conserva a ficha em caso de falha.
 
 06/11 — foodIcons.createResolver prioriza farinhas sobre raízes/frutas e reconhece 11 novos ícones. loadLibrary valida a contagem declarada no manifesto, sem limite fixo de 78. Biblioteca ampliada para 89 imagens WebP.
+
+- recipeSheet.queueIngredient(edit): inclui ou substitui ingrediente pendente/confirmado por ID, validando revisão e sinalizando recálculo somente se os dados mudarem.
+- recipeJourney: clique em qualquer tile preenche o popup existente para edição de produto e quantidade.

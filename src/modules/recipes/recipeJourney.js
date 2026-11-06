@@ -4,6 +4,7 @@
     const dialog=el('recipe-ingredient-dialog'), cooking=el('recipe-cooking-dialog');
     const grid=el('ingredient-tiles'), add=el('ingredient-builder-toggle');
     const form=el('ingredient-builder'), status=el('recipe-journey-status');
+    let edit=null;
     let library=null, busy=false, openingScroll=0, categoryEdited=false, lastRevision=-1;
     const escape=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
     const format=value=>Number(value).toLocaleString('pt-BR',{maximumFractionDigits:4});
@@ -20,8 +21,8 @@
         const icon=library?.resolve(item.name,item.category);
         const quantity=format(item.unit==='kg'?item.qtyG/1000:item.qtyG)+' '+(item.unit||'g');
         return '<article class="ingredient-tile'+(item.confirmed?' is-confirmed':'')+'" title="'+escape(item.name+', '+quantity)+'">'+
-          '<span class="ingredient-tile-image">'+(item.confirmed?'<button type="button" class="ingredient-tile-edit" data-edit-tile="'+item.index+'" aria-label="Editar quantidade de '+escape(item.name+', '+quantity)+'">':'')+
-          (icon?'<img src="'+escape(icon.url)+'" alt="" width="80" height="80" decoding="async">':'<span class="ingredient-icon-loading" aria-hidden="true"></span>')+(item.confirmed?'</button>':'')+
+          '<span class="ingredient-tile-image">'+('<button type="button" class="ingredient-tile-edit" data-edit-tile="'+escape(item.id)+'" aria-label="Editar ingrediente '+escape(item.name+', '+quantity)+'">')+
+          (icon?'<img src="'+escape(icon.url)+'" alt="" width="80" height="80" decoding="async">':'<span class="ingredient-icon-loading" aria-hidden="true"></span>')+'</button>'+
           '<button type="button" class="ingredient-tile-remove" '+(item.confirmed?'data-remove-confirmed':'data-remove-pending')+'="'+escape(item.id)+'" aria-label="Remover '+escape(item.name)+'">×</button></span>'+
           '<strong>'+escape(item.name)+'</strong><span class="ingredient-tile-quantity">'+escape(quantity)+'</span></article>';
       }).join('');
@@ -31,7 +32,7 @@
       el('recipe-prepare-button').disabled=busy;
       el('recipe-prepare-help').textContent=state.needsReprepare||state.confirmed.length||state.editing
         ?'Ingredientes alterados. Recalcule para atualizar a receita.'
-        :'Tudo separado? Confirme os ingredientes para continuar.';
+        :'Tudo separado? clique em "Preparar receita" para calcular e registrar sua receita.';
       el('recipe-yield-section').hidden=!state.confirmed.length;
       if(lastRevision!==state.revision){status.textContent='';lastRevision=state.revision;}
     }
@@ -43,6 +44,9 @@
     }
     function openIngredientDialog() {
       if(busy||dialog.open)return;
+      edit=null;
+      el("ingredient-dialog-title").textContent="Adicionar ingrediente";
+      form.querySelector("button[type=submit]").textContent="Adicionar ingrediente";
       openingScroll=window.scrollY;
       selectSource(sheet.getJourneyState().source);
       el('ing-qty').value='';el('ing-rendimento').value='';
@@ -125,9 +129,10 @@
       controls.forEach(({control})=>control.disabled=true);
       try {
         if(!await sheet.resolveSelectedMeasure())return;
-        if(!sheet.queueIngredient())return;
+        if(!sheet.queueIngredient(edit))return;
         closeIngredientDialog(true);
-        status.textContent='Ingrediente adicionado à seleção.';
+        status.textContent=edit?'Ingrediente atualizado.':'Ingrediente adicionado à seleção.';
+        edit=null;
       } finally {
         busy=false;controls.forEach(({control,disabled})=>control.disabled=disabled);
         sheet.calcIngCost();
@@ -149,7 +154,24 @@
         return;
       }
       const tile=event.target.closest('[data-edit-tile]');
-      if(tile)sheet.openIngredientEditor(Number(tile.dataset.editTile));
+      if(tile){
+        const state=sheet.getJourneyState();
+        const confirmed=state.confirmed.find(i=>String(i.id)===tile.dataset.editTile);
+        const item=confirmed||state.pending.find(i=>String(i.id)===tile.dataset.editTile);
+        if(!item)return;
+        openIngredientDialog();
+        selectSource(item.source||'virtual');
+        edit={id:item.id,confirmed:Boolean(confirmed),revision:sheet.getJourneyState().revision};
+        if(item.source!=='manual')sheet.selectIngredient(item.source==='fisico'?'pf_'+item.physicalId:String(item.stockId));
+        el('ing-search').value=item.name;
+        el('ing-unit').value=item.unit||'g';
+        el('ing-qty').value=item.unit==='kg'?item.qtyG/1000:item.qtyG;
+        el('ing-rendimento').value=item.rendimento||100;
+        renderCategoryOptions('ing-category',item.category||'');
+        el('ingredient-dialog-title').textContent='Editar ingrediente';
+        form.querySelector('button[type=submit]').textContent='Salvar alterações';
+        sheet.calcIngCost();
+      }
     });
     el('recipe-prepare-button').addEventListener('click',prepareRecipe);
     cooking.addEventListener('cancel',event=>event.preventDefault());
