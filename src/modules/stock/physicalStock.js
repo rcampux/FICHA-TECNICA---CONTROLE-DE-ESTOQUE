@@ -109,7 +109,7 @@
 
       const organizationId = db.activeOrganizationId?.();
       if (db.mode?.() === "supabase" && !organizationId) {
-        throw new Error("Workspace Supabase ativo nao encontrado.");
+        throw new Error("Selecione sua cozinha para continuar.");
       }
       if (db.mode?.() === "supabase" && db.saveRemote && organizationId) {
         const savedPhysicalStock = await db.saveRemote(storageKeys.physicalStock, nextPhysicalStock, organizationId);
@@ -129,7 +129,7 @@
 
       const organizationId = db.activeOrganizationId?.();
       if (db.mode?.() === "supabase" && !organizationId) {
-        throw new Error("Workspace Supabase ativo nao encontrado.");
+        throw new Error("Selecione sua cozinha para continuar.");
       }
       if (db.mode?.() === "supabase" && db.saveRemote && organizationId) {
         const savedStock = await db.saveRemote(storageKeys.stock, nextStock, organizationId);
@@ -349,7 +349,7 @@
         } catch (rollbackError) {
           console.error("Physical stock rollback failed:", rollbackError);
         }
-        showToast("Nao foi possivel salvar o produto no Supabase.");
+        showToast("Nao foi possivel salvar o produto.");
         return;
       }
 
@@ -370,7 +370,7 @@
         await persistPhysicalSnapshot(nextPhysicalStock);
       } catch (error) {
         console.error(error);
-        showToast("Nao foi possivel excluir o produto no Supabase.");
+        showToast("Nao foi possivel excluir o produto.");
         return;
       }
       renderPhysical();
@@ -502,7 +502,7 @@
         await persistPhysicalSnapshot(nextPhysicalStock);
       } catch (error) {
         console.error(error);
-        showToast("Nao foi possivel atualizar o estoque no Supabase.");
+        showToast("Nao foi possivel atualizar o estoque.");
         return;
       }
 

@@ -16,3 +16,5 @@ Revisão visual: fita compacta de 380 px no desktop e no máximo 330 px no mobil
 O host do popover apenas posiciona: não recebe blur nem animação. A superfície interna usa flex e animação; o vidro fica em uma camada própria atrás do texto, ícone e X. Isso desacopla a composição visual do top layer dos dialogs. Sem alterações nos ancestrais da navegação fixa.
 
 Verificação desta revisão: testes de duração, substituição, fechamento e todas as naturezas; visualização com CSS completo e dialog nativo em viewport mobile/desktop. Em Chrome, mensagem curta ~77 px e longa ~127 px, sem extravasamento. O comportamento em iPhone físico ainda precisa de confirmação no dispositivo após publicação.
+
+Mensagens ao usuário nunca mencionam banco, Supabase ou arquitetura. Descrever o problema e a ação possível. Confirmação de receita: Sua receita foi salva. Erro de ingrediente indisponível orienta selecionar novamente o produto.

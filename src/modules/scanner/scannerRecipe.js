@@ -395,7 +395,7 @@
 
       const organizationId = DB.activeOrganizationId?.();
       if (DB.mode?.() === "supabase" && !organizationId) {
-        showToast("Workspace Supabase ativo nao encontrado.");
+        showToast("Selecione sua cozinha para continuar.");
         return;
       }
       if (DB.mode?.() === "supabase" && DB.saveRemote && organizationId) {
@@ -407,7 +407,7 @@
           recipes = previousRecipes;
           if (DB.saveLocal) DB.saveLocal(STORAGE_KEYS.recipes, previousRecipes);
           else DB.save(STORAGE_KEYS.recipes, previousRecipes);
-          showToast("Nao foi possivel salvar a receita digitalizada no Supabase.");
+          showToast("Nao foi possivel salvar a receita digitalizada.");
           return;
         }
       }

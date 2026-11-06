@@ -95,7 +95,7 @@
 
       const organizationId = db.activeOrganizationId?.();
       if (db.mode?.() === "supabase" && !organizationId) {
-        throw new Error("Workspace Supabase ativo nao encontrado.");
+        throw new Error("Selecione sua cozinha para continuar.");
       }
       if (db.mode?.() === "supabase" && db.saveRemote && organizationId) {
         const savedStock = await db.saveRemote(storageKeys.stock, nextStock, organizationId);
@@ -232,7 +232,7 @@
       catch(error){
         setStock(previousStock);
         if(db.saveLocal)db.saveLocal(storageKeys.stock,previousStock);
-        console.error(error);showToast('Nao foi possivel salvar o produto no Supabase.');return;
+        console.error(error);showToast('Nao foi possivel salvar o produto.');return;
       }
       closeModal('modal-stock');renderStock();renderStockCategoryFilters();
       renderRecipes(document.getElementById('recipe-search').value,getActiveIngredientFilter());
@@ -244,7 +244,7 @@
       if(!await confirmAction('Deseja excluir este produto do estoque virtual?','Excluir produto'))return;
       const nextStock=getStock().filter(s=>String(s.id)!==String(id));
       try{await persistStockSnapshot(nextStock);}
-      catch(error){console.error(error);showToast('Nao foi possivel excluir o produto no Supabase.');return;}
+      catch(error){console.error(error);showToast('Nao foi possivel excluir o produto.');return;}
       renderStock();renderStockCategoryFilters();showToast('Removido.');
     }
     function renderStock(filter=''){

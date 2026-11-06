@@ -565,3 +565,5 @@ Atualização posterior: os tiles voltaram a mostrar nome e quantidade a pedido 
 - ProductDiscovery: `calculateProductPrice` inclui mg; `inferPackage` usa `packageSize`; `selectProductResult` solicita quantidade quando a oferta não informa conteúdo, preservando o preço encontrado.
 - ScannerRecipe: `confirmScanSave` converte medidas explícitas e contagens com equivalência conhecida, encaminhando ingredientes sem peso à Ficha. Formatters: `quantity` apresenta medidas métricas e identifica embalagens antigas sem peso.
 - Testes: `tests/measurements.test.mjs` verifica embalagens e normalização; harness de preparação carrega Measurements/StockPricing e simula gravação em lote, falhas, pesos conhecidos, estoque físico, miligramas e volume. `tests/stock-discovery.test.mjs` carrega a conversão compartilhada.
+
+Revisão 06/11: persistRecipesSnapshot atualiza vínculos virtuais pelo catálogo carregado antes de gravar; readIngredientDraft conserva stockRemoteId; saveRecipe distingue ingrediente indisponível e conserva a ficha em caso de falha.

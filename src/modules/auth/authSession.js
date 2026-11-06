@@ -380,7 +380,7 @@
 
       if (error) {
         console.error(error);
-        showToast("Nao foi possivel carregar workspaces.");
+        showToast("Não foi possível carregar suas cozinhas.");
         return [];
       }
 
@@ -493,7 +493,7 @@
       if (!state.isSupabaseEnabled) {
         if (stateTitle) stateTitle.textContent = "Prototipo local";
         if (stateDescription) {
-          stateDescription.textContent = "Seus dados ficam salvos neste navegador ate ligarmos o Supabase.";
+          stateDescription.textContent = "Seus dados ficam salvos neste navegador enquanto você estiver no modo local.";
         }
         if (formWrap) formWrap.style.display = "none";
         if (workspaceWrap) workspaceWrap.style.display = "none";
@@ -539,7 +539,7 @@
       }
       if (stateDescription) {
         stateDescription.textContent = showWorkspace
-          ? "Escolha o workspace de trabalho antes de salvar dados remotos."
+          ? "Escolha sua cozinha antes de salvar."
           : showVerification
             ? "Enviamos um link de confirmacao. Abra seu e-mail e confirme a conta para voltar ao app."
             : copy.description;
@@ -755,7 +755,7 @@
       }
 
       if (!state.isSupabaseEnabled || !client) {
-        showToast("Configure o Supabase antes de entrar.");
+        showToast("Este serviço está indisponível no momento. Tente novamente mais tarde.");
         return;
       }
 
@@ -825,7 +825,7 @@
       }
 
       if (!state.isSupabaseEnabled || !client) {
-        showToast("Configure o Supabase antes de recuperar a senha.");
+        showToast("Este serviço está indisponível no momento. Tente novamente mais tarde.");
         return false;
       }
 
@@ -871,7 +871,7 @@
       }
 
       if (!state.isSupabaseEnabled || !client) {
-        showToast("Configure o Supabase antes de redefinir a senha.");
+        showToast("Este serviço está indisponível no momento. Tente novamente mais tarde.");
         return false;
       }
 
@@ -953,7 +953,7 @@
       }
 
       if (!state.isSupabaseEnabled || !client) {
-        showToast("Configure o Supabase antes de reenviar.");
+        showToast("Este serviço está indisponível no momento. Tente novamente mais tarde.");
         return;
       }
 

@@ -542,7 +542,7 @@ async function hydrateWorkspaceData(event){
     kitchenBoard.render();
   }catch(error){
     console.error(error);
-    showToast('Nao foi possivel sincronizar o workspace.');
+    showToast('Nao foi possivel atualizar os dados da sua cozinha.');
   }
 }
 Object.assign(window,{confirmAction,closeConfirmAction,hydrateWorkspaceData});

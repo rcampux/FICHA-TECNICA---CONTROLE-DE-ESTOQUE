@@ -168,13 +168,17 @@
       };
 
       try {
-        recipes = nextRecipes;
+        recipes = nextRecipes.map(recipe => ({...recipe, ingredients:recipe.ingredients.map(item => {
+          if(item.source !== "virtual") return item;
+          const product=findStockItem(item.stockRemoteId || item.stockId,item.name);
+          return product?.remoteId ? {...item,stockId:product.id,stockRemoteId:product.remoteId} : item;
+        })}));
         setRecipes(recipes);
         persistLocal(recipes);
 
         const organizationId = DB.activeOrganizationId?.();
         if (DB.mode?.() === "supabase" && !organizationId) {
-          throw new Error("Workspace Supabase ativo nao encontrado.");
+          throw new Error("Selecione sua cozinha para continuar.");
         }
         if (DB.mode?.() === "supabase" && DB.saveRemote && organizationId) {
           const savedRecipes = await DB.saveRemote(STORAGE_KEYS.recipes, recipes, organizationId);
@@ -990,7 +994,7 @@
       const qtyBruta=qtyG/(rend/100);
       return {
         id:window.crypto?.randomUUID?.() || Date.now()+ingredientSequence++,
-        stockId:product.id||null,physicalId:product._physicalId||null,
+        stockId:product.id||null,stockRemoteId:manual?null:product.remoteId||null,physicalId:product._physicalId||null,
         source:ingSource,name:product.name,qtyG,qtyBruta,unit:measures.baseUnit(unit),rendimento:rend,
         category:document.getElementById('ing-category')?.value || product.category || deps.inferIngredientCategory?.(product.name) || '',
         cost:rate*qtyBruta,savedPricePerG:rate,nutrition:manual?{}:{...(product.nutrition||getNutrition(product.name)),...(conversion?{recipeEquivalence:{key:conversion.key,value:equivalent}}:{})}
@@ -1297,11 +1301,11 @@
         showToast(quotaExceeded
           ? "A imagem ficou grande demais para o armazenamento local. Escolha uma foto menor."
           : DB.mode?.() === "supabase"
-            ? "Nao foi possivel salvar a receita no Supabase."
+            ? (error?.code === "23503" ? "Um ingrediente não está mais disponível no estoque. Edite os ingredientes e selecione o produto novamente." : "Não foi possível salvar sua receita. Confira sua conexão e tente novamente. Seus dados continuam na ficha.")
             : "Nao foi possivel salvar a receita neste dispositivo.");
         return;
       }
-      showToast(DB.mode?.() === "supabase" ? `"${nome}" salva no banco!` : `"${nome}" salva!`);
+      showToast("Sua receita foi salva.",{tone:"success"});
       document.getElementById('recipe-search').value='';
       activeIngFilter=null;
       showPage('receitas','nav-receitas');
@@ -1588,7 +1592,7 @@
         await persistRecipesSnapshot(nextRecipes);
       } catch (error) {
         console.error(error);
-        showToast("Nao foi possivel excluir a receita no Supabase.");
+        showToast("Nao foi possivel excluir a receita.");
         return;
       }
       closeModal('modal-recipe');
