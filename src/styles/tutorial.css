@@ -28,3 +28,10 @@ body[data-visual-style="menu"] #tutorial-guide h2 {font-family:Georgia,serif;fon
 @media(min-width:1200px){.tutorial-desktop-entry {display:flex!important;align-items:center;gap:14px;background:transparent;color:inherit;border:0;padding:14px 16px;font:600 14px Roboto,sans-serif;cursor:pointer;text-align:left;}}
 @media(max-width:767px){#tutorial-guide .tutorial-panel {padding:16px;}#tutorial-guide h2 {font-size:21px;}#tutorial-guide footer {gap:6px;}#tutorial-guide p {font-size:14px;}}
 @media(prefers-reduced-motion:no-preference){#tutorial-guide[open] .tutorial-panel {animation:tutorial-arrive .18s ease-out;}@keyframes tutorial-arrive{from{opacity:0;translate:0 6px}to{opacity:1;translate:0 0}}}
+/* Desktop sidebar: visible tutorial shortcut with a warm, restrained highlight. */
+@media(min-width:1200px){
+  .nav .tutorial-desktop-entry{display:flex!important;align-items:center;gap:12px;margin:12px 8px 0;padding:13px 14px;border:1px solid #efd8ad66;border-radius:12px;background:#f5e5c8;color:#513521;font:600 14px Roboto,sans-serif;text-align:left;cursor:pointer;}
+  .nav .tutorial-desktop-entry .material-symbols-rounded{color:#795026;font-size:21px;}
+  .nav .tutorial-desktop-entry:hover{background:#fff0d5;}
+  .nav .tutorial-desktop-entry:focus-visible{outline:2px solid #fff;outline-offset:3px;}
+}

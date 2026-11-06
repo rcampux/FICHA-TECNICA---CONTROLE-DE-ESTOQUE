@@ -18,3 +18,5 @@ O host do popover apenas posiciona: não recebe blur nem animação. A superfíc
 Verificação desta revisão: testes de duração, substituição, fechamento e todas as naturezas; visualização com CSS completo e dialog nativo em viewport mobile/desktop. Em Chrome, mensagem curta ~77 px e longa ~127 px, sem extravasamento. O comportamento em iPhone físico ainda precisa de confirmação no dispositivo após publicação.
 
 Mensagens ao usuário nunca mencionam banco, Supabase ou arquitetura. Descrever o problema e a ação possível. Confirmação de receita: Sua receita foi salva. Erro de ingrediente indisponível orienta selecionar novamente o produto.
+
+06/11: atalho Tutoriais destacado em creme/dourado na lateral desktop (1200px+); mantém a ação existente e não altera o mobile.
