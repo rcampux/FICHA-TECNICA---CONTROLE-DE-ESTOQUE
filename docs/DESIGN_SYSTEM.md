@@ -147,3 +147,5 @@ Os tokens canônicos ficam em `src/styles/tokens.css`. Aliases legados existem a
 - Categorias do filtro correspondem às categorias dos ingredientes cadastrados no estoque. Clicar novamente na opção ativa desmarca o filtro.
 - Registro temporário de insumos guarda apenas os ingredientes de estoque virtual/físico de uma nova ficha neste navegador. Restaurar não executa baixa de estoque. Salvar ou limpar a ficha encerra o registro. Receitas sem estoque ficam fora desse registro.
 - O quadro da cozinha permite deslizar horizontalmente e arrastar pela alça; aproximar o cartão da borda desloca o quadro.
+
+Menu em blocos: quatro colunas a partir de 1200 px; modo Lista mantém linha completa. Mobile usa imagem limitada pela altura segura svh, menor espaçamento e botões com área de toque de 44 px. Conteúdo expandido cresce naturalmente, sem corte ou altura fixa. Navegação fixa permanece inalterada.
