@@ -567,3 +567,5 @@ Atualização posterior: os tiles voltaram a mostrar nome e quantidade a pedido 
 - Testes: `tests/measurements.test.mjs` verifica embalagens e normalização; harness de preparação carrega Measurements/StockPricing e simula gravação em lote, falhas, pesos conhecidos, estoque físico, miligramas e volume. `tests/stock-discovery.test.mjs` carrega a conversão compartilhada.
 
 Revisão 06/11: persistRecipesSnapshot atualiza vínculos virtuais pelo catálogo carregado antes de gravar; readIngredientDraft conserva stockRemoteId; saveRecipe distingue ingrediente indisponível e conserva a ficha em caso de falha.
+
+06/11 — foodIcons.createResolver prioriza farinhas sobre raízes/frutas e reconhece 11 novos ícones. loadLibrary valida a contagem declarada no manifesto, sem limite fixo de 78. Biblioteca ampliada para 89 imagens WebP.
