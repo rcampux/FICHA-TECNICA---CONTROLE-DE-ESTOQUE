@@ -1250,6 +1250,12 @@
         showToast('Preencha “Nome da receita” antes de salvar.',{tone:'warning',title:'Falta o nome da receita'});
         return;
       }
+      const recipeCategories=window.FichaTecRecipeCategories?.get()||[];
+      if(!recipeCategories.some(value=>typeof value==='string'&&value.trim())){
+        showToast('Selecione pelo menos uma categoria para salvar sua receita.',{tone:'warning',title:'Falta a categoria da receita'});
+        document.getElementById('recipe-types-open')?.focus({preventScroll:true});
+        return;
+      }
       if(!currentIngredients.length){showToast('Adicione pelo menos um ingrediente.');return;}
       const markup=parseFloat(document.getElementById('markup-pct').value)||0;
       if (markup < 0) { showToast('Informe um markup maior ou igual a zero.'); return; }

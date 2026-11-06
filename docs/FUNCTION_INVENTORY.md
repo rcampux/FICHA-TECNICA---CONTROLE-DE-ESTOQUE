@@ -582,3 +582,5 @@ Revisão 06/11: persistRecipesSnapshot atualiza vínculos virtuais pelo catálog
 - recipeFilters.normalize/filter: busca sem acentos e combinação de tipos (OU) com ingredientes (TODOS).
 - recipeCategories.list: catálogo compartilhado pelo editor e filtro.
 - recipeSheet.bindRecipeFilterActions/renderRecipes/setIngFilter: seleção múltipla, busca incremental e limpeza sem perda das escolhas ocultas pela busca.
+
+- recipeSheet.saveRecipe: valida seleção obrigatória de categoria e interrompe salvamento com toast de atenção.

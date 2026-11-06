@@ -38,3 +38,5 @@ Todos os ícones, pendentes ou confirmados, reabrem o popup de ingrediente para 
 Tipos de receita compartilham o catálogo de Categorias da receita (padrões, personalizadas e categorias das receitas salvas), sem misturar categorias de produtos. Checkboxes permitem múltiplos tipos (OU) e ingredientes (TODOS). Busca interna incremental, sem acentos/caixa, filtra as opções nos dois grupos sem alterar escolhas. Buscar receita continua filtrando títulos em conjunto. Limpar remove escolhas e busca interna; X, clique externo e ESC usam o fechamento existente. Cabeçalho e busca ficam separados da área rolável para evitar títulos sobrepostos no mobile/desktop.
 Validação: 93 testes; conferência no navegador da busca "al" mostrando Saladas e Alho, mantendo Massas marcada, painel 354 × 510 em viewport 390 × 700 sem transbordamento horizontal.
 Próximo passo: conferir com o catálogo real de receitas e categorias personalizadas.
+
+Categoria obrigatória: salvar exige pelo menos uma categoria da receita. Sem seleção, toast de atenção orienta selecionar categoria e mantém dados da ficha. A regra também se aplica ao salvar edições de receitas antigas.

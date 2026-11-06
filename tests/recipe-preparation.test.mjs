@@ -141,6 +141,7 @@ test('salvar e reordenar na mesma sessão reutiliza IDs e não duplica ingredien
 
 function recipeHarness(preview = null, stockOverride = null, physicalOverride = []){
   const elements=new Map(),routes=[],messages=[];
+  let recipeCategories=["Sobremesas"];
   let reorder,fail=false,physical=physicalOverride;
   const local=new Map();let user="test-user";
   const element=id=>{
@@ -149,9 +150,9 @@ function recipeHarness(preview = null, stockOverride = null, physicalOverride = 
     return elements.get(id);
   };
   const ingredients=[{id:'uuid-a',stockId:1,name:'Leite',qtyG:360,qtyBruta:360,unit:'g',rendimento:100,cost:3,nutrition:{}},{id:'uuid-b',stockId:2,name:'Manteiga',qtyG:20,qtyBruta:20,unit:'g',rendimento:100,cost:1,nutrition:{}}];
-  let recipes=[{id:'recipe-1',nome:'Brigadeiro',ingredients,modoPreparo:'Texto anterior',observacoes:'Manter refrigerado',origem:'scan',porcoes:20,yieldUnit:'unit',markup:0,createdAt:'2026-11-02',totalCost:4}];
+  let recipes=[{id:'recipe-1',nome:'Brigadeiro',recipeCategories:['Sobremesas'],ingredients,modoPreparo:'Texto anterior',observacoes:'Manter refrigerado',origem:'scan',porcoes:20,yieldUnit:'unit',markup:0,createdAt:'2026-11-02',totalCost:4}];
   const baseURI='https://example.test/public/index.html';
-  const context={URL,localStorage:{getItem:key=>local.get(key),setItem:(key,value)=>local.set(key,value),removeItem:key=>local.delete(key)},window:{getAuthState:()=>({user:{id:user}}),location:{href:baseURI},open:()=>preview,FichaTecIngredientOrder:{...order,bindIngredientOrder:(_el,options)=>{reorder=options.onMove;}},requestAnimationFrame(){},setTimeout(){}},document:{body:{dataset:{}},baseURI,getElementById:element,querySelector(){return null;}},console:{error(){},warn(){}}};
+  const context={URL,localStorage:{getItem:key=>local.get(key),setItem:(key,value)=>local.set(key,value),removeItem:key=>local.delete(key)},window:{FichaTecRecipeCategories:{list:()=>["Sobremesas"],get:()=>recipeCategories,set:value=>{recipeCategories=value;}},getAuthState:()=>({user:{id:user}}),location:{href:baseURI},open:()=>preview,FichaTecIngredientOrder:{...order,bindIngredientOrder:(_el,options)=>{reorder=options.onMove;}},requestAnimationFrame(){},setTimeout(){}},document:{body:{dataset:{}},baseURI,getElementById:element,querySelector(){return null;}},console:{error(){},warn(){}}};
   vm.runInNewContext(read('utils/measurements.js'),context);
   vm.runInNewContext(read('modules/stock/stockPricing.js'),context);
   vm.runInNewContext(read('modules/recipes/productionPlan.js'),context);
@@ -165,7 +166,7 @@ function recipeHarness(preview = null, stockOverride = null, physicalOverride = 
     getPhysicalStock:()=>physical,getStock:()=>stockOverride || ingredients.map(i=>({id:i.stockId,name:i.name,price:.01,qty:1,unit:'g'})),getRecipes:()=>recipes,
     pricePerUnit:context.window.FichaTecStockPricing.pricePerUnit,setPhysicalStock:value=>{physical=value;},setStock:value=>{stockOverride=value;},setRecipes:value=>{recipes=value;},showPage:page=>routes.push(page),showToast:m=>messages.push(m),storageKeys:{recipes:'recipes'},
   });
-  return {module,element,routes,local,getPhysical:()=>physical,getStock:()=>stockOverride,messages,setUser:value=>{user=value;},getRecipes:()=>recipes,reorder:(a,b)=>reorder(a,b),setFail:value=>{fail=value;}};
+  return {setCategories:value=>{recipeCategories=value;},module,element,routes,local,getPhysical:()=>physical,getStock:()=>stockOverride,messages,setUser:value=>{user=value;},getRecipes:()=>recipes,reorder:(a,b)=>reorder(a,b),setFail:value=>{fail=value;}};
 }
 test('salvar edição mantém preparo, ordem e metadados e abre receitas apenas após sucesso',async()=>{
   const h=recipeHarness();h.module.editRecipe('recipe-1');
@@ -716,4 +717,14 @@ test('preparo soma massas nas três origens e mantém volume separado',()=>{
     assert.equal(modelContext.window.FichaTecProduction.ingredientMass([{source,unit:'g',qtyG:500},{source,unit:'g',qtyG:300}]),800);
   }
   assert.equal(modelContext.window.FichaTecProduction.ingredientMass([{unit:'g',qtyG:500},{unit:'ml',qtyG:80}]),null);
+});
+
+test('categoria obrigatória bloqueia salvamento com aviso e permite salvar após selecionar',async()=>{
+ const h=recipeHarness();await h.module.editRecipe('recipe-1');
+ h.setCategories([]);await h.module.saveRecipe();
+ assert.ok(h.messages.some(m=>m.includes('Selecione pelo menos uma categoria')));
+ assert.equal(h.routes.includes('receitas'),false);
+ h.setCategories(['Sobremesas']);await h.module.saveRecipe();
+ assert.equal(h.routes.includes('receitas'),true);
+ assert.equal(h.getRecipes()[0].recipeCategories[0],'Sobremesas');
 });
