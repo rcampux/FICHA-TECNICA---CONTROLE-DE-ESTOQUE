@@ -33,3 +33,8 @@ Ao editar uma receita existente, a confirmação de novos ingredientes usa Refaz
 
 ## Edição antes do preparo — 06/11/2026
 Todos os ícones, pendentes ou confirmados, reabrem o popup de ingrediente para trocar produto, origem, categoria, quantidade e medida. Salvar substitui o item na mesma posição, sem duplicação. Cancelar preserva a seleção. X permanece independente. A primeira preparação exibe: Tudo separado? clique em "Preparar receita" para calcular e registrar sua receita. Próximo passo: conferir a troca de produto antes de preparar em desktop e mobile.
+
+## Filtros combinados — 06/11/2026
+Tipos de receita compartilham o catálogo de Categorias da receita (padrões, personalizadas e categorias das receitas salvas), sem misturar categorias de produtos. Checkboxes permitem múltiplos tipos (OU) e ingredientes (TODOS). Busca interna incremental, sem acentos/caixa, filtra as opções nos dois grupos sem alterar escolhas. Buscar receita continua filtrando títulos em conjunto. Limpar remove escolhas e busca interna; X, clique externo e ESC usam o fechamento existente. Cabeçalho e busca ficam separados da área rolável para evitar títulos sobrepostos no mobile/desktop.
+Validação: 93 testes; conferência no navegador da busca "al" mostrando Saladas e Alho, mantendo Massas marcada, painel 354 × 510 em viewport 390 × 700 sem transbordamento horizontal.
+Próximo passo: conferir com o catálogo real de receitas e categorias personalizadas.

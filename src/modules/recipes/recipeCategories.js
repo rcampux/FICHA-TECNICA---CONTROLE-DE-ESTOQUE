@@ -17,5 +17,5 @@
   dialog.querySelectorAll('[data-close]').forEach(b=>b.addEventListener('click',()=>dialog.close()));
   dialog.addEventListener('click',e=>{if(e.target===dialog)dialog.close();});
   dialog.querySelector('form').addEventListener('submit',e=>{e.preventDefault();const input=dialog.querySelector('form input');const name=input.value.trim();if(!name)return;selected=[...new Set([...selected,name])];try{localStorage.setItem(scope(),JSON.stringify([...new Set([...custom(),name])]))}catch{}input.value='';render();showSelected();});
-  window.FichaTecRecipeCategories={get:()=>[...selected],set:value=>{selected=Array.isArray(value)?value.filter(v=>typeof v==='string'):[];showSelected();}};
+  window.FichaTecRecipeCategories={list:()=>[...new Set([...defaults,...custom()])],get:()=>[...selected],set:value=>{selected=Array.isArray(value)?value.filter(v=>typeof v==='string'):[];showSelected();}};
 })();

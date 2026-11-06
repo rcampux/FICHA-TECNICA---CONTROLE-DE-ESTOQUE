@@ -156,6 +156,7 @@ function recipeHarness(preview = null, stockOverride = null, physicalOverride = 
   vm.runInNewContext(read('modules/stock/stockPricing.js'),context);
   vm.runInNewContext(read('modules/recipes/productionPlan.js'),context);
   vm.runInNewContext(read('modules/recipes/recipePrint.js'),context);
+  vm.runInNewContext(read('modules/recipes/recipeFilters.js'),context);
   vm.runInNewContext(read('modules/recipes/recipeSheet.js'),context);
   const module=context.window.FichaTecRecipeSheet.createRecipeSheetModule({
     closeModal(){},confirmAction:async()=>true,

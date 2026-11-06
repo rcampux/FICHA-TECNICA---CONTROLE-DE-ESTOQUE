@@ -33,7 +33,8 @@
     let currentRecipeId = null;
     let editingRecipeId = null;
     let activeIngFilter = null;
-    let categoryFilter = null;
+    const selectedRecipeTypes = new Set();
+    const selectedRecipeIngredients = new Set();
     let draftScope;
 
     function personalKey(feature) {
@@ -565,14 +566,22 @@
       const panel = document.getElementById('recipe-filter-panel');
       const trigger = document.getElementById('recipe-filter-trigger');
       trigger.onclick = () => window.FichaTecCategoryPanels.toggle(panel.id);
-      panel.onclick = (event) => {
-        const category=event.target.closest('[data-category-filter]');
-        if(category){categoryFilter=categoryFilter===category.dataset.categoryFilter?null:category.dataset.categoryFilter;renderRecipes();return;}
-        const option = event.target.closest('[data-ingredient-filter]');
-        if (!option || !panel.contains(option)) return;
-        const value=option.dataset.ingredientFilter;
-        if(!value)categoryFilter=null;
-        setIngFilter(value===activeIngFilter?null:value||null);
+      panel.oninput = event => {if(event.target.id==='recipe-filter-search')renderRecipes();};
+      panel.onchange = event => {
+        const input=event.target;
+        const isType=input.hasAttribute('data-category-filter');
+        if(!isType&&!input.hasAttribute('data-ingredient-filter'))return;
+        const value=isType?input.dataset.categoryFilter:input.dataset.ingredientFilter;
+        const selected=isType?selectedRecipeTypes:selectedRecipeIngredients;
+        if(input.checked)selected.add(value);else selected.delete(value);
+        activeIngFilter=null;
+        renderRecipes();
+        [...panel.querySelectorAll('input[type=checkbox]')].find(node=>(isType?node.dataset.categoryFilter:node.dataset.ingredientFilter)===value)?.focus({preventScroll:true});
+      };
+      panel.onclick = event => {
+        if(!event.target.closest('[data-clear-recipe-filters]'))return;
+        selectedRecipeTypes.clear();selectedRecipeIngredients.clear();activeIngFilter=null;
+        document.getElementById('recipe-filter-search').value='';renderRecipes();
       };
     }
 
@@ -1318,7 +1327,7 @@
       }
       showToast("Sua receita foi salva.",{tone:"success"});
       document.getElementById('recipe-search').value='';
-      activeIngFilter=null;
+      activeIngFilter=null;selectedRecipeTypes.clear();selectedRecipeIngredients.clear();
       showPage('receitas','nav-receitas');
       renderRecipes('',null);
       focusRecipeCard(recipe.id);
@@ -1338,25 +1347,25 @@
     }
     function renderRecipes(filter = document.getElementById('recipe-search').value, ingFilter = activeIngFilter) {
       bindRecipeStyles();
-      const categories=[...new Set(recipes.flatMap(r=>[...(r.recipeCategories||[]),...r.ingredients.map(ingredientCategory)]).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'pt-BR'));
-      if(!categories.includes(categoryFilter))categoryFilter=null;
-      document.getElementById('recipe-category-chips').innerHTML=categories.map(c=>`<button type="button" class="recipe-filter-choice" aria-pressed="${c===categoryFilter}" data-category-filter="${escapeAttribute(c)}">${escapeHtml(c)}</button>`).join('')||'<span>Sem categorias cadastradas.</span>';
-      const allIngredients = [...new Set(recipes.flatMap(recipe => recipe.ingredients.map(item => item.name)))].sort((a,b) => a.localeCompare(b,'pt-BR'));
-      activeIngFilter = allIngredients.includes(ingFilter) ? ingFilter : null;
-      ingFilter = activeIngFilter;
-      document.getElementById('recipe-filter-count').hidden = !ingFilter&&!categoryFilter;
-      document.getElementById('recipe-filter-count').textContent=Number(Boolean(ingFilter))+Number(Boolean(categoryFilter));
-      const filterElement = document.getElementById('ingredient-filter-chips');
-      filterElement.innerHTML = allIngredients.map(name => `<button type="button" class="recipe-filter-choice" aria-pressed="${name === ingFilter}" data-ingredient-filter="${escapeAttribute(name)}">${escapeHtml(name)}</button>`).join('') || '<p>Nenhum ingrediente nas receitas.</p>';
+      const categories=[...new Set([...(window.FichaTecRecipeCategories?.list()||[]),...recipes.flatMap(r=>r.recipeCategories||[])])].sort((a,b)=>a.localeCompare(b,'pt-BR'));
+      const allIngredients=[...new Set(recipes.flatMap(r=>r.ingredients.map(i=>i.name)))].sort((a,b)=>a.localeCompare(b,'pt-BR'));
+      for(const name of selectedRecipeTypes)if(!categories.includes(name))selectedRecipeTypes.delete(name);
+      for(const name of selectedRecipeIngredients)if(!allIngredients.includes(name))selectedRecipeIngredients.delete(name);
+      const query=document.getElementById('recipe-filter-search')?.value||'';
+      const choice=(name,kind,selected)=>`<label class="recipe-filter-choice"><input type="checkbox" data-${kind}-filter="${escapeAttribute(name)}" ${selected.has(name)?'checked':''}><span>${escapeHtml(name)}</span></label>`;
+      const matches=name=>window.FichaTecRecipeFilters.normalize(name).includes(window.FichaTecRecipeFilters.normalize(query));
+      document.getElementById('recipe-category-chips').innerHTML=categories.filter(matches).map(name=>choice(name,'category',selectedRecipeTypes)).join('')||'<p>Nenhum tipo encontrado.</p>';
+      document.getElementById('ingredient-filter-chips').innerHTML=allIngredients.filter(matches).map(name=>choice(name,'ingredient',selectedRecipeIngredients)).join('')||'<p>Nenhum ingrediente encontrado.</p>';
+      const count=selectedRecipeTypes.size+selectedRecipeIngredients.size;
+      document.getElementById('recipe-filter-count').hidden=!count;
+      document.getElementById('recipe-filter-count').textContent=count;
       bindRecipeFilterActions();
-      let f=recipes.filter(r=>r.nome.toLowerCase().includes((filter||'').toLowerCase()));
-      if(ingFilter)f=f.filter(r=>r.ingredients.some(i=>i.name===ingFilter));
-      if(categoryFilter)f=f.filter(r=>(r.recipeCategories||[]).includes(categoryFilter)||r.ingredients.some(i=>ingredientCategory(i)===categoryFilter));
+      let f=window.FichaTecRecipeFilters.filter(recipes,{name:filter,types:[...selectedRecipeTypes],ingredients:[...selectedRecipeIngredients]});
       const el=document.getElementById('recipes-list');
       if(!f.length){
         el.onclick = null;
         el.onkeydown = null;
-        el.innerHTML=`<div class="empty-state"><span class="empty-icon"><span class="material-symbols-rounded" style="font-size:52px;font-variation-settings:'FILL' 0,'wght' 300,'GRAD' 0,'opsz' 48">menu_book</span></span><div class="empty-text">${filter||ingFilter?'Nenhuma receita encontrada.':'Nenhuma receita salva ainda.'}</div></div>`;
+        el.innerHTML=`<div class="empty-state"><span class="empty-icon"><span class="material-symbols-rounded" style="font-size:52px;font-variation-settings:'FILL' 0,'wght' 300,'GRAD' 0,'opsz' 48">menu_book</span></span><div class="empty-text">${filter||selectedRecipeTypes.size||selectedRecipeIngredients.size?'Nenhuma receita encontrada.':'Nenhuma receita salva ainda.'}</div></div>`;
         return;
       }
       el.innerHTML=f.map((r,cardIndex)=>{
@@ -1398,7 +1407,7 @@
       }).join('');
       bindRecipeCardActions(el);
     }
-    function setIngFilter(val){activeIngFilter=val;renderRecipes(document.getElementById('recipe-search').value,val);}
+    function setIngFilter(val){activeIngFilter=val;selectedRecipeIngredients.clear();if(val)selectedRecipeIngredients.add(val);renderRecipes();}
     function sameProductName(a,b) {
       return a.trim().toLocaleLowerCase('pt-BR') === b.trim().toLocaleLowerCase('pt-BR');
     }

@@ -578,3 +578,7 @@ Revisão 06/11: persistRecipesSnapshot atualiza vínculos virtuais pelo catálog
 - recipeCategories.render/showSelected/get/set: escolha múltipla, nova categoria e integração com ficha.
 - supabaseDomainRepository.recipeNotesMetadata: lê envelope versionado para categorias e divisão por lote, mantendo observações antigas.
 - nutrition-search.chooseNutritionProduct: correspondência exata de produto.
+
+- recipeFilters.normalize/filter: busca sem acentos e combinação de tipos (OU) com ingredientes (TODOS).
+- recipeCategories.list: catálogo compartilhado pelo editor e filtro.
+- recipeSheet.bindRecipeFilterActions/renderRecipes/setIngFilter: seleção múltipla, busca incremental e limpeza sem perda das escolhas ocultas pela busca.

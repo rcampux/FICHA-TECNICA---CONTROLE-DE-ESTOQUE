@@ -410,14 +410,15 @@
       <span class="material-symbols-rounded search-icon" aria-hidden="true">search</span>
       <input type="search" aria-label="Buscar receita" placeholder="Buscar receita..." oninput="renderRecipes(this.value,activeIngFilter)" id="recipe-search">
     </div>
-    <button class="btn btn-secondary" id="recipe-filter-trigger" type="button" aria-label="Filtrar por ingrediente" aria-controls="recipe-filter-panel" aria-expanded="false"><span class="material-symbols-rounded" aria-hidden="true">filter_list</span> Filtro<span id="recipe-filter-count" hidden>1</span></button>
-    <div class="category-filter-panel" id="recipe-filter-panel" role="region" aria-label="Filtro de ingredientes" hidden>
-      <div class="category-filter-header"><strong>Filtrar por ingrediente</strong><button type="button" class="category-panel-close" data-close-category-panel aria-label="Fechar filtros"><span class="material-symbols-rounded" aria-hidden="true">close</span></button></div>
-      <strong>Categorias de receitas e ingredientes</strong>
+    <button class="btn btn-secondary" id="recipe-filter-trigger" type="button" aria-label="Filtrar receitas" aria-controls="recipe-filter-panel" aria-expanded="false"><span class="material-symbols-rounded" aria-hidden="true">filter_list</span> Filtro<span id="recipe-filter-count" hidden>1</span></button>
+    <div class="category-filter-panel" id="recipe-filter-panel" role="region" aria-label="Filtros de receitas" hidden>
+      <div class="category-filter-header"><strong>Filtrar receitas</strong><button type="button" class="category-panel-close" data-close-category-panel aria-label="Fechar filtros"><span class="material-symbols-rounded" aria-hidden="true">close</span></button></div>
+      <label class="recipe-filter-search-label" for="recipe-filter-search">Buscar tipos ou ingredientes</label><input type="search" id="recipe-filter-search" placeholder="Digite um nome..." autocomplete="off">
+      <p class="recipe-filter-help">Escolha um ou mais tipos. A receita deve conter todos os ingredientes marcados.</p><div class="recipe-filter-scroll"><strong>Tipos de receita</strong>
       <div class="category-filter-options" id="recipe-category-chips"></div>
       <strong>Ingredientes</strong>
       <div class="category-filter-options" id="ingredient-filter-chips"></div>
-      <button type="button" class="btn btn-quiet" data-ingredient-filter="">Limpar filtro</button>
+      </div><button type="button" class="btn btn-quiet" data-clear-recipe-filters>Limpar filtros</button>
     </div>
   </div>
   <div class="recipe-view-toolbar">
@@ -1143,6 +1144,7 @@
 <script src="../src/modules/recipes/foodIcons.js" defer></script>
 <script src="../src/modules/recipes/recipeCategories.js" defer></script>
 <script src="../src/modules/recipes/recipeJourney.js" defer></script>
+<script src="../src/modules/recipes/recipeFilters.js" defer></script>
 <script src="../src/modules/recipes/recipeSheet.js" defer></script>
 <script src="../src/modules/scanner/scannerRecipe.js" defer></script>
 <script src="../src/modules/stock/stockPricing.js" defer></script>
