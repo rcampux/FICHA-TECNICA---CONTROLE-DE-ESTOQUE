@@ -701,3 +701,18 @@ test('editar ícone manual mantém posição e pede recálculo somente quando mu
   state=h.module.getJourneyState();assert.equal(state.confirmed.length,1);assert.equal(state.needsReprepare,true);
   assert.equal(state.confirmed[0].name,'Chocolate');assert.equal(state.confirmed[0].qtyG,30);
 });
+
+test('categorias e divisão por lote sobrevivem ao salvamento sem alterar observações',()=>{
+  const mapped=repo.mapRecipeToRemote({nome:'QA',recipeCategories:['Massas','Entradas'],yieldUnit:'batch',observacoes:'Nota original'},'org');
+  const restored=repo.mapRecipeFromRemote(mapped);
+  assert.deepEqual(Array.from(restored.recipeCategories),['Massas','Entradas']);
+  assert.equal(restored.yieldUnit,'batch');assert.equal(restored.observacoes,'Nota original');
+  assert.equal(repo.mapRecipeFromRemote({notes:'Nota antiga'}).observacoes,'Nota antiga');
+});
+
+test('preparo soma massas nas três origens e mantém volume separado',()=>{
+  for(const source of ['manual','virtual','fisico']){
+    assert.equal(modelContext.window.FichaTecProduction.ingredientMass([{source,unit:'g',qtyG:500},{source,unit:'g',qtyG:300}]),800);
+  }
+  assert.equal(modelContext.window.FichaTecProduction.ingredientMass([{unit:'g',qtyG:500},{unit:'ml',qtyG:80}]),null);
+});

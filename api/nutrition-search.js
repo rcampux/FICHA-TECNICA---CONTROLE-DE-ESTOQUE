@@ -60,6 +60,7 @@ function scoreProduct(product, query) {
 
 function chooseNutritionProduct(products, query) {
   return (products || [])
+    .filter(product=>[product?.product_name,product?.generic_name].some(name=>normalizeText(name)===normalizeText(query)))
     .filter((product) => product?.nutriments && (product.product_name || product.generic_name)
       && ["kcal", "carb", "prot", "fat", "fiber", "sodium"].some((key) => mapNutrition(product)[key] !== null))
     .sort((left, right) => scoreProduct(right, query) - scoreProduct(left, query))[0] || null;
@@ -96,7 +97,7 @@ export default async function handler(request, response) {
     const payload = await nutritionResponse.json();
     const product = chooseNutritionProduct(payload?.products, query);
     if (!product) {
-      sendJson(response, 404, {error: "Nao encontramos uma tabela confiavel para esse produto."});
+      sendJson(response, 404, {error: "Não encontramos uma tabela para esse produto exato. Informe os valores do rótulo; não usaremos outro alimento."});
       return;
     }
 

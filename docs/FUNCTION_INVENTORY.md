@@ -572,3 +572,9 @@ Revisão 06/11: persistRecipesSnapshot atualiza vínculos virtuais pelo catálog
 
 - recipeSheet.queueIngredient(edit): inclui ou substitui ingrediente pendente/confirmado por ID, validando revisão e sinalizando recálculo somente se os dados mudarem.
 - recipeJourney: clique em qualquer tile preenche o popup existente para edição de produto e quantidade.
+
+## Revisão QA 06/11/2026
+- recipeStockBatch.updateSaveState/showIncomplete: bloqueio acessível e aviso repetível por pendências.
+- recipeCategories.render/showSelected/get/set: escolha múltipla, nova categoria e integração com ficha.
+- supabaseDomainRepository.recipeNotesMetadata: lê envelope versionado para categorias e divisão por lote, mantendo observações antigas.
+- nutrition-search.chooseNutritionProduct: correspondência exata de produto.

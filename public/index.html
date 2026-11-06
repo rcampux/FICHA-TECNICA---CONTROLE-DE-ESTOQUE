@@ -206,7 +206,7 @@
     </div>
     <div class="input-group">
       <label class="input-label">Nome da Receita *</label>
-      <input type="text" id="ficha-nome" placeholder="Ex: Bolo de banana, Esfiha de carne...">
+      <div class="recipe-name-controls"><input type="text" id="ficha-nome" placeholder="Ex: Bolo de banana, Esfiha de carne..."><button type="button" class="btn btn-secondary" id="recipe-types-open">Categorias da receita</button></div><div id="recipe-types-selected"></div>
     </div>
     <div class="recipe-cover-picker">
       <div class="recipe-image-preview" id="recipe-image-preview" aria-live="polite">
@@ -253,7 +253,7 @@
     </div>
     <div class="recipe-yield-grid">
       <div class="input-group">
-        <label class="input-label" for="weight-raw">Ingredientes somados (g)</label>
+        <label class="input-label" for="weight-raw">Ingredientes somados (g / ml)</label>
         <input id="weight-raw" readonly placeholder="Calculado ao adicionar">
       </div>
       <div class="input-group">
@@ -263,9 +263,9 @@
     </div>
     <div class="recipe-division">
       <div class="input-group">
-        <label class="input-label" for="ficha-yield-unit">Dividir o lote em</label>
+        <label class="input-label" for="ficha-yield-unit">Dividir a produção em:</label>
         <select id="ficha-yield-unit" onchange="calcFicha()">
-          <option value="portion">Porções</option>
+          <option value="batch">Lote</option><option value="portion">Porções</option>
           <option value="unit">Unidades</option>
         </select>
       </div>
@@ -413,7 +413,7 @@
     <button class="btn btn-secondary" id="recipe-filter-trigger" type="button" aria-label="Filtrar por ingrediente" aria-controls="recipe-filter-panel" aria-expanded="false"><span class="material-symbols-rounded" aria-hidden="true">filter_list</span> Filtro<span id="recipe-filter-count" hidden>1</span></button>
     <div class="category-filter-panel" id="recipe-filter-panel" role="region" aria-label="Filtro de ingredientes" hidden>
       <div class="category-filter-header"><strong>Filtrar por ingrediente</strong><button type="button" class="category-panel-close" data-close-category-panel aria-label="Fechar filtros"><span class="material-symbols-rounded" aria-hidden="true">close</span></button></div>
-      <strong>Categorias dos ingredientes</strong>
+      <strong>Categorias de receitas e ingredientes</strong>
       <div class="category-filter-options" id="recipe-category-chips"></div>
       <strong>Ingredientes</strong>
       <div class="category-filter-options" id="ingredient-filter-chips"></div>
@@ -435,7 +435,7 @@
 
 <dialog id="recipe-stock-batch" aria-labelledby="recipe-stock-batch-title">
   <form novalidate>
-    <header><h2 id="recipe-stock-batch-title" data-batch-title>Adicionar ao estoque</h2><button type="button" class="btn btn-icon" data-batch-close aria-label="Fechar cadastro"><span class="material-symbols-rounded" aria-hidden="true">close</span></button></header>
+    <header><h2 id="recipe-stock-batch-title" data-batch-title>Adicionar ingredientes ao estoque</h2><button type="button" class="btn btn-icon" data-batch-close aria-label="Fechar cadastro"><span class="material-symbols-rounded" aria-hidden="true">close</span></button></header>
     <div data-batch-body></div>
     <footer><p data-batch-status role="status" aria-live="polite"></p><button type="submit" class="btn btn-primary" data-batch-save hidden>Salvar no estoque</button></footer>
   </form>
@@ -1141,6 +1141,7 @@
 <script src="../src/modules/recipes/recipePrint.js" defer></script>
 <script src="../src/modules/recipes/recipeStockBatch.js" defer></script>
 <script src="../src/modules/recipes/foodIcons.js" defer></script>
+<script src="../src/modules/recipes/recipeCategories.js" defer></script>
 <script src="../src/modules/recipes/recipeJourney.js" defer></script>
 <script src="../src/modules/recipes/recipeSheet.js" defer></script>
 <script src="../src/modules/scanner/scannerRecipe.js" defer></script>

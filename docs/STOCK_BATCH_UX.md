@@ -14,3 +14,11 @@
 Testes automatizados cobrem persistência de categorias, falha de gravação, troca de cozinha, arredondamento nutricional, ciclos de teclado iOS/Android, fallback sem VisualViewport e rolagem interna do campo. A jornada foi exercitada em navegador isolado com dados locais: seleção e criação de categoria, preenchimento nutricional com resposta controlada, persistência de produtos e atualização do custo da receita, estilos CARD/Menu, desktop e emulação mobile. A altura visível do teclado foi simulada; isso não substitui uma conferência em aparelho físico.
 
 Próximo passo recomendado: conferir esta jornada no iPhone que apresentou o problema, incluindo abrir e fechar o teclado em quantidade, preço e nome de categoria.
+
+## Revisão QA — 06/11/2026
+- Adicionar ingredientes ao estoque: cada linha começa em Adicionar; confirmar quantidade e valor recolhe e marca Adicionado. Editar remove a confirmação até nova confirmação. Salvar usa aria-disabled para permitir aviso explicativo a cada clique, com X, e bloqueia a operação até todas as linhas confirmadas.
+- Gerar tabela nutricional exige correspondência exata do nome normalizado; não associa ingredientes puros a preparações que contenham esses nomes. Ausência de referência deixa preenchimento manual disponível. A versão da requisição evita reutilização de resultados anteriores.
+- Soma de ingredientes: gramas são somadas nas três origens. Quando há ml sem equivalência de massa, mostra separadamente g + ml, sem inventar densidade ou calcular perda incorreta.
+- Divisão: lote, porções e unidades; rótulos e cálculo relacionais. Categorias da receita: múltiplas escolhas, criação, tags e filtro. Metadados persistidos em envelope versionado nas observações existentes, preservando o texto legado e evitando dependência de migração.
+- Validação: 91 testes passaram; jornada local conferida desde criação sem estoque, categorias, soma de 50 g, lote, cadastro bloqueado, aviso, confirmação Adicionado e transição para markup.
+- Próximo passo: validar teclado físico em iPhone/Android; validação em navegador não substitui esse teste em aparelho.

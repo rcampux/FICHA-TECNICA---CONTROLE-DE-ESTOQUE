@@ -31,6 +31,8 @@
       draftMarkup = String(Number.isFinite(Number(recipe.markup)) && Number(recipe.markup) >= 0 ? Number(recipe.markup) : 0);
       scope = db.activeOrganizationId?.();
       rows = [];
+      dialog.querySelector('[data-batch-alert]')?.remove();
+      saveButton.removeAttribute('aria-disabled');
       destination = null;
       phase = 'destination';
       savedProducts = [];
@@ -40,7 +42,7 @@
       status.textContent = '';
       saveButton.hidden = true;
       saveButton.textContent='Salvar no estoque';
-      dialog.querySelector('[data-batch-title]').textContent = 'Adicionar ao estoque';
+      dialog.querySelector('[data-batch-title]').textContent = 'Adicionar ingredientes ao estoque';
       body.innerHTML = '<p>Escolha onde cadastrar os ingredientes de <strong>' + escape(recipe.nome) + '</strong>.</p>' +
         '<div class="batch-destinations"><button type="button" data-batch-destination="virtual"><span class="material-symbols-rounded">inventory_2</span><strong>Estoque virtual</strong><small>Catálogo, preços e nutrição</small></button>' +
         '<button type="button" data-batch-destination="physical"><span class="material-symbols-rounded">storefront</span><strong>Estoque físico</strong><small>Quantidades reais e catálogo virtual</small></button></div>';
@@ -79,7 +81,8 @@
         rows.map(renderRow).join('');
       body.scrollTop = 0;
       saveButton.hidden = false;
-      status.textContent = 'Revise todos os ingredientes antes de salvar.';
+      status.textContent = 'Adicione cada ingrediente antes de salvar.';
+      updateSaveState();
     }
 
     function renderMarkup() {
@@ -101,6 +104,7 @@
     }
     function showMarkupStep() {
       phase='markup';dialog.dataset.batchPhase=phase;
+      saveButton.removeAttribute('aria-disabled');
       dialog.querySelector('[data-batch-title]').textContent='Definir preço de venda';
       body.innerHTML='<p class="batch-step-intro">Ingredientes cadastrados para <strong>'+escape(recipe.nome)+'</strong>. Agora escolha o percentual que deseja acrescentar ao custo.</p>'+renderMarkup();
       saveButton.textContent='Salvar';
@@ -115,7 +119,7 @@
       const number=value=>Number(value).toLocaleString('pt-BR',{maximumFractionDigits:2});
       const money=value=>Number(value).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
       const count=Number(recipe.porcoes)||1;
-      const unit=recipe.yieldUnit==='unit'?'unidade':'porção';
+      const unit=recipe.yieldUnit==='batch'?'lote':recipe.yieldUnit==='unit'?'unidade':'porção';
       const loss=values.lossPercent===null?'Sem pesagem completa':money(values.lossPremium);
       const lossLabel=values.lossPercent===null?'Adicional pela perda':'Adicional pela perda ('+number(Math.max(0,values.lossPercent))+'%)';
       const row=(label,value)=>'<div><dt>'+label+'</dt><dd>'+value+'</dd></div>';
@@ -181,7 +185,7 @@
       const used = row.ingredients.map(item => Number(item.unit === 'kg' ? item.qtyG / 1000 : item.qtyG).toLocaleString('pt-BR', {maximumFractionDigits:4}) + ' ' + item.unit).join(' + ');
       return `<article class="batch-product" data-batch-row="${index}">
         <div class="batch-product-heading"><div><strong>${escape(product.name)}</strong><small>Na receita · ${escape(used)}</small><small>${row.existing ? 'Produto cadastrado — os dados serão atualizados ao salvar.' : 'Novo produto no catálogo'}</small><small data-batch-summary></small></div>
-        <button class="btn btn-secondary" type="button" data-batch-edit aria-expanded="false"><span class="material-symbols-rounded" aria-hidden="true">edit</span>Editar</button></div>
+        <button class="btn btn-secondary" type="button" data-batch-edit aria-expanded="false"><span class="material-symbols-rounded" aria-hidden="true">edit</span>Adicionar</button></div>
         <div class="batch-fields" hidden>
           <div class="batch-category-select"><label for="batch-category-${index}">Categoria / tag</label>
             <div class="batch-category-controls"><select id="batch-category-${index}" data-field="category">${categoryOptions(product.category)}</select>
@@ -198,7 +202,7 @@
             <label>Valor pago (R$)<input data-field="price" type="number" inputmode="decimal" step="0.01" min="0" required value="${product.price}"></label>
             ${destination === 'physical' ? `<label>Quantidade desejada<input data-field="desiredQty" type="number" inputmode="decimal" step="any" min="0.000001" value="${row.desiredQty}" placeholder="Igual à comprada"></label>` : ''}
           </div>
-          <button class="btn btn-primary batch-nutrition-button" type="button" data-batch-nutrition><span class="material-symbols-rounded" aria-hidden="true">nutrition</span>Tabela nutricional</button>
+          <button class="btn btn-primary batch-nutrition-button" type="button" data-batch-nutrition><span class="material-symbols-rounded" aria-hidden="true">nutrition</span>Gerar tabela nutricional</button>
           <details class="batch-nutrition"><summary>Revisar tabela nutricional</summary>
             <p class="batch-nutrition-status" role="status"></p>
             <p>Valores por 100 g/ml. Confira a referência e ajuste conforme o rótulo.</p>
@@ -206,6 +210,7 @@
             <label>Porção para visualizar (g/ml)<input data-field="portionSize" type="number" inputmode="decimal" min="0.1" step="any" value="${product.nutrition.portionSize}"></label>
             <div class="batch-nutrition-preview"></div>
           </details>
+          <button type="button" class="btn btn-primary" data-batch-confirm>Adicionar ingrediente</button>
         </div></article>`;
     }
 
@@ -341,6 +346,7 @@
       if (busy) return;
       if (phase === 'markup') { await saveMarkup(); return; }
       if (phase !== 'ingredients' || !destination) return;
+      if (rows.some(row=>!row.confirmed)) {showIncomplete();return;}
       if (categorySaving) return;
       if (body.querySelector('.batch-category-create:not([hidden])')) {
         status.textContent = 'Crie ou cancele a nova categoria antes de salvar os ingredientes.';
@@ -393,6 +399,17 @@
       }
     }
 
+    function updateSaveState() {
+      saveButton.setAttribute('aria-disabled',String(rows.some(row=>!row.confirmed)));
+    }
+    function showIncomplete() {
+      let alert=dialog.querySelector('[data-batch-alert]');
+      if(!alert){alert=document.createElement('div');alert.dataset.batchAlert='';alert.className='batch-incomplete-alert';alert.setAttribute('role','alert');dialog.querySelector('header').after(alert);}
+      alert.innerHTML='<span>Adicione e confirme todos os ingredientes antes de salvar no estoque.</span><button type="button" class="btn btn-icon" aria-label="Fechar aviso" data-dismiss-batch-alert>×</button>';
+    }
+    saveButton.addEventListener('click',event=>{
+      if(phase==='ingredients'&&rows.some(row=>!row.confirmed)){event.preventDefault();showIncomplete();}
+    });
     form.addEventListener('submit', save);
     body.addEventListener('input', event => {
       if (event.target.matches('[data-batch-markup]')) {
@@ -422,8 +439,24 @@
       if (event.target === dialog || event.target.closest('[data-batch-close]')) {closeBatch(); return;}
       const destinationButton = event.target.closest('[data-batch-destination]');
       if (destinationButton) {chooseDestination(destinationButton.dataset.batchDestination); return;}
+      if(event.target.closest('[data-dismiss-batch-alert]')){dialog.querySelector('[data-batch-alert]').remove();return;}
       const article = event.target.closest('[data-batch-row]');
       if (!article) return;
+      const row=rows[Number(article.dataset.batchRow)];
+      if(event.target.closest('[data-batch-confirm]')){
+        readRow(article);
+        const invalid=article.querySelector('input:invalid');
+        if(invalid || !(row.product.qty>0) || row.product.price===''){
+          showToast('Informe a quantidade comprada e o valor pago.',{tone:'warning'});invalid?.reportValidity();return;
+        }
+        row.confirmed=true;article.classList.add('is-added');
+        article.querySelector('.batch-fields').hidden=true;
+        article.querySelector('[data-batch-edit]').textContent='Editar';
+        article.querySelector('[data-batch-edit]').setAttribute('aria-expanded','false');
+        let tag=article.querySelector('.batch-added-tag');
+        if(!tag){tag=document.createElement('span');tag.className='batch-added-tag';tag.textContent='Adicionado';article.querySelector('.batch-product-heading strong').after(tag);}
+        dialog.querySelector('[data-batch-alert]')?.remove();updateSaveState();return;
+      }
       if (event.target.closest('[data-batch-category-toggle]')) {
         toggleCategoryCreation(article, article.querySelector('.batch-category-create').hidden);
         return;
@@ -432,6 +465,7 @@
       if (event.target.closest('[data-batch-category-save]')) {createCategory(article); return;}
       const edit = event.target.closest('[data-batch-edit]');
       if (edit) {
+        row.confirmed=false;article.classList.remove('is-added');article.querySelector('.batch-added-tag')?.remove();updateSaveState();
         const fields = article.querySelector('.batch-fields');
         fields.hidden = !fields.hidden;
         edit.setAttribute('aria-expanded', String(!fields.hidden));

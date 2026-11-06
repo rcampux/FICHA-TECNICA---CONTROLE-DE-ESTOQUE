@@ -18,3 +18,12 @@
 @import "./mobile-navigation.css";
 @import "./tutorial.css";
 @import "./toasts.css";
+
+/* Cadastro revisado de ingredientes */
+#recipe-stock-batch [data-batch-save][aria-disabled="true"]{opacity:.45;cursor:not-allowed;box-shadow:none}
+.batch-product.is-added{background:#f3f3f3;color:#696969;border-radius:8px;padding:16px}
+.batch-added-tag{display:inline-block;margin:8px;padding:4px 10px;background:#d9f5e4;color:#17653c;border-radius:6px;font-size:12px;font-weight:700}
+.batch-incomplete-alert{display:flex;align-items:center;gap:12px;padding:12px 24px;background:#fff0d1;color:#784c10;flex-shrink:0}
+.recipe-name-controls{display:flex;gap:8px;align-items:center}.recipe-name-controls input{min-width:0;flex:1}.recipe-name-controls button{flex-shrink:0}#recipe-types-selected{font-size:13px;margin-top:8px}
+.recipe-types-dialog{width:min(540px,calc(100% - 32px));max-height:80dvh;overflow:auto;border:0;border-radius:16px;padding:24px;background:var(--surface,#fff);color:#302624}.recipe-types-dialog::backdrop{background:#0006}.recipe-types-dialog header{display:flex;align-items:center;justify-content:space-between;gap:16px}.recipe-types-dialog [data-options]{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:20px 0}.recipe-types-dialog [data-options] label{display:flex;align-items:center;gap:8px}.recipe-types-dialog input[type=checkbox]{width:18px;height:18px;min-height:0;appearance:auto}.recipe-types-dialog form{display:flex;align-items:end;gap:8px;margin-bottom:20px}.recipe-types-dialog input{font-size:16px}.recipe-type-tags{display:flex;flex-wrap:wrap;gap:6px}
+@media(max-width:600px){.recipe-name-controls{flex-wrap:wrap}.recipe-name-controls input{flex-basis:100%}.recipe-types-dialog{padding:18px}}

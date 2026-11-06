@@ -577,14 +577,14 @@
     }
 
     function normalizeRecipeYieldUnit(value) {
-      return String(value || "").toLowerCase() === "unit" ? "unit" : "portion";
+      return ["unit","batch"].includes(value) ? value : "portion";
     }
 
     function formatRecipeYield(quantity, yieldUnit) {
       const normalizedQuantity = Math.max(readNumericValue(quantity, 1), 0);
       const formattedQuantity = formatBatchNumber(normalizedQuantity);
       const normalizedUnit = normalizeRecipeYieldUnit(yieldUnit);
-      const label = normalizedUnit === "unit"
+      const label = normalizedUnit === "batch" ? (normalizedQuantity === 1 ? "lote" : "lotes") : normalizedUnit === "unit"
         ? (normalizedQuantity === 1 ? "unidade" : "unidades")
         : (normalizedQuantity === 1 ? "porção" : "porções");
       return `${formattedQuantity} ${label}`;
@@ -600,10 +600,10 @@
       const byId = id => document.getElementById(id);
       const countInput = byId('recipe-production-quantity');
       const unit = byId('production-unit').value;
-      const piece = unit === 'unit' ? 'unidade' : 'porção';
+      const piece = unit === 'batch' ? 'lote' : unit === 'unit' ? 'unidade' : 'porção';
       countInput.step = unit === 'unit' ? '1' : 'any';
       countInput.min = unit === 'unit' ? '1' : '0';
-      byId('production-count-label').textContent = unit === 'unit' ? 'Quantas unidades?' : 'Quantas porções?';
+      byId('production-count-label').textContent = unit === 'batch' ? 'Quantos lotes?' : unit === 'unit' ? 'Quantas unidades?' : 'Quantas porções?';
       byId('production-weight-label').textContent = 'Peso por ' + piece + ' (g)';
       byId('production-piece-label').textContent = 'Venda por ' + piece;
       const plan = window.FichaTecProduction.calculatePlan(recipe, {
@@ -1130,15 +1130,15 @@
       const byPiece = yieldDriver === 'piece';
       const target = byPiece ? Number(pieceInput.value) : null;
       const division = window.FichaTecProduction.divideBatch(ready, byPiece ? null : countInput.value, target);
-      const noun = unit === 'unit' ? 'unidade' : 'porção';
-      const plural = unit === 'unit' ? 'unidades' : 'porções';
+      const noun = unit === 'batch' ? 'lote' : unit === 'unit' ? 'unidade' : 'porção';
+      const plural = unit === 'batch' ? 'lotes' : unit === 'unit' ? 'unidades' : 'porções';
       pieceInput.disabled = !(ready > 0);
       pieceInput.placeholder = ready > 0 ? 'Ex.: 25' : 'Após a pesagem';
       countInput.step = unit === 'unit' && !byPiece ? '1' : 'any';
       countInput.min = unit === 'unit' && !byPiece ? '1' : '0.0001';
       if (byPiece) countInput.value = division.count > 0 ? Number(division.count.toFixed(4)) : '';
       else pieceInput.value = division.pieceWeight > 0 ? Number(division.pieceWeight.toFixed(4)) : '';
-      document.getElementById('batch-count-label').textContent = 'Quantidade de ' + plural;
+      document.getElementById('batch-count-label').textContent = unit === 'batch' ? 'Quantidade do lote' : 'Quantidade de ' + plural;
       document.getElementById('batch-piece-label').textContent = 'Peso por ' + noun + ' (g)';
       document.getElementById('batch-divide-help').textContent = 'Com o peso pronto, informe a quantidade ou o peso de cada ' + noun + '. A ficha calcula o outro campo.';
       return {...division, ready, unit, noun, target};
@@ -1148,7 +1148,7 @@
       if (!(batch.ready > 0)) return 'A perda será calculada quando você informar o peso pronto.';
       const {loss, lossPercent} = window.FichaTecProduction.weightChange(rawWeight, batch.ready);
       const parts = [];
-      if (loss === null) parts.push('Para calcular a perda, é preciso conhecer o peso de todos os ingredientes em gramas.');
+      if (loss === null) parts.push('A soma inclui líquidos em ml. Para calcular a perda real, cadastre esses líquidos pelo peso em gramas; volume não equivale automaticamente a peso.');
       else if (loss === 0) parts.push('Sem perda de peso no preparo (0%).');
       else parts.push((loss > 0 ? 'Perda' : 'Ganho') + ' no preparo de ' + formatBatchNumber(Math.abs(loss)) + ' g (' + Math.abs(lossPercent).toLocaleString('pt-BR', {maximumFractionDigits: 2}) + '%).');
       if (batch.target > 0 && batch.count > 0 && !Number.isInteger(batch.count)) {
@@ -1167,7 +1167,7 @@
       document.getElementById('pending-cost-notice').hidden=!pending;
       const batch = syncBaseYield(changedField);
       const rawWeight = window.FichaTecProduction.ingredientMass(currentIngredients);
-      document.getElementById('weight-raw').value = rawWeight === null ? '' : formatBatchNumber(rawWeight);
+      document.getElementById('weight-raw').value = rawWeight === null ? formatBatchNumber(currentIngredients.filter(i=>i.unit!=='ml').reduce((sum,i)=>sum+Number(i.qtyBruta??i.qtyG??0),0))+' g + '+formatBatchNumber(currentIngredients.filter(i=>i.unit==='ml').reduce((sum,i)=>sum+Number(i.qtyBruta??i.qtyG??0),0))+' ml' : formatBatchNumber(rawWeight);
       document.getElementById('weight-summary').textContent = weightSummary(rawWeight, batch);
       if(!currentIngredients.length){document.getElementById('ficha-totals').style.display='none';return;}
       const markup=parseFloat(document.getElementById('markup-pct').value)||0;
@@ -1213,6 +1213,7 @@
       currentRecipeImage=null;
       recipeImageOperationId+=1;
       setRecipeImageProcessing(false);
+      window.FichaTecRecipeCategories?.set([]);
       ['ficha-nome','ficha-rendimento','markup-pct','ficha-modo-preparo'].forEach(f=>document.getElementById(f).value='');
       document.getElementById('ficha-porcoes').value='1';
       document.getElementById('ficha-yield-unit').value='portion';
@@ -1282,6 +1283,7 @@
       const recipePortionSize=parseFloat(document.getElementById('portion-size').value)||100;
       const recipe={
         id:existingRecipe?.id||Date.now(),remoteId:existingRecipe?.remoteId,nome,ingredients:ingredientRefs,
+        recipeCategories:window.FichaTecRecipeCategories?.get()||[],
         rendimento:batch.ready,
         porcoes:batch.count,
         targetPieceWeightG:batch.target,
@@ -1336,7 +1338,7 @@
     }
     function renderRecipes(filter = document.getElementById('recipe-search').value, ingFilter = activeIngFilter) {
       bindRecipeStyles();
-      const categories=[...new Set(recipes.flatMap(r=>r.ingredients.map(ingredientCategory)).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'pt-BR'));
+      const categories=[...new Set(recipes.flatMap(r=>[...(r.recipeCategories||[]),...r.ingredients.map(ingredientCategory)]).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'pt-BR'));
       if(!categories.includes(categoryFilter))categoryFilter=null;
       document.getElementById('recipe-category-chips').innerHTML=categories.map(c=>`<button type="button" class="recipe-filter-choice" aria-pressed="${c===categoryFilter}" data-category-filter="${escapeAttribute(c)}">${escapeHtml(c)}</button>`).join('')||'<span>Sem categorias cadastradas.</span>';
       const allIngredients = [...new Set(recipes.flatMap(recipe => recipe.ingredients.map(item => item.name)))].sort((a,b) => a.localeCompare(b,'pt-BR'));
@@ -1349,7 +1351,7 @@
       bindRecipeFilterActions();
       let f=recipes.filter(r=>r.nome.toLowerCase().includes((filter||'').toLowerCase()));
       if(ingFilter)f=f.filter(r=>r.ingredients.some(i=>i.name===ingFilter));
-      if(categoryFilter)f=f.filter(r=>r.ingredients.some(i=>ingredientCategory(i)===categoryFilter));
+      if(categoryFilter)f=f.filter(r=>(r.recipeCategories||[]).includes(categoryFilter)||r.ingredients.some(i=>ingredientCategory(i)===categoryFilter));
       const el=document.getElementById('recipes-list');
       if(!f.length){
         el.onclick = null;
@@ -1377,8 +1379,9 @@
               </span>
             </div>
           </div>
+          <div class="recipe-type-tags">${(r.recipeCategories||[]).map(c=>`<span class="badge">${escapeHtml(c)}</span>`).join('')}</div>
           <div class="recipe-card-meta"><span class="material-symbols-rounded">fork_spoon</span>${r.ingredients.length} ingrediente(s) · ${formatRecipeYield(r.porcoes,r.yieldUnit)}${r.rendimento?' · '+formatBatchNumber(r.rendimento)+' g':''}${pending?'':' · Markup '+r.markup+'%'}</div>
-          ${pending?`<button class="btn btn-secondary btn-sm recipe-stock-action" data-recipe-action="stock" type="button"><span class="material-symbols-rounded" aria-hidden="true">inventory_2</span>Adicionar ao estoque</button>`:`<div class="recipe-card-prices"><div>Venda do lote<strong>${fmtBRL(venda)}</strong></div><div>Venda por ${r.yieldUnit === 'unit' ? 'unidade' : 'porção'}<strong>${fmtBRL(venda / (Number(r.porcoes) || 1))}</strong></div></div>
+          ${pending?`<button class="btn btn-secondary btn-sm recipe-stock-action" data-recipe-action="stock" type="button"><span class="material-symbols-rounded" aria-hidden="true">inventory_2</span>Adicionar ingredientes ao estoque</button>`:`<div class="recipe-card-prices"><div>Venda do lote<strong>${fmtBRL(venda)}</strong></div><div>Venda por ${r.yieldUnit === 'batch' ? 'lote' : r.yieldUnit === 'unit' ? 'unidade' : 'porção'}<strong>${fmtBRL(venda / (Number(r.porcoes) || 1))}</strong></div></div>
           <div class="recipe-card-meta" style="font-size:11px;color:var(--n500)"><span class="material-symbols-rounded" style="font-size:13px">nutrition</span> ${nutritionSummary.label}</div>`}
           ${!pending && changed?`<div class="recipe-card-meta" style="font-size:11px;color:var(--n400)"><span class="material-symbols-rounded" style="font-size:13px">sync</span> Preços atualizados</div>`:''}
           <div class="recipe-card-footer">
@@ -1445,7 +1448,7 @@
         return true;
       } catch (error) {
         if (strict) throw error;
-        showToast('Produto salvo. Abra Adicionar ao estoque na receita e salve a lista para concluir o vínculo.');
+        showToast('Produto salvo. Abra Adicionar ingredientes ao estoque na receita e salve a lista para concluir o vínculo.');
         return false;
       }
     }
@@ -1455,7 +1458,7 @@
       content.innerHTML=renderRecipeMedia(recipe,'modal')+`<h3>${escapeHtml(recipe.nome)}</h3>
         <span class="pending-tag">Custo pendente</span>
         <p>Revise os ingredientes, informe as quantidades compradas e os valores pagos para calcular esta receita.</p>
-        <button type="button" class="btn recipe-stock-action" data-add-recipe-stock><span class="material-symbols-rounded" aria-hidden="true">inventory_2</span>Adicionar ao estoque</button>
+        <button type="button" class="btn recipe-stock-action" data-add-recipe-stock><span class="material-symbols-rounded" aria-hidden="true">inventory_2</span>Adicionar ingredientes ao estoque</button>
         <p>Rendimento: ${formatRecipeYield(recipe.porcoes,recipe.yieldUnit)}</p>
         ${recipe.ingredients.map(item=>`<div class="pending-ingredient"><strong>${escapeHtml(item.name)}</strong> · ${formatProductionIngredientQuantity(item)}</div>`).join('')}
         <details><summary>Modo de preparo</summary><p class="recipe-preparation-content">${escapeHtml(recipe.modoPreparo||'Ainda não informado.')}</p></details>`;
@@ -1510,7 +1513,7 @@
           <form id="production-form">
             <div class="production-planner-control">
               <div class="input-group"><label class="input-label" for="production-unit">Produzir em</label>
-                <select id="production-unit"><option value="portion" ${yieldUnit==='portion'?'selected':''}>Porções</option><option value="unit" ${yieldUnit==='unit'?'selected':''}>Unidades</option></select></div>
+                <select id="production-unit"><option value="batch" ${yieldUnit==='batch'?'selected':''}>Lote</option><option value="portion" ${yieldUnit==='portion'?'selected':''}>Porções</option><option value="unit" ${yieldUnit==='unit'?'selected':''}>Unidades</option></select></div>
               <div class="input-group"><label class="input-label" id="production-count-label" for="recipe-production-quantity">Quantidade</label>
                 <input id="recipe-production-quantity" type="number" required inputmode="decimal" value="${escapeAttribute(plannedCount)}"></div>
               <div class="input-group"><label class="input-label" id="production-weight-label" for="production-weight">Peso por peça (g)</label>
@@ -1628,6 +1631,7 @@
       recipeImageOperationId+=1;
       setRecipeImageProcessing(false);
       document.getElementById('ficha-nome').value=r.nome;
+      window.FichaTecRecipeCategories?.set(r.recipeCategories||[]);
       document.getElementById('ficha-modo-preparo').value=r.modoPreparo||'';
       document.getElementById('ficha-rendimento').value=r.rendimento||'';
       document.getElementById('ficha-porcoes').value=r.porcoes||'';
@@ -1653,7 +1657,7 @@
       const preview = window.FichaTecRecipePrint.openRecipePreview();
       const price = calcCosts(recipe.ingredients, recipe.markup, recipe.rendimento);
       const count = Number(recipe.porcoes) || 1;
-      const unit = normalizeRecipeYieldUnit(recipe.yieldUnit) === 'unit' ? 'unidade' : 'porção';
+      const unit = recipe.yieldUnit === 'batch' ? 'lote' : normalizeRecipeYieldUnit(recipe.yieldUnit) === 'unit' ? 'unidade' : 'porção';
       const pieceWeight = window.FichaTecProduction.divideBatch(recipe.rendimento, count, recipe.targetPieceWeightG).pieceWeight;
       const nutrition = getRecipeNutritionSummary(recipe);
       const created = new Date(recipe.createdAt);

@@ -267,7 +267,7 @@
     }
 
     async function fetchNutrition(productName) {
-      const response = await fetch(`/api/nutrition-search?q=${encodeURIComponent(productName)}`, {
+      const response = await fetch(`/api/nutrition-search?v=2&q=${encodeURIComponent(productName)}`, {
         headers: {accept: 'application/json'},
         signal: AbortSignal.timeout(15000),
       });

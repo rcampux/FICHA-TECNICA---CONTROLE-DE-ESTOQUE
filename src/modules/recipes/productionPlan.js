@@ -54,7 +54,7 @@
     const count = Number(draft.count);
     const weight = Number(draft.weight);
     const markup = Number(draft.markup);
-    const unit = draft.unit === 'unit' ? 'unit' : 'portion';
+    const unit = ['unit','batch'].includes(draft.unit) ? draft.unit : 'portion';
     if (!Number.isFinite(count) || count <= 0 || (unit === 'unit' && !Number.isInteger(count))) {
       return {error: unit === 'unit' ? 'Informe um número inteiro de unidades maior que zero.' : 'Informe uma quantidade de porções maior que zero.'};
     }

@@ -278,6 +278,9 @@
     };
   }
 
+  function recipeNotesMetadata(notes) {
+    try {const data=JSON.parse(notes);return data?.format==='fichatec-recipe-v1'?data:null;}catch{return null;}
+  }
   function mapRecipeToRemote(recipe, organizationId) {
     const remoteId = getRemoteId(recipe);
     const image = normalizeRecipeImageMetadata(recipe?.image);
@@ -298,7 +301,7 @@
       total_cost_cents: centsFromCurrency(recipe.totalCost),
       sale_price_cents: centsFromCurrency(recipe.venda),
       preparation_method: recipe.modoPreparo || null,
-      notes: recipe.observacoes || null,
+      notes: JSON.stringify({format:"fichatec-recipe-v1",text:recipe.observacoes||"",categories:recipe.recipeCategories||[],division:recipe.yieldUnit}),
       origin: recipe.origem || "manual",
       deleted_at: null,
     };
@@ -316,13 +319,14 @@
         ? window.FichaTecProduction.divideBatch(row.yield_g, row.portions, row.target_piece_weight_g).count
         : normalizeNumber(row.portions, 1),
       targetPieceWeightG: normalizeNumber(row.target_piece_weight_g) || null,
-      yieldUnit: row.yield_unit === "unit" ? "unit" : "portion",
+      yieldUnit: recipeNotesMetadata(row.notes)?.division === "batch" ? "batch" : row.yield_unit === "unit" ? "unit" : "portion",
+      recipeCategories: recipeNotesMetadata(row.notes)?.categories || [],
       markup: normalizeNumber(row.markup_percent),
       totalCost: currencyFromCents(row.total_cost_cents),
       venda: currencyFromCents(row.sale_price_cents),
       porcaoSize: normalizeNumber(row.portion_size_g, 100),
       modoPreparo: row.preparation_method || "",
-      observacoes: row.notes || "",
+      observacoes: recipeNotesMetadata(row.notes)?.text ?? row.notes ?? "",
       origem: row.origin || "manual",
       imagePath:imagePath || null,
       ...(imagePath ? {image:{
