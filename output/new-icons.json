@@ -1,0 +1,68 @@
+[
+  {
+    "id": "bacon",
+    "label": "Bacon",
+    "subject": "two wavy strips of bacon, terracotta meat with creamy fat stripes",
+    "source": "output/food-icons-extension/masters/bacon.png"
+  },
+  {
+    "id": "ovo-cozido",
+    "label": "Ovo cozido",
+    "subject": "two hard boiled egg halves, firm golden circular yolks inside ivory egg whites, clearly cooked sliced egg",
+    "source": "output/food-icons-extension/masters/ovo-cozido.png"
+  },
+  {
+    "id": "calabresa",
+    "label": "Calabresa",
+    "subject": "one dark smoked Brazilian calabresa sausage with three cut round slices showing small cream fat flecks",
+    "source": "output/food-icons-extension/masters/calabresa.png"
+  },
+  {
+    "id": "linguica",
+    "label": "Linguiça",
+    "subject": "two linked fresh pork sausages, light pink terracotta, gently curved with tied ends",
+    "source": "output/food-icons-extension/masters/linguica.png"
+  },
+  {
+    "id": "embutidos",
+    "label": "Embutidos",
+    "subject": "a small assortment of sliced ham, salami and a sausage, category icon for cured meats",
+    "source": "output/food-icons-extension/masters/embutidos.png"
+  },
+  {
+    "id": "farinha-mandioca",
+    "label": "Farinha de mandioca",
+    "subject": "a low wooden bowl filled with fine pale golden cassava flour and a small wooden scoop, small cut cassava root beside bowl",
+    "source": "output/food-icons-extension/masters/farinha-mandioca.png"
+  },
+  {
+    "id": "cacau",
+    "label": "Cacau",
+    "subject": "a whole reddish ochre cacao pod and an opened pod revealing ivory pulp-covered beans, small green leaf",
+    "source": "output/food-icons-extension/masters/cacau.png"
+  },
+  {
+    "id": "cacau-po",
+    "label": "Cacau em pó",
+    "subject": "a small cream ceramic bowl with a mound of dark brown cocoa powder and a wooden spoon holding powder",
+    "source": "output/food-icons-extension/masters/cacau-po.png"
+  },
+  {
+    "id": "chocolate-po",
+    "label": "Chocolate em pó",
+    "subject": "an ochre cylindrical tin with an unlettered chocolate-square emblem, light brown chocolate drink powder and small scoop beside it",
+    "source": "output/food-icons-extension/masters/chocolate-po.png"
+  },
+  {
+    "id": "whey-protein",
+    "label": "Whey protein",
+    "subject": "a squat white protein supplement tub, navy screw cap and burgundy label with a simple unlettered muscle emblem, scoop of ivory powder beside it",
+    "source": "output/food-icons-extension/masters/whey-protein.png"
+  },
+  {
+    "id": "suplementos",
+    "label": "Suplementos",
+    "subject": "a small amber dietary supplement bottle with teal cap and unlettered leaf emblem, two cream capsules beside it",
+    "source": "output/food-icons-extension/masters/suplementos.png"
+  }
+]
