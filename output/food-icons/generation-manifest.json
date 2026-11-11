@@ -1,0 +1,782 @@
+[
+  {
+    "id": "sem-categoria",
+    "label": "Sem categoria",
+    "subject": "a warm taupe price tag with a visible round cream hole, diagonal orientation",
+    "unicode": "",
+    "group": "Categorias",
+    "status": "generated",
+    "source": "output/food-icons/masters/sem-categoria.png",
+    "prompt": "Use attached image as STYLE REFERENCE ONLY. Create ONE isolated food/category icon faithfully matching its warm Portuguese flat illustration identity: rounded organic silhouettes, clean crisp edges, solid opaque fills, two or three soft shading planes, small restrained highlights, no outlines. White solid background, no shadow or glow, no lettering, no watermark, no background tile. Centered composition, approximately square object footprint, 18% clear margins on all sides. Readable at 48px. Subject: a warm taupe price tag with a visible round cream hole, diagonal orientation."
+  },
+  {
+    "id": "acucares",
+    "label": "Açúcares",
+    "subject": "three ivory sugar cubes stacked with three tiny warm brown accent strokes",
+    "unicode": "",
+    "group": "Categorias",
+    "status": "generated",
+    "source": "output/food-icons/masters/acucares.png",
+    "prompt": "Use attached image as STYLE REFERENCE ONLY. Create ONE isolated food/category icon faithfully matching its warm Portuguese flat illustration identity: rounded organic silhouettes, clean crisp edges, solid opaque fills, two or three soft shading planes, small restrained highlights, no outlines. White solid background, no shadow or glow, no lettering, no watermark, no background tile. Centered composition, approximately square object footprint, 18% clear margins on all sides. Readable at 48px. Subject: three ivory sugar cubes stacked with three tiny warm brown accent strokes."
+  },
+  {
+    "id": "carboidratos",
+    "label": "Carboidratos",
+    "subject": "a golden oval bread loaf behind three short hollow rigatoni pasta tubes",
+    "unicode": "",
+    "group": "Categorias",
+    "status": "generated",
+    "source": "output/food-icons/masters/carboidratos.png",
+    "prompt": "Use attached image as STYLE REFERENCE ONLY. Create ONE isolated food/category icon faithfully matching its warm Portuguese flat illustration identity: rounded organic silhouettes, clean crisp edges, solid opaque fills, two or three soft shading planes, small restrained highlights, no outlines. White solid background, no shadow or glow, no lettering, no watermark, no background tile. Centered composition, approximately square object footprint, 18% clear margins on all sides. Readable at 48px. Subject: a golden oval bread loaf behind three short hollow rigatoni pasta tubes."
+  },
+  {
+    "id": "carnes",
+    "label": "Carnes",
+    "subject": "a raw red beef steak with a cream fat rim and oval pale center",
+    "unicode": "",
+    "group": "Categorias",
+    "status": "generated",
+    "source": "output/food-icons/masters/carnes.png",
+    "prompt": "Use attached image as STYLE REFERENCE ONLY. Create ONE isolated food/category icon faithfully matching its warm Portuguese flat illustration identity: rounded organic silhouettes, clean crisp edges, solid opaque fills, two or three soft shading planes, small restrained highlights, no outlines. White solid background, no shadow or glow, no lettering, no watermark, no background tile. Centered composition, approximately square object footprint, 18% clear margins on all sides. Readable at 48px. Subject: a raw red beef steak with a cream fat rim and oval pale center."
+  },
+  {
+    "id": "cereais",
+    "label": "Cereais",
+    "subject": "a terracotta bowl of dry cereal grains with one golden wheat ear behind",
+    "unicode": "",
+    "group": "Categorias",
+    "status": "generated",
+    "source": "output/food-icons/masters/cereais.png",
+    "prompt": "Use attached image as STYLE REFERENCE ONLY. Create ONE isolated food/category icon faithfully matching its warm Portuguese flat illustration identity: rounded organic silhouettes, clean crisp edges, solid opaque fills, two or three soft shading planes, small restrained highlights, no outlines. White solid background, no shadow or glow, no lettering, no watermark, no background tile. Centered composition, approximately square object footprint, 18% clear margins on all sides. Readable at 48px. Subject: a terracotta bowl of dry cereal grains with one golden wheat ear behind."
+  },
+  {
+    "id": "farinhas",
+    "label": "Farinhas",
+    "subject": "a kraft flour bag with a wheat ear symbol and a small mound of white flour beside",
+    "unicode": "",
+    "group": "Categorias",
+    "status": "generated",
+    "source": "output/food-icons/masters/farinhas.png",
+    "prompt": "Use attached image as STYLE REFERENCE ONLY. Create ONE isolated food/category icon faithfully matching its warm Portuguese flat illustration identity: rounded organic silhouettes, clean crisp edges, solid opaque fills, two or three soft shading planes, small restrained highlights, no outlines. White solid background, no shadow or glow, no lettering, no watermark, no background tile. Centered composition, approximately square object footprint, 18% clear margins on all sides. Readable at 48px. Subject: a kraft flour bag with a wheat ear symbol and a small mound of white flour beside."
+  },
+  {
+    "id": "hortifruti",
+    "label": "Hortifruti",
+    "subject": "a red apple, green lettuce leaf and orange carrot arranged together",
+    "unicode": "",
+    "group": "Categorias",
+    "status": "generated",
+    "source": "output/food-icons/masters/hortifruti.png",
+    "prompt": "Use attached image as STYLE REFERENCE ONLY. Create ONE isolated food/category icon faithfully matching its warm Portuguese flat illustration identity: rounded organic silhouettes, clean crisp edges, solid opaque fills, two or three soft shading planes, small restrained highlights, no outlines. White solid background, no shadow or glow, no lettering, no watermark, no background tile. Centered composition, approximately square object footprint, 18% clear margins on all sides. Readable at 48px. Subject: a red apple, green lettuce leaf and orange carrot arranged together."
+  },
+  {
+    "id": "laticinios-leite",
+    "label": "Laticínios · leite",
+    "subject": "a blue and white milk carton with a yellow Swiss cheese wedge",
+    "unicode": "",
+    "group": "Categorias",
+    "status": "generated",
+    "source": "output/food-icons/masters/laticinios-leite.png",
+    "prompt": "Use attached image as STYLE REFERENCE ONLY. Create ONE isolated food/category icon faithfully matching its warm Portuguese flat illustration identity: rounded organic silhouettes, clean crisp edges, solid opaque fills, two or three soft shading planes, small restrained highlights, no outlines. White solid background, no shadow or glow, no lettering, no watermark, no background tile. Centered composition, approximately square object footprint, 18% clear margins on all sides. Readable at 48px. Subject: a blue and white milk carton with a yellow Swiss cheese wedge."
+  },
+  {
+    "id": "laticinios-iogurte",
+    "label": "Laticínios · iogurte",
+    "subject": "a small open blue rim yogurt pot of cream with a yellow Swiss cheese wedge beside",
+    "unicode": "",
+    "group": "Categorias",
+    "status": "generated",
+    "source": "output/food-icons/masters/laticinios-iogurte.png",
+    "prompt": "Use attached image as STYLE REFERENCE ONLY. Create ONE isolated food/category icon faithfully matching its warm Portuguese flat illustration identity: rounded organic silhouettes, clean crisp edges, solid opaque fills, two or three soft shading planes, small restrained highlights, no outlines. White solid background, no shadow or glow, no lettering, no watermark, no background tile. Centered composition, approximately square object footprint, 18% clear margins on all sides. Readable at 48px. Subject: a small open blue rim yogurt pot of cream with a yellow Swiss cheese wedge beside."
+  },
+  {
+    "id": "leguminosas",
+    "label": "Leguminosas",
+    "subject": "an open green pea pod with red dry kidney beans and beige chickpeas beside",
+    "unicode": "",
+    "group": "Categorias",
+    "status": "generated",
+    "source": "output/food-icons/masters/leguminosas.png",
+    "prompt": "Use attached image as STYLE REFERENCE ONLY. Create ONE isolated food/category icon faithfully matching its warm Portuguese flat illustration identity: rounded organic silhouettes, clean crisp edges, solid opaque fills, two or three soft shading planes, small restrained highlights, no outlines. White solid background, no shadow or glow, no lettering, no watermark, no background tile. Centered composition, approximately square object footprint, 18% clear margins on all sides. Readable at 48px. Subject: an open green pea pod with red dry kidney beans and beige chickpeas beside."
+  },
+  {
+    "id": "oleaginosas",
+    "label": "Oleaginosas",
+    "subject": "an almond, a walnut half and a cashew nut with two green leaves",
+    "unicode": "",
+    "group": "Categorias",
+    "status": "generated",
+    "source": "output/food-icons/masters/oleaginosas.png",
+    "prompt": "Use attached image as STYLE REFERENCE ONLY. Create ONE isolated food/category icon faithfully matching its warm Portuguese flat illustration identity: rounded organic silhouettes, clean crisp edges, solid opaque fills, two or three soft shading planes, small restrained highlights, no outlines. White solid background, no shadow or glow, no lettering, no watermark, no background tile. Centered composition, approximately square object footprint, 18% clear margins on all sides. Readable at 48px. Subject: an almond, a walnut half and a cashew nut with two green leaves."
+  },
+  {
+    "id": "oleos-gorduras",
+    "label": "Óleos e gorduras",
+    "subject": "a small clear cruet of golden oil with brown stopper beside a golden butter block on cream dish",
+    "unicode": "",
+    "group": "Categorias",
+    "status": "generated",
+    "source": "output/food-icons/masters/oleos-gorduras.png",
+    "prompt": "Use attached image as STYLE REFERENCE ONLY. Create ONE isolated food/category icon faithfully matching its warm Portuguese flat illustration identity: rounded organic silhouettes, clean crisp edges, solid opaque fills, two or three soft shading planes, small restrained highlights, no outlines. White solid background, no shadow or glow, no lettering, no watermark, no background tile. Centered composition, approximately square object footprint, 18% clear margins on all sides. Readable at 48px. Subject: a small clear cruet of golden oil with brown stopper beside a golden butter block on cream dish."
+  },
+  {
+    "id": "outros",
+    "label": "Outros",
+    "subject": "three small equally spaced horizontal warm brown dots",
+    "unicode": "",
+    "group": "Categorias",
+    "status": "generated",
+    "source": "output/food-icons/masters/outros.png",
+    "prompt": "Use attached image as STYLE REFERENCE ONLY. Create ONE isolated food/category icon faithfully matching its warm Portuguese flat illustration identity: rounded organic silhouettes, clean crisp edges, solid opaque fills, two or three soft shading planes, small restrained highlights, no outlines. White solid background, no shadow or glow, no lettering, no watermark, no background tile. Centered composition, approximately square object footprint, 18% clear margins on all sides. Readable at 48px. Subject: three small equally spaced horizontal warm brown dots."
+  },
+  {
+    "id": "proteinas",
+    "label": "Proteínas",
+    "subject": "a halved boiled egg with golden yolk and small golden grilled chicken breast with three brown marks, faithfully reproduce reference category",
+    "unicode": "",
+    "group": "Categorias",
+    "status": "generated",
+    "source": "output/food-icons/masters/proteinas.png",
+    "prompt": "Use attached image as STYLE REFERENCE ONLY. Create ONE isolated food/category icon faithfully matching its warm Portuguese flat illustration identity: rounded organic silhouettes, clean crisp edges, solid opaque fills, two or three soft shading planes, small restrained highlights, no outlines. White solid background, no shadow or glow, no lettering, no watermark, no background tile. Centered composition, approximately square object footprint, 18% clear margins on all sides. Readable at 48px. Subject: a halved boiled egg with golden yolk and small golden grilled chicken breast with three brown marks, faithfully reproduce reference category."
+  },
+  {
+    "id": "temperos",
+    "label": "Temperos",
+    "subject": "a glass spice jar of red paprika with brown shaker lid, three brown peppercorns and green herb leaves",
+    "unicode": "",
+    "group": "Categorias",
+    "status": "generated",
+    "source": "output/food-icons/masters/temperos.png",
+    "prompt": "Use attached image as STYLE REFERENCE ONLY. Create ONE isolated food/category icon faithfully matching its warm Portuguese flat illustration identity: rounded organic silhouettes, clean crisp edges, solid opaque fills, two or three soft shading planes, small restrained highlights, no outlines. White solid background, no shadow or glow, no lettering, no watermark, no background tile. Centered composition, approximately square object footprint, 18% clear margins on all sides. Readable at 48px. Subject: a glass spice jar of red paprika with brown shaker lid, three brown peppercorns and green herb leaves."
+  },
+  {
+    "id": "arroz",
+    "label": "Arroz",
+    "subject": "an open small kraft sack filled with uncooked ivory long rice grains, few dry grains beside, no cooked rice",
+    "unicode": "1F33E",
+    "group": "Ingredientes especiais",
+    "status": "generated",
+    "source": "output/food-icons/masters/arroz.png",
+    "prompt": "Use attached image as STYLE REFERENCE ONLY. Create ONE isolated food/category icon faithfully matching its warm Portuguese flat illustration identity: rounded organic silhouettes, clean crisp edges, solid opaque fills, two or three soft shading planes, small restrained highlights, no outlines. White solid background, no shadow or glow, no lettering, no watermark, no background tile. Centered composition, approximately square object footprint, 18% clear margins on all sides. Readable at 48px. Subject: an open small kraft sack filled with uncooked ivory long rice grains, few dry grains beside, no cooked rice."
+  },
+  {
+    "id": "feijao",
+    "label": "Feijão",
+    "subject": "five dry red brown kidney beans with cream hilum marks, no bowl or sauce",
+    "unicode": "1FAD8",
+    "group": "Ingredientes especiais",
+    "status": "generated",
+    "source": "output/food-icons/masters/feijao.png",
+    "prompt": "Use attached image as STYLE REFERENCE ONLY. Create ONE isolated food/category icon faithfully matching its warm Portuguese flat illustration identity: rounded organic silhouettes, clean crisp edges, solid opaque fills, two or three soft shading planes, small restrained highlights, no outlines. White solid background, no shadow or glow, no lettering, no watermark, no background tile. Centered composition, approximately square object footprint, 18% clear margins on all sides. Readable at 48px. Subject: five dry red brown kidney beans with cream hilum marks, no bowl or sauce."
+  },
+  {
+    "id": "farinha-trigo",
+    "label": "Farinha de trigo",
+    "subject": "a kraft wheat flour bag with tiny wheat ear emblem and loose white flour mound",
+    "unicode": "",
+    "group": "Ingredientes especiais",
+    "status": "generated",
+    "source": "output/food-icons/masters/farinha-trigo.png",
+    "prompt": "Use attached image as STYLE REFERENCE ONLY. Create ONE isolated food/category icon faithfully matching its warm Portuguese flat illustration identity: rounded organic silhouettes, clean crisp edges, solid opaque fills, two or three soft shading planes, small restrained highlights, no outlines. White solid background, no shadow or glow, no lettering, no watermark, no background tile. Centered composition, approximately square object footprint, 18% clear margins on all sides. Readable at 48px. Subject: a kraft wheat flour bag with tiny wheat ear emblem and loose white flour mound."
+  },
+  {
+    "id": "leite-condensado",
+    "label": "Leite condensado",
+    "subject": "a small blue and cream carton of condensed milk beside a spoon with thick pale ivory condensed milk",
+    "unicode": "",
+    "group": "Ingredientes especiais",
+    "status": "generated",
+    "source": "output/food-icons/masters/leite-condensado.png",
+    "prompt": "Use attached image as STYLE REFERENCE ONLY. Create ONE isolated food/category icon faithfully matching its warm Portuguese flat illustration identity: rounded organic silhouettes, clean crisp edges, solid opaque fills, two or three soft shading planes, small restrained highlights, no outlines. White solid background, no shadow or glow, no lettering, no watermark, no background tile. Centered composition, approximately square object footprint, 18% clear margins on all sides. Readable at 48px. Subject: a small blue and cream carton of condensed milk beside a spoon with thick pale ivory condensed milk."
+  },
+  {
+    "id": "doce-leite",
+    "label": "Doce de leite",
+    "subject": "an open glass jar of caramel brown dulce de leche and a small spoon of thick caramel cream",
+    "unicode": "",
+    "group": "Ingredientes especiais",
+    "status": "generated",
+    "source": "output/food-icons/masters/doce-leite.png",
+    "prompt": "Use attached image as STYLE REFERENCE ONLY. Create ONE isolated food/category icon faithfully matching its warm Portuguese flat illustration identity: rounded organic silhouettes, clean crisp edges, solid opaque fills, two or three soft shading planes, small restrained highlights, no outlines. White solid background, no shadow or glow, no lettering, no watermark, no background tile. Centered composition, approximately square object footprint, 18% clear margins on all sides. Readable at 48px. Subject: an open glass jar of caramel brown dulce de leche and a small spoon of thick caramel cream."
+  },
+  {
+    "id": "mel",
+    "label": "Mel",
+    "subject": "a squat clear glass honey jar filled with golden honey, wooden honey dipper resting across the opening with a small honey drop",
+    "unicode": "1F36F",
+    "group": "Ingredientes especiais",
+    "status": "generated",
+    "source": "output/food-icons/masters/mel.png",
+    "prompt": "Use attached image as STYLE REFERENCE ONLY. Create ONE isolated food/category icon faithfully matching its warm Portuguese flat illustration identity: rounded organic silhouettes, clean crisp edges, solid opaque fills, two or three soft shading planes, small restrained highlights, no outlines. White solid background, no shadow or glow, no lettering, no watermark, no background tile. Centered composition, approximately square object footprint, 18% clear margins on all sides. Readable at 48px. Subject: a squat clear glass honey jar filled with golden honey, wooden honey dipper resting across the opening with a small honey drop."
+  },
+  {
+    "id": "enlatados",
+    "label": "Enlatados",
+    "subject": "three small food cans grouped, one blue fish can, one green pea can and one yellow corn can",
+    "unicode": "1F96B",
+    "group": "Ingredientes especiais",
+    "status": "generated",
+    "source": "output/food-icons/masters/enlatados.png",
+    "prompt": "Use attached image as STYLE REFERENCE ONLY. Create ONE isolated food/category icon faithfully matching its warm Portuguese flat illustration identity: rounded organic silhouettes, clean crisp edges, solid opaque fills, two or three soft shading planes, small restrained highlights, no outlines. White solid background, no shadow or glow, no lettering, no watermark, no background tile. Centered composition, approximately square object footprint, 18% clear margins on all sides. Readable at 48px. Subject: three small food cans grouped, one blue fish can, one green pea can and one yellow corn can."
+  },
+  {
+    "id": "atum-lata",
+    "label": "Atum em lata",
+    "subject": "an open low round blue tin can with pale pink tuna flakes and a peeled back silver lid, simple small fish symbol on label",
+    "unicode": "",
+    "group": "Ingredientes especiais",
+    "status": "generated",
+    "source": "output/food-icons/masters/atum-lata.png",
+    "prompt": "Use attached image as STYLE REFERENCE ONLY. Create ONE isolated food/category icon faithfully matching its warm Portuguese flat illustration identity: rounded organic silhouettes, clean crisp edges, solid opaque fills, two or three soft shading planes, small restrained highlights, no outlines. White solid background, no shadow or glow, no lettering, no watermark, no background tile. Centered composition, approximately square object footprint, 18% clear margins on all sides. Readable at 48px. Subject: an open low round blue tin can with pale pink tuna flakes and a peeled back silver lid, simple small fish symbol on label."
+  },
+  {
+    "id": "ervilha-lata",
+    "label": "Ervilha em lata",
+    "subject": "an open silver and green food tin filled with round green peas, green pea pod symbol on label",
+    "unicode": "",
+    "group": "Ingredientes especiais",
+    "status": "generated",
+    "source": "output/food-icons/masters/ervilha-lata.png",
+    "prompt": "Use attached image as STYLE REFERENCE ONLY. Create ONE isolated food/category icon faithfully matching its warm Portuguese flat illustration identity: rounded organic silhouettes, clean crisp edges, solid opaque fills, two or three soft shading planes, small restrained highlights, no outlines. White solid background, no shadow or glow, no lettering, no watermark, no background tile. Centered composition, approximately square object footprint, 18% clear margins on all sides. Readable at 48px. Subject: an open silver and green food tin filled with round green peas, green pea pod symbol on label."
+  },
+  {
+    "id": "milho-lata",
+    "label": "Milho em lata",
+    "subject": "an open silver and golden yellow food tin filled with yellow corn kernels, corn cob symbol on label",
+    "unicode": "",
+    "group": "Ingredientes especiais",
+    "status": "generated",
+    "source": "output/food-icons/masters/milho-lata.png",
+    "prompt": "Use attached image as STYLE REFERENCE ONLY. Create ONE isolated food/category icon faithfully matching its warm Portuguese flat illustration identity: rounded organic silhouettes, clean crisp edges, solid opaque fills, two or three soft shading planes, small restrained highlights, no outlines. White solid background, no shadow or glow, no lettering, no watermark, no background tile. Centered composition, approximately square object footprint, 18% clear margins on all sides. Readable at 48px. Subject: an open silver and golden yellow food tin filled with yellow corn kernels, corn cob symbol on label."
+  },
+  {
+    "id": "sardinha-lata",
+    "label": "Sardinha em lata",
+    "subject": "an open low rectangular rounded blue silver sardine tin with two small silver sardines neatly inside and rolled back lid",
+    "unicode": "",
+    "group": "Ingredientes especiais",
+    "status": "generated",
+    "source": "output/food-icons/masters/sardinha-lata.png",
+    "prompt": "Use attached image as STYLE REFERENCE ONLY. Create ONE isolated food/category icon faithfully matching its warm Portuguese flat illustration identity: rounded organic silhouettes, clean crisp edges, solid opaque fills, two or three soft shading planes, small restrained highlights, no outlines. White solid background, no shadow or glow, no lettering, no watermark, no background tile. Centered composition, approximately square object footprint, 18% clear margins on all sides. Readable at 48px. Subject: an open low rectangular rounded blue silver sardine tin with two small silver sardines neatly inside and rolled back lid."
+  },
+  {
+    "id": "leite-condensado-lata",
+    "label": "Leite condensado em lata",
+    "subject": "an open blue and cream tin can filled with thick ivory condensed milk and a pale milk drop symbol",
+    "unicode": "",
+    "group": "Ingredientes especiais",
+    "status": "generated",
+    "source": "output/food-icons/masters/leite-condensado-lata.png",
+    "prompt": "Use attached image as STYLE REFERENCE ONLY. Create ONE isolated food/category icon faithfully matching its warm Portuguese flat illustration identity: rounded organic silhouettes, clean crisp edges, solid opaque fills, two or three soft shading planes, small restrained highlights, no outlines. White solid background, no shadow or glow, no lettering, no watermark, no background tile. Centered composition, approximately square object footprint, 18% clear margins on all sides. Readable at 48px. Subject: an open blue and cream tin can filled with thick ivory condensed milk and a pale milk drop symbol."
+  },
+  {
+    "id": "uva",
+    "label": "Uva",
+    "subject": "a bunch of purple grapes with green leaf",
+    "unicode": "1F347",
+    "group": "Frutas",
+    "status": "generated",
+    "source": "output/food-icons/masters/uva.png",
+    "prompt": "Use attached image as STYLE REFERENCE ONLY. Create ONE isolated food/category icon faithfully matching its warm Portuguese flat illustration identity: rounded organic silhouettes, clean crisp edges, solid opaque fills, two or three soft shading planes, small restrained highlights, no outlines. White solid background, no shadow or glow, no lettering, no watermark, no background tile. Centered composition, approximately square object footprint, 18% clear margins on all sides. Readable at 48px. Subject: a bunch of purple grapes with green leaf."
+  },
+  {
+    "id": "melao",
+    "label": "Melão",
+    "subject": "a pale green round melon with a wedge showing pale orange flesh",
+    "unicode": "1F348",
+    "group": "Frutas",
+    "status": "generated",
+    "source": "output/food-icons/masters/melao.png",
+    "prompt": "Use attached image as STYLE REFERENCE ONLY. Create ONE isolated food/category icon faithfully matching its warm Portuguese flat illustration identity: rounded organic silhouettes, clean crisp edges, solid opaque fills, two or three soft shading planes, small restrained highlights, no outlines. White solid background, no shadow or glow, no lettering, no watermark, no background tile. Centered composition, approximately square object footprint, 18% clear margins on all sides. Readable at 48px. Subject: a pale green round melon with a wedge showing pale orange flesh."
+  },
+  {
+    "id": "melancia",
+    "label": "Melancia",
+    "subject": "a triangular watermelon slice with red flesh black seeds and green rind",
+    "unicode": "1F349",
+    "group": "Frutas",
+    "status": "generated",
+    "source": "output/food-icons/masters/melancia.png",
+    "prompt": "Use attached image as STYLE REFERENCE ONLY. Create ONE isolated food/category icon faithfully matching its warm Portuguese flat illustration identity: rounded organic silhouettes, clean crisp edges, solid opaque fills, two or three soft shading planes, small restrained highlights, no outlines. White solid background, no shadow or glow, no lettering, no watermark, no background tile. Centered composition, approximately square object footprint, 18% clear margins on all sides. Readable at 48px. Subject: a triangular watermelon slice with red flesh black seeds and green rind."
+  },
+  {
+    "id": "tangerina",
+    "label": "Tangerina",
+    "subject": "a small round orange tangerine with a green leaf and a peeled segment",
+    "unicode": "1F34A",
+    "group": "Frutas",
+    "status": "generated",
+    "source": "output/food-icons/masters/tangerina.png",
+    "prompt": "Use attached image as STYLE REFERENCE ONLY. Create ONE isolated food/category icon faithfully matching its warm Portuguese flat illustration identity: rounded organic silhouettes, clean crisp edges, solid opaque fills, two or three soft shading planes, small restrained highlights, no outlines. White solid background, no shadow or glow, no lettering, no watermark, no background tile. Centered composition, approximately square object footprint, 18% clear margins on all sides. Readable at 48px. Subject: a small round orange tangerine with a green leaf and a peeled segment."
+  },
+  {
+    "id": "limao-siciliano",
+    "label": "Limão siciliano",
+    "subject": "a yellow lemon and a half showing citrus segments",
+    "unicode": "1F34B",
+    "group": "Frutas",
+    "status": "generated",
+    "source": "output/food-icons/masters/limao-siciliano.png",
+    "prompt": "Use attached image as STYLE REFERENCE ONLY. Create ONE isolated food/category icon faithfully matching its warm Portuguese flat illustration identity: rounded organic silhouettes, clean crisp edges, solid opaque fills, two or three soft shading planes, small restrained highlights, no outlines. White solid background, no shadow or glow, no lettering, no watermark, no background tile. Centered composition, approximately square object footprint, 18% clear margins on all sides. Readable at 48px. Subject: a yellow lemon and a half showing citrus segments."
+  },
+  {
+    "id": "limao",
+    "label": "Limão",
+    "subject": "a green lime with a sliced half showing pale green segments",
+    "unicode": "1F34B-200D-1F7E9",
+    "group": "Frutas",
+    "status": "generated",
+    "source": "output/food-icons/masters/limao.png",
+    "prompt": "Use attached image as STYLE REFERENCE ONLY. Create ONE isolated food/category icon faithfully matching its warm Portuguese flat illustration identity: rounded organic silhouettes, clean crisp edges, solid opaque fills, two or three soft shading planes, small restrained highlights, no outlines. White solid background, no shadow or glow, no lettering, no watermark, no background tile. Centered composition, approximately square object footprint, 18% clear margins on all sides. Readable at 48px. Subject: a green lime with a sliced half showing pale green segments."
+  },
+  {
+    "id": "banana",
+    "label": "Banana",
+    "subject": "a small bunch of three ripe yellow bananas",
+    "unicode": "1F34C",
+    "group": "Frutas",
+    "status": "generated",
+    "source": "output/food-icons/masters/banana.png",
+    "prompt": "Use attached image as STYLE REFERENCE ONLY. Create ONE isolated food/category icon faithfully matching its warm Portuguese flat illustration identity: rounded organic silhouettes, clean crisp edges, solid opaque fills, two or three soft shading planes, small restrained highlights, no outlines. White solid background, no shadow or glow, no lettering, no watermark, no background tile. Centered composition, approximately square object footprint, 18% clear margins on all sides. Readable at 48px. Subject: a small bunch of three ripe yellow bananas."
+  },
+  {
+    "id": "abacaxi",
+    "label": "Abacaxi",
+    "subject": "a small golden pineapple with green spiky crown and simple diamond marks",
+    "unicode": "1F34D",
+    "group": "Frutas",
+    "status": "generated",
+    "source": "output/food-icons/masters/abacaxi.png",
+    "prompt": "Use attached image as STYLE REFERENCE ONLY. Create ONE isolated food/category icon faithfully matching its warm Portuguese flat illustration identity: rounded organic silhouettes, clean crisp edges, solid opaque fills, two or three soft shading planes, small restrained highlights, no outlines. White solid background, no shadow or glow, no lettering, no watermark, no background tile. Centered composition, approximately square object footprint, 18% clear margins on all sides. Readable at 48px. Subject: a small golden pineapple with green spiky crown and simple diamond marks."
+  },
+  {
+    "id": "manga",
+    "label": "Manga",
+    "subject": "a ripe orange red mango with a cut golden flesh half",
+    "unicode": "1F96D",
+    "group": "Frutas",
+    "status": "generated",
+    "source": "output/food-icons/masters/manga.png",
+    "prompt": "Use attached image as STYLE REFERENCE ONLY. Create ONE isolated food/category icon faithfully matching its warm Portuguese flat illustration identity: rounded organic silhouettes, clean crisp edges, solid opaque fills, two or three soft shading planes, small restrained highlights, no outlines. White solid background, no shadow or glow, no lettering, no watermark, no background tile. Centered composition, approximately square object footprint, 18% clear margins on all sides. Readable at 48px. Subject: a ripe orange red mango with a cut golden flesh half."
+  },
+  {
+    "id": "maca-vermelha",
+    "label": "Maçã vermelha",
+    "subject": "a red apple with brown stem and one green leaf",
+    "unicode": "1F34E",
+    "group": "Frutas",
+    "status": "generated",
+    "source": "output/food-icons/masters/maca-vermelha.png",
+    "prompt": "Use attached image as STYLE REFERENCE only. Create ONE isolated red apple food icon faithfully matching the illustration style of the red apple under Hortifruti in the reference. Flat design, solid opaque fills, clean crisp edges, warm colors, small highlights, no outlines. Single red apple with brown stem and a green leaf. White solid background, no shadow or glow, no gradients, no labels, no tile. Center object in square canvas with 20% white margins. It must be crisp and opaque, clearly readable at 48 pixels."
+  },
+  {
+    "id": "maca-verde",
+    "label": "Maçã verde",
+    "subject": "a green apple with brown stem and one green leaf",
+    "unicode": "1F34F",
+    "group": "Frutas",
+    "status": "generated",
+    "source": "output/food-icons/masters/maca-verde.png",
+    "prompt": "Use attached image as STYLE REFERENCE ONLY. Create ONE isolated food/category icon faithfully matching its warm Portuguese flat illustration identity: rounded organic silhouettes, clean crisp edges, solid opaque fills, two or three soft shading planes, small restrained highlights, no outlines. White solid background, no shadow or glow, no lettering, no watermark, no background tile. Centered composition, approximately square object footprint, 18% clear margins on all sides. Readable at 48px. Subject: a green apple with brown stem and one green leaf."
+  },
+  {
+    "id": "pera",
+    "label": "Pera",
+    "subject": "a pale green pear with brown stem and a small green leaf",
+    "unicode": "1F350",
+    "group": "Frutas",
+    "status": "generated",
+    "source": "output/food-icons/masters/pera.png",
+    "prompt": "Use attached image as STYLE REFERENCE ONLY. Create ONE isolated food/category icon faithfully matching its warm Portuguese flat illustration identity: rounded organic silhouettes, clean crisp edges, solid opaque fills, two or three soft shading planes, small restrained highlights, no outlines. White solid background, no shadow or glow, no lettering, no watermark, no background tile. Centered composition, approximately square object footprint, 18% clear margins on all sides. Readable at 48px. Subject: a pale green pear with brown stem and a small green leaf."
+  },
+  {
+    "id": "pessego",
+    "label": "Pêssego",
+    "subject": "a soft orange pink peach with a central crease and one green leaf",
+    "unicode": "1F351",
+    "group": "Frutas",
+    "status": "generated",
+    "source": "output/food-icons/masters/pessego.png",
+    "prompt": "Use attached image as STYLE REFERENCE ONLY. Create ONE isolated food/category icon faithfully matching its warm Portuguese flat illustration identity: rounded organic silhouettes, clean crisp edges, solid opaque fills, two or three soft shading planes, small restrained highlights, no outlines. White solid background, no shadow or glow, no lettering, no watermark, no background tile. Centered composition, approximately square object footprint, 18% clear margins on all sides. Readable at 48px. Subject: a soft orange pink peach with a central crease and one green leaf."
+  },
+  {
+    "id": "cereja",
+    "label": "Cereja",
+    "subject": "two red cherries connected by curved brown stems with one leaf",
+    "unicode": "1F352",
+    "group": "Frutas",
+    "status": "generated",
+    "source": "output/food-icons/masters/cereja.png",
+    "prompt": "Use attached image as STYLE REFERENCE ONLY. Create ONE isolated food/category icon faithfully matching its warm Portuguese flat illustration identity: rounded organic silhouettes, clean crisp edges, solid opaque fills, two or three soft shading planes, small restrained highlights, no outlines. White solid background, no shadow or glow, no lettering, no watermark, no background tile. Centered composition, approximately square object footprint, 18% clear margins on all sides. Readable at 48px. Subject: two red cherries connected by curved brown stems with one leaf."
+  },
+  {
+    "id": "morango",
+    "label": "Morango",
+    "subject": "a ripe red strawberry with small golden seeds and green leaf crown",
+    "unicode": "1F353",
+    "group": "Frutas",
+    "status": "generated",
+    "source": "output/food-icons/masters/morango.png",
+    "prompt": "Use attached image as STYLE REFERENCE ONLY. Create ONE isolated food/category icon faithfully matching its warm Portuguese flat illustration identity: rounded organic silhouettes, clean crisp edges, solid opaque fills, two or three soft shading planes, small restrained highlights, no outlines. White solid background, no shadow or glow, no lettering, no watermark, no background tile. Centered composition, approximately square object footprint, 18% clear margins on all sides. Readable at 48px. Subject: a ripe red strawberry with small golden seeds and green leaf crown."
+  },
+  {
+    "id": "mirtilo",
+    "label": "Mirtilo",
+    "subject": "three deep blue blueberries with five point crown marks and one green leaf",
+    "unicode": "1FAD0",
+    "group": "Frutas",
+    "status": "generated",
+    "source": "output/food-icons/masters/mirtilo.png",
+    "prompt": "Use attached image as STYLE REFERENCE ONLY. Create ONE isolated food/category icon faithfully matching its warm Portuguese flat illustration identity: rounded organic silhouettes, clean crisp edges, solid opaque fills, two or three soft shading planes, small restrained highlights, no outlines. White solid background, no shadow or glow, no lettering, no watermark, no background tile. Centered composition, approximately square object footprint, 18% clear margins on all sides. Readable at 48px. Subject: three deep blue blueberries with five point crown marks and one green leaf."
+  },
+  {
+    "id": "kiwi",
+    "label": "Kiwi",
+    "subject": "a brown kiwi fruit and a green cut half with radial tiny black seeds",
+    "unicode": "1F95D",
+    "group": "Frutas",
+    "status": "generated",
+    "source": "output/food-icons/masters/kiwi.png",
+    "prompt": "Use attached image as STYLE REFERENCE ONLY. Create ONE isolated food/category icon faithfully matching its warm Portuguese flat illustration identity: rounded organic silhouettes, clean crisp edges, solid opaque fills, two or three soft shading planes, small restrained highlights, no outlines. White solid background, no shadow or glow, no lettering, no watermark, no background tile. Centered composition, approximately square object footprint, 18% clear margins on all sides. Readable at 48px. Subject: a brown kiwi fruit and a green cut half with radial tiny black seeds."
+  },
+  {
+    "id": "tomate",
+    "label": "Tomate",
+    "subject": "a ripe red tomato with green star shaped calyx",
+    "unicode": "1F345",
+    "group": "Frutas",
+    "status": "generated",
+    "source": "output/food-icons/masters/tomate.png",
+    "prompt": "Use attached image as STYLE REFERENCE ONLY. Create ONE isolated food/category icon faithfully matching its warm Portuguese flat illustration identity: rounded organic silhouettes, clean crisp edges, solid opaque fills, two or three soft shading planes, small restrained highlights, no outlines. White solid background, no shadow or glow, no lettering, no watermark, no background tile. Centered composition, approximately square object footprint, 18% clear margins on all sides. Readable at 48px. Subject: a ripe red tomato with green star shaped calyx."
+  },
+  {
+    "id": "azeitona",
+    "label": "Azeitona",
+    "subject": "three green olives on a short twig with narrow leaves, one cut olive with red center",
+    "unicode": "1FAD2",
+    "group": "Frutas",
+    "status": "generated",
+    "source": "output/food-icons/masters/azeitona.png",
+    "prompt": "Use attached image as STYLE REFERENCE ONLY. Create ONE isolated food/category icon faithfully matching its warm Portuguese flat illustration identity: rounded organic silhouettes, clean crisp edges, solid opaque fills, two or three soft shading planes, small restrained highlights, no outlines. White solid background, no shadow or glow, no lettering, no watermark, no background tile. Centered composition, approximately square object footprint, 18% clear margins on all sides. Readable at 48px. Subject: three green olives on a short twig with narrow leaves, one cut olive with red center."
+  },
+  {
+    "id": "coco",
+    "label": "Coco",
+    "subject": "a brown fibrous coconut and a half with bright white flesh",
+    "unicode": "1F965",
+    "group": "Frutas",
+    "status": "generated",
+    "source": "output/food-icons/masters/coco.png",
+    "prompt": "Use attached image as STYLE REFERENCE ONLY. Create ONE isolated food/category icon faithfully matching its warm Portuguese flat illustration identity: rounded organic silhouettes, clean crisp edges, solid opaque fills, two or three soft shading planes, small restrained highlights, no outlines. White solid background, no shadow or glow, no lettering, no watermark, no background tile. Centered composition, approximately square object footprint, 18% clear margins on all sides. Readable at 48px. Subject: a brown fibrous coconut and a half with bright white flesh."
+  },
+  {
+    "id": "abacate",
+    "label": "Abacate",
+    "subject": "an avocado cut lengthwise showing pale green flesh and a large brown pit",
+    "unicode": "1F951",
+    "group": "Vegetais e grãos",
+    "status": "generated",
+    "source": "output/food-icons/masters/abacate.png",
+    "prompt": "Use attached image as STYLE REFERENCE ONLY. Create ONE isolated food/category icon faithfully matching its warm Portuguese flat illustration identity: rounded organic silhouettes, clean crisp edges, solid opaque fills, two or three soft shading planes, small restrained highlights, no outlines. White solid background, no shadow or glow, no lettering, no watermark, no background tile. Centered composition, approximately square object footprint, 18% clear margins on all sides. Readable at 48px. Subject: an avocado cut lengthwise showing pale green flesh and a large brown pit."
+  },
+  {
+    "id": "berinjela",
+    "label": "Berinjela",
+    "subject": "a purple eggplant with green calyx and curved stem",
+    "unicode": "1F346",
+    "group": "Vegetais e grãos",
+    "status": "generated",
+    "source": "output/food-icons/masters/berinjela.png",
+    "prompt": "Use attached image as STYLE REFERENCE ONLY. Create ONE isolated food/category icon faithfully matching its warm Portuguese flat illustration identity: rounded organic silhouettes, clean crisp edges, solid opaque fills, two or three soft shading planes, small restrained highlights, no outlines. White solid background, no shadow or glow, no lettering, no watermark, no background tile. Centered composition, approximately square object footprint, 18% clear margins on all sides. Readable at 48px. Subject: a purple eggplant with green calyx and curved stem."
+  },
+  {
+    "id": "batata",
+    "label": "Batata",
+    "subject": "two uncooked golden brown potatoes with tiny eye marks",
+    "unicode": "1F954",
+    "group": "Vegetais e grãos",
+    "status": "generated",
+    "source": "output/food-icons/masters/batata.png",
+    "prompt": "Use attached image as STYLE REFERENCE ONLY. Create ONE isolated food/category icon faithfully matching its warm Portuguese flat illustration identity: rounded organic silhouettes, clean crisp edges, solid opaque fills, two or three soft shading planes, small restrained highlights, no outlines. White solid background, no shadow or glow, no lettering, no watermark, no background tile. Centered composition, approximately square object footprint, 18% clear margins on all sides. Readable at 48px. Subject: two uncooked golden brown potatoes with tiny eye marks."
+  },
+  {
+    "id": "cenoura",
+    "label": "Cenoura",
+    "subject": "an orange carrot with green leafy tops and small orange groove marks",
+    "unicode": "1F955",
+    "group": "Vegetais e grãos",
+    "status": "generated",
+    "source": "output/food-icons/masters/cenoura.png",
+    "prompt": "Use attached image as STYLE REFERENCE ONLY. Create ONE isolated food/category icon faithfully matching its warm Portuguese flat illustration identity: rounded organic silhouettes, clean crisp edges, solid opaque fills, two or three soft shading planes, small restrained highlights, no outlines. White solid background, no shadow or glow, no lettering, no watermark, no background tile. Centered composition, approximately square object footprint, 18% clear margins on all sides. Readable at 48px. Subject: an orange carrot with green leafy tops and small orange groove marks."
+  },
+  {
+    "id": "milho",
+    "label": "Milho",
+    "subject": "a fresh golden corn cob with green husks",
+    "unicode": "1F33D",
+    "group": "Vegetais e grãos",
+    "status": "generated",
+    "source": "output/food-icons/masters/milho.png",
+    "prompt": "Use attached image as STYLE REFERENCE ONLY. Create ONE isolated food/category icon faithfully matching its warm Portuguese flat illustration identity: rounded organic silhouettes, clean crisp edges, solid opaque fills, two or three soft shading planes, small restrained highlights, no outlines. White solid background, no shadow or glow, no lettering, no watermark, no background tile. Centered composition, approximately square object footprint, 18% clear margins on all sides. Readable at 48px. Subject: a fresh golden corn cob with green husks."
+  },
+  {
+    "id": "pimenta",
+    "label": "Pimenta",
+    "subject": "a curved red chili pepper with green stem",
+    "unicode": "1F336",
+    "group": "Vegetais e grãos",
+    "status": "generated",
+    "source": "output/food-icons/masters/pimenta.png",
+    "prompt": "Use attached image as STYLE REFERENCE ONLY. Create ONE isolated food/category icon faithfully matching its warm Portuguese flat illustration identity: rounded organic silhouettes, clean crisp edges, solid opaque fills, two or three soft shading planes, small restrained highlights, no outlines. White solid background, no shadow or glow, no lettering, no watermark, no background tile. Centered composition, approximately square object footprint, 18% clear margins on all sides. Readable at 48px. Subject: a curved red chili pepper with green stem."
+  },
+  {
+    "id": "pimentao",
+    "label": "Pimentão",
+    "subject": "a green bell pepper with rounded lobes and a short stem",
+    "unicode": "1FAD1",
+    "group": "Vegetais e grãos",
+    "status": "generated",
+    "source": "output/food-icons/masters/pimentao.png",
+    "prompt": "Use attached image as STYLE REFERENCE ONLY. Create ONE isolated food/category icon faithfully matching its warm Portuguese flat illustration identity: rounded organic silhouettes, clean crisp edges, solid opaque fills, two or three soft shading planes, small restrained highlights, no outlines. White solid background, no shadow or glow, no lettering, no watermark, no background tile. Centered composition, approximately square object footprint, 18% clear margins on all sides. Readable at 48px. Subject: a green bell pepper with rounded lobes and a short stem."
+  },
+  {
+    "id": "pepino",
+    "label": "Pepino",
+    "subject": "a dark green cucumber with two pale green round slices",
+    "unicode": "1F952",
+    "group": "Vegetais e grãos",
+    "status": "generated",
+    "source": "output/food-icons/masters/pepino.png",
+    "prompt": "Use attached image as STYLE REFERENCE ONLY. Create ONE isolated food/category icon faithfully matching its warm Portuguese flat illustration identity: rounded organic silhouettes, clean crisp edges, solid opaque fills, two or three soft shading planes, small restrained highlights, no outlines. White solid background, no shadow or glow, no lettering, no watermark, no background tile. Centered composition, approximately square object footprint, 18% clear margins on all sides. Readable at 48px. Subject: a dark green cucumber with two pale green round slices."
+  },
+  {
+    "id": "folhas",
+    "label": "Folhas verdes",
+    "subject": "a crisp green leafy lettuce with pale central stalk",
+    "unicode": "1F96C",
+    "group": "Vegetais e grãos",
+    "status": "generated",
+    "source": "output/food-icons/masters/folhas.png",
+    "prompt": "Use attached image as STYLE REFERENCE ONLY. Create ONE isolated food/category icon faithfully matching its warm Portuguese flat illustration identity: rounded organic silhouettes, clean crisp edges, solid opaque fills, two or three soft shading planes, small restrained highlights, no outlines. White solid background, no shadow or glow, no lettering, no watermark, no background tile. Centered composition, approximately square object footprint, 18% clear margins on all sides. Readable at 48px. Subject: a crisp green leafy lettuce with pale central stalk."
+  },
+  {
+    "id": "brocolis",
+    "label": "Brócolis",
+    "subject": "a green broccoli head with three rounded florets and pale stalk",
+    "unicode": "1F966",
+    "group": "Vegetais e grãos",
+    "status": "generated",
+    "source": "output/food-icons/masters/brocolis.png",
+    "prompt": "Use attached image as STYLE REFERENCE ONLY. Create ONE isolated food/category icon faithfully matching its warm Portuguese flat illustration identity: rounded organic silhouettes, clean crisp edges, solid opaque fills, two or three soft shading planes, small restrained highlights, no outlines. White solid background, no shadow or glow, no lettering, no watermark, no background tile. Centered composition, approximately square object footprint, 18% clear margins on all sides. Readable at 48px. Subject: a green broccoli head with three rounded florets and pale stalk."
+  },
+  {
+    "id": "alho",
+    "label": "Alho",
+    "subject": "a white garlic bulb with two peeled ivory cloves beside",
+    "unicode": "1F9C4",
+    "group": "Vegetais e grãos",
+    "status": "generated",
+    "source": "output/food-icons/masters/alho.png",
+    "prompt": "Use attached image as STYLE REFERENCE ONLY. Create ONE isolated food/category icon faithfully matching its warm Portuguese flat illustration identity: rounded organic silhouettes, clean crisp edges, solid opaque fills, two or three soft shading planes, small restrained highlights, no outlines. White solid background, no shadow or glow, no lettering, no watermark, no background tile. Centered composition, approximately square object footprint, 18% clear margins on all sides. Readable at 48px. Subject: a white garlic bulb with two peeled ivory cloves beside."
+  },
+  {
+    "id": "cebola",
+    "label": "Cebola",
+    "subject": "a golden brown onion with a cut half showing cream concentric rings",
+    "unicode": "1F9C5",
+    "group": "Vegetais e grãos",
+    "status": "generated",
+    "source": "output/food-icons/masters/cebola.png",
+    "prompt": "Use attached image as STYLE REFERENCE ONLY. Create ONE isolated food/category icon faithfully matching its warm Portuguese flat illustration identity: rounded organic silhouettes, clean crisp edges, solid opaque fills, two or three soft shading planes, small restrained highlights, no outlines. White solid background, no shadow or glow, no lettering, no watermark, no background tile. Centered composition, approximately square object footprint, 18% clear margins on all sides. Readable at 48px. Subject: a golden brown onion with a cut half showing cream concentric rings."
+  },
+  {
+    "id": "amendoim",
+    "label": "Amendoim",
+    "subject": "two beige peanuts in shell and two reddish shelled nuts",
+    "unicode": "1F95C",
+    "group": "Vegetais e grãos",
+    "status": "generated",
+    "source": "output/food-icons/masters/amendoim.png",
+    "prompt": "Use attached image as STYLE REFERENCE ONLY. Create ONE isolated food/category icon faithfully matching its warm Portuguese flat illustration identity: rounded organic silhouettes, clean crisp edges, solid opaque fills, two or three soft shading planes, small restrained highlights, no outlines. White solid background, no shadow or glow, no lettering, no watermark, no background tile. Centered composition, approximately square object footprint, 18% clear margins on all sides. Readable at 48px. Subject: two beige peanuts in shell and two reddish shelled nuts."
+  },
+  {
+    "id": "castanha",
+    "label": "Castanha",
+    "subject": "two brown chestnuts with pale beige bases, one cut half",
+    "unicode": "1F330",
+    "group": "Vegetais e grãos",
+    "status": "generated",
+    "source": "output/food-icons/masters/castanha.png",
+    "prompt": "Use attached image as STYLE REFERENCE ONLY. Create ONE isolated food/category icon faithfully matching its warm Portuguese flat illustration identity: rounded organic silhouettes, clean crisp edges, solid opaque fills, two or three soft shading planes, small restrained highlights, no outlines. White solid background, no shadow or glow, no lettering, no watermark, no background tile. Centered composition, approximately square object footprint, 18% clear margins on all sides. Readable at 48px. Subject: two brown chestnuts with pale beige bases, one cut half."
+  },
+  {
+    "id": "gengibre",
+    "label": "Gengibre",
+    "subject": "a knobby pale beige ginger root with a small golden cut end",
+    "unicode": "1FADA",
+    "group": "Vegetais e grãos",
+    "status": "generated",
+    "source": "output/food-icons/masters/gengibre.png",
+    "prompt": "Use attached image as STYLE REFERENCE ONLY. Create ONE isolated food/category icon faithfully matching its warm Portuguese flat illustration identity: rounded organic silhouettes, clean crisp edges, solid opaque fills, two or three soft shading planes, small restrained highlights, no outlines. White solid background, no shadow or glow, no lettering, no watermark, no background tile. Centered composition, approximately square object footprint, 18% clear margins on all sides. Readable at 48px. Subject: a knobby pale beige ginger root with a small golden cut end."
+  },
+  {
+    "id": "ervilha-vagem",
+    "label": "Ervilha na vagem",
+    "subject": "an open bright green pea pod showing four round green peas",
+    "unicode": "1FADB",
+    "group": "Vegetais e grãos",
+    "status": "generated",
+    "source": "output/food-icons/masters/ervilha-vagem.png",
+    "prompt": "Use attached image as STYLE REFERENCE ONLY. Create ONE isolated food/category icon faithfully matching its warm Portuguese flat illustration identity: rounded organic silhouettes, clean crisp edges, solid opaque fills, two or three soft shading planes, small restrained highlights, no outlines. White solid background, no shadow or glow, no lettering, no watermark, no background tile. Centered composition, approximately square object footprint, 18% clear margins on all sides. Readable at 48px. Subject: an open bright green pea pod showing four round green peas."
+  },
+  {
+    "id": "cogumelo",
+    "label": "Cogumelo comestível",
+    "subject": "two edible brown button mushrooms with cream stems, one halved; no red poisonous mushroom",
+    "unicode": "1F344-200D-1F7EB",
+    "group": "Vegetais e grãos",
+    "status": "generated",
+    "source": "output/food-icons/masters/cogumelo.png",
+    "prompt": "Use attached image as STYLE REFERENCE ONLY. Create ONE isolated food/category icon faithfully matching its warm Portuguese flat illustration identity: rounded organic silhouettes, clean crisp edges, solid opaque fills, two or three soft shading planes, small restrained highlights, no outlines. White solid background, no shadow or glow, no lettering, no watermark, no background tile. Centered composition, approximately square object footprint, 18% clear margins on all sides. Readable at 48px. Subject: two edible brown button mushrooms with cream stems, one halved; no red poisonous mushroom."
+  },
+  {
+    "id": "raiz",
+    "label": "Raiz / nabo",
+    "subject": "a turnip with white round root, purple shoulder, thin root tip and green leaves",
+    "unicode": "1FADC",
+    "group": "Vegetais e grãos",
+    "status": "generated",
+    "source": "output/food-icons/masters/raiz.png",
+    "prompt": "Use attached image as STYLE REFERENCE ONLY. Create ONE isolated food/category icon faithfully matching its warm Portuguese flat illustration identity: rounded organic silhouettes, clean crisp edges, solid opaque fills, two or three soft shading planes, small restrained highlights, no outlines. White solid background, no shadow or glow, no lettering, no watermark, no background tile. Centered composition, approximately square object footprint, 18% clear margins on all sides. Readable at 48px. Subject: a turnip with white round root, purple shoulder, thin root tip and green leaves."
+  },
+  {
+    "id": "carne-crua",
+    "label": "Carne crua",
+    "subject": "a raw red beef steak with cream fat rim, no cooking marks",
+    "unicode": "1F969",
+    "group": "Ingredientes e frutos do mar",
+    "status": "generated",
+    "source": "output/food-icons/masters/carne-crua.png",
+    "prompt": "Use attached image as STYLE REFERENCE ONLY. Create ONE isolated food/category icon faithfully matching its warm Portuguese flat illustration identity: rounded organic silhouettes, clean crisp edges, solid opaque fills, two or three soft shading planes, small restrained highlights, no outlines. White solid background, no shadow or glow, no lettering, no watermark, no background tile. Centered composition, approximately square object footprint, 18% clear margins on all sides. Readable at 48px. Subject: a raw red beef steak with cream fat rim, no cooking marks."
+  },
+  {
+    "id": "ovo",
+    "label": "Ovo",
+    "subject": "one whole uncooked cream chicken egg and one cracked egg with golden yolk",
+    "unicode": "1F95A",
+    "group": "Ingredientes e frutos do mar",
+    "status": "generated",
+    "source": "output/food-icons/masters/ovo.png",
+    "prompt": "Use attached image as STYLE REFERENCE ONLY. Create ONE isolated food/category icon faithfully matching its warm Portuguese flat illustration identity: rounded organic silhouettes, clean crisp edges, solid opaque fills, two or three soft shading planes, small restrained highlights, no outlines. White solid background, no shadow or glow, no lettering, no watermark, no background tile. Centered composition, approximately square object footprint, 18% clear margins on all sides. Readable at 48px. Subject: one whole uncooked cream chicken egg and one cracked egg with golden yolk."
+  },
+  {
+    "id": "queijo",
+    "label": "Queijo",
+    "subject": "a golden yellow Swiss cheese wedge with round holes",
+    "unicode": "1F9C0",
+    "group": "Ingredientes e frutos do mar",
+    "status": "generated",
+    "source": "output/food-icons/masters/queijo.png",
+    "prompt": "Use attached image as STYLE REFERENCE ONLY. Create ONE isolated food/category icon faithfully matching its warm Portuguese flat illustration identity: rounded organic silhouettes, clean crisp edges, solid opaque fills, two or three soft shading planes, small restrained highlights, no outlines. White solid background, no shadow or glow, no lettering, no watermark, no background tile. Centered composition, approximately square object footprint, 18% clear margins on all sides. Readable at 48px. Subject: a golden yellow Swiss cheese wedge with round holes."
+  },
+  {
+    "id": "manteiga",
+    "label": "Manteiga",
+    "subject": "a golden butter block on unfolded ivory paper with a small butter slice",
+    "unicode": "1F9C8",
+    "group": "Ingredientes e frutos do mar",
+    "status": "generated",
+    "source": "output/food-icons/masters/manteiga.png",
+    "prompt": "Use attached image as STYLE REFERENCE ONLY. Create ONE isolated food/category icon faithfully matching its warm Portuguese flat illustration identity: rounded organic silhouettes, clean crisp edges, solid opaque fills, two or three soft shading planes, small restrained highlights, no outlines. White solid background, no shadow or glow, no lettering, no watermark, no background tile. Centered composition, approximately square object footprint, 18% clear margins on all sides. Readable at 48px. Subject: a golden butter block on unfolded ivory paper with a small butter slice."
+  },
+  {
+    "id": "sal",
+    "label": "Sal",
+    "subject": "a small clear salt shaker with warm brown perforated lid and tiny white salt crystals",
+    "unicode": "1F9C2",
+    "group": "Ingredientes e frutos do mar",
+    "status": "generated",
+    "source": "output/food-icons/masters/sal.png",
+    "prompt": "Use attached image as STYLE REFERENCE ONLY. Create ONE isolated food/category icon faithfully matching its warm Portuguese flat illustration identity: rounded organic silhouettes, clean crisp edges, solid opaque fills, two or three soft shading planes, small restrained highlights, no outlines. White solid background, no shadow or glow, no lettering, no watermark, no background tile. Centered composition, approximately square object footprint, 18% clear margins on all sides. Readable at 48px. Subject: a small clear salt shaker with warm brown perforated lid and tiny white salt crystals."
+  },
+  {
+    "id": "leite",
+    "label": "Leite",
+    "subject": "a clear glass filled with white milk, small pale blue reflection",
+    "unicode": "1F95B",
+    "group": "Ingredientes e frutos do mar",
+    "status": "generated",
+    "source": "output/food-icons/masters/leite.png",
+    "prompt": "Use attached image as STYLE REFERENCE ONLY. Create ONE isolated food/category icon faithfully matching its warm Portuguese flat illustration identity: rounded organic silhouettes, clean crisp edges, solid opaque fills, two or three soft shading planes, small restrained highlights, no outlines. White solid background, no shadow or glow, no lettering, no watermark, no background tile. Centered composition, approximately square object footprint, 18% clear margins on all sides. Readable at 48px. Subject: a clear glass filled with white milk, small pale blue reflection."
+  },
+  {
+    "id": "sorvete-massa",
+    "label": "Sorvete em massa e bolas",
+    "subject": "a low rectangular cream tub of ice cream with visible scooped surface, next to three round ice cream scoops in vanilla cream, strawberry pink and chocolate brown, no cone no soft serve",
+    "unicode": "1F368,1F366",
+    "group": "Ingredientes e frutos do mar",
+    "status": "generated",
+    "source": "output/food-icons/masters/sorvete-massa.png",
+    "prompt": "Use attached image as STYLE REFERENCE ONLY. Create ONE isolated food/category icon faithfully matching its warm Portuguese flat illustration identity: rounded organic silhouettes, clean crisp edges, solid opaque fills, two or three soft shading planes, small restrained highlights, no outlines. White solid background, no shadow or glow, no lettering, no watermark, no background tile. Centered composition, approximately square object footprint, 18% clear margins on all sides. Readable at 48px. Subject: a low rectangular cream tub of ice cream with visible scooped surface, next to three round ice cream scoops in vanilla cream, strawberry pink and chocolate brown, no cone no soft serve."
+  },
+  {
+    "id": "caranguejo",
+    "label": "Caranguejo",
+    "subject": "an uncooked small crab with muted terracotta shell, two claws and eight legs, no plate garnish or steam",
+    "unicode": "1F980",
+    "group": "Ingredientes e frutos do mar",
+    "status": "generated",
+    "source": "output/food-icons/masters/caranguejo.png",
+    "prompt": "Use attached image as STYLE REFERENCE ONLY. Create ONE isolated food/category icon faithfully matching its warm Portuguese flat illustration identity: rounded organic silhouettes, clean crisp edges, solid opaque fills, two or three soft shading planes, small restrained highlights, no outlines. White solid background, no shadow or glow, no lettering, no watermark, no background tile. Centered composition, approximately square object footprint, 18% clear margins on all sides. Readable at 48px. Subject: an uncooked small crab with muted terracotta shell, two claws and eight legs, no plate garnish or steam."
+  },
+  {
+    "id": "lagosta",
+    "label": "Lagosta",
+    "subject": "an uncooked lobster with warm red brown shell, two large claws and segmented tail, no plate garnish or steam",
+    "unicode": "1F99E",
+    "group": "Ingredientes e frutos do mar",
+    "status": "generated",
+    "source": "output/food-icons/masters/lagosta.png",
+    "prompt": "Use attached image as STYLE REFERENCE ONLY. Create ONE isolated food/category icon faithfully matching its warm Portuguese flat illustration identity: rounded organic silhouettes, clean crisp edges, solid opaque fills, two or three soft shading planes, small restrained highlights, no outlines. White solid background, no shadow or glow, no lettering, no watermark, no background tile. Centered composition, approximately square object footprint, 18% clear margins on all sides. Readable at 48px. Subject: an uncooked lobster with warm red brown shell, two large claws and segmented tail, no plate garnish or steam."
+  },
+  {
+    "id": "camarao",
+    "label": "Camarão",
+    "subject": "an uncooked curved shrimp with pale coral gray shell and simple antennae, no breading or plate",
+    "unicode": "1F990",
+    "group": "Ingredientes e frutos do mar",
+    "status": "generated",
+    "source": "output/food-icons/masters/camarao.png",
+    "prompt": "Use attached image as STYLE REFERENCE ONLY. Create ONE isolated food/category icon faithfully matching its warm Portuguese flat illustration identity: rounded organic silhouettes, clean crisp edges, solid opaque fills, two or three soft shading planes, small restrained highlights, no outlines. White solid background, no shadow or glow, no lettering, no watermark, no background tile. Centered composition, approximately square object footprint, 18% clear margins on all sides. Readable at 48px. Subject: an uncooked curved shrimp with pale coral gray shell and simple antennae, no breading or plate."
+  },
+  {
+    "id": "lula",
+    "label": "Lula",
+    "subject": "a raw squid with pale rose mantle, triangular fins and short curved tentacles, no rings or plate",
+    "unicode": "1F991",
+    "group": "Ingredientes e frutos do mar",
+    "status": "generated",
+    "source": "output/food-icons/masters/lula.png",
+    "prompt": "Use attached image as STYLE REFERENCE ONLY. Create ONE isolated food/category icon faithfully matching its warm Portuguese flat illustration identity: rounded organic silhouettes, clean crisp edges, solid opaque fills, two or three soft shading planes, small restrained highlights, no outlines. White solid background, no shadow or glow, no lettering, no watermark, no background tile. Centered composition, approximately square object footprint, 18% clear margins on all sides. Readable at 48px. Subject: a raw squid with pale rose mantle, triangular fins and short curved tentacles, no rings or plate."
+  },
+  {
+    "id": "ostra",
+    "label": "Ostra",
+    "subject": "an open oyster with gray beige ridged shell and cream oyster flesh, no pearl, no plate",
+    "unicode": "1F9AA",
+    "group": "Ingredientes e frutos do mar",
+    "status": "generated",
+    "source": "output/food-icons/masters/ostra.png",
+    "prompt": "Use attached image as STYLE REFERENCE ONLY. Create ONE isolated food/category icon faithfully matching its warm Portuguese flat illustration identity: rounded organic silhouettes, clean crisp edges, solid opaque fills, two or three soft shading planes, small restrained highlights, no outlines. White solid background, no shadow or glow, no lettering, no watermark, no background tile. Centered composition, approximately square object footprint, 18% clear margins on all sides. Readable at 48px. Subject: an open oyster with gray beige ridged shell and cream oyster flesh, no pearl, no plate."
+  },
+  {
+    "id": "ervas",
+    "label": "Ervas",
+    "subject": "a small green herb sprig with oval leaves, like basil or oregano",
+    "unicode": "1F33F",
+    "group": "Ingredientes e frutos do mar",
+    "status": "generated",
+    "source": "output/food-icons/masters/ervas.png",
+    "prompt": "Use attached image as STYLE REFERENCE ONLY. Create ONE isolated food/category icon faithfully matching its warm Portuguese flat illustration identity: rounded organic silhouettes, clean crisp edges, solid opaque fills, two or three soft shading planes, small restrained highlights, no outlines. White solid background, no shadow or glow, no lettering, no watermark, no background tile. Centered composition, approximately square object footprint, 18% clear margins on all sides. Readable at 48px. Subject: a small green herb sprig with oval leaves, like basil or oregano."
+  }
+]
