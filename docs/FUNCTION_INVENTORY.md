@@ -584,3 +584,7 @@ Revisão 06/11: persistRecipesSnapshot atualiza vínculos virtuais pelo catálog
 - recipeSheet.bindRecipeFilterActions/renderRecipes/setIngFilter: seleção múltipla, busca incremental e limpeza sem perda das escolhas ocultas pela busca.
 
 - recipeSheet.saveRecipe: valida seleção obrigatória de categoria e interrompe salvamento com toast de atenção.
+
+## Portabilidade dos materiais de ícones — 11/11/2026
+
+- `scripts/build-food-icon-catalog.py`: `package_icons` resolve fontes relativas à raiz do projeto e evita copiar um original sobre ele mesmo. Permite usar os PNGs versionados em outro computador, sem depender de caminhos pessoais.

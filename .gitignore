@@ -13,3 +13,14 @@ supabase/.temp/
 .env
 .env.*
 !.env.example
+
+# Generated caches and private QA captures are not project sources.
+__pycache__/
+*.py[cod]
+output/*
+!output/food-icons/
+!output/food-icons-extension/
+!output/icon-tools/
+!output/pdf/
+!output/new-icons.json
+!output/new-food-icons-preview.png

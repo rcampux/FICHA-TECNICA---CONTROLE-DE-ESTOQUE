@@ -4,6 +4,7 @@ Aplicativo PWA em evolucao para chefs e negocios de alimentacao criarem receitas
 
 ## Diretrizes
 
+- [Começar em outro computador](docs/NOVO_COMPUTADOR.md)
 - [Diretrizes de produto](docs/PRODUCT_GUIDELINES.md)
 - [Arquitetura tecnica](docs/TECHNICAL_ARCHITECTURE.md)
 - [Design system](docs/DESIGN_SYSTEM.md)
@@ -34,14 +35,16 @@ O scanner por IA exige um endpoint `POST /api/scan-recipe`; quando ele nao exist
 
 A pesquisa de preços exige `SERPAPI_API_KEY` somente no servidor. Copie `.env.example` como referência e configure essa variável na Vercel; nunca coloque a chave em `public/`.
 
-Nesta fase, abra `public/index.html` para testar o app.
+Para testar o app, use o servidor local abaixo; não abra o HTML diretamente pelo explorador de arquivos.
 
 ## Prototipo local
 
-Para servir o projeto localmente com Node:
+Com Node.js 24 e Git instalados, execute na pasta do projeto:
 
 ```bash
-node scripts/dev-server.mjs
+npm ci
+npm run build
+npm run dev
 ```
 
 Depois acesse:
@@ -49,6 +52,8 @@ Depois acesse:
 ```text
 http://localhost:4173/public/index.html
 ```
+
+Sem configuração adicional, esse fluxo abre o modo local de desenvolvimento. Para acessar os serviços existentes e continuar em outro PC, siga [o guia de configuração](docs/NOVO_COMPUTADOR.md). Chaves privadas e dados dos clientes não são distribuídos pelo GitHub.
 
 ## Deploy Vercel
 

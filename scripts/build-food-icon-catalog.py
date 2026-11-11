@@ -23,7 +23,11 @@ def package_icons(items):
         if item['status'] != 'generated':
             raise ValueError('Missing generated icon: ' + item['id'])
         source = Path(item['source'])
-        shutil.copy2(source, OUT / 'masters' / (item['id'] + '.png'))
+        if not source.is_absolute():
+            source = ROOT / source
+        master = OUT / 'masters' / (item['id'] + '.png')
+        if source.resolve() != master.resolve():
+            shutil.copy2(source, master)
         with Image.open(source) as img:
             image = ImageOps.contain(img.convert('RGB'), (512, 512), Image.Resampling.LANCZOS)
             tile = Image.new('RGB', (512, 512), 'white')
