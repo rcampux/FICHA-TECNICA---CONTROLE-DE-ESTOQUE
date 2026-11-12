@@ -90,7 +90,7 @@ Este arquivo e um inventario vivo das funcoes utilizadas no projeto. Toda nova f
 
 | Funcao | Arquivo | Linha | Responsabilidade inicial |
 | --- | --- | ---: | --- |
-| `resolveRequestPath` | `scripts/dev-server.mjs` | 19 | Resolve a pagina inicial e o manifesto dinamico de release no servidor local, bloqueando caminhos fora do projeto. |
+| `resolveRequestPath` | `scripts/dev-server.mjs` | 26 | Resolve a pagina inicial, o manifesto de release e `/src/config/env.js` para a configuracao gerada em `public/src/config/env.js`, permitindo carregar Supabase no servidor local. |
 | `toQuotedString` | `scripts/sync-public-assets.mjs` | 9 | Serializa valores de ambiente para gerar JS publico seguro. |
 | `normalizeReleaseId` | `scripts/sync-public-assets.mjs` | 18 | Normaliza o identificador do deployment/commit para uso seguro no manifesto publico de release. |
 | `resolveReleaseId` | `scripts/sync-public-assets.mjs` | 26 | Seleciona deployment, URL ou commit da Vercel/GitHub como versao automatica do build. |

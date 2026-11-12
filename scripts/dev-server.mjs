@@ -29,6 +29,8 @@ function resolveRequestPath(url) {
     ? "/public/index.html"
     : requestedPath === "/release.json"
       ? "/public/release.json"
+      : requestedPath === "/src/config/env.js"
+        ? "/public/src/config/env.js"
       : requestedPath;
   const filePath = normalize(join(root, pathname));
 
