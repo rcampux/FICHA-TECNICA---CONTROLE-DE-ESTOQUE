@@ -1,0 +1,34 @@
+#modal-account .account-settings { width:min(860px,100%); max-width:860px; padding:24px; background:var(--journey-paper); color:var(--journey-ink); border-radius:var(--journey-dialog-radius); }
+.account-heading { display:flex; align-items:center; justify-content:space-between; gap:16px; margin-bottom:24px; }
+.account-heading h2 { margin:4px 0 0; font-size:26px; }
+.account-eyebrow { color:var(--journey-accent); font-size:12px; font-weight:800; letter-spacing:.08em; text-transform:uppercase; }
+.account-close { border:0; background:var(--journey-tint); color:var(--journey-accent); border-radius:50%; width:44px; height:44px; display:grid; place-items:center; flex-shrink:0; }
+.account-summary { display:flex; gap:16px; align-items:center; padding:20px; background:var(--journey-tint); border-radius:16px; margin-bottom:24px; }
+.account-avatar { width:60px; height:60px; flex-shrink:0; background:var(--journey-accent); color:white; border-radius:50%; display:grid; place-items:center; font-size:20px; font-weight:800; }
+.account-summary strong { font-size:20px; display:block; overflow-wrap:anywhere; }
+.account-summary p { margin:4px 0 8px; color:var(--journey-muted); overflow-wrap:anywhere; }
+.account-role { font-size:12px; font-weight:700; color:var(--journey-accent); }
+.account-grid { display:grid; grid-template-columns:1fr 1fr; gap:28px; }
+.account-grid form { min-width:0; }
+.account-grid h3 { display:flex; gap:8px; align-items:center; margin:0 0 16px; font-size:18px; }
+.account-grid fieldset { border:0; padding:0; margin:0; min-width:0; }
+.account-grid .input-group { margin-bottom:16px; }
+.account-grid label { display:block; margin-bottom:8px; font-weight:600; font-size:14px; }
+.account-grid :is(input,select) { width:100%; box-sizing:border-box; min-height:48px; font-size:16px; }
+.account-grid input[readonly] { opacity:.8; }
+.account-grid small,.account-help { display:block; font-size:13px; line-height:1.5; margin:8px 0 16px; color:var(--journey-muted); }
+.account-location { display:grid; grid-template-columns:1fr 90px; gap:12px; }
+.account-grid .btn { min-height:48px; width:100%; }
+.account-footer { display:flex; align-items:center; justify-content:space-between; gap:16px; margin-top:24px; padding-top:16px; border-top:1px solid var(--journey-line); }
+#account-status { font-size:14px; line-height:1.5; margin:0; }
+#account-status[data-error="true"] { color:var(--md-sys-color-error); }
+body[data-visual-style="menu"] .account-summary { border-radius:4px; }
+@media(max-width:767px) {
+  #modal-account { padding:0; align-items:flex-end; }
+  #modal-account .account-settings { max-height:92dvh; margin:0; padding:20px 20px calc(24px + env(safe-area-inset-bottom,0px)); border-radius:var(--journey-dialog-radius) var(--journey-dialog-radius) 0 0; }
+  .account-grid { grid-template-columns:1fr; gap:28px; }
+  .account-heading h2 { font-size:23px; }
+  .account-summary { padding:16px; }
+  .account-footer { align-items:flex-start; flex-direction:column; }
+}
+

@@ -18,6 +18,7 @@
 @import "./mobile-navigation.css";
 @import "./tutorial.css";
 @import "./toasts.css";
+@import "./account-settings.css";
 
 /* Cadastro revisado de ingredientes */
 #recipe-stock-batch [data-batch-save][aria-disabled="true"]{opacity:.45;cursor:not-allowed;box-shadow:none}

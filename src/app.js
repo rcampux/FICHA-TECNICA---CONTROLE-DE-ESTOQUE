@@ -497,6 +497,13 @@ const authSessionModule=window.FichaTecAuthSession.createAuthSessionModule({
 const {backToAuthForm,clearAuthInputs,getAuthRedirectUrl,getAuthState,getPasswordValidation,handleAuthBack,handleAuthKeydown,handlePasswordRecovery,initAuthSession,isStrongPassword,loadOrganizations,openAuthModal,renderAuthState,renderPasswordFeedback,requestPasswordReset,resendConfirmationEmail,selectOrganization,setAuthMode,signOutAuth,submitAuthForm,syncSupabaseSession,togglePasswordConfirmationVisibility,togglePasswordVisibility,updatePassword}=authSessionModule;
 Object.assign(window,{backToAuthForm,clearAuthInputs,getAuthRedirectUrl,getAuthState,getPasswordValidation,handleAuthBack,handleAuthKeydown,handlePasswordRecovery,initAuthSession,isStrongPassword,loadOrganizations,openAuthModal,renderAuthState,renderPasswordFeedback,requestPasswordReset,resendConfirmationEmail,selectOrganization,setAuthMode,signOutAuth,submitAuthForm,syncSupabaseSession,togglePasswordConfirmationVisibility,togglePasswordVisibility,updatePassword,openStartLogin,showBootSplash,showStartScreen,enterAppExperience,exitToStartExperience});
 
+const accountSettings=window.FichaTecAccountSettings.createAccountSettings({
+  repository:window.FichaTecAccountRepository.createAccountRepository({createClient:window.FichaTecSupabaseClientService.createClient}),
+  getAuth:getAuthState, closeModal, reloadOrganizations:loadOrganizations,
+});
+function openAccountSettings(){ accountSettings.open(); }
+window.openAccountSettings=openAccountSettings;
+
 window.FichaTecTutorial=window.FichaTecTutorialGuide.createGuide({
   getAuth:getAuthState,
   createClient:window.FichaTecSupabaseClientService.createClient,
@@ -574,6 +581,7 @@ window.addEventListener('fichatec:auth-signed-out',clearSessionData);
 document.querySelectorAll('.modal-overlay').forEach(m=>{
   m.addEventListener('click',e=>{
     if(e.target!==m)return;
+    if(m.id==='modal-account'){accountSettings.close();return;}
     if(m.id==='modal-confirm'){closeConfirmAction(false);return;}
     if(m.id==='modal-auth'&&m.classList.contains('auth-gate'))return;
     if(m.dataset.busy==='true')return;
@@ -602,6 +610,7 @@ document.addEventListener('keydown',event=>{
   if (document.getElementById('recipe-print-preview')?.open || document.getElementById('tutorial-guide')?.open) return;
   if(!activeModal)return;
   if(event.key==='Escape'){
+      if(activeModal.id==='modal-account'){event.preventDefault();accountSettings.close();return;}
     if(activeModal.id==='modal-auth'&&activeModal.classList.contains('auth-gate'))return;
     if(activeModal.dataset.busy==='true')return;
     event.preventDefault();

@@ -1052,6 +1052,7 @@
       </div>
 
       <div id="auth-workspace-wrap" style="display:none">
+        <button class="btn btn-primary btn-full" type="button" onclick="openAccountSettings()"><span class="material-symbols-rounded" aria-hidden="true">manage_accounts</span> Perfil e configurações</button>
         <div class="section-label" style="margin-top:0">Workspace ativo</div>
         <div id="auth-workspace-list"></div>
         <div class="auth-action-stack">
@@ -1124,6 +1125,26 @@
 <div class="cooking-scene" aria-hidden="true"><div class="cooking-steam"><i></i><i></i><i></i></div><div class="cooking-spoon"></div><div class="cooking-pot"><div class="cooking-soup"></div></div><div class="cooking-shadow"></div></div>
 <h2 id="recipe-cooking-title" tabindex="-1" autofocus>Preparando sua receita</h2><p id="recipe-cooking-copy">Reunindo ingredientes, quantidades e custos.</p></dialog>
 
+<div class="modal-overlay" id="modal-account" role="dialog" aria-modal="true" aria-labelledby="account-title">
+<section class="modal account-settings">
+<header class="account-heading"><div><span class="account-eyebrow">Sua conta</span><h2 class="modal-title" id="account-title">Perfil e configurações</h2></div><button class="account-close" id="account-close" type="button" aria-label="Fechar configurações"><span class="material-symbols-rounded" aria-hidden="true">close</span></button></header>
+<div class="account-summary"><span class="account-avatar" id="account-avatar" aria-hidden="true">•</span><div><strong id="account-summary-name">Seu perfil</strong><p id="account-summary-company"></p><span class="account-role" id="account-role"></span></div></div>
+<div class="account-grid">
+<form id="account-profile-form"><h3><span class="material-symbols-rounded" aria-hidden="true">person</span> Meu perfil</h3><fieldset id="account-profile-fields" disabled>
+<div class="input-group"><label for="account-name">Nome completo *</label><input id="account-name" name="full_name" autocomplete="name" required maxlength="120" placeholder="Como você quer ser chamado"></div>
+<div class="input-group"><label for="account-email">E-mail de acesso</label><input id="account-email"  type="email" readonly aria-describedby="account-email-help" placeholder=""></div>
+<small id="account-email-help">Seu e-mail de login. Não é alterado por este formulário.</small>
+<div class="input-group"><label for="account-phone">Telefone</label><input id="account-phone" name="phone" type="tel" autocomplete="tel" maxlength="25" pattern="[+0-9\(\) .\-]{7,25}" placeholder="(11) 99999-9999"></div>
+<button class="btn btn-primary" type="submit">Salvar perfil</button></fieldset><p class="account-help">Seu perfil acompanha você em todas as suas empresas.</p></form>
+<form id="account-company-form"><h3><span class="material-symbols-rounded" aria-hidden="true">storefront</span> Minha empresa</h3><p class="account-help" id="account-company-note"></p><fieldset id="account-company-fields" disabled>
+<div class="input-group"><label for="account-company-name">Nome da empresa *</label><input id="account-company-name" name="name" autocomplete="organization" required maxlength="120" placeholder="Nome da sua cozinha ou negócio"></div>
+<div class="input-group"><label for="account-segment">Tipo de empreendimento</label><select id="account-segment" name="business_segment"><option value="">Selecione</option><option value="restaurant">Restaurante</option><option value="bakery">Padaria</option><option value="confectionery">Confeitaria</option><option value="cafe">Cafeteria</option><option value="snack_bar">Lanchonete</option><option value="delivery">Delivery / marmitaria</option><option value="buffet">Buffet / eventos</option><option value="private_chef">Chef particular</option><option value="other">Outro</option></select></div>
+<div class="account-location"><div class="input-group"><label for="account-city">Cidade</label><input id="account-city" name="city" autocomplete="address-level2" maxlength="100" placeholder="Sua cidade"></div><div class="input-group"><label for="account-region">UF</label><select id="account-region" name="region"><option value="">Selecione</option><option value="AC">AC</option><option value="AL">AL</option><option value="AP">AP</option><option value="AM">AM</option><option value="BA">BA</option><option value="CE">CE</option><option value="DF">DF</option><option value="ES">ES</option><option value="GO">GO</option><option value="MA">MA</option><option value="MT">MT</option><option value="MS">MS</option><option value="MG">MG</option><option value="PA">PA</option><option value="PB">PB</option><option value="PR">PR</option><option value="PE">PE</option><option value="PI">PI</option><option value="RJ">RJ</option><option value="RN">RN</option><option value="RS">RS</option><option value="RO">RO</option><option value="RR">RR</option><option value="SC">SC</option><option value="SP">SP</option><option value="SE">SE</option><option value="TO">TO</option></select></div></div>
+<div class="input-group"><label for="account-company-phone">Telefone da empresa</label><input id="account-company-phone" name="phone" type="tel" maxlength="25" pattern="[+0-9\(\) .\-]{7,25}" placeholder="Telefone de contato"></div>
+<div class="input-group"><label for="account-company-email">E-mail da empresa</label><input id="account-company-email" name="billing_email" type="email" maxlength="254" placeholder="contato@suaempresa.com.br"></div>
+<button class="btn btn-primary" type="submit">Salvar empresa</button></fieldset></form>
+</div><footer class="account-footer"><p id="account-status" role="status" aria-live="polite"></p><button class="btn btn-secondary" id="account-reload" type="button">Recarregar dados</button></footer>
+</section></div>
 <script src="../src/config/env.js" defer></script>
 <script src="../src/config/supabase.js" defer></script>
 <script src="../src/config/storageKeys.js" defer></script>
@@ -1135,6 +1156,8 @@
 <script src="../src/services/repositories/supabaseDomainRepository.js" defer></script>
 <script src="../src/services/repositories/hybridRepository.js" defer></script>
 <script src="../src/modules/auth/authSession.js" defer></script>
+<script src="../src/services/repositories/accountRepository.js" defer></script>
+<script src="../src/modules/account/accountSettings.js" defer></script>
 <script src="../src/modules/billing/planAccess.js" defer></script>
 <script src="../src/modules/nutrition/nutritionDefaults.js" defer></script>
 <script src="../src/modules/recipes/ingredientOrder.js" defer></script>
